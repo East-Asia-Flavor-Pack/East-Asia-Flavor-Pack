@@ -1,0 +1,397 @@
+namespace = korean_restoration
+
+# Emperor takes power
+korean_restoration.1 = {
+	type = country_event
+	placement = root
+	title = korean_restoration.1.t
+	desc = korean_restoration.1.d
+	flavor = korean_restoration.1.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:korean_restoration_ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	trigger = {
+		# triggered by meiji restoration JE
+	}
+                      
+
+	immediate = {
+                                ruler = {
+			save_scope_as = korean_restoration_ruler
+		}
+		set_variable = {
+			name = korean_restoration_var
+			value = 0
+		}
+		add_journal_entry = {
+			type = je_korean_restoration_main
+		}
+	}
+
+                 option = { # favour the industrialists
+		name = korean_restoration.1.a
+		default_option = yes
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = korean_restoration_favored_ig
+				months = normal_modifier_time
+			}
+		}
+		custom_tooltip = yangban_rename.tt
+		hidden_effect = {
+			scope:yangban_ig = {
+				set_interest_group_name = ig_landowners
+			}
+		}
+		if = {
+			limit = {
+				in_default = no
+				any_scope_state = {
+					filter = {
+						is_incorporated = yes
+					}
+					any_scope_building = {
+						is_building_type = building_urban_center
+						level >= 5
+					}
+					has_building = building_railway
+					percent > 0.6
+				}
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_economy
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_law = law_type:law_serfdom }
+				has_technology_researched = napoleonic_warfare
+				NOT = {
+					any_scope_building = {
+						is_building_type = building_barracks
+						OR = {
+							has_active_production_method = pm_irregular_infantry
+							has_active_production_method = pm_no_artillery
+							has_active_production_method = pm_cannon_artillery
+						}
+					}
+				}
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+			trigger_event = {
+				id = korean_restoration.3
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_army
+			}
+		}
+		if = {
+			limit = {
+				NOT = { is_country_type = unrecognized }
+				NOT = { has_law = law_type:law_isolationism }
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_diplomacy
+			}
+		}
+	}
+	option = { # favour the intellectuals
+		name = korean_restoration.1.b
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = korean_restoration_favored_ig
+				months = normal_modifier_time
+			}
+		}
+		custom_tooltip = yangban_rename.tt
+		hidden_effect = {
+			scope:yangban_ig = {
+				set_interest_group_name = ig_landowners
+			}
+		}
+		if = {
+			limit = {
+				in_default = no
+				any_scope_state = {
+					filter = {
+						is_incorporated = yes
+					}
+					any_scope_building = {
+						is_building_type = building_urban_center
+						level >= 5
+					}
+					has_building = building_railway
+					percent > 0.6
+				}
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_economy
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_law = law_type:law_serfdom }
+				has_technology_researched = napoleonic_warfare
+				NOT = {
+					any_scope_building = {
+						is_building_type = building_barracks
+						OR = {
+							has_active_production_method = pm_irregular_infantry
+							has_active_production_method = pm_no_artillery
+							has_active_production_method = pm_cannon_artillery
+						}
+					}
+				}
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+			trigger_event = {
+				id = korean_restoration.3
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_army
+			}
+		}
+		if = {
+			limit = {
+				NOT = { is_country_type = unrecognized }
+				NOT = { has_law = law_type:law_isolationism }
+			}
+			change_variable = {
+				name = korean_restoration_var
+				add = 1
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_korean_restoration_diplomacy
+			}
+		}
+	}
+}
+
+
+# Reforms complete!
+korean_restoration.2 = {
+	type = country_event
+	placement = root
+	title = korean_restoration.2.t
+	desc = korean_restoration.2.d
+	flavor = korean_restoration.2.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	event_image = {
+		video = "gfx/event_pictures/unspecific_ruler_speaking_to_people.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	trigger = {
+		# triggered by meiji restoration JE
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = korean_restoration_ruler
+		}
+		set_global_variable = korean_restoration_complete
+	}
+
+	option = {
+		name = korean_restoration.2.a
+		add_modifier = {
+			name = korea_military_reward
+			months = normal_modifier_time
+		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_SHIKOKU }
+			}
+			s:STATE_SHIKOKU = {
+				add_claim = ROOT
+			}
+		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_KANTO }
+			}
+			s:STATE_KANTO = {
+				add_claim = ROOT
+			}
+		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_KANSAI }
+			}
+			s:STATE_KANSAI = {
+				add_claim = ROOT
+			}
+		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_CHUBU }
+			}
+			s:STATE_CHUBU = {
+				add_claim = ROOT
+			}
+		}
+                        if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_KYUSHU }
+			}
+			s:STATE_KYUSHU = {
+				add_claim = ROOT
+			}
+		}
+                        if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_CHUGOKU }
+			}
+			s:STATE_CHUGOKU = {
+				add_claim = ROOT
+			}
+		}
+                       if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_TOHOKU }
+			}
+			s:STATE_TOHOKU = {
+				add_claim = ROOT
+			}
+		}
+                           if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_HOKKAIDO }
+			}
+			s:STATE_HOKKAIDO = {
+				add_claim = ROOT
+			}
+		}
+                                    if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_RYUKYU_ISLANDS }
+			}
+			s:STATE_RYUKYU_ISLANDS = {
+				add_claim = ROOT
+			}
+		}
+                               hidden_effect ={
+                               add_journal_entry = {
+				type = je_korean_empire
+			}
+                                     }
+	}
+
+
+option = {
+		name = korean_restoration.2.b
+		default_option = yes
+		add_modifier = {
+			name = korea_military_reward
+			months = normal_modifier_time
+		}
+		
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_NORTHERN_MANCHURIA }
+			}
+			s:STATE_NORTHERN_MANCHURIA = {
+				add_claim = ROOT
+			}
+		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_SOUTHERN_MANCHURIA }
+			}
+			s:STATE_SOUTHERN_MANCHURIA = {
+				add_claim = ROOT
+			}
+		}
+                        if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_OUTER_MANCHURIA }
+			}
+			s:STATE_OUTER_MANCHURIA = {
+				add_claim = ROOT
+			}
+		}
+                        if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_SHENGJING }
+			}
+			s:STATE_SHENGJING = {
+				add_claim = ROOT
+			}
+	                }
+                               hidden_effect ={
+                               add_journal_entry = {
+				type = je_korean_empire
+			}
+                                     }
+
+              }
+	option = {
+		name = korean_restoration.2.c
+                                hidden_effect ={
+                               add_journal_entry = {
+				type = je_korean_empire
+			}
+                                     }
+		add_modifier = {
+			name = korea_diplomatic_reward
+			months = normal_modifier_time
+		}
+	}
+	option = {
+		name = korean_restoration.2.e
+                                hidden_effect ={
+                               add_journal_entry = {
+				type = je_korean_empire
+			}
+                                     }
+		add_modifier = {
+			name = korea_production_reward
+			months = normal_modifier_time
+		}
+	}
+}
+

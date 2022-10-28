@@ -1,0 +1,128 @@
+je_donghak_countdown = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = {
+			name = donghak_progress_var
+			value = 0
+		}
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		has_law = law_type:law_serfdom_banned
+	}
+
+	on_complete = {
+                               custom_tooltip = {
+                                text = donghak_complete_tt
+		trigger_event = { id = donghak_events.5 } #동학사태의 해결
+                               }
+	}
+
+	fail = {# 동학파
+			custom_tooltip = {
+				text = donghak_rebels
+				any_country = {
+					is_revolutionary = yes
+					country_definition = root.country_definition
+					ig:ig_rural_folk = {
+						is_in_government = yes
+					}
+				}
+			}
+      }
+
+	on_fail = {
+		if = {
+			limit = {
+				any_country = {
+					is_revolutionary = yes
+					country_definition = root.country_definition
+                    ig:ig_rural_folk = {
+						is_in_government = yes
+					}
+				}
+			}
+			set_variable = donghak_will_spawn_var
+		}
+		custom_tooltip = {
+			text = donghak_will_happen_tt
+			trigger_event = { id = donghak_je_events.1 }
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					has_law = law_type:law_serfdom_banned
+				}
+				change_variable = {
+					name = donghak_progress_var
+					add = 1
+				}
+			}
+		}
+		random_events = {
+			# 동학농민운동 이벤트
+			100 = 0
+			20 = donghak_events.1 # 북접
+			20 = donghak_events.3 # 남접
+		}
+	}
+	on_yearly_pulse = {
+		random_events = {
+			40 = 0
+			20 = donghak_events.2 # 보은집회
+			20 = donghak_events.6 # 전장혁사망
+			20 = donghak_events.7 # 고부민란
+		}
+	}
+
+	current_value = {
+		value = root.var:donghak_progress_var
+	}
+
+	goal_add_value = {
+		value = 120
+	}
+
+	progressbar = yes
+
+	weight = 100
+
+	should_be_pinned_by_default = yes
+}
+
+je_donghak_war = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	complete = {
+		custom_tooltip = {
+			text = donghak_war_tt_complete
+			scope:target = { is_country_alive = no }
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = donghak_je_events.2 }
+		if = {
+			limit = { 
+				has_variable = csa_will_spawn_var
+			}
+			
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			donghak_je_events.4
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+}
