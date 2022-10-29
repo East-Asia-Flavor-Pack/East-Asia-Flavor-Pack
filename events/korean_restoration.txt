@@ -1,6 +1,5 @@
 namespace = korean_restoration
 
-# Emperor takes power
 korean_restoration.1 = {
 	type = country_event
 	placement = root
@@ -20,378 +19,1094 @@ korean_restoration.1 = {
 	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
 
 	trigger = {
-		# triggered by meiji restoration JE
+		exists = c:KOR
+		c:KOR = ROOT
+		game_date >= 1837.1.1
+		NOT = { has_variable = korean_restoration_first_var }
 	}
-                      
 
 	immediate = {
-                                ruler = {
-			save_scope_as = korean_restoration_ruler
-		}
 		set_variable = {
-			name = korean_restoration_var
+			name = korean_restoration_first_var
 			value = 0
 		}
+		ruler = {
+			save_scope_as = korean_restoration_ruler
+		}
 		add_journal_entry = {
-			type = je_korean_restoration_main
+			type = je_korean_restoration_first
 		}
 	}
 
-                 option = { # favour the industrialists
+	option = { 
 		name = korean_restoration.1.a
 		default_option = yes
-		ig:ig_industrialists = {
-			add_modifier = {
-				name = korean_restoration_favored_ig
-				months = normal_modifier_time
+		add_journal_entry = {
+				type = je_korean_restoration_gunjeong
 			}
-		}
-		custom_tooltip = yangban_rename.tt
-		hidden_effect = {
-			scope:yangban_ig = {
-				set_interest_group_name = ig_landowners
+		add_journal_entry = {
+				type = je_korean_restoration_jeonjeong
 			}
-		}
-		if = {
-			limit = {
-				in_default = no
-				any_scope_state = {
-					filter = {
-						is_incorporated = yes
-					}
-					any_scope_building = {
-						is_building_type = building_urban_center
-						level >= 5
-					}
-					has_building = building_railway
-					percent > 0.6
-				}
+		add_journal_entry = {
+				type = je_korean_restoration_hwangok
 			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_economy
-			}
-		}
-		if = {
-			limit = {
-				NOT = { has_law = law_type:law_serfdom }
-				has_technology_researched = napoleonic_warfare
-				NOT = {
-					any_scope_building = {
-						is_building_type = building_barracks
-						OR = {
-							has_active_production_method = pm_irregular_infantry
-							has_active_production_method = pm_no_artillery
-							has_active_production_method = pm_cannon_artillery
-						}
-					}
-				}
-			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-			trigger_event = {
-				id = korean_restoration.3
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_army
-			}
-		}
-		if = {
-			limit = {
-				NOT = { is_country_type = unrecognized }
-				NOT = { has_law = law_type:law_isolationism }
-			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_diplomacy
-			}
-		}
-	}
-	option = { # favour the intellectuals
-		name = korean_restoration.1.b
-		ig:ig_intelligentsia = {
-			add_modifier = {
-				name = korean_restoration_favored_ig
-				months = normal_modifier_time
-			}
-		}
-		custom_tooltip = yangban_rename.tt
-		hidden_effect = {
-			scope:yangban_ig = {
-				set_interest_group_name = ig_landowners
-			}
-		}
-		if = {
-			limit = {
-				in_default = no
-				any_scope_state = {
-					filter = {
-						is_incorporated = yes
-					}
-					any_scope_building = {
-						is_building_type = building_urban_center
-						level >= 5
-					}
-					has_building = building_railway
-					percent > 0.6
-				}
-			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_economy
-			}
-		}
-		if = {
-			limit = {
-				NOT = { has_law = law_type:law_serfdom }
-				has_technology_researched = napoleonic_warfare
-				NOT = {
-					any_scope_building = {
-						is_building_type = building_barracks
-						OR = {
-							has_active_production_method = pm_irregular_infantry
-							has_active_production_method = pm_no_artillery
-							has_active_production_method = pm_cannon_artillery
-						}
-					}
-				}
-			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-			trigger_event = {
-				id = korean_restoration.3
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_army
-			}
-		}
-		if = {
-			limit = {
-				NOT = { is_country_type = unrecognized }
-				NOT = { has_law = law_type:law_isolationism }
-			}
-			change_variable = {
-				name = korean_restoration_var
-				add = 1
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_korean_restoration_diplomacy
-			}
-		}
+		
 	}
 }
 
-
-# Reforms complete!
+# 삼정의 문란 해결
 korean_restoration.2 = {
 	type = country_event
-	placement = root
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
 	title = korean_restoration.2.t
 	desc = korean_restoration.2.d
 	flavor = korean_restoration.2.f
 
 	duration = 3
+                
+     trigger = {
+     }
 
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	 immediate = {
+		}
+
+     option = { # 위신증가
+         default_option = yes
+		name = korean_restoration.2.a
+		add_modifier = {
+	            name = samjeong_complete_1
+	            months = 36
+	        }
+        }
+                     
+
+    option = {# 백성들의 덕이다
+        name = korean_restoration.2.b
+		add_loyalists = { 
+				pop_type = peasants
+				value = 0.3
+			}
+      }
+ }
+
+ # 삼정의 문란 해결 중 이벤트 1 - 지주 반발
+korean_restoration.3 = {
+	type = country_event
+
 	event_image = {
-		video = "gfx/event_pictures/unspecific_ruler_speaking_to_people.bk2"
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
 
-	trigger = {
-		# triggered by meiji restoration JE
-	}
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
 
-	immediate = {
-		ruler = {
-			save_scope_as = korean_restoration_ruler
+	title = korean_restoration.3.t
+	desc = korean_restoration.3.d
+	flavor = korean_restoration.3.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jiju_banbal }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jiju_banbal
 		}
-		set_global_variable = korean_restoration_complete
+		}
+
+     option = { # 지주의 편을 든다
+         default_option = yes
+		name = korean_restoration.3.a
+        ig:ig_landowners = {
+	        add_modifier = {
+	            name = jiju_banbal_1
+	            months = 12
+	        }
+		}
+		change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+                     
+     }
+
+    option = {# 백성의 편을 든다
+        name = korean_restoration.3.b
+		ig:ig_rural_folk = {
+	        add_modifier = {
+	            name = jiju_banbal_2
+	            months = 12
+	        }
+		}
+		change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+      }
+ }
+
+ # 삼정의 문란 해결 이벤트 2 - 농민 반발
+korean_restoration.4 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
 	}
 
-	option = {
-		name = korean_restoration.2.a
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.4.t
+	desc = korean_restoration.4.d
+	flavor = korean_restoration.4.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = nongmin_banbal }
+	  ig:ig_landowners = {
+			OR = {
+				is_powerful = yes
+				is_in_government = yes 
+			}
+		}
+    }
+
+	 immediate = {
+		set_variable = {
+			name = nongmin_banbal
+		}
+		}
+
+     option = { #세금을 줄인다
+         default_option = yes
+		name = korean_restoration.4.a
+         add_modifier = {
+			name = nomgmin_gamse
+			months = 36
+		 }
+        change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}             
+     }
+
+    option = {#과세한다
+        name = korean_restoration.4.b
+		 add_modifier = {
+	            name = nongmin_gwase
+	            months = 36
+	        }
+	   change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+      }
+ }
+
+ # 환곡 해결
+korean_restoration.5 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.5.t
+	desc = korean_restoration.5.d
+	flavor = korean_restoration.5.f
+
+	duration = 3
+                
+     trigger = {
+     }
+
+	 immediate = {
+		}
+
+     option = { #
+         default_option = yes
+		name = korean_restoration.5.a
+		}
+                     
+     }
+
+ # 환곡 월간 이벤트 - 환곡탕감
+korean_restoration.6 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.6.t
+	desc = korean_restoration.6.d
+	flavor = korean_restoration.6.f
+
+	duration = 3
+                
+     trigger = {
+      NOT = { has_variable = hwangok_tanggam }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = hwangok_tanggam
+		}
+		}
+
+     option = { # 탕감을 해준다
+         default_option = yes
+		name = korean_restoration.6.a
+        change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+     }
+
+    option = {# 그런 건 없다
+        name = korean_restoration.6.b
+	  change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+		}
+ }
+
+  # 환곡 월간 이벤트 2 - 하납미를 가로챈 관리
+korean_restoration.7 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.7.t
+	desc = korean_restoration.7.d
+	flavor = korean_restoration.7.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = hanap_mi }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = hanap_mi
+		}
+		}
+
+     option = { # 처벌한다
+         default_option = yes
+		name = korean_restoration.7.a
+		change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}     
+     }
+
+    option = {# 눈 감아 준다
+        name = korean_restoration.7.b
+		change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+ # 환곡 연간 이벤트 - 환곡 이자를 줄이자
+korean_restoration.8 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.8.t
+	desc = korean_restoration.8.d
+	flavor = korean_restoration.8.f
+
+	duration = 3
+                
+     trigger = {
+		 NOT = { has_variable = hwangok_interest }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = hwangok_interest
+		}
+		}
+
+     option = { # 줄이자
+         default_option = yes
+		name = korean_restoration.8.a
+		change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+                     
+     }
+
+    option = {# 놔두자
+        name = korean_restoration.8.b
+      }
+	  change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+ }
+
+  # 환곡 연간 이벤트 2 - 왕의 직접적인 개입
+korean_restoration.9 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.9.t
+	desc = korean_restoration.9.d
+	flavor = korean_restoration.9.f
+
+	duration = 3
+                
+     trigger = {
+      NOT = { has_variable = hwangok_1 }
+	  has_variable = hwangok_2
+	  has_variable = hwangok_interest
+     }
+
+	 immediate = {
+		set_variable = {
+			name = hwangok_1
+		}
+		}
+
+     option = { # 개입한다
+		name = korean_restoration.9.a
+		set_variable = { name = hwangok_complete }
+		 change_variable = {
+			name = korean_restoration_var
+			add = 10
+		}
+     }
+           
+    option = {# 개입하지 않는다
+         default_option = yes
+        name = korean_restoration.9.b
+	set_variable = { name = hwangok_complete }
+	 change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+	}
+ }
+
+  # 환곡 연간 이벤트 3 - 횡령금지령
+korean_restoration.10 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.10.t
+	desc = korean_restoration.10.d
+	flavor = korean_restoration.10.f
+
+	duration = 3
+                
+     trigger = {
+      NOT = { has_variable = hwangok_2 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = hwangok_2
+		}
+		}
+
+     option = { # 횡령 금지 시킨다
+         
+		name = korean_restoration.10.a
+		change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+                     
+     }
+
+    option = {# 놔둔다
+	    default_option = yes
+        name = korean_restoration.10.b
+		change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+  # 군정 월간 이벤트 - 군역의 회피
+korean_restoration.11 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.11.t
+	desc = korean_restoration.11.d
+	flavor = korean_restoration.11.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = gunjeong_1 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = gunjeong_1
+		}
+		}
+
+     option = { # 잡아들여라
+         default_option = yes
+		name = korean_restoration.11.a
+                     
+     }
+
+    option = {# 용인해라
+        name = korean_restoration.11.b
+		change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+	
+      }
+ }
+
+   # 군정 월간 이벤트 2 - 군포 과다 
+korean_restoration.12 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.12.t
+	desc = korean_restoration.12.d
+	flavor = korean_restoration.12.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = gunjeong_2 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = gunjeogn_2
+		}
+		}
+
+     option = { # 원칙을 지켜라
+         default_option = yes
+		name = korean_restoration.12.a
+         change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}            
+     }
+
+    option = {# 여유를 줘라
+        name = korean_restoration.12.b
+            change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}
+      }
+ }
+
+   # 군정 연간 이벤트 - 백골 징포
+korean_restoration.13 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.13.t
+	desc = korean_restoration.13.d
+	flavor = korean_restoration.13.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = gunjeong_3 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = gunjeong_3
+		}
+		}
+
+     option = { # 관리를 벌하라
+         default_option = yes
+		name = korean_restoration.13.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 관리를 봐줘라
+        name = korean_restoration.13.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+   # 군정 연간 이벤트 2 - 족징
+korean_restoration.14 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.14.t
+	desc = korean_restoration.14.d
+	flavor = korean_restoration.14.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = gunjeong_4 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = gunjeong_4
+		}
+		}
+
+     option = { # 제도를 폐지하라
+         default_option = yes
+		name = korean_restoration.14.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 제도를 남기자
+        name = korean_restoration.14.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+   # 군정 연간 이벤트 3 - 왕의 직접 개입
+korean_restoration.15 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.15.t
+	desc = korean_restoration.15.d
+	flavor = korean_restoration.15.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = gunjeong_5 }
+	  has_variable = gunjeong_4
+	  has_variable = gunjeong_3
+     }
+
+	 immediate = {
+		set_variable = {
+			name = gunjeong_5
+		}
+		}
+
+     option = { # 개혁하라
+         default_option = yes
+		name = korean_restoration.15.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 10
+		}  
+		set_variable = { name = gunjeong_complete }          
+     }
+
+    option = {# 놔둬라
+        name = korean_restoration.15.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -10
+		}
+		set_variable = { name = gunjeong_complete }
+      }
+ }
+
+   # 전정해결
+korean_restoration.16 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.16.t
+	desc = korean_restoration.16.d
+	flavor = korean_restoration.16.f
+
+	duration = 3
+                
+     trigger = {
+     }
+
+	 immediate = {
+		}
+
+     option = { #
+         default_option = yes
+		name = korean_restoration.16.a
+		}
+                     
+     }
+ 
+   
+   # 전정 월간 이벤트 - 없는 땅으로 세금 거두는 사람
+korean_restoration.17 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.17.t
+	desc = korean_restoration.17.d
+	flavor = korean_restoration.17.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jeonjeong_1 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jeonjeong_1
+		}
+		}
+
+     option = { # 처벌하라
+         default_option = yes
+		name = korean_restoration.17.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 훈방해라
+        name = korean_restoration.17.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+   # 전정 월간 이벤트 2 - 비옥한 토지의 세금을 걷지 않음
+korean_restoration.18 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.18.t
+	desc = korean_restoration.18.d
+	flavor = korean_restoration.18.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jeonjeong_2 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jeonjeong_2
+		}
+		}
+
+     option = { # 처벌하라
+         
+		name = korean_restoration.18.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 그럴 수 있지
+	    default_option = yes
+        name = korean_restoration.18.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+   # 전정 연간 이벤트 - 도결의 폐단
+korean_restoration.19 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.19.t
+	desc = korean_restoration.19.d
+	flavor = korean_restoration.19.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jeonjeong_3 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jeonjeong_3
+		}
+		}
+
+     option = { # 처벌하라
+		name = korean_restoration.19.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 쉬쉬하자
+	    default_option = yes
+        name = korean_restoration.19.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}
+      }
+ }
+
+    # 전정 연간 이벤트 2 - 양전 실행
+korean_restoration.20 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.20.t
+	desc = korean_restoration.20.d
+	flavor = korean_restoration.20.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jeonjeong_4 }
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jeonjeong_4
+		}
+		}
+
+     option = { # 부분적시행
+		name = korean_restoration.20.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 5
+		}            
+     }
+
+    option = {# 전국적시행
+	    default_option = yes
+        name = korean_restoration.20.b
+            change_variable = {
+			name = korean_restoration_var
+			add = 10
+		}
+   }
+	option = { # 시행 안함
+		name = korean_restoration.20.c
+         change_variable = {
+			name = korean_restoration_var
+			add = -5
+		}            
+     }
+    
+ }
+
+    # 전정 연간 이벤트 3 - 조정의 개입
+korean_restoration.21 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.21.t
+	desc = korean_restoration.21.d
+	flavor = korean_restoration.21.f
+
+	duration = 3
+                
+     trigger = {
+		exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = jeonjeong_5 }
+	  has_variable = jeonjeong_3
+      has_variable = jeonjeong_4
+     }
+
+	 immediate = {
+		set_variable = {
+			name = jeonjeong_5
+		}
+		}
+
+     option = { # 해결하라
+		name = korean_restoration.21.a
+         change_variable = {
+			name = korean_restoration_var
+			add = 10
+		}            
+		set_variable = { name = jeonjeong_complete }
+     }
+
+    option = {# 놔둬라
+	    default_option = yes
+        name = korean_restoration.21.b
+            change_variable = {
+			name = korean_restoration_var
+			add = -10
+		}
+		set_variable = { name = jeonjeong_complete }
+      }
+ }
+
+#군정 해결
+korean_restoration.22 = {
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.22.t
+	desc = korean_restoration.22.d
+	flavor = korean_restoration.22.f
+
+	duration = 3
+                
+     trigger = {
+     }
+
+	 immediate = {
+		}
+
+     option = { #
+         default_option = yes
+		name = korean_restoration.22.a
+		}
+                     
+     }
+
+#삼정의 문란 개혁의 실패
+
+korean_restoration.23 = { 
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration.23.t
+	desc = korean_restoration.23.d
+	flavor = korean_restoration.23.f
+
+	duration = 3
+                
+     trigger = {
+     }
+
+	
+     option = { #
+         default_option = yes
+		name = korean_restoration.23.a
+        add_journal_entry = {
+				type = je_korean_restoration_restart
+			}
+                     
+     }
+
+    option = {#
+        name = korean_restoration.23.b
 		add_modifier = {
-			name = korea_military_reward
-			months = normal_modifier_time
-		}
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_SHIKOKU }
-			}
-			s:STATE_SHIKOKU = {
-				add_claim = ROOT
-			}
-		}
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_KANTO }
-			}
-			s:STATE_KANTO = {
-				add_claim = ROOT
-			}
-		}
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_KANSAI }
-			}
-			s:STATE_KANSAI = {
-				add_claim = ROOT
-			}
-		}
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_CHUBU }
-			}
-			s:STATE_CHUBU = {
-				add_claim = ROOT
-			}
-		}
-                        if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_KYUSHU }
-			}
-			s:STATE_KYUSHU = {
-				add_claim = ROOT
-			}
-		}
-                        if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_CHUGOKU }
-			}
-			s:STATE_CHUGOKU = {
-				add_claim = ROOT
-			}
-		}
-                       if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_TOHOKU }
-			}
-			s:STATE_TOHOKU = {
-				add_claim = ROOT
-			}
-		}
-                           if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_HOKKAIDO }
-			}
-			s:STATE_HOKKAIDO = {
-				add_claim = ROOT
-			}
-		}
-                                    if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_RYUKYU_ISLANDS }
-			}
-			s:STATE_RYUKYU_ISLANDS = {
-				add_claim = ROOT
-			}
-		}
-                               hidden_effect ={
-                               add_journal_entry = {
-				type = je_korean_empire
-			}
-                                     }
-	}
-
-
-option = {
-		name = korean_restoration.2.b
-		default_option = yes
-		add_modifier = {
-			name = korea_military_reward
-			months = normal_modifier_time
-		}
-		
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_NORTHERN_MANCHURIA }
-			}
-			s:STATE_NORTHERN_MANCHURIA = {
-				add_claim = ROOT
-			}
-		}
-		if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_SOUTHERN_MANCHURIA }
-			}
-			s:STATE_SOUTHERN_MANCHURIA = {
-				add_claim = ROOT
-			}
-		}
-                        if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_OUTER_MANCHURIA }
-			}
-			s:STATE_OUTER_MANCHURIA = {
-				add_claim = ROOT
-			}
-		}
-                        if = {
-			limit = {
-				NOT = { owns_entire_state_region = STATE_SHENGJING }
-			}
-			s:STATE_SHENGJING = {
-				add_claim = ROOT
-			}
-	                }
-                               hidden_effect ={
-                               add_journal_entry = {
-				type = je_korean_empire
-			}
-                                     }
-
-              }
-	option = {
-		name = korean_restoration.2.c
-                                hidden_effect ={
-                               add_journal_entry = {
-				type = je_korean_empire
-			}
-                                     }
-		add_modifier = {
-			name = korea_diplomatic_reward
-			months = normal_modifier_time
-		}
-	}
-	option = {
-		name = korean_restoration.2.e
-                                hidden_effect ={
-                               add_journal_entry = {
-				type = je_korean_empire
-			}
-                                     }
-		add_modifier = {
-			name = korea_production_reward
-			months = normal_modifier_time
-		}
-	}
-}
-
+	            name = failure_of_reform
+	            months = 36
+	        }
+      }
+ }
