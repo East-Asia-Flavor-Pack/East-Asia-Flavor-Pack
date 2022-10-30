@@ -1,3 +1,5 @@
+namespace = donghak_je_events
+
 donghak_je_events.1 = {
 	type = country_event
 	event_image = {
@@ -9,102 +11,45 @@ donghak_je_events.1 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	title = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					has_variable = donghak_will_spawn_var
-				}
-				desc = donghak_je_events.1.t1
-			}
-			triggered_desc = {
-				trigger = {
-					always = yes
-				}
-				desc = donghak_je_events.1.t2
-			}
-		}
-	}
-	desc = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					has_variable = donghak_will_spawn_var
-				}
-				desc = donghak_je_events.1.d1
-			}
-			triggered_desc = {
-				trigger = {
-					always = yes
-				}
-				desc = donghak_je_events.1.d2
-			}
-		}
-	}
-	flavor = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					has_variable = donghak_will_spawn_var
-				}
-				desc = donghak_je_events.1.f1
-			}
-			triggered_desc = {
-				trigger = {
-					always = yes
-				}
-				desc = donghak_je_events.1.f2
-			}
-		}
-	}
-
-	duration = 3
+	title =  donghak_je_events.1.t2
+	desc = donghak_je_events.1.d2
+	flavor = donghak_je_events.1.f2
 
 	trigger = {
 	 # JE_Donghak
 	}
 
 	immediate = {
-		
-		if = {
 			limit = {
 				has_variable = donghak_will_spawn_var
 			}
-			random_country = {
-				limit = {	
-					is_revolutionary = yes
-					country_definition = root.country_definition
-				}
-				change_tag = ABC #임시
+			c:ABC = {
 				save_scope_as = abc_scope
 				limit = {
 					NOT = { has_law = law_type:law_parliamentary_republic}
 					}
 					activate_law = law_type:law_parliamentary_republic
-		}
-			
-					
-		}
+				}
+		
 		set_global_variable = {
 			name = donghak_civil_war
 			value = yes
 		}
-		random_diplomatic_play = {
-			limit = {
-				any_scope_play_involved = {
-					this = scope:abc_scope
-				}
-			}
+		
+		create_diplomatic_play = {
+			target_country = scope:abc_scope
+			war = yes
+			type = dp_annex_war
+
 			add_war_goal = {
-				holder = initiator
-				type = secession
-			}
-			remove_war_goal = {
-				who = initiator
-				war_goal = annex_country
-			}
-		}
+					holder = c:ABC
+					type = annex_country
+					target_country = c:KOR
+				}
+            }
+		
 	}
+        
 
 	option = {
 		name = donghak_je_events.1.a
@@ -113,20 +58,26 @@ donghak_je_events.1 = {
 		set_variable = union_side_donghak
 		hidden_effect = { 
 			scope:abc_scope = {
+				ig:ig_devout = {
+			leader = { set_ideology = ideology_dongkak }
+		}
+		ig:ig_rural_folk = {
+			leader = { set_ideology = ideology_dongkak }
+		}
 			 create_character = {
 		 # 전봉준
                 first_name = "Bongjun"
                 last_name = "Jeon"
                 ruler = yes
-                birth_date = 1855.1.10
+                birth_date = 1800.1.10
                 interest_group = ig_rural_folk 
-                ideology = ideology_reformer
+                ideology = ideology_donghak
                       traits = {
                     romantic
-					           }
-					        }
-							}
-		}
+		   }
+		  }
+	}
+	}
 		if = {
 			limit = { exists = c:ABC }
 			add_journal_entry = {
@@ -141,31 +92,326 @@ donghak_je_events.1 = {
 
 		trigger = { is_player = yes }
 
+		
 		set_variable = union_side_donghak
+		set_variable = donghak_gun
+		play_as = scope:abc_scope
+		scope:abc_scope = {
+		if = {
+			limit = { exists = c:ABC }
+			add_journal_entry = {
+				type = je_donghak_war_2
+				target = scope:abc_scope
+			}
+			}
 		hidden_effect = { 
-			scope:abc_scope = {
+			ig:ig_devout = {
+			leader = { set_ideology = ideology_dongkak }
+		}
+		ig:ig_rural_folk = {
+			leader = { set_ideology = ideology_dongkak }
+		}
 			 create_character = {
 		 # 전봉준
                 first_name = "Bongjun"
                 last_name = "Jeon"
                 ruler = yes
-                birth_date = 1855.1.10
+                birth_date = 1800.1.10
                 interest_group = ig_rural_folk 
-                ideology = ideology_reformer
+                ideology = ideology_donghak
                       traits = {
                     romantic
-					           }
-					        }
-							}
+		   }
+		  }
+	} 
 		}
-		if = {
-			limit = { exists = c:ABC }
-			add_journal_entry = {
-				type = je_donghak_war
-				target = scope:abc_scope
+		}
+
+}
+
+# 동학농민운동 복원
+donghak_je_events.2 = {
+	type = country_event
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_capitalists_meeting.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/capitalists_meeting"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	title = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = donghak_gun
+				}
+				desc = donghak_je_events.2.t1
 			}
-			play_as = scope:abc_scope
+			triggered_desc = {
+				trigger = {
+					always = yes
+				}
+				desc = donghak_je_events.2.t2
+			}
+		}
+	}
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = donghak_gun
+				}
+				desc = donghak_je_events.2.d1
+			}
+			triggered_desc = {
+				trigger = {
+					always = yes
+				}
+				desc = donghak_je_events.2.d2
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = donghak_gun
+				}
+				desc = donghak_je_events.2.f1
+			}
+			triggered_desc = {
+				trigger = {
+					always = yes
+				}
+				desc = donghak_je_events.2.f2
+			}
 		}
 	}
 
+	duration = 3
+
+	trigger = {
+		# 동학농민 전쟁 트리거
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = donghak_je_events.2.a
+		
+		add_journal_entry = {
+			type = je_donghak_reconstruction
+		}
+			
+		if = {
+			limit = { has_variable = donghak_gun
+			}
+			add_journal_entry = {
+				type = je_donghak_gun
+			}
+		}
+		else = {
+			
+			add_journal_entry = {
+				type = je_donghak_equality
+			}
+			}
+		}
+}
+
+# 동학농민운동 복구완료
+donghak_je_events.3 = {
+	type = country_event
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_capitalists_meeting.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/capitalists_meeting"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	title = donghak_je_events.3.t
+	desc = donghak_je_events.3.d
+	flavor = donghak_je_events.3.f
+
+	duration = 3
+
+	trigger = {
+		
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = donghak_je_events.3.a
+	    country_legitimacy_base_add = 20
+		}
+	
+}
+
+donghak_je_events.4 = {
+	type = country_event
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_capitalists_meeting.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/capitalists_meeting"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	title = donghak_je_events.4.t
+	desc = donghak_je_events.4.d
+	flavor = donghak_je_events.4.f
+
+	duration = 3
+
+	trigger = {
+		# 동학농민운동으로 일어남
+		exists = c:ABC
+		exists = c:KOR
+		NOT = { has_law = law_type:law_serfdom_banned }
+		any_diplomatic_play = {
+			AND = {
+				any_scope_play_involved = { this = c:ABC }
+				any_scope_play_involved = { this = c:KOR }
+			}
+		}
+		NOT = { 
+			any_interest_group = {
+				has_modifier = delayed_serfdom_banned
+			}
+		}
+		has_variable = union_side_donghak
+	}
+
+	immediate = {
+		law_type:law_serfdom_banned = {
+			save_scope_as = abolition_law
+		}
+	}
+
+	option = {
+		name = donghak_je_events.4.a 
+		default_option = yes
+		activate_law = law_type:law_serfdom_banned
+
+		every_interest_group = {
+			limit = {
+				law_stance = {
+					law = law_type:law_serfdom_banned
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = enacted_serfdom_banned # +1 opinion
+				months = normal_modifier_time
+			}
+		}
+	}
+
+	option = {
+		name = donghak_je_events.4.b
+
+		every_interest_group = {
+			limit = {
+				law_stance = {
+					law = law_type:law_serfdom_banned
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = delayed_serfdom_banned
+				months = normal_modifier_time
+			}
+		}
+	}
+}
+
+#선택
+
+donghak_je_events.5 = {
+   type = country_event
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_capitalists_meeting.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/capitalists_meeting"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+     title = donghak_je_events.5.t
+	desc = donghak_je_events.5.d
+	flavor = donghak_je_events.5.f
+    
+   trigger = {
+	}
+
+    immediate = {
+	}
+
+
+	 option = {
+		name = donghak_je_events.5.a
+	    activate_law = law_type:law_regulatory_bodies
+		}
+
+	option = {
+		name = donghak_je_events.5.b
+		country_prestige_mult = -0.15
+		}
+}
+
+#농민공화국
+donghak_je_events.6 ={
+type = country_event
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_capitalists_meeting.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/capitalists_meeting"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+     title = donghak_je_events.6.t
+	desc = donghak_je_events.6.d
+	flavor = donghak_je_events.6.f
+    
+   trigger = {
+	}
+
+    immediate = {
+	}
+
+
+	 option = {
+		name = donghak_je_events.6.a
+	    activate_law = law_type:law_monarchy 
+		change_tag = KOR
+		}
+
+		option = {
+		name = donghak_je_events.6.b
+		activate_law = law_type:law_presidential_republic
+		change_tag = KOR
+		}
+
+		option = {
+		name = donghak_je_events.6.c
+		activate_law = law_type:law_council_republic
+		change_tag = KOR
+		}
+
+		option = {
+		name = donghak_je_events.6.e
+		country_prestige_mult = 0.20
+		change_tag = KOR
+		}
 }
