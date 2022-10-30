@@ -1,14 +1,15 @@
 namespace = donghak_events
+
 #북접
 donghak_events.1 = {
 	type = country_event
 	
 	event_image = {
-		video = "gfx/event_pictures/southamerica_public_figure_assassination.bk2"
+		video = "gfx/event_pictures/seeking.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/southamerica/public_figure_assassination"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
@@ -35,9 +36,12 @@ donghak_events.1 = {
 	option = { #북접 모임
 		name = donghak_events.1.a
         default_option = yes
-                     convert_population = {
-				target = rel:catholic value = 0.05
-            }
+        ig:ig_rural_folk = {
+	        add_modifier = {
+	            name = donghak_political_power
+	            months = 12
+	        }
+		}
            }
 	
 }
@@ -47,7 +51,7 @@ donghak_events.2 = {
 	type = country_event
 
 	event_image = {
-		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+		video = "gfx/event_pictures/bonggi.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -77,12 +81,22 @@ donghak_events.2 = {
 
     option = { #곤장을 친다
 		name = donghak_events.2.a
+		ig:ig_rural_folk = {
+	        add_modifier = {
+	            name = donghak_boeun_assembly_bad
+	            months = 36
+	        }
+		}
                      
       }
 
     option = {#해산시킨다
         default_option = yes
         name = donghak_events.2.b
+	        add_modifier = {
+	            name = donghak_boeun_assembly_good
+	            months = 24
+	        }
     }
  }
 
@@ -91,7 +105,7 @@ donghak_events.3 = {
 	type = country_event
 
 	event_image = {
-		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+		video = "gfx/event_pictures/sendball.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -110,6 +124,7 @@ donghak_events.3 = {
 		c:KOR = ROOT
 		NOT = { has_law = law_type:law_serfdom_banned }
 		NOT = { has_variable = south_jeop }
+		NOT = { has_modifier = donghak_political_power }
      }
 
 	 immediate = {
@@ -117,10 +132,18 @@ donghak_events.3 = {
 			name =  south_jeop
 			value = yes
 		}
+	}
 
      option = { #남접 모임
         default_option = yes
-name = donghak_events.3.a
+        name = donghak_events.3.a
+        ig:ig_rural_folk = {
+	        add_modifier = {
+	            name = donghak_political_power2
+	            months = 24
+	        }
+		}
+    
                      
      }
 
@@ -131,7 +154,7 @@ donghak_events.5 = {
 	type = country_event
 
 	event_image = {
-		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+		video = "gfx/event_pictures/city.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -149,6 +172,12 @@ donghak_events.5 = {
     option = { #해결
      default_option = yes
 		name = donghak_events.5.a
+       ig:ig_rural_folk = {
+	        add_modifier = {
+	            name = donghak_complete
+	            months = 36
+	        }
+		}
                      
      }
  }
@@ -158,7 +187,7 @@ donghak_events.6 = {
 	type = country_event
 
 	event_image = {
-		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+		video = "gfx/event_pictures/hiki.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -175,8 +204,9 @@ donghak_events.6 = {
      trigger = {
 		exists = c:KOR
 		c:KOR = ROOT
-		NOT = { has_law = law_type:law_serfdom_banned }
       NOT = { has_variable = sangso }
+	  NOT = { has_modifier = donghak_boeun_assembly_good }
+	  NOT = { has_modifier = donghak_boeun_assembly_bad }
      }
 
 	 immediate = {
@@ -184,15 +214,27 @@ donghak_events.6 = {
 			name =  sangso
 			value = yes
 		}
+		}
 
      option = { #곤장을 친다
          default_option = yes
 		name = donghak_events.6.a
+        ig:ig_rural_folk = {
+			join_revolution = yes
+	        add_modifier = {
+	            name = ig_mass_arrests
+	            months = 12
+	        }
+		}
                      
      }
 
     option = {#요구를 받아들인다
         name = donghak_events.6.b
+		 add_modifier = {
+	            name = donghak_sangso_acceptance
+	            months = 36
+	        }
       }
  }
 
@@ -201,7 +243,7 @@ donghak_events.7 = {
 	type = country_event
 
 	event_image = {
-		video = "gfx/event_pictures/southamerica_slaves_night.bk2"
+		video = "gfx/event_pictures/bonggi.dds"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -215,26 +257,68 @@ donghak_events.7 = {
 
 	duration = 3
                 
-                  trigger = {
-		exists = c:KOR
-		c:KOR = ROOT
-		NOT = { has_law = law_type:law_serfdom_banned }
-        NOT = { has_variable = gobu_rebel }
-     }
+        trigger = {
+		has_insurrectionary_interest_groups = yes
+		ig:ig_rural_folk = {
+			is_revolutionary = no
+			is_in_government = no
+			is_marginal = no
+    		AND = {
+	    		ig_approval <= -1
+	    		ig_approval > -8
+	    	}
+			NOT = { has_modifier = donghak_sangso_acceptance }
+			NOT = { has_modifier = ig_mass_arrests }
+		}
+	}
+    
 
 	 immediate = {
 		set_variable = {
 			name =  gobu_rebel
 			value = yes
+			}
+			ig:ig_rural_folk = {
+			save_scope_as = ig_rf_on_the_edge
+			}
+			ig:ig_landowners = {
+			limit = {
+    			is_in_government = yes
+			}
+			leader = {
+				save_scope_as = landowners_leader
+		}
+		}
 		}
 
       option = { #진압한다
          default_option = yes
 		name = donghak_events.7.a
+		ig:ig_rural_folk = {
+			
+		 join_revolution = yes
+		add_modifier = {
+	            name = donghak_revolts
+	            months = 20
+	        }
+			}
+
                      
      }
 
       option = {#요구를 받아들인다
           name = donghak_events.7.b
-   }
- }
+		  scope:landowners_leader = {
+				kill_character = yes
+			}
+			ig:ig_landowners = {
+	        add_modifier = {
+	            name = donghak_revolts_landowners
+	            months = 12
+	        }
+		}
+		}
+
+}
+		  
+	
