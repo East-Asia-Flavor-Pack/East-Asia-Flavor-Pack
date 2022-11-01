@@ -1,0 +1,776 @@
+namespace = reformation_of_qing
+
+reformation_of_qing.1 = { #청나라 사신의 도래
+    
+    type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = reformation_of_qing.1.t
+	desc = reformation_of_qing.1.d
+	flavor = reformation_of_qing.1.f
+
+    trigger = {
+
+    }
+    
+    option = { 
+		name = reformation_of_qing.1.a
+		default_option = yes
+		set_global_variable = reformation_of_qing_2
+		if = {
+			limit = { exists = c:CHI }
+			change_relations = {
+				country = c:CHI
+				value = 50
+			}
+		}
+		}
+ 
+
+    option = {
+        name = reformation_of_qing.1.b
+        if = {
+			limit = { exists = c:CHI }
+			change_relations = {
+				country = c:CHI
+				value = -30
+			}
+		}
+    
+	}
+}
+ 
+
+
+reformation_of_qing.2 = { #청나라 측 이벤트
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" #다른 사진으로 교체
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.2.t
+desc = reformation_of_qing.2.d
+flavor = reformation_of_qing.2.f
+
+
+duration = 3
+
+ trigger = {
+     has_global_variable = reformation_of_qing_2
+     exists = c:CHI
+     this = c:CHI
+     NOT = {has_global_variable = reformation_of_qing_3 }
+    }
+
+    immediate = {
+		set_global_variable = reformation_of_qing_3
+    }
+
+    option = {
+        default_option = yes
+        name = reformation_of_qing.2.a
+        change_relations = {
+            country = c:KOR
+            value = 30
+        }
+        add_journal_entry = {
+			type = je_reformation_of_qing
+            }
+    }
+   
+    option = {
+        default_option = yes
+        name = reformation_of_qing.2.b
+        change_relations = {
+            country = c:KOR
+            value = -30
+        }
+    }
+}
+
+reformation_of_qing.3 = { #개혁성공
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" #다른 사진으로 교체
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.3.t
+desc = reformation_of_qing.3.d
+flavor = reformation_of_qing.3.f
+
+trigger = {
+    
+   
+   }
+
+   immediate = {
+       set_global_variable = reformation_of_qing_4
+   }
+
+   option = {
+    default_option = yes
+    name = reformation_of_qing.3.a
+    add_modifier = {
+        name = reformation_of_qing_complete
+    }
+   }
+}
+
+reformation_of_qing.4 = { #성공에 대한조선의 반응
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" 
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.4.t
+desc = reformation_of_qing.4.d
+flavor = reformation_of_qing.4.f
+
+trigger = {
+    has_global_variable = reformation_of_qing_4
+    exists = c:KOR
+     this = c:KOR
+    NOT = { has_variable = roq_1 }
+   }
+
+   immediate = {
+    set_variable = roq_1
+   }
+
+   option = {
+    default_option = yes
+    name = reformation_of_qing.4.a
+   }
+
+}
+
+
+
+reformation_of_qing.5 = { #칭스플로젼
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/not_runjo.dds" #사진 변경
+   }
+
+   on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.5.t
+desc = reformation_of_qing.5.d
+flavor = reformation_of_qing.5.f
+
+trigger = {
+    
+   }
+
+   immediate = {
+    set_global_variable = china_shatters_kr
+    if = {
+        limit = { exists = s:STATE_HUNAN.region_state:CHI }
+        create_country = {
+            tag = HNA
+            origin = this
+            state = s:STATE_HUNAN.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:HNA = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_WESTERN_HUBEI.region_state:CHI }
+            s:STATE_WESTERN_HUBEI.region_state:CHI = { set_state_owner = c:HNA }
+        }
+        if = {
+            limit = { exists = s:STATE_EASTERN_HUBEI.region_state:CHI }
+            s:STATE_EASTERN_HUBEI.region_state:CHI = { set_state_owner = c:HNA }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_GUANGXI.region_state:CHI }
+        create_country = { #Guangxi
+            tag = GNG
+            origin = this
+            state = s:STATE_GUANGXI.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:GNG = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:CHI }
+        create_country = { #Anhui Clique
+            tag = AHU
+            origin = this
+            state = s:STATE_SOUTHERN_ANHUI.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:AHU = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:CHI }
+            s:STATE_NORTHERN_ANHUI.region_state:CHI = { set_state_owner = c:AHU }
+        }
+        if = {
+            limit = { exists = s:STATE_HENAN.region_state:CHI }
+            s:STATE_HENAN.region_state:CHI = { set_state_owner = c:AHU }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_ZHILI.region_state:CHI }
+        create_country = { #Zhili Clique
+            tag = ZHI
+            origin = this
+            state = s:STATE_ZHILI.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:ZHI = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
+        create_country = { #Fengtian Clique
+            tag = MCH
+            origin = this
+            state = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:MCH = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:CHI }
+            s:STATE_NORTHERN_MANCHURIA.region_state:CHI = { set_state_owner = c:MCH }
+        }
+        if = {
+            limit = { exists = s:STATE_OUTER_MANCHURIA.region_state:CHI }
+            s:STATE_OUTER_MANCHURIA.region_state:CHI = { set_state_owner = c:MCH }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_SHANXI.region_state:CHI }
+        create_country = {  #Shanxi
+            tag = SHN
+            origin = this
+            state = s:STATE_SHANXI.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:SHN = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_TIANSHAN.region_state:CHI }
+        create_country = {  #Xinjiang Clique
+            tag = XIN
+            origin = this
+            state = s:STATE_TIANSHAN.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:XIN = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_DZUNGARIA.region_state:CHI }
+            s:STATE_DZUNGARIA.region_state:CHI = { set_state_owner = c:XIN }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_YUNNAN.region_state:CHI }
+        create_country = {  #Yunnan
+            tag = YUN
+            origin = this
+            state = s:STATE_YUNNAN.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:YUN = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
+        create_country = { #Guizhou
+            tag = GUI
+            origin = this
+            state = s:STATE_GUIZHOU.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:GUI = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_CHONGQING.region_state:CHI }
+            s:STATE_CHONGQING.region_state:CHI = { set_state_owner = c:GUI }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_GUANGDONG.region_state:CHI }
+        create_country = { #Guangdong
+            tag = YUE
+            origin = this
+            state = s:STATE_GUANGDONG.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:YUE = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_SHAOZHOU.region_state:CHI }
+            s:STATE_SHAOZHOU.region_state:CHI = { set_state_owner = c:YUE }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_SICHUAN.region_state:CHI }
+        create_country = {
+            tag = SIH
+            origin = this
+            state = s:STATE_SICHUAN.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:SIH = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_QINGHAI.region_state:CHI }
+            s:STATE_QINGHAI.region_state:CHI = { set_state_owner = c:SIH }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_SHANDONG.region_state:CHI }
+        create_country = {
+            tag = SHA
+            origin = this
+            state = s:STATE_SHANDONG.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:SHA = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_NINGXIA.region_state:CHI }
+        create_country = {
+            tag = XIB
+            origin = this
+            state = s:STATE_NINGXIA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:XIB = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_GANSU.region_state:CHI }
+            s:STATE_GANSU.region_state:CHI = { set_state_owner = c:XIB }
+        }
+        if = {
+            limit = { exists = s:STATE_ALXA.region_state:CHI }
+            s:STATE_ALXA.region_state:CHI = { set_state_owner = c:XIB }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_URGA.region_state:CHI }
+        create_country = {
+            tag = MGL
+            origin = this
+            state = s:STATE_URGA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+            }
+        }
+        c:MGL = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_ULIASTAI.region_state:CHI }
+            s:STATE_ULIASTAI.region_state:CHI = { set_state_owner = c:MGL }
+        }
+        if = {
+            limit = { exists = s:STATE_HINGGAN.region_state:CHI }
+            s:STATE_HINGGAN.region_state:CHI = { set_state_owner = c:MGL }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_TUVA.region_state:CHI }
+        create_country = {
+            tag = TUV
+            origin = this
+            state = s:STATE_TUVA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:TUV = { save_scope_as = scope_roq }
+    }
+
+
+    if = {
+        limit = { exists = s:STATE_KIRGHIZIA.region_state:CHI }
+        create_country = {
+            tag = KIR
+            origin = this
+            state = s:STATE_KIRGHIZIA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:KIR = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_JETISY.region_state:CHI }
+            s:STATE_JETISY.region_state:CHI = { set_state_owner = c:KIR }
+        }
+        if = {
+            limit = { exists = s:STATE_TOMSK.region_state:CHI }
+            s:STATE_TOMSK.region_state:CHI = { set_state_owner = c:KIR }
+        }
+    }
+
+    
+
+    if = {
+        limit = { exists = s:STATE_XIAN.region_state:CHI }
+        create_country = {
+            tag = XIA
+            origin = this
+            state = s:STATE_XIAN.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:XIA = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_FORMOSA.region_state:CHI }
+        create_country = {
+            tag = JUN
+            origin = this
+            state = s:STATE_FORMOSA.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:JUN = { save_scope_as = scope_roq }
+    }
+
+    if = {
+        limit = { exists = s:STATE_ZHEJIANG.region_state:CHI }
+        create_country = {
+            tag = CH0
+            origin = this
+            state = s:STATE_ZHEJIANG.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:CH0 = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_FUJIAN.region_state:CHI }
+            s:STATE_FUJIAN.region_state:CHI = { set_state_owner = c:CH0 }
+        }
+        if = {
+            limit = { exists = s:STATE_JIANGXI.region_state:CHI }
+            s:STATE_JIANGXI.region_state:CHI = { set_state_owner = c:CH0 }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_NANJING.region_state:CHI }
+        create_country = {
+            tag = OOH
+            origin = this
+            state = s:STATE_NANJING.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:OOH = { save_scope_as = scope_roq }
+        if = {
+            limit = { exists = s:STATE_JIANGSU.region_state:CHI }
+            s:STATE_JIANGSU.region_state:CHI = { set_state_owner = c:OOH }
+        }
+        if = {
+            limit = { exists = s:STATE_SUZHOU.region_state:CHI }
+            s:STATE_SUZHOU.region_state:CHI = { set_state_owner = c:OOH }
+        }
+    }
+
+    if = {
+        limit = { exists = s:STATE_BEIJING.region_state:CHI }
+        create_country = {
+            tag = MIN
+            origin = this
+            state = s:STATE_BEIJING.region_state:CHI
+
+            on_created = {
+                warlord_setup_effect = yes
+                set_variable = warlord_state
+            }
+        }
+        c:MIN = { save_scope_as = scope_roq }
+    }
+
+    every_subject_or_below = {
+        make_independent = yes
+    }
+
+
+}
+option = {
+    default_option = yes
+    name = warlord_china_events.100.a
+ }
+}
+
+reformation_of_qing.6 = { #청 붕괴에 대한조선의 반응
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" 
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.6.t
+desc = reformation_of_qing.6.d
+flavor = reformation_of_qing.6.f
+
+trigger = {
+    has_global_variable = china_shatters_kr
+    exists = c:KOR
+     this = c:KOR
+    NOT = { has_variable = roq_2 }
+   }
+
+   immediate = {
+    set_variable = roq_2
+   }
+
+   option = {#반응안함
+    default_option = yes
+    name = reformation_of_qing.6.a
+   }
+
+   option = {#받아들임
+    name = reformation_of_qing.6.b
+    hidden_effect = {
+    trigger_event = { id = reformation_of_qing.7 days = 360 }
+    }
+   }
+
+}
+
+
+reformation_of_qing.7 = { #청나라 황족의 도래
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" 
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.7.t
+desc = reformation_of_qing.7.d
+flavor = reformation_of_qing.7.f
+
+trigger = {
+   }
+
+   immediate = {
+   }
+
+   option = {#받아들임
+    default_option = yes
+    name = reformation_of_qing.7.a
+    hidden_effect = {
+    trigger_event = { id = reformation_of_qing.8 days = 160 }
+    }
+
+}
+
+reformation_of_qing.8 = { #계승
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" 
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.8.t
+desc = reformation_of_qing.8.d
+flavor = reformation_of_qing.8.f
+
+trigger = {
+   }
+
+   immediate =  {
+		cu:han = {
+			save_scope_as = han_culture
+		}
+		cu:manchu = {
+			save_scope_as = manchu_culture
+		}
+   }
+
+   option = {#받아들임
+   name = reformation_of_qing.8.a
+    default_option = yes
+    s:STATE_SHENGJING.region_state:CHI = {
+				set_state_owner = c:KOR
+			}
+    trigger_event = { id = reformation_of_qing.9 days = 60 }
+   } 
+
+   option = {#포기
+    name = reformation_of_qing.8.b
+   }
+
+}
+
+
+reformation_of_qing.9 = { #전쟁
+    
+type = country_event
+
+event_image = {
+    texture = "gfx/event_pictures/seeking.dds" 
+}
+
+on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+title = reformation_of_qing.9.t
+desc = reformation_of_qing.9.d
+flavor = reformation_of_qing.9.f
+
+trigger = {
+   }
+
+   immediate =  { 
+   }
+
+   option = {#받아들임
+   name = reformation_of_qing.9.a
+    default_option = yes
+    add_modifier = 
+    {
+        name = roq3
+        months = 30
+    }
+    every_country = {
+			limit = {
+        		country_has_primary_culture = cu:han 
+        			} 
+            create_diplomatic_play = {
+			target_country = c:KOR
+			war = yes
+			type = dp_regime_change
+        }
+       
+   }
+}
+ 
+}
+
+
