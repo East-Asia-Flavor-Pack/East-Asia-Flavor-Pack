@@ -1,0 +1,153 @@
+﻿namespace = heavenly
+
+# Heavenly Kingdom spawn
+heavenly.4 = {
+	type = country_event
+	placement = ROOT
+
+	title = heavenly.4.t
+	desc = heavenly.4.d
+	flavor = heavenly.4.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	duration = 3
+
+	trigger = {
+
+	}
+	immediate = {
+		every_state = {
+			limit = {
+				has_modifier = god_worshippers
+			}
+			remove_modifier = god_worshippers
+		}
+		random_scope_state = {
+			limit = {
+				has_variable = cult_center
+				any_scope_pop = {
+					has_pop_religion = protestant
+					religion_accepted = no
+				}
+				radical_fraction = { value >= 0.30 }
+				is_coastal = yes
+			}
+			save_scope_as = heavenly_kingdom_spawn
+		}
+		create_country = {
+			tag = TPG
+			origin = this
+			state = scope:heavenly_kingdom_spawn
+			on_created = {
+				if = {
+					limit = {
+						NOT = {
+							has_ruling_interest_group = ig_devout
+						}
+					}
+					ig:ig_devout = {
+						add_ruling_interest_group = yes
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_theocracy
+						}
+					}
+					activate_law = law_type:law_theocracy
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_state_religion
+						}
+					}
+					activate_law = law_type:law_state_religion
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_peasant_levies
+						}
+					}
+					activate_law = law_type:law_peasant_levies
+				}
+				add_modifier = {
+					name = uprising_conscription
+					months = normal_modifier_time
+				}
+			}
+		}
+		c:TPG = {
+			save_scope_as = heavenly_kingdom_scope
+		}
+		if = {
+			limit = { has_journal_entry = je_warlord_china }
+			post_notification = warlord_china_explosion_point_add
+			change_variable = {
+				name = china_warlord_explosion
+				add = 1
+			}
+		}
+        
+		if = {
+			limit = {
+				any_scope_state = {
+					has_variable = cult_center
+				}
+			}
+			every_scope_state = {
+				limit = {
+					has_variable = cult_center
+				}
+				set_state_owner = c:TPG
+				set_state_type = incorporated
+			}
+			every_scope_state = {
+				limit = {
+					is_capital = no
+					NOT = { has_variable = cult_center }
+					any_neighbouring_state = {
+						has_variable = cult_center
+					}
+					turmoil > 0.1
+				}
+				set_state_owner = c:TPG
+				set_state_type = incorporated
+			}
+		}
+	}
+
+	option = {
+		name = heavenly.4.a
+		default_option = yes
+		ai_chance = { base = 1 }
+		add_journal_entry = {
+			type = je_taiping
+		}
+		create_diplomatic_play = {
+			name = taiping_rebellion
+			target_country = scope:heavenly_kingdom_scope
+			type = dp_taiping_rebellion
+		}
+	}
+	option = {
+		name = heavenly.4.b
+		ai_chance = { base = 0 }
+		create_diplomatic_play = {
+			name = taiping_rebellion
+			target_country = scope:heavenly_kingdom_scope
+			type = dp_taiping_rebellion
+		}
+		play_as = scope:heavenly_kingdom_scope
+	}
+}
