@@ -1,1 +1,529 @@
 namespace = jku
+
+jku.1 = { #일본 황실에 접근
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.1.t
+	desc = jku.1.d
+	flavor = jku.1.f
+
+   trigger = {
+
+   }
+
+   option = {#왕실 접근
+      default_option = yes
+      name = jku.1.a
+	  c:JAP = {
+            trigger_event = { id = jku.3 days = 3 popup = yes }
+        }
+   }
+
+}
+
+jku.2 = { #더미 이벤트
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.2.t
+	desc = jku.2.d
+	flavor = jku.2.f
+
+   trigger = {
+
+   }
+
+   option = {#왕실 접근
+      default_option = yes
+      name = jku.1.a
+      
+   }
+
+}
+
+jku.3 = { #일본 황실의 반응
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.3.t
+	desc = jku.3.d
+	flavor = jku.3.f
+
+   trigger = {
+	has_global_variable = jku_royal_marriage
+	exists = c:JAP
+	this = c:JAP 
+   }
+
+   option = {#허락
+      default_option = yes
+      name = jku.3.a
+	  set_global_variable = jku_acceptance
+	  c:KOR = {
+            trigger_event = { id = jku.5 days = 3 popup = yes }
+        }
+      if = {
+			limit = { exists = c:KOR }
+			change_relations = {
+				country = c:KOR
+				value = 50
+			}
+		}
+   }
+
+  option = {#거부
+      name = jku.3.b
+	  c:KOR = {
+            trigger_event = { id = jku.4 days = 3 popup = yes }
+        }
+     if = {
+		set_global_variable = jku_reject
+			limit = { exists = c:KOR }
+			change_relations = {
+				country = c:KOR
+				value = -50
+			}
+		}
+   }
+}
+
+jku.4 = { #거부시 반응
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.4.t
+	desc = jku.4.d
+	flavor = jku.4.f
+
+   trigger = {
+	has_global_variable = jku_reject
+	exists = c:KOR
+	this = c:KOR 
+   }
+
+   option = {#분노
+      default_option = yes
+     name = jku.4.a
+	 remove_diplomatic_pact = {
+					country = c:JAP
+					type = alliance
+				}
+	 add_journal_entry = {
+			type = je_japan_invasion
+		}
+   }
+
+  option = {#참기
+      name = jku.4.b
+    }
+}
+
+jku.5 = { #수락시 - 왕실결혼
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.5.t
+	desc = jku.5.d
+	flavor = jku.5.f
+
+   trigger = {
+	has_global_variable = jku_acceptance
+	exists = c:KOR
+	this = c:KOR
+   }
+
+   option = {#왕실결혼
+      default_option = yes
+      name = jku.3.a
+      add_journal_entry = {
+			type = je_jku_ausgleich
+		}
+    }
+
+}
+
+
+jku.6 = { #통화 통일
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.6.t
+	desc = jku.6.d
+	flavor = jku.6.f
+
+   trigger = {
+	NOT = { has_variable = jku_1 }
+   }
+
+   immediate = {
+	set_variable = jku_1
+   }
+
+   option = {# 통일
+       default_option = yes
+		name = jku.6.a
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 통일 안함
+		name = jku.6.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -1
+		}
+    }
+
+}
+
+jku.7 = { #의회 통일
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.7.t
+	desc = jku.7.d
+	flavor = jku.7.f
+
+   trigger = {
+	NOT = { has_variable = jku_2 }
+	has_variable = jku_1
+   }
+
+   immediate = {
+	set_variable = jku_2
+   }
+
+   option = {# 통일
+       default_option = yes
+		name = jku.7.a
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 통일 안함
+		name = jku.7.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -1
+		}
+    }
+
+}
+
+jku.8 = { #외교부 통일
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.8.t
+	desc = jku.8.d
+	flavor = jku.8.f
+
+   trigger = {
+	NOT = { has_variable = jku_3 }
+	has_variable = jku_2
+   }
+
+   immediate = {
+	set_variable = jku_3
+   }
+
+   option = {# 통일
+       default_option = yes
+		name = jku.8.a
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 통일 안함
+		name = jku.8.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -1
+		}
+    }
+
+}
+
+jku.9 = { #군대 통일
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.9.t
+	desc = jku.9.d
+	flavor = jku.9.f
+
+   trigger = {
+	NOT = { has_variable = jku_4 }
+	has_variable = jku_3
+   }
+
+   immediate = {
+	set_variable = jku_4
+   }
+
+   option = {# 통일
+       default_option = yes
+		name = jku.9.a
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 통일 안함
+		name = jku.9.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -1
+		}
+    }
+
+}
+
+jku.10 = { #사법 통일
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.10.t
+	desc = jku.10.d
+	flavor = jku.10.f
+
+   trigger = {
+	NOT = { has_variable = jku_5 }
+	has_variable = jku_4
+   }
+
+   immediate = {
+	set_variable = jku_5
+   }
+
+   option = {# 통일
+       default_option = yes
+		name = jku.10.a
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 통일 안함
+		name = jku.10.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -1
+		}
+    }
+
+}
+
+jku.11 = { #덴노 폐지
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.11.t
+	desc = jku.11.d
+	flavor = jku.11.f
+
+   trigger = {
+	NOT = { has_variable = jku_6 }
+	has_variable = jku_5
+   }
+
+   immediate = {
+	set_variable = jku_6
+   }
+
+   option = {# 폐지 안함
+       default_option = yes
+		name = jku.11.a
+		set_variable = jku_ausgleich_complete
+		change_variable = {
+			name = jku_ausgleich_var
+			add = 1
+		}
+    }
+
+	 option = {# 덴노를 폐지함 - 합병 불가
+		name = jku.11.b
+		change_variable = {
+			name = jku_ausgleich_var
+			add = -5
+		}
+    }
+}
+
+jku.12 = { #한일 이중제국
+	type = country_event
+
+	title = jku.12.t
+	desc = jku.12.d
+	flavor = jku.12.f
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_signed_contract.bk2"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/unspecific/signed_contract"
+
+	trigger = {
+
+	}
+
+	option = {
+		name = jku.12.a
+		change_tag = KJU
+       hidden_effect = {
+         annex = c:JAP
+       }
+	}
+
+}
+
+jku.13 = { #협상 실패
+
+    	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/southamerica/slaves_night"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = jku.13.t
+	desc = jku.13.d
+	flavor = jku.13.f
+
+   trigger = {
+   }
+
+   immediate = {
+   }
+
+   option = {# 
+       default_option = yes
+		name = jku.13.a
+    }
+
+	 option = {# 못참겠다
+		name = jku.13.b
+		remove_diplomatic_pact = {
+					country = c:JAP
+					type = alliance
+				}
+	   add_journal_entry = {
+			type = je_japan_invasion
+		}
+    }
+}

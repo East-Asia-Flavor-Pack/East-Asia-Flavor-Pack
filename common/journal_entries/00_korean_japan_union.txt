@@ -1,22 +1,16 @@
 je_Ilseontongjo_ron = {
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
-	is_shown_when_inactive = {
-		exists = c:KRE
-		c:KRE = ROOT
-		has_technology_researched = pan-nationalism
-	}
-
 	possible = {
 		has_technology_researched = pan-nationalism
 	}
-
+	
 	complete = {
 		ROOT = {
 			army_size >= 150
-			navy_size >= 75
-                                             }
-                             c:JAP = {
+			navy_size >= 30
+              }
+        c:JAP = {
 		country_rank < rank_value:great_power
 		has_diplomatic_pact = {
 				who = ROOT
@@ -25,10 +19,84 @@ je_Ilseontongjo_ron = {
 		}
 	}
 		
-
 	on_complete = {
-                                           set_variable = korean_japan_union
+		 trigger_event = {
+			id = jku.1
+		 }
+	}
+   
+   should_be_pinned_by_default = yes
+}
+
+
+je_jku_ausgleich = {
+    icon = "gfx/interface/icons/event_icons/event_protest.dds"
+   
+   possible = {
+	    is_subject = no
+		c:JAP = {
+		country_rank < rank_value:great_power
+		has_diplomatic_pact = {
+				who = ROOT
+				type = alliance
+			}
+		is_subject = no
+		}
 	}
 
-	timeout = 3650
+	immediate = {
+		set_variable = {
+			name = jku_ausgleich_var
+			value = 0
+		}
+	}
+
+complete = {
+	    scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		has_law = law_type:law_multicultural
+		custom_tooltip = {
+			text = jku_ausgleich_complete_tt
+		has_variable = jku_ausgleich_complete
+		}
+	}
+
+ on_complete = {
+		 trigger_event = {
+			id = jku.12 days = 30
+		 }
+	}
+
+ on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = jku.6
+			10 = jku.7
+            10 = jku.8
+			10 = jku.9
+			10 = jku.10
+			10 = jku.11
+		}
+	}
+
+	current_value = {
+		value = root.var:jku_ausgleich_var
+	}
+
+	goal_add_value = {
+	      value = 3
+	}
+
+    timeout = 2555
+
+    on_timeout = {
+		trigger_event = { id = jku.13 }
+	}
+
+	progressbar = yes
+
+	  should_be_pinned_by_default = yes
 }
+
+
