@@ -1,0 +1,114 @@
+﻿je_opium_wars = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	complete = {
+		any_scope_state = {
+			is_treaty_port = yes
+			state_region = {
+				any_scope_state = {
+					owner = scope:target
+				}
+			}
+		}
+	}
+
+	on_complete = {
+		remove_variable = opium_wars_aggressor
+		trigger_event = {
+			id = opium_wars.5
+		}
+		####추가댐!
+		if = {
+			limit = {
+				this = c:GBR
+			}
+			save_scope_as = gbr_scope
+			every_country = {
+				limit = {
+					this = c:CHI
+				}
+				save_scope_as = chi_scope
+				remove_modifier = lia_modifier_rtc
+				remove_modifier = lia_modifier_rtc_prewar
+				add_modifier = {
+					name = lia_modifier_rtc_fall
+					months = 240
+					is_decaying = yes
+				}
+				add_modifier = {
+					name = lia_modifier_rtc_defeat
+					months = 240
+					is_decaying = yes
+				}			
+				trigger_event = {
+					id = lia_event_rtc.3
+					months = 246
+				}			
+			}		
+			every_country = {
+				limit = {
+					country_rank = rank_value:great_power
+					NOT = { this = c:GBR }
+				}
+				trigger_event = {
+					id = lia_event_rtc.1
+					days = { 3 7 }
+				}			
+			}
+			every_country = {
+				limit = {
+					OR = {
+						country_rank = rank_value:major_power
+						country_rank = rank_value:unrecognized_major_power
+						country_rank = rank_value:unrecognized_regional_power
+					}
+					NOT = { this = c:KOR }
+					NOT = { this = c:CHI }
+				}
+				trigger_event = {
+					id = lia_event_rtc.4
+					days = { 5 10 }
+				}			
+			}		
+			every_country = {
+				limit = {
+					this = c:KOR
+				}
+				trigger_event = {
+					id = lia_event_rtc.2
+					days = { 3 7 }
+				}
+			}
+		}
+		####
+	}
+
+	fail = {
+		scope:target = {
+			NOT = {
+				any_primary_culture = {
+					has_cultural_obsession = opium
+				}
+			}
+		}
+	}
+
+	on_fail = {
+		custom_tooltip = {
+			text = opium_wars_fail_invalid_tt
+			remove_variable = opium_wars_aggressor
+		}
+	}
+
+	on_timeout = {
+		custom_tooltip = {
+			text = opium_wars_fail_invalid_tt
+			remove_variable = opium_wars_aggressor
+		}
+	}
+
+	weight = 10000
+	should_be_pinned_by_default = yes
+
+	timeout = 3650
+}
