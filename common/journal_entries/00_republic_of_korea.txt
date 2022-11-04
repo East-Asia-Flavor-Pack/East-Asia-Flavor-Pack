@@ -41,8 +41,8 @@ je_republic_of_korea_second = {
  complete = {
 		NOT = { has_law = law_type:law_autocracy }
         NOT = { has_law = law_type:law_oligarchy }
-        literacy_rate > 0.4
-		root.average_sol > 15
+        literacy_rate > 0.5
+		root.average_sol > 17
 	}
   
 on_complete = {
@@ -52,16 +52,23 @@ on_complete = {
     }
 
  fail = {
+	has_technology_researched = democracy
     has_law = law_type:law_autocracy
     ig:ig_landowners = {
 			is_powerful = yes
 			is_in_government = yes
 		}
+	ig:ig_intelligentsia = {
+			is_in_government = no
+    		AND = {
+	    		ig_approval < -1
+	    	}
+		}
  }
 
  on_fail = {
     trigger_event = {
-            id = republic_of_korea.6
+            id = republic_of_korea.6 days = 3
         }
         if = {
 			limit = { exists = c:XYZ }
@@ -80,6 +87,81 @@ on_complete = {
                     }
 			}
 		}
+		c:XYZ = {
+			save_scope_as = rok_scope
+		}
  }
+
+}
+
+je_daehan_war = {
+   icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+ complete = {
+			owns_entire_state_region = STATE_YANGHO
+			owns_entire_state_region = STATE_BUSAN
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_SARIWON
+			owns_entire_state_region = STATE_PYONGYANG
+	}
+
+ on_complete = { 
+	trigger_event = { id = republic_of_korea.7 }
+	set_variable = republic_of_korea_var
+	change_tag = KOR
+ }
+
+}
+
+je_spearhead_of_democracy_jp ={ 
+     icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+  possible = {
+	c:JAP = {
+		NOT = { has_law = law_type:law_parliamentary_republic }
+		NOT = { has_law = law_type:law_presidential_republic }
+		NOT = { has_law = law_type:law_council_republic }
+	}
+}
+   
+   complete = {
+	army_size > c:JAP.army_size
+	navy_size > c:JAP.navy_size
+	C:JAP = {
+     		relations:root <= relations_threshold:cold
+		}
+   }
+
+   on_complete ={
+	trigger_event = { id = republic_of_korea.8 }
+   }
+
+
+}
+
+ 
+je_spearhead_of_democracy_cn ={ 
+     icon = "gfx/interface/icons/event_icons/event_scales.dds"
+   
+    possible = {
+	c:CHI = {
+		NOT = { has_law = law_type:law_parliamentary_republic }
+		NOT = { has_law = law_type:law_presidential_republic }
+		NOT = { has_law = law_type:law_council_republic }
+	}
+}
+   
+   complete = {
+	gdp > c:CHI.gdp
+	navy_size > c:CHI.navy_size
+	C:CHI = {
+     		relations:root <= relations_threshold:cold
+		}
+   }
+
+   on_complete ={
+	trigger_event = { id = republic_of_korea.9 }
+   }
+
 
 }
