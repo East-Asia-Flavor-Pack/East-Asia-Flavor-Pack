@@ -547,6 +547,8 @@ kurofune.51 = {
 	duration = 3
 
 	trigger = {
+		exists = c:JAP
+		exists = c:NIP
 	}
 
 
@@ -554,28 +556,32 @@ kurofune.51 = {
 		every_subject_or_below = {
 			limit = {is_subject_type = subject_type_daimyo}
 			make_independent = yes
-		}	
+		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+		s:STATE_KANSAI = { region_state:NIP={ save_scope_as = kansai } }
+		s:STATE_KANTO = { region_state:JAP={ save_scope_as = kanto } }
 	}
 	option = { # Japan unification
-                            c:KOR = {
-            trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
-        }
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
                               
 		name = kurofune.51.a						
         default_option = yes
-
-
+		set_global_variable = boshin_war
 		create_diplomatic_play = {
 			name = japan_unification
-			war = yes
-			type = dp_annex_war
-
-			target_country = c:NIP
+			type = dp_return_state
+			target_state = scope:kansai
 
 			add_war_goal = {
 				holder = c:NIP
-				type = annex_country
-				target_country = c:JAP
+				type = return_state
+				target_state = scope:kanto
 			}
 		}
 	}
@@ -637,8 +643,9 @@ kurofune.53 = {
 	duration = 3
 
 	trigger = {
+		exists = c:JAP
+		exists = c:NIP
 	}
-
 
 	immediate = {
 		c:JAP = {		
@@ -647,27 +654,164 @@ kurofune.53 = {
 				make_independent = yes
 			}
 		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+		s:STATE_KANSAI = { region_state:NIP={ save_scope_as = kansai } }
+		s:STATE_KANTO = { region_state:JAP={ save_scope_as = kanto } }
 	}
 	option = { # Japan unification
 		name = kurofune.51.a						
         default_option = yes
-
+		set_global_variable = boshin_war
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
 
 		create_diplomatic_play = {
 			name = japan_unification
-			war = yes
-			type = dp_annex_war
-
-			target_country = c:JAP
+			type = dp_return_state
+			target_state = scope:kanto
 
 			add_war_goal = {
 				holder = c:JAP
-				type = annex_country
-				target_country = c:NIP
+				type = return_state
+				target_state = scope:kansai
 			}
 		}
 	}
 }
+
+kurofune.54 = {
+	type = country_event
+	placement = root
+	title = kurofune.54.t
+	desc = kurofune.54.d
+	flavor = kurofune.54.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+		has_global_variable = boshin_war
+		is_at_war = no
+		is_diplomatic_play_initiator = no
+		is_diplomatic_play_target = no
+	}
+
+
+	immediate = {
+		every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			make_independent = yes
+		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+		s:STATE_KANSAI = { region_state:NIP={ save_scope_as = kansai } }
+		s:STATE_KANTO = { region_state:JAP={ save_scope_as = kanto } }
+	}
+	option = { # Japan unification
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+                              
+		name = kurofune.51.a						
+        default_option = yes
+		create_diplomatic_play = {
+			name = japan_unification
+			type = dp_return_state
+			target_state = scope:kansai
+
+			add_war_goal = {
+				holder = c:NIP
+				type = return_state
+				target_state = scope:kanto
+			}
+		}
+	}
+}
+
+kurofune.55 = {
+	type = country_event
+	placement = root
+	title = kurofune.54.t
+	desc = kurofune.54.d
+	flavor = kurofune.54.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+		has_global_variable = boshin_war
+		is_at_war = no
+		is_diplomatic_play_initiator = no
+		is_diplomatic_play_target = no
+	}
+
+	immediate = {
+		c:JAP = {		
+			every_subject_or_below = {
+				limit = {is_subject_type = subject_type_daimyo}
+				make_independent = yes
+			}
+		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+		s:STATE_KANSAI = { region_state:NIP={ save_scope_as = kansai } }
+		s:STATE_KANTO = { region_state:JAP={ save_scope_as = kanto } }
+	}
+	option = { # Japan unification
+		name = kurofune.51.a						
+        default_option = yes
+		set_global_variable = boshin_war
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+
+		create_diplomatic_play = {
+			name = japan_unification
+			type = dp_return_state
+			target_state = scope:kanto
+
+			add_war_goal = {
+				holder = c:JAP
+				type = return_state
+				target_state = scope:kansai
+			}
+		}
+	}
+}
+
+
 
 kurofune.100 = {
 	type = country_event
