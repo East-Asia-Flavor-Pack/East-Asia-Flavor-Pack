@@ -34,6 +34,9 @@ meiji.1 = {
 				save_scope_as = shogunate_ig_leader
 			}
 		}
+		ig:ig_armed_forces = {
+			save_scope_as = samurai_ig
+		}
 		if = {
 			limit = {
 				year < 1846
@@ -168,7 +171,6 @@ meiji.1 = {
 
 	option = { # favour the industrialists
 		name = meiji.1.a
-		default_option = yes
 		ig:ig_industrialists = {
 			add_modifier = {
 				name = meiji_favored_ig
@@ -185,7 +187,6 @@ meiji.1 = {
 		custom_tooltip = shogunate_rename.tt
 		hidden_effect = {
 			scope:shogunate_ig = {
-				set_interest_group_name = ig_landowners
 			}
 		}
 		scope:shogunate_ig_leader = { # honorable sudoku
@@ -193,47 +194,35 @@ meiji.1 = {
 		}
 		if = {
 			limit = {
-				in_default = no
-				any_scope_state = {
-					filter = {
-						is_incorporated = yes
-					}
-					any_scope_building = {
-						is_building_type = building_urban_center
-						level >= 5
-					}
-					has_building = building_railway
-					percent > 0.7
+				OR = {
+					has_technology_researched = human_rights
+					has_law = law_type:law_wealth_voting 
+					has_law = law_type:law_census_voting
+					has_law = law_type:law_universal_suffrage 
+				}	
+				
+				OR = {
+					ig:ig_industrialists = { ig_clout > 0.1 }
+					ig:ig_intelligentsia = { ig_clout > 0.1 }
 				}
 			}
 			change_variable = {
 				name = meiji_var
 				add = 1
 			}
+			trigger_event = {
+				id = meiji.14
+			}
 		}
 		else = {
 			add_journal_entry = {
-				type = je_meiji_economy
+				type = je_meiji_politic
 			}
 		}
 		if = {
 			limit = {
-				NOT = { has_law = law_type:law_serfdom }
-				ig:ig_armed_forces = {
-					is_powerful = no
-					is_in_government = no
-				}
-				has_technology_researched = napoleonic_warfare
-				NOT = {
-					any_scope_building = {
-						is_building_type = building_barracks
-						OR = {
-							has_active_production_method = pm_irregular_infantry
-							has_active_production_method = pm_no_artillery
-							has_active_production_method = pm_cannon_artillery
-						}
-					}
-				}
+				has_technology_researched = general_staff
+				government_legitimacy > 50
 			}
 			change_variable = {
 				name = meiji_var
@@ -250,12 +239,15 @@ meiji.1 = {
 		}
 		if = {
 			limit = {
-				NOT = { is_country_type = unrecognized }
 				NOT = { has_law = law_type:law_isolationism }
+				has_technology_researched = philosophical_pragmatism
 			}
 			change_variable = {
 				name = meiji_var
 				add = 1
+			}
+			trigger_event = {
+				id = meiji.13
 			}
 		}
 		else = {
@@ -266,6 +258,7 @@ meiji.1 = {
 	}
 	option = { # favour the intellectuals
 		name = meiji.1.b
+		default_option = yes
 		ig:ig_intelligentsia = {
 			add_modifier = {
 				name = meiji_favored_ig
@@ -290,47 +283,35 @@ meiji.1 = {
 		}
 		if = {
 			limit = {
-				in_default = no
-				any_scope_state = {
-					filter = {
-						is_incorporated = yes
-					}
-					any_scope_building = {
-						is_building_type = building_urban_center
-						level >= 5
-					}
-					has_building = building_railway
-					percent > 0.7
+				OR = {
+					has_technology_researched = human_rights
+					has_law = law_type:law_wealth_voting 
+					has_law = law_type:law_census_voting
+					has_law = law_type:law_universal_suffrage 
+				}	
+				
+				OR = {
+					ig:ig_industrialists = { ig_clout > 0.1 }
+					ig:ig_intelligentsia = { ig_clout > 0.1 }
 				}
 			}
 			change_variable = {
 				name = meiji_var
 				add = 1
 			}
+			trigger_event = {
+				id = meiji.14
+			}
 		}
 		else = {
 			add_journal_entry = {
-				type = je_meiji_economy
+				type = je_meiji_politic
 			}
 		}
 		if = {
 			limit = {
-				NOT = { has_law = law_type:law_serfdom }
-				ig:ig_armed_forces = {
-					is_powerful = no
-					is_in_government = no
-				}
-				has_technology_researched = napoleonic_warfare
-				NOT = {
-					any_scope_building = {
-						is_building_type = building_barracks
-						OR = {
-							has_active_production_method = pm_irregular_infantry
-							has_active_production_method = pm_no_artillery
-							has_active_production_method = pm_cannon_artillery
-						}
-					}
-				}
+				has_technology_researched = general_staff
+				government_legitimacy > 50
 			}
 			change_variable = {
 				name = meiji_var
@@ -347,12 +328,15 @@ meiji.1 = {
 		}
 		if = {
 			limit = {
-				NOT = { is_country_type = unrecognized }
 				NOT = { has_law = law_type:law_isolationism }
+				has_technology_researched = philosophical_pragmatism
 			}
 			change_variable = {
 				name = meiji_var
 				add = 1
+			}
+			trigger_event = {
+				id = meiji.13
 			}
 		}
 		else = {
@@ -439,6 +423,10 @@ meiji.2 = {
 				add_claim = ROOT
 			}
 		}
+		ai_chance = {base = 10}
+		set_strategy = ai_strategy_industrial_expansion
+		set_strategy = ai_strategy_progressive_agenda
+		set_strategy = ai_strategy_territorial_expansion
 	}
 	option = {
 		name = meiji.2.b
@@ -446,6 +434,7 @@ meiji.2 = {
 			name = japan_diplomatic_reward
 			months = normal_modifier_time
 		}
+		ai_chance = {base = 0}
 	}
 	option = {
 		name = meiji.2.c
@@ -453,6 +442,7 @@ meiji.2 = {
 			name = japan_production_reward
 			months = normal_modifier_time
 		}
+		ai_chance = {base = 0}
 	}
 }
 
@@ -504,6 +494,14 @@ meiji.3 = {
 			name = samurai_officers
 			months = normal_modifier_time
 		}
+
+		if = {
+			limit = {
+				has_law = law_type:law_serfdom
+			}
+			activate_law = law_type:law_serfdom_banned
+		}
+
 	}
 	option = { # expel the samurai from the army
 		name = meiji.3.b
@@ -513,11 +511,11 @@ meiji.3 = {
 				set_interest_group_name = ig_armed_forces
 			}
 		}
-		scope:samurai_ig = {
-			remove_ideology = ideology_bakufu
-		}
 		scope:samurai_ig_leader = { # honorable sudoku
 			kill_character = yes
+		}
+		scope:samurai_ig = {
+			remove_ideology = ideology_bakufu
 		}
 		add_radicals = {
 			pop_type = officers
@@ -528,6 +526,12 @@ meiji.3 = {
 			pop_type = soldiers
 			culture = cu:japanese
 			value = 0.5
+		}
+		if = {
+			limit = {
+				has_law = law_type:law_serfdom
+			}
+			activate_law = law_type:law_serfdom_banned
 		}
 	}
 }
@@ -1564,15 +1568,84 @@ meiji.13 = {
 				months = 60
 			}
 		}
-
+		ai_chance = {base = 10}
 	}
 
 	option = {
 		name = meiji.13.b
 		change_relations= {
 			country = scope:buy_country_1
-			value = 15
+			value = -30
 		}
+		ai_chance = {base = 0}
+	}
+}
+
+meiji.14 = {
+	type = country_event
+	placement = root
+	title = meiji.14.t
+	desc = meiji.14.d
+	flavor = meiji.14.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:petition_participant_1
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	trigger = {
+		OR = {
+			has_law = law_type:law_autocracy 
+			has_law = law_type:law_oligarchy
+			has_law = law_type:law_elder_council
+			has_law = law_type:law_landed_voting
+		}
+	}
+
+	immediate = {
+		ig:ig_intelligentsia = {
+			leader = { save_scope_as = petition_participant_1 }
+		}
+	}
+
+	option = {
+		name = meiji.14.a
+		default_option = yes
+		activate_law = law_type:law_wealth_voting
+		add_modifier = {
+			name = government_conflict #authority
+			months = normal_modifier_time
+		}
+		ai_chance = {base = 10}
+	}
+
+	option = {
+		name = meiji.14.b
+		ig:ig_landowners = {
+	        add_modifier = {
+	            name = satisfied_bakufu
+	            months = 60
+	        }
+		}
+		ig:ig_industrialists = {
+	        add_modifier = {
+	            name = rejected_petition
+	            months = 60
+	        }
+		}		
+		ig:ig_intelligentsia = {
+	        add_modifier = {
+	            name = rejected_petition
+	            months = 60
+	        }
+		}
+		ai_chance = {base = 0}
 	}
 
 

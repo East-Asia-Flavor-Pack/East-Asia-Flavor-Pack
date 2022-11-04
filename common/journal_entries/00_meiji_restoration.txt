@@ -36,21 +36,20 @@
 	should_be_pinned_by_default = yes
 }
 
-je_meiji_economy = {
+je_meiji_politic = {
 	icon = "gfx/interface/icons/event_icons/event_industry.dds"
 
 	complete = {
-		in_default = no
-		any_scope_state = {
-			filter = {
-				is_incorporated = yes
-			}
-			any_scope_building = {
-				is_building_type = building_urban_center
-				level >= 5
-			}
-			has_building = building_railway
-			percent > 0.7
+		OR = {
+			has_technology_researched = human_rights
+			has_law = law_type:law_wealth_voting 
+			has_law = law_type:law_census_voting
+			has_law = law_type:law_universal_suffrage 
+		}	
+		
+		OR = {
+			ig:ig_industrialists = { ig_clout > 0.1 }
+			ig:ig_intelligentsia = { ig_clout > 0.1 }
 		}
 	}
 
@@ -58,6 +57,9 @@ je_meiji_economy = {
 		change_variable = {
 			name = meiji_var
 			add = 1
+		}
+		trigger_event = {
+			id = meiji.14
 		}
 	}
 
@@ -78,22 +80,8 @@ je_meiji_army = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	complete = {
-		NOT = { has_law = law_type:law_serfdom }
-		ig:ig_armed_forces = {
-			is_powerful = no
-			is_in_government = no
-		}
-		has_technology_researched = napoleonic_warfare
-		NOT = {
-			any_scope_building = {
-				is_building_type = building_barracks
-				OR = {
-					has_active_production_method = pm_irregular_infantry
-					has_active_production_method = pm_no_artillery
-					has_active_production_method = pm_cannon_artillery
-				}
-			}
-		}
+		has_technology_researched = general_staff
+		government_legitimacy > 50
 	}
 
 	on_complete = {
@@ -124,9 +112,7 @@ je_meiji_diplomacy = {
 
 	complete = {
 		NOT = { has_law = law_type:law_isolationism }
-		NOT = { has_law = law_type:law_traditionalism }
-		NOT = { has_law = law_type:law_closed_borders }
-		is_subject = no
+		has_technology_researched = philosophical_pragmatism
 	}
 
 	on_complete = {
