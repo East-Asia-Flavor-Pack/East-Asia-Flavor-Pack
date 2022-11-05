@@ -261,7 +261,8 @@ heavenly.4 = {
 
 	}
 	immediate = {
-		save_scope_as = chi_scope	#추가
+		save_scope_as = chi_scope # 추가
+		set_variable = heavenly_kingdom_start_var # 추가
 		every_state = {
 			limit = {
 				has_modifier = god_worshippers
@@ -275,7 +276,8 @@ heavenly.4 = {
 					has_pop_religion = protestant
 					religion_accepted = no
 				}
-				radical_fraction = { value >= 0.30 }
+				radical_fraction = { value >= 0.25 } # 0.3에서 수정
+				is_coastal = yes # 추가
 			}
 			save_scope_as = heavenly_kingdom_spawn
 		}
@@ -328,6 +330,32 @@ heavenly.4 = {
 			save_scope_as = heavenly_kingdom_scope
 		}
 		if = {
+			limit = {
+				any_scope_state = {
+					has_variable = cult_center
+				}
+			}
+			every_scope_state = {
+				limit = {
+					has_variable = cult_center
+				}
+				set_state_owner = c:TPG
+				set_state_type = incorporated
+			}
+			every_scope_state = {
+				limit = {
+					is_capital = no
+					NOT = { has_variable = cult_center }
+					any_neighbouring_state = {
+						has_variable = cult_center
+					}
+					turmoil > 0.1
+				}
+				set_state_owner = c:TPG
+				set_state_type = incorporated
+			}
+		}
+		if = {
 			limit = { has_journal_entry = je_warlord_china }
 			post_notification = warlord_china_explosion_point_add
 			change_variable = {
@@ -344,157 +372,119 @@ heavenly.4 = {
 		add_journal_entry = {
 			type = je_taiping
 		}
-		if = {
-			limit = {
-				any_scope_state = {
-					has_variable = cult_center
-				}
-			}
-			every_scope_state = {
-				limit = {
-					has_variable = cult_center
-				}
-				set_state_owner = c:TPG
-				set_state_type = incorporated
-			}
-			every_scope_state = {
-				limit = {
-					is_capital = no
-					NOT = { has_variable = cult_center }
-					any_neighbouring_state = {
-						has_variable = cult_center
-					}
-					turmoil > 0.1
-				}
-				set_state_owner = c:TPG
-				set_state_type = incorporated
-			}
-		}
 		create_diplomatic_play = {
 			name = taiping_rebellion
 			target_country = scope:heavenly_kingdom_scope
 			type = dp_taiping_rebellion
-		}
-		trigger_event = {	#추가
-			id = lia_event_rtc.5
-			days = 3
-		}
-		every_country = {	#추가
-			limit = {
-				this = c:TPG
+			add_war_goal = {
+				holder = c:TPG
+				type = annex_country
+				target_country = c:CHI
 			}
-			trigger_event = {
-				id = lia_event_rtc.6
-				days = 3
-			}			
-		}		
-		every_country = {	#추가
-			limit = {
-				OR = {
-					country_rank = rank_value:great_power
-					country_rank = rank_value:major_power
-				}
-				NOT = { this = c:CHI }
-				NOT = { this = c:TPG }
-			}
-			trigger_event = {
-				id = lia_event_rtc.7
-				days = { 21 30 }
-			}			
 		}
-		every_country = {	#추가
-			limit = {
-				OR = {
-					country_rank = rank_value:minor_power
-					country_rank = rank_value:unrecognized_major_power
-					country_rank = rank_value:unrecognized_regional_power	
-				}
-				NOT = { this = c:CHI }
-				NOT = { this = c:TPG }
-			}
-			trigger_event = {
-				id = lia_event_rtc.8
-				days = { 51 60 }
-			}			
-		}		
+        hidden_effect = { # 추가
+            trigger_event = {
+                id = lia_event_rtc.5
+                days = 3
+            }
+            every_country = {
+                limit = {
+                    this = c:TPG
+                }
+                trigger_event = {
+                    id = lia_event_rtc.6
+                    days = 3
+                }			
+            }		
+            every_country = {
+                limit = {
+                    OR = {
+                        country_rank = rank_value:great_power
+                        country_rank = rank_value:major_power
+                    }
+                    NOT = { this = c:CHI }
+                    NOT = { this = c:TPG }
+                }
+                trigger_event = {
+                    id = lia_event_rtc.7
+                    days = { 21 30 }
+                }			
+            }
+            every_country = {
+                limit = {
+                    OR = {
+                        country_rank = rank_value:minor_power
+                        country_rank = rank_value:unrecognized_major_power
+                        country_rank = rank_value:unrecognized_regional_power	
+                    }
+                    NOT = { this = c:CHI }
+                    NOT = { this = c:TPG }
+                }
+                trigger_event = {
+                    id = lia_event_rtc.8
+                    days = { 51 60 }
+                }			
+            }
+        }
 	}
 	option = {
 		name = heavenly.4.b
 		ai_chance = { base = 0 }
-		if = {
-			limit = {
-				any_scope_state = {
-					has_variable = cult_center
-				}
-			}
-			every_scope_state = {
-				limit = {
-					has_variable = cult_center
-				}
-				set_state_owner = c:TPG
-				set_state_type = incorporated
-			}
-			every_scope_state = {
-				limit = {
-					is_capital = no
-					NOT = { has_variable = cult_center }
-					any_neighbouring_state = {
-						has_variable = cult_center
-					}
-					turmoil > 0.1
-				}
-				set_state_owner = c:TPG
-				set_state_type = incorporated
-			}
-		}
 		create_diplomatic_play = {
 			name = taiping_rebellion
 			target_country = scope:heavenly_kingdom_scope
 			type = dp_taiping_rebellion
-		}
-		trigger_event = {	#추가댐!
-			id = lia_event_rtc.5
-			days = 3
-		}		
-		every_country = {	#추가댐!
-			limit = {
-				this = c:TPG
+			add_war_goal = {
+				holder = c:TPG
+				type = annex_country
+				target_country = c:CHI
 			}
-			trigger_event = {
-				id = lia_event_rtc.6
-				days = 3
-			}			
 		}
-		every_country = {	#추가댐!
-			limit = {
-				OR = {
-					country_rank = rank_value:great_power
-					country_rank = rank_value:major_power
-				}
-				NOT = { this = c:CHI }
-				NOT = { this = c:TPG }
-			}
-			trigger_event = {
-				id = lia_event_rtc.7
-				days = { 21 30 }
-			}			
-		}
-		every_country = {	#추가댐!
-			limit = {
-				OR = {
-					country_rank = rank_value:minor_power
-					country_rank = rank_value:unrecognized_major_power
-					country_rank = rank_value:unrecognized_regional_power	
-				}
-				NOT = { this = c:CHI }
-				NOT = { this = c:TPG }
-			}
-			trigger_event = {
-				id = lia_event_rtc.8
-				days = { 51 60 }
-			}			
-		}		
-		play_as = scope:heavenly_kingdom_scope		
+        hidden_effect = { # 추가
+            trigger_event = {
+                id = lia_event_rtc.5
+                days = 3
+            }		
+            every_country = {
+                limit = {
+                    this = c:TPG
+                }
+                trigger_event = {
+                    id = lia_event_rtc.6
+                    days = 3
+                }			
+            }
+            every_country = {
+                limit = {
+                    OR = {
+                        country_rank = rank_value:great_power
+                        country_rank = rank_value:major_power
+                    }
+                    NOT = { this = c:CHI }
+                    NOT = { this = c:TPG }
+                }
+                trigger_event = {
+                    id = lia_event_rtc.7
+                    days = { 21 30 }
+                }			
+            }
+            every_country = {
+                limit = {
+                    OR = {
+                        country_rank = rank_value:minor_power
+                        country_rank = rank_value:unrecognized_major_power
+                        country_rank = rank_value:unrecognized_regional_power	
+                    }
+                    NOT = { this = c:CHI }
+                    NOT = { this = c:TPG }
+                }
+                trigger_event = {
+                    id = lia_event_rtc.8
+                    days = { 51 60 }
+                }			
+            }
+        }
+		play_as = scope:heavenly_kingdom_scope
 	}
 }
 
