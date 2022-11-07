@@ -135,6 +135,8 @@ lia_event_rtc.3 = {	#양무운동
 	flavor = lia_event_rtc.3.f
 
 	duration = 3
+	
+	is_popup = yes
 
 	event_image = {
 		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
@@ -160,25 +162,26 @@ lia_event_rtc.3 = {	#양무운동
 			months = 240
 			is_decaying = yes
 		}
-		if = {
-			limit = {
-				exists = c:TPG
-				is_ai = yes
-				any_country = {
-					this = c:TPG
-					total_population > 100000000	#태평천국의 인구가 1억명이 넘을 정도로 강성할때
-				}				
-			}
-			every_country = {
-				limit = {
-					this = c:TPG
-				}
-				add_modifier = {
-					name = lia_modifier_rtc_tp_reconquest
-					months = 240
-				}			
-			}						
-		}
+		#if = {
+		#	limit = {
+		#		exists = c:TPG
+		#		is_ai = yes
+		#		any_country = {
+		#			this = c:TPG
+		#			total_population > 100000000	#태평천국의 인구가 1억명이 넘을 정도로 강성할때
+		#		}				
+		#	}
+		#	every_country = {
+		#		limit = {
+		#			this = c:TPG
+		#		}
+		#		add_modifier = {
+		#			name = lia_modifier_rtc_tp_reconquest
+		#			months = 240
+		#			is_decaying = yes
+		#		}			
+		#	}						
+		#}
 		ai_chance = {
 			base = 100
 		}
@@ -230,6 +233,8 @@ lia_event_rtc.5 = {	#태평천국 반란-청나라
 	flavor = lia_event_rtc.5.f
 
 	duration = 1
+	
+	is_popup = yes
 
 	event_image = {
 		video = "gfx/event_pictures/asia_union_leader.bk2"
@@ -278,6 +283,8 @@ lia_event_rtc.6 = {	#태평천국 운동-태평천국
 	flavor = lia_event_rtc.6.f
 
 	duration = 1
+	
+	is_popup = yes
 
 	event_image = {
 		video = "gfx/event_pictures/asia_union_leader.bk2"
@@ -312,6 +319,11 @@ lia_event_rtc.6 = {	#태평천국 운동-태평천국
 		}
 		set_variable = {
 			name = lia_variable_rtc_tpg
+		}
+
+		trigger_event = {
+			id = lia_event_rtc.10
+			days = { 1460 2190 }	#4~6년 사이에
 		}
 		
 		ai_chance = {
@@ -367,7 +379,11 @@ lia_event_rtc.7 = {	#태평천국 반란-전세계 열강,강대국
 			add_modifier = {
 				name = lia_modifier_rtc_tp_qing
 				months = 18
-			}			
+			}
+			trigger_event = {
+				id = lia_event_rtc.9
+				days = 3
+			}
 		}
 
 		ai_chance = {
@@ -549,6 +565,220 @@ lia_event_rtc.8 = {	#태평천국 반란-전세계 비열강
 
 	option = {
 		name = lia_event_rtc.8.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}	
+	
+}
+lia_event_rtc.9 = {	#태평천국 청나라 채무탕감
+	type = country_event
+	placement = ROOT
+
+	title = lia_event_rtc.9.t
+	desc = lia_event_rtc.9.d
+	flavor = lia_event_rtc.9.f
+
+	duration = 1
+	
+	is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_signed_contract.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/gold_prospectors"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = lia_event_rtc.9.a
+		default_option = yes
+		
+		clear_scaled_debt = 0.15
+		
+		ai_chance = {
+			base = 100
+		}
+	}	
+	
+}
+
+lia_event_rtc.10 = {	#천국의 분열
+	type = country_event
+	placement = ROOT
+
+	title = lia_event_rtc.10.t
+	desc = lia_event_rtc.10.d
+	flavor = lia_event_rtc.10.f
+
+	duration = 1
+	
+	is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				exists = c:TPG
+				THIS = c:TPG
+			}
+			every_country = {
+				limit = {
+					country_is_in_east_asia = yes
+					NOT = { THIS = c:TPG }
+				}
+				trigger_event = {
+					id = lia_event_rtc.10
+					days = { 3 7 }
+				}
+			}		
+		}		
+	}
+
+	option = {
+		name = lia_event_rtc.10.a
+		default_option = yes
+
+		if = {
+			limit = {
+				exists = c:TPG
+				THIS = c:TPG
+				total_population >= 100000000	#태평천국의 인구가 1억명이 넘을 정도로 강성할때
+			}
+			add_modifier = {
+				name = lia_modifier_rtc_tp_reconquest
+				months = 240
+				is_decaying = yes
+			}
+			random_scope_character = {
+				limit = {
+					or = {
+						has_role = general
+						has_role = admiral
+					}
+					is_ruler = no
+				}
+				kill_character = yes
+			}			
+		}
+		if = {
+			limit = {
+				exists = c:TPG
+				THIS = c:TPG
+				total_population < 100000000	#태평천국의 인구가 1억 밑일때
+			}
+			add_modifier = {
+				name = lia_modifier_rtc_tp_reconquest
+				months = 120
+				is_decaying = yes
+			}
+			random_scope_character = {
+				limit = {
+					or = {
+						has_role = general
+						has_role = admiral
+					}
+					is_ruler = no
+				}
+				kill_character = yes
+			}			
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}	
+	
+}
+
+lia_event_rtc.11 = {	#태평천국의 북벌
+	type = country_event
+	placement = ROOT
+
+	title = lia_event_rtc.11.t
+	desc = lia_event_rtc.11.d
+	flavor = lia_event_rtc.11.f
+
+	duration = 1
+	
+	#is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_devastation.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {		
+	}
+
+	option = {
+		name = lia_event_rtc.11.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}	
+	
+}
+
+lia_event_rtc.12 = {	#청조의 역적토벌
+	type = country_event
+	placement = ROOT
+
+	title = lia_event_rtc.12.t
+	desc = lia_event_rtc.12.d
+	flavor = lia_event_rtc.12.f
+
+	duration = 1
+	
+	#is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_devastation.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {		
+	}
+
+	option = {
+		name = lia_event_rtc.12.a
 		default_option = yes
 
 		ai_chance = {
