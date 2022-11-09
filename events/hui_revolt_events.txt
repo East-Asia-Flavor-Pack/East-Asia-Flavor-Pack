@@ -1,0 +1,864 @@
+namespace = hui_revolt
+
+# 회족의 불안
+hui_revolt.1 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.1.t
+	desc = hui_revolt.1.d
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		# triggered by je_hui_revolt_pre
+	}
+
+	immediate = {
+		save_scope_as = chi_scope
+		random_scope_state = {
+			limit = {
+				OR = {
+					AND = {
+						NOT = { has_variable = PNG_start }
+						OR = {
+							this = s:STATE_SICHUAN.region_state:CHI
+							this = s:STATE_YUNNAN.region_state:CHI
+						}
+					}
+					AND = {
+						NOT = { has_variable = YTS_start }
+						OR = {
+							this = s:STATE_XIAN.region_state:CHI
+							this = s:STATE_NINGXIA.region_state:CHI
+							this = s:STATE_GANSU.region_state:CHI
+							this = s:STATE_QINGHAI.region_state:CHI
+							this = s:STATE_DZUNGARIA.region_state:CHI
+							this = s:STATE_TIANSHAN.region_state:CHI
+						}
+					}
+				}
+				NOT = { has_modifier = hui_revolt_3 }
+			}
+			save_scope_as = revolt_state
+		}
+		scope:revolt_state = {
+			if = {
+				limit = {
+					has_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				remove_modifier = hui_revolt_2
+				add_modifier = {
+					name = hui_revolt_3
+					months = 18
+				}
+				if = {
+					limit = { s:STATE_YUNNAN.region_state:CHI = { has_modifier = hui_revolt_3 } }
+					c:CHI = { trigger_event = { id = hui_revolt.4 } }
+				}
+				else_if = {
+					limit = {
+						AND = {
+							OR = {
+								s:STATE_TIANSHAN.region_state:CHI = { has_modifier = hui_revolt_2 }
+								s:STATE_TIANSHAN.region_state:CHI = { has_modifier = hui_revolt_3 }
+							}
+							OR = {
+								s:STATE_DZUNGARIA.region_state:CHI = { has_modifier = hui_revolt_2 }
+								s:STATE_DZUNGARIA.region_state:CHI = { has_modifier = hui_revolt_3 }
+							}
+						}
+					}
+					c:CHI = { trigger_event = { id = hui_revolt.5 } }
+				}
+				else = {
+					trigger_event = {
+						id = hui_revolt.2
+						months = 6
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					has_modifier = hui_revolt_1
+				}
+				remove_modifier = hui_revolt_1
+				add_modifier = {
+					name = hui_revolt_2
+					months = 12
+				}
+				trigger_event = {
+					id = hui_revolt.3
+					months = 6
+				}
+			}
+			else = {
+				add_modifier = {
+					name = hui_revolt_1
+					months = 6
+				}
+			}
+		}
+	}
+
+	option = {
+		name = hui_revolt.1.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 회족 불만 모디파이어 체크 3->2
+
+hui_revolt.2 = {
+	type = state_event
+	hidden = yes
+	immediate = {
+		remove_modifier = hui_revolt_3
+		add_modifier = {
+			name = hui_revolt_2
+			months = 12
+		}
+	}
+}
+
+# 회족 불만 모디파이어 체크 2->1
+
+hui_revolt.3 = {
+	type = state_event
+	hidden = yes
+	immediate = {
+		if = {
+			limit = { has_modifier = hui_revolt_2 }
+			remove_modifier = hui_revolt_2
+			add_modifier = {
+				name = hui_revolt_1
+				months = 6
+			}
+		}
+	}
+}
+
+# 운남회변 시작
+
+hui_revolt.4 = {
+	type = country_event
+	placement = s:STATE_YUNNAN.region_state:CHI
+
+	title = hui_revolt.4.t
+	desc = hui_revolt.4.d
+	flavor = hui_revolt.4.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	trigger = {
+		# triggered by hui_revolt.1
+	}
+
+	immediate = {
+		save_scope_as = chi_scope
+		set_variable = PNG_start
+		s:STATE_SICHUAN.region_state:CHI = {
+			save_scope_as = revolt_state
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_YUNNAN.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		create_country = {
+			tag = PNG
+			origin = this
+			state = s:STATE_YUNNAN.region_state:CHI
+			on_created = {
+				create_character = {
+					first_name = "Wenxiu"
+					last_name = "Du2"
+					ruler = yes
+					birth_date = 1823.01.14
+					traits = {
+						mountain_commander
+						experienced_offensive_planner
+						experienced_defensive_strategist
+						brave
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_ruling_interest_group = ig_devout
+						}
+					}
+					ig:ig_devout = {
+						add_ruling_interest_group = yes
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_monarchy
+						}
+					}
+					activate_law = law_type:law_monarchy
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_autocracy
+						}
+					}
+					activate_law = law_type:law_autocracy
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_cultural_exclusion
+						}
+					}
+					activate_law = law_type:law_cultural_exclusion
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_state_religion
+						}
+					}
+					activate_law = law_type:law_state_religion
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_appointed_bureaucrats
+						}
+					}
+					activate_law = law_type:law_appointed_bureaucrats
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_peasant_levies
+						}
+					}
+					activate_law = law_type:law_peasant_levies
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_home_affairs
+						}
+					}
+					activate_law = law_type:law_no_home_affairs
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_traditionalism
+						}
+					}
+					activate_law = law_type:law_traditionalism
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_mercantilism
+						}
+					}
+					activate_law = law_type:law_mercantilism
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_land_based_taxation
+						}
+					}
+					activate_law = law_type:law_land_based_taxation
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_colonial_affairs
+						}
+					}
+					activate_law = law_type:law_no_colonial_affairs
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_police
+						}
+					}
+					activate_law = law_type:law_no_police
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_schools
+						}
+					}
+					activate_law = law_type:law_no_schools
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_health_system
+						}
+					}
+					activate_law = law_type:law_no_health_system
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_censorship
+						}
+					}
+					activate_law = law_type:law_censorship
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_serfdom
+						}
+					}
+					activate_law = law_type:law_serfdom
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_child_labor_allowed
+						}
+					}
+					activate_law = law_type:law_child_labor_allowed
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_womens_rights
+						}
+					}
+					activate_law = law_type:law_no_womens_rights
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_social_security
+						}
+					}
+					activate_law = law_type:law_no_social_security
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_migration_controls
+						}
+					}
+					activate_law = law_type:law_no_migration_controls
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_slavery_banned
+						}
+					}
+					activate_law = law_type:law_slavery_banned
+				}
+				add_modifier = {
+					name = uprising_conscription
+					months = normal_modifier_time
+				}
+			}
+		}
+		c:PNG = {
+			save_scope_as = png_scope
+		}
+		add_journal_entry = {
+			type = je_yunnan_hui_rebellion
+		}
+	}
+
+	option = {
+		name = hui_revolt.4.a
+		default_option = yes
+		c:PNG = {
+			create_diplomatic_play = {
+				name = yunnan_hui_rebellion
+				target_country = c:CHI
+				type = dp_independence
+				war = yes
+				add_war_goal = {
+					holder = c:CHI
+					type = annex_country
+					target_country = c:PNG
+				}
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 동치회란 시작
+
+hui_revolt.5 = {
+	type = country_event
+	placement = s:STATE_TIANSHAN.region_state:CHI
+
+	title = hui_revolt.5.t
+	desc = hui_revolt.5.d
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	trigger = {
+		# triggered by hui_revolt.1
+	}
+
+	immediate = {
+		save_scope_as = chi_scope
+		set_variable = YTS_start
+		s:STATE_XIAN.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_NINGXIA.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_GANSU.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_QINGHAI.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_DZUNGARIA.region_state:CHI = {
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		s:STATE_TIANSHAN.region_state:CHI = {
+			save_scope_as = revolt_state
+			if = {
+				limit = { has_modifier = hui_revolt_1 }
+				remove_modifier = hui_revolt_1
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+			}
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				remove_modifier = hui_revolt_3
+			}
+		}
+		create_country = {
+			tag = YTS
+			origin = this
+			state = s:STATE_TIANSHAN.region_state:CHI
+			on_created = {
+				create_character = {
+					first_name = "Yaqub"
+					last_name = "Beg"
+					ruler = yes
+					birth_date = 1820.01.14
+					traits = {
+						pillager
+						mountain_commander
+						experienced_offensive_planner
+						experienced_defensive_strategist
+						explorer
+						arrogant
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_ruling_interest_group = ig_devout
+						}
+					}
+					ig:ig_devout = {
+						add_ruling_interest_group = yes
+					}
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_monarchy
+						}
+					}
+					activate_law = law_type:law_monarchy
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_autocracy
+						}
+					}
+					activate_law = law_type:law_autocracy
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_cultural_exclusion
+						}
+					}
+					activate_law = law_type:law_cultural_exclusion
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_freedom_of_conscience
+						}
+					}
+					activate_law = law_type:law_freedom_of_conscience
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_appointed_bureaucrats
+						}
+					}
+					activate_law = law_type:law_appointed_bureaucrats
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_peasant_levies
+						}
+					}
+					activate_law = law_type:law_peasant_levies
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_home_affairs
+						}
+					}
+					activate_law = law_type:law_no_home_affairs
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_traditionalism
+						}
+					}
+					activate_law = law_type:law_traditionalism
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_mercantilism
+						}
+					}
+					activate_law = law_type:law_mercantilism
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_land_based_taxation
+						}
+					}
+					activate_law = law_type:law_land_based_taxation
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_colonial_affairs
+						}
+					}
+					activate_law = law_type:law_no_colonial_affairs
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_police
+						}
+					}
+					activate_law = law_type:law_no_police
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_schools
+						}
+					}
+					activate_law = law_type:law_no_schools
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_health_system
+						}
+					}
+					activate_law = law_type:law_no_health_system
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_censorship
+						}
+					}
+					activate_law = law_type:law_censorship
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_serfdom
+						}
+					}
+					activate_law = law_type:law_serfdom
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_child_labor_allowed
+						}
+					}
+					activate_law = law_type:law_child_labor_allowed
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_womens_rights
+						}
+					}
+					activate_law = law_type:law_no_womens_rights
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_social_security
+						}
+					}
+					activate_law = law_type:law_no_social_security
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_no_migration_controls
+						}
+					}
+					activate_law = law_type:law_no_migration_controls
+				}
+				if = {
+					limit = {
+						NOT = {
+							has_law = law_type:law_slavery_banned
+						}
+					}
+					activate_law = law_type:law_slavery_banned
+				}
+				add_modifier = {
+					name = uprising_conscription
+					months = normal_modifier_time
+				}
+			}
+			s:STATE_DZUNGARIA.region_state:CHI = {
+				set_state_owner = c:YTS
+				set_state_type = incorporated
+			}
+		}
+		c:YTS = {
+			save_scope_as = yts_scope
+		}
+		add_journal_entry = {
+			type = je_tongzhi_hui_revolt
+		}
+	}
+
+	option = {
+		name = hui_revolt.5.a
+		default_option = yes
+		c:YTS = {
+			create_diplomatic_play = {
+				name = tongzhi_hui_revolt
+				target_country = c:CHI
+				type = dp_independence
+				war = yes
+				add_war_goal = {
+					holder = c:CHI
+					type = annex_country
+					target_country = c:YTS
+				}
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 운남회변 이후
+
+hui_revolt.6 = {
+	type = country_event
+	placement = root
+
+	title = hui_revolt.6.t
+	desc = hui_revolt.6.d
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		# triggered by je_yunnan_hui_rebellion
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = hui_revolt.6.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 동치회란 이후
+
+hui_revolt.7 = {
+	type = country_event
+	placement = root
+
+	title = hui_revolt.7.t
+	desc = hui_revolt.7.d
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		# triggered by je_tongzhi_hui_revolt
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = hui_revolt.7.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
