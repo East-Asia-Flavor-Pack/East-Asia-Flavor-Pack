@@ -194,130 +194,35 @@ heavenly.3 = {
 		}
 	}
 	immediate = {
-		set_local_variable = { name = ts1 value = 0}
-		set_local_variable = { name = ts2 value = 0}
-		set_local_variable = { name = ts4 value = 0}
-		every_scope_state = { # 진짜 어거지로 어떻게 만든 코드
+		random_scope_state = {
 			limit = {
-				state_region = { is_homeland = cu:han } # 전파 도착 주 조건
-				NOT = { has_variable = cult_center }
-				NOT = { is_capital = yes }
-				any_neighbouring_state = { # 전파 출발 주 조건
-					has_variable = cult_center
-					any_scope_pop = {
-						has_pop_religion = protestant
+				has_variable = cult_center
+				any_scope_pop = {
+					has_pop_religion = protestant
+				}
+				any_neighbouring_state = {
+					owner = ROOT
+					state_region = { is_homeland = cu:han } # 추가
+					NOT = {
+						has_variable = cult_center
 					}
+					NOT = { is_capital = yes }
 				}
 			}
-			if = {
+			save_scope_as = cult_center
+			random_neighbouring_state = {
 				limit = {
-					OR = { 
-						this = STATE_EASTERN_HUBEI.region_state:CHI
-						this = STATE_SOUTHERN_ANHUI.region_state:CHI
-						this = STATE_JIANGXI.region_state:CHI
-						this = STATE_ZHEJIANG.region_state:CHI
-						this = STATE_SUZHOU.region_state:CHI
-						this = STATE_NANJING.region_state:CHI
+					owner = ROOT
+					state_region = { is_homeland = cu:han } # 추가
+					NOT = {
+						has_variable = cult_center
 					}
+					NOT = { is_capital = yes }
 				}
-				change_local_variable = { name = ts4 add = 4 }
-			}
-			else_if = {
-				limit = {
-					OR = { 
-						this = STATE_JIANGSU.region_state:CHI
-						this = STATE_FUJIAN.region_state:CHI
-						this = STATE_SHAOZHOU.region_state:CHI
-						this = STATE_HUNAN.region_state:CHI
-						this = STATE_NORTHERN_ANHUI.region_state:CHI
-						this = STATE_HENAN.region_state:CHI
-						this = STATE_WESTERN_HUBEI.region_state:CHI
-						this = STATE_GUANGXI.region_state:CHI
-					}
+				save_scope_as = cult_growth_state
+				set_variable = {
+					name = cult_center
 				}
-				change_local_variable = { name = ts2 add = 2 }
-			}
-			else_if = {
-				limit = {
-					NOT = { this = STATE_YUNNAN.region_state:CHI }
-					NOT = { this = STATE_SICHUAN.region_state:CHI }
-				}
-				change_local_variable = { name = ts1 add = 1 }
-			}
-		}
-		random_list = {
-			0 = { 
-				modifier = { add = local_var:ts4 always = yes }
-				c:CHI = {
-					random_scope_state = { # 전파 도착 주 조건
-						limit = {
-							state_region = { is_homeland = cu:han }
-							NOT = { has_variable = cult_center }
-							NOT = { is_capital = yes }
-							OR = { 
-								this = STATE_EASTERN_HUBEI.region_state:CHI
-								this = STATE_SOUTHERN_ANHUI.region_state:CHI
-								this = STATE_JIANGXI.region_state:CHI
-								this = STATE_ZHEJIANG.region_state:CHI
-								this = STATE_SUZHOU.region_state:CHI
-								this = STATE_NANJING.region_state:CHI
-							}
-						}
-						save_scope_as = cult_growth_state
-					}
-				}
-			}
-			0 = { 
-				modifier = { add = local_var:ts2 always = yes }
-				c:CHI = {
-					random_scope_state = { # 전파 도착 주 조건
-						limit = {
-							state_region = { is_homeland = cu:han }
-							NOT = { has_variable = cult_center }
-							NOT = { is_capital = yes }
-							OR = { 
-								this = STATE_JIANGSU.region_state:CHI
-								this = STATE_FUJIAN.region_state:CHI
-								this = STATE_SHAOZHOU.region_state:CHI
-								this = STATE_HUNAN.region_state:CHI
-								this = STATE_NORTHERN_ANHUI.region_state:CHI
-								this = STATE_HENAN.region_state:CHI
-								this = STATE_WESTERN_HUBEI.region_state:CHI
-								this = STATE_GUANGXI.region_state:CHI
-							}
-						}
-						save_scope_as = cult_growth_state
-					}
-				}
-			}
-			0 = { 
-				modifier = { add = local_var:ts1 always = yes }
-				c:CHI = {
-					random_scope_state = { # 전파 도착 주 조건
-						limit = {
-							state_region = { is_homeland = cu:han }
-							NOT = { has_variable = cult_center }
-							NOT = { is_capital = yes }
-							NOT = { this = STATE_YUNNAN.region_state:CHI }
-							NOT = { this = STATE_SICHUAN.region_state:CHI }
-						}
-						save_scope_as = cult_growth_state
-					}
-				}
-			}
-		}
-		scope:cult_growth_state = {
-			set_variable = {
-				name = cult_center
-			}
-			any_neighbouring_state = {
-				limit = {
-					has_variable = cult_center
-					any_scope_pop = {
-						has_pop_religion = protestant
-					}
-				}
-				save_scope_as = cult_center
 			}
 		}
 	}
@@ -376,31 +281,6 @@ heavenly.4 = {
 					religion_accepted = no
 				}
 				turmoil >= 0.25 # 수정
-			}
-			weight = { # 추가 - 주에 가중치 부여
-				base = 1
-				modifier = {
-					add = 2
-					any_neighbouring_state = {
-						OR = {
-							this = STATE_EASTERN_HUBEI.region_state:CHI
-							this = STATE_SOUTHERN_ANHUI.region_state:CHI
-							this = STATE_JIANGXI.region_state:CHI
-						}
-						NOT = { has_variable = cult_center }
-					}
-				}
-				modifier = {
-					add = 1
-					any_neighbouring_state = {
-						OR = {
-							this = STATE_ZHEJIANG.region_state:CHI
-							this = STATE_SUZHOU.region_state:CHI
-							this = STATE_NANJING.region_state:CHI
-						}
-						NOT = { has_variable = cult_center }
-					}
-				}
 			}
 			save_scope_as = heavenly_kingdom_spawn
 		}
