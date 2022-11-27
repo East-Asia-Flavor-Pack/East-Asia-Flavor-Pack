@@ -65,7 +65,7 @@ immediate = {
 	}
 
 	complete = {
-	custom_tooltip ={
+	custom_tooltip = { 
 		text = samjeong_complete_tt
 		has_variable = hwangok_complete
 		has_variable = gunjeong_complete
@@ -78,9 +78,6 @@ immediate = {
 	}
 
 	on_complete = {
-		remove_modifier = hwangok_problem
-		remove_modifier = jeonjeong_problem
-		remove_modifier = gunjeong_problem
 		trigger_event = {
 			id = korean_restoration.2
 			days = 50
@@ -89,49 +86,38 @@ immediate = {
 
 	on_monthly_pulse = {
 		random_events = {
-			90 = 0
-			5 = korean_restoration.3
-			5 = korean_restoration.4
+			98 = 0
+			1 = korean_restoration.3
+			1 = korean_restoration.4
 		}
 	}
 
- 	on_yearly_pulse = {
-		effect = {
-			change_variable = {
-					name = korean_restoration_var
-					add = 1
-				}
-		}
-	}
-
- fail = { 
-	game_date > 1870.12.30
-	}
-
-  on_fail = {
-		set_variable = korean_restoration_fail
-		trigger_event = {
-			id = korean_restoration.23
-		}
-	}
 
 	current_value = {
 		value = root.var:korean_restoration_var
 	}
 
 	goal_add_value = {
-	      value = 100
+	      value = 3
 	}
 
 	progressbar = yes
 
 	weight = 10000
+
 	should_be_pinned_by_default = yes
 }
 
 je_korean_restoration_hwangok = {
 	icon = "gfx/interface/icons/event_icons/event_industry.dds"
 
+
+	immediate = {
+		set_variable = {
+			name = hwangok_var
+			value = 0
+		}
+	}
 	complete = {
 		custom_tooltip = {
 			text = hwangok_complete_tt
@@ -140,6 +126,10 @@ je_korean_restoration_hwangok = {
 	}
 
 	on_complete = {
+		change_variable = {
+			name = korean_restoration_var
+			add = 1
+		}
 		trigger_event = {
 			id = korean_restoration.5
 		}
@@ -147,66 +137,33 @@ je_korean_restoration_hwangok = {
 
 
 	on_monthly_pulse = {
-		random_events = {
-			80 = 0
-			10 = korean_restoration.6
-			10 = korean_restoration.7
+		events = {
+			korean_restoration.6 # 저장량 부족
+			korean_restoration.7 # 완전 탕감
+			korean_restoration.8 # 부당한 환곡에 대한 지방관 처벌
 		}
 	}
 
 	on_yearly_pulse = {
-		random_events = {
-			55 = 0
-			15 = korean_restoration.8
-			15 = korean_restoration.9
-			15 = korean_restoration.10
+		random_events = { #3개는 못봐도 상관 없음
+			50 = 0
+			10 = korean_restoration.9 #지방 환곡 탕감 - 양호
+			10 = korean_restoration.10 #지방 환곡 탕감 - 서울
+			10 = korean_restoration.11 #지방 환곡 탕감 - 부산
+			10 = korean_restoration.12 #지방 환곡 탕감 - 사리원  
+			10 = korean_restoration.13 #지방 환곡 탕감 - 평양
 		}
 	}
 
-	inheritable = no
-
-	weight = 5000
-}
-
-je_korean_restoration_gunjeong = {
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	complete = {
-		custom_tooltip = {
-			text = gunjeong_complete_tt
-			has_variable = gunjeong_complete
-		}
-	}
-	
-
-	on_complete = {
-		change_variable = {
-			name = korean_restoration_var
-			add = 10
-		}
-		trigger_event = {
-			id = korean_restoration.22
-			 #실수로 번호 꼬임
-		}
+	current_value = {
+		value = root.var:hwangok_var
 	}
 
-	on_monthly_pulse = {
-		random_events = {
-			80 = 0
-			10 = korean_restoration.11
-			10 = korean_restoration.12
-		}
+	goal_add_value = {
+	      value = 12
 	}
 
-on_yearly_pulse = {
-		random_events = {
-			55 = 0
-			15 = korean_restoration.13
-			15 = korean_restoration.14
-			15 = korean_restoration.15
-		}
-	}
-	inheritable = no
+	progressbar = yes
 
 	weight = 5000
 }
@@ -215,108 +172,122 @@ je_korean_restoration_jeonjeong = {
 	icon = "gfx/interface/icons/event_icons/event_trade.dds"
 
 	complete = {
-		custom_tooltip = {
-			text = jeonjeong_complete_tt
-			has_variable = jeonjeong_complete
+		s:STATE_SEOUL.region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_university
+					occupancy >= 0.9
+					level >= 5
+			}
+		}
+		s:STATE_BUSAN.region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_naval_base
+					level >= 3
+					occupancy >= 0.9
+			}
+		}
+		s:STATE_YANGHO.region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_rice_farm
+					level >= 5
+					occupancy >= 0.9
+			}
+		}
+		s:STATE_SARIWON.region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_coal_mine
+					level >= 3
+					occupancy >= 0.9
+				}
+				any_scope_building = {
+					is_building_type = building_iron_mine
+					level >= 2
+					occupancy >= 0.9
+				}
+			}
+		s:STATE_PYONGYANG.region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_logging_camp
+					level >= 5
+					occupancy >= 0.9
+			}
 		}
 	}
 
 	on_complete = {
 		change_variable = {
 			name = korean_restoration_var
-			add = 10
+			add = 1
 		}
 		trigger_event = {
-			id = korean_restoration.16
+			id = korean_restoration.20 #양전 시행
 		}
 	}
 
 
 	on_monthly_pulse = {
 		random_events = {
-			80 = 0
-			10	= korean_restoration.17
-			10	= korean_restoration.18
+			91 = 0
+			3	= korean_restoration.21 #백지징세
+			3	= korean_restoration.22 #은결
+			3	= korean_restoration.23 #부패한 관리
 		}
 	}
    
     on_yearly_pulse = {
 		random_events = {
-			55 = 0
-			15 = korean_restoration.19
-			15 = korean_restoration.20
-			15 = korean_restoration.21
+			70 = 0
+			30 = korean_restoration.24 #도결의 폐단이 발각
 		}
 	}
 
 	weight = 10000
 }
 
-je_korean_restoration_restart = {
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
-
-immediate = {
-		set_variable = {
-			name = restart_var
-			value = 0
+je_korean_restoration_gunjeong = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	
+	complete = {
+		any_scope_state = {
+			filter = {
+				is_incorporated = yes
+			}
+			any_scope_building = {
+				is_building_type = building_barracks
+				level >= 15
+			}
 		}
-	}
-
-	on_monthly_pulse = {
-		effect = {
-			if = {
-				limit = {
-					ig:ig_landowners = {
-						is_powerful = no
-						is_in_government = no
-					}
-					has_insurrectionary_interest_groups = no
-					is_at_war = no
-				}
-				change_variable = {
-					name = restart_var
-					add = 1
-				}
+		custom_tooltip = {
+			text = gunjeong_complete_tt
+			OR = {
+				has_variable = gunjeong_complete1
+				has_variable = gunjeong_complete2
 			}
 		}
 	}
-
-	complete = {
-		trigger_if = {
-			limit = { exists = var:restart_var }
-			scope:journal_entry = { is_goal_complete = yes }
+	
+	on_monthly_pulse = {
+		events = {
+			korean_restoration.27 # 군역의 회피
+			korean_restoration.28 # 백골징수
+			korean_restoration.29 # 족징
+			korean_restoration.30 # 양반의 군포
+			korean_restoration.31 # 결정
 		}
-		ig:ig_landowners = {
-			is_powerful = no
-			is_in_government = no
-		}
-		has_insurrectionary_interest_groups = no
-		is_at_war = no
 	}
 
 	on_complete = {
-                                remove_modifier = hwangok_problem
-		remove_modifier = jeonjeong_problem
-		remove_modifier = gunjeong_problem
+		change_variable = {
+			name = korean_restoration_var
+			add = 1
+		}
 		trigger_event = {
-			id = korean_restoration.2
+			id = korean_restoration.36 #디시전 활성화
 		}
 	}
 
-	current_value = {
-		value = root.var:restart_var
-	}
-
-	goal_add_value = {
-		value = 120
-	}
-
-	progressbar = yes
-
-	weight = 10000
-	should_be_pinned_by_default = yes
+	weight = 5000
 }
-
 
 je_korean_restoration_second = {
 	icon = "gfx/interface/icons/event_icons/event_scales.dds"
@@ -419,7 +390,6 @@ icon = "gfx/interface/icons/event_icons/event_military.dds"
 			is_powerful = no
 			is_in_government = no
 		}
-		
 		NOT = { has_law = law_type:law_peasant_levies }
 		has_technology_researched = napoleonic_warfare
 		NOT = {
@@ -491,6 +461,7 @@ icon = "gfx/interface/icons/event_icons/event_trade.dds"
 
 	complete = {
 		NOT = { has_law = law_type:law_no_schools }
+		NOT = { has_law = law_type:law_religious_schools }
 		any_scope_state = {
 			filter = {
 				is_incorporated = yes

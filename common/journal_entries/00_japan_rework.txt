@@ -1,0 +1,710 @@
+je_japan_rework_start = { #시작 시점 저널
+    icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	is_shown_when_inactive = {
+	 exists = c:JAP
+	 ROOT = c:JAP
+	}
+
+    possible = {
+		NOT = { has_global_variable = boshin_war_var }
+	}
+
+	immediate = {
+         set_global_variable = {
+			name = japan_start_var
+			value = 0
+		 }
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		is_at_war = no
+		custom_tooltip = {
+		text = kurofune_je_tt
+		has_global_variable = kurofune_var
+		}
+	}
+
+	on_complete = {
+		hidden_effect = {
+    c:JAP = {
+            remove_diplomatic_pact = {
+				country = c:NIP
+				type = tenno
+			}
+        }
+		}
+		trigger_event = {
+			id = boshin_war.1
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+			limit = {
+                country_has_primary_culture = cu:japanese
+				game_date >= 1836.1
+				}
+			trigger_event = { id = before_kurofune_je.1 } # 대기근의 절정
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1837.9
+					}
+			trigger_event = { id = before_kurofune_je.7 } #이에요시 취임
+			}
+			if = {
+			limit = {
+                country_has_primary_culture = cu:japanese
+				game_date >= 1837.11
+					}
+			trigger_event = { id = before_kurofune_je.8 } # 텐포금화 발행
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1839.5
+					}
+			trigger_event = { id = before_kurofune_je.9 } #만사의 옥
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1839.7
+					}
+			trigger_event = { id = tenpo_restoration.1 } # 텐포 개혁 시작
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1841.2
+					}
+			trigger_event = { id = tenpo_restoration.2 } # 이에나리 사망
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1844.5
+					}
+			trigger_event = { id = before_kurofune_je.10 } # 네덜란드 국왕 친서
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1852.3
+					}
+			trigger_event = { id = before_kurofune_je.13 } # 페리 내항에 대한 정보
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1853.7
+					}
+			trigger_event = { id = kurofune.1 } # 류큐내항
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1854.11
+				}
+			trigger_event = { id = kurofune.8 } # 안세이 대지진
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				has_variable = kanagawa_treaty
+				game_date >= 1858.7
+					}
+			trigger_event = { id = kurofune.12 } # 일미수호통상조약
+			}
+			if = {
+			limit = {
+                exists = c:JAP
+				this = c:JAP
+				game_date >= 1867.10
+					}
+			trigger_event = { id = kurofune.40 } # 파국에 다달음
+			}
+		}
+	}
+	
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_japan_rework_start_great_points
+				trigger = {
+					global_var:japan_start_var <= 20
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_good_points
+				trigger = {
+					global_var:japan_start_var > 20
+					global_var:japan_start_var < 50
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_medium_points
+				trigger = {
+					global_var:japan_start_var >= 50
+					global_var:japan_start_var < 90
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_bad_points
+				trigger = {
+					global_var:japan_start_var >= 90
+				}
+			}
+		}
+	}
+
+	current_value = {
+		value = global_var:japan_start_var
+	}
+
+	goal_add_value = {
+		value = 100
+	}
+
+	progressbar = yes
+    
+	should_be_pinned_by_default = yes
+}
+
+je_japan_rework_start_daimyo = { #다이묘 시작 저널
+
+	is_shown_when_inactive = {
+	 exists = c:JAP
+	 NOT = { ROOT = c:JAP }
+	 country_has_primary_culture = cu:japanese
+	}
+
+    possible = {
+		NOT = { has_global_variable = boshin_war_var }
+	}
+
+	complete = {
+	    scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		custom_tooltip = {
+		text = kurofune_je_tt
+		has_global_variable = kurofune_var
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = boshin_war.2
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+			limit = {
+                country_has_primary_culture = cu:japanese
+				game_date >= 1836.1
+					}
+			trigger_event = { id = before_kurofune_je.1 } # 대기근의 절정
+			}
+			if = {
+			limit = {
+                exists = c:ODA
+				this = c:ODA
+				game_date >= 1836.9
+					}
+			trigger_event = { id = before_kurofune_je.2 } # 카모봉기
+			}
+			if = {
+			limit = {
+                exists = c:NIP
+				this = c:NIP
+				game_date >= 1837.3
+					}
+			trigger_event = { id = before_kurofune_je.3 } # 오시오헤이하치로의 난
+			}
+
+			#4는 삭제됨
+			
+			if = {
+			limit = {
+                exists = c:YON
+				this = c:YON
+				game_date >= 1837.6
+					}
+			trigger_event = { id = before_kurofune_je.5 } # 이쿠타 요로즈의 난
+			}
+			if = {
+			limit = {
+                exists = c:SAT
+				this = c:SAT
+				game_date >= 1837.7
+					}
+			trigger_event = { id = before_kurofune_je.6 } # 모리슨호 사건
+			}
+			if = {
+			limit = {
+                country_has_primary_culture = cu:japanese
+				game_date >= 1837.11
+					}
+			trigger_event = { id = before_kurofune_je.8 } # 텐포금화 발행
+			}
+			if = {
+			limit = {
+                exists = c:TOS
+				this = c:TOS
+				game_date >= 1841.1
+					}
+			trigger_event = { id = manjiro.1 } # 만지로 표류
+			}
+			if = {
+			limit = {
+                exists = c:NIP
+				this = c:NIP
+				game_date >= 1846.3
+					}
+			trigger_event = { id = before_kurofune_je.11 } # 고메이 덴노 즉위
+			}
+			if = {
+			limit = {
+                exists = c:KAG
+				this = c:KAG
+				game_date >= 1847.5
+					}
+			trigger_event = { id = before_kurofune_je.12 } # 젠코지 대지진
+			}
+			if = {
+			limit = {
+                exists = c:ODA
+				this = c:ODA
+				game_date >= 1853.3
+					}
+			trigger_event = { id = before_kurofune_je.14 } # 오다와라 지진
+			}
+			if = {
+			limit = {
+                exists = c:RYU
+				this = c:RYU
+				game_date >= 1853.5
+					}
+			trigger_event = { id = before_kurofune_je.15 } # 류큐내항
+			}
+			if = {
+			limit = {
+				AND = { exists = c:ODA this = c:ODA }
+				AND = { exists = c:NIP this = c:NIP }
+				AND = { exists = c:KAG this = c:KAG }
+				AND = { exists = c:GIS this = c:GIS }
+				AND = { exists = c:TOS this = c:TOS }
+				AND = { game_date >= 1854.11 }
+				}
+			trigger_event = { id = kurofune.8 } # 안세이 대지진
+			}
+			if = {
+			limit = {
+                exists = c:RYU
+				this = c:RYU
+				game_date >= 1854.7
+					}
+			trigger_event = { id = kurofune.13 } # 류미수호통상조약
+			}
+			if = {
+			limit = {
+                exists = c:SAT
+				this = c:SAT
+				game_date >= 1862.8
+					}
+			trigger_event = { id = kurofune.18 } # 나마무기 사건
+			}
+		}
+	}
+
+	current_value = {
+		value = global_var:japan_start_var
+	}
+
+	goal_add_value = {
+		value = 100
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_japan_rework_start_great_points
+				trigger = {
+					global_var:japan_start_var <= 20
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_good_points
+				trigger = {
+					global_var:japan_start_var > 20
+					global_var:japan_start_var < 50
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_medium_points
+				trigger = {
+					global_var:japan_start_var >= 50
+					global_var:japan_start_var < 90
+				}
+			}
+			triggered_desc = {
+				desc = je_japan_rework_start_bad_points
+				trigger = {
+					global_var:japan_start_var >= 90
+				}
+			}
+		}
+	}
+
+	progressbar = yes
+
+	should_be_pinned_by_default = yes
+}
+
+je_shogun_vs_tenno = { #천황이냐 막부냐
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+ 
+    is_shown_when_inactive = {
+		is_subject_type = subject_type_daimyo
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = kurofune_var_tt
+			has_global_variable = kurofune_var
+			}
+	}
+
+	complete = {
+		exists = c:JAP
+		c:JAP = {relations:root >= 80}
+	}
+
+	on_complete = {
+		c:JAP = { trigger_event = { id = kurofune.31 } }
+		trigger_event = { id = kurofune.33 }
+	}
+
+	fail = {
+		exists = c:JAP
+		c:JAP = {relations:root <= -75} 
+	}
+
+	on_fail = { 
+		c:JAP = { trigger_event = { id = kurofune.32 } } 
+		trigger_event = { id = kurofune.34 }
+	}
+
+	should_be_pinned_by_default = yes
+}
+
+je_kurofune_shogun = { #쇼군측 저널
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		NOT = { has_law = law_type:law_isolationism }
+		NOT = { has_law = law_type:law_closed_borders }
+	}
+
+	on_complete = {#외국의 지원
+		add_technology_progress = {
+			progress = 2500
+			technology = repeaters
+		}
+		add_modifier = {
+			name = je_kurofune_shogun_md
+			months = 120
+			is_decaying = yes
+		}
+	}
+
+	fail = {
+		game_date > 1868.1.27
+	}
+
+	on_fail = {
+		if = {
+			limit = { exists = c:USA }
+			change_relations = {
+				country = c:USA
+				value = -30
+			}
+		}
+		every_country = {
+			limit = {
+				country_rank = rank_value:great_power
+				country_is_in_europe = yes
+				has_interest_marker_in_region = root.capital.region
+			}
+			change_relations = {
+				country = root
+				value = -30
+			}
+		}
+	}
+
+	should_be_pinned_by_default = yes
+}
+
+je_kurofune_tenno = { #덴노측 저널
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		NOT = { has_law = law_type:law_isolationism }
+		NOT = { has_law = law_type:law_closed_borders }
+	}
+
+	on_complete = {#외국의 지원
+		add_technology_progress = {
+			progress = 2500
+			technology = repeaters
+		}
+		add_modifier = {
+			name = je_kurofune_tenno_md
+			months = 120
+			is_decaying = yes
+		}
+	}
+
+	fail = {
+		game_date > 1868.1.27
+	}
+
+	on_fail = {
+		if = {
+			limit = { exists = c:USA }
+			change_relations = {
+				country = c:USA
+				value = -30
+			}
+		}
+		every_country = {
+			limit = {
+				country_rank = rank_value:great_power
+				country_is_in_europe = yes
+				has_interest_marker_in_region = root.capital.region
+			}
+			change_relations = {
+				country = root
+				value = -30
+			}
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+}
+
+je_daimyo = { #공용 다이묘 저널
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		any_scope_state = {
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+			has_building = building_railway
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.16 }
+	}
+
+	timeout = 6400
+
+}
+
+
+je_daimyo_sat = { #사츠마 시작 저널
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		s:STATE_KYUSHU.region_state:SAT = {
+				any_scope_building = {
+					is_building_type = building_naval_base
+					level >= 2
+					occupancy >= 0.9
+			}
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 5
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.17 }
+	}
+
+	timeout = 6400
+
+}
+
+je_daimyo_cho = { #쵸슈
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		any_scope_state = {
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 5
+			}
+		}
+		army_size > 15
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.18 }
+	}
+
+	timeout = 6400
+
+}
+
+je_daimyo_tos = { #토사
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		any_scope_state = {
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 5
+			}
+		}
+		c:CHO = {relations:root >= 50} 
+		c:SAT = {relations:root >= 50} 
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.19 }
+	}
+
+	timeout = 6400
+
+}
+
+je_daimyo_nip = { #천황
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		any_scope_state = {
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 5
+			}
+		}
+		army_size > 15
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.20 }
+	}
+
+	timeout = 6400
+
+}
+
+je_daimyo_aid = { #아이즈
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		any_scope_state = {
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 5
+			}
+		}
+		army_size > 15
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.21 }
+	}
+
+	timeout = 6400
+
+}
+
+je_daimyo_jap = { #쇼군
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+				any_scope_building = {
+					is_building_type = building_coal_mine
+					level >= 4
+					occupancy >= 0.9
+				}
+	}
+
+	on_complete = {
+		trigger_event = { id = before_kurofune_je.22 }
+	}
+
+	timeout = 6400
+
+}
+
+
+je_meiji_formation = { #보신전쟁
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	complete = {
+		owns_entire_state_region = STATE_KANTO
+		NOT = { exists = c:JAP}
+	}
+
+	on_complete = {
+		trigger_event = { id = boshin_war.6 }
+	}
+
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
+je_bakufu_formation = { #보신전쟁
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	complete = {
+		NOT = { exists = c:NIP}
+	}
+
+	on_complete = {
+		trigger_event = { id = boshin_war.7 }
+	}
+
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
