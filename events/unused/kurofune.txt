@@ -1,0 +1,915 @@
+namespace = kurofune
+
+# Perry expedition
+kurofune.10 = {
+	type = country_event
+	placement = root
+	title = kurofune.10.t
+	desc = kurofune.10.d
+	flavor = kurofune.10.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		# triggered by journal entry
+	}
+	immediate = {
+	}
+
+	option = { # Not fight. Maybe will add fight option but it seems meaningless
+		name = kurofune.10.a						
+        default_option = yes
+
+        every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			activate_law = law_type:law_mercantilism
+			set_strategy = ai_strategy_industrial_expansion
+			set_strategy = ai_strategy_progressive_agenda
+			set_strategy = ai_strategy_territorial_expansion
+			add_modifier = {
+				name = japan_society_tech_modifier
+				months = 60
+			}
+		}
+		
+		set_strategy = ai_strategy_industrial_expansion
+		set_strategy = ai_strategy_progressive_agenda
+		set_strategy = ai_strategy_territorial_expansion
+        activate_law = law_type:law_mercantilism
+    	add_modifier = {
+			name = japan_society_tech_modifier
+			months = 60
+		}
+
+        c:NIP = {add_journal_entry = {type = je_kurofune2} }
+	}
+}
+
+kurofune.20 = {
+	type = country_event
+	placement = root
+	title = kurofune.20.t
+	desc = kurofune.20.d
+	flavor = kurofune.20.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { # Does not allow treaty
+		name = kurofune.20.a						
+        default_option = yes
+        c:JAP = { 
+
+        	activate_law = law_type:law_free_trade
+        	every_subject_or_below = {
+				limit = {is_subject_type = subject_type_daimyo}
+				activate_law = law_type:law_free_trade
+			} 
+       			trigger_event = { id = kurofune.30} 
+        }
+
+
+        ai_chance = {base = 9}
+	}
+
+	option = { # Allow it
+		name = kurofune.20.b						
+        c:JAP = {
+        	activate_law = law_type:law_free_trade
+        	every_subject_or_below = {
+				limit = {is_subject_type = subject_type_daimyo}
+				activate_law = law_type:law_free_trade
+			} 
+        		trigger_event = { id = kurofune.31} }
+
+        ig:ig_landowners = {
+	        add_modifier = {
+	            name = satisfied_bakufu
+	            months = 60
+	        }
+		}
+		ai_chance = {base = 1}
+	}
+}
+
+kurofune.30 = {
+	type = country_event
+	placement = root
+	title = kurofune.30.t
+	desc = kurofune.30.d
+	flavor = kurofune.30.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+		every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			change_relations = {
+				country = c:JAP
+				value = -30
+			}
+		}
+	}
+	option = { # Ansei purge
+		name = kurofune.30.a						
+        default_option = yes
+        c:JAP = {
+        	add_journal_entry = {type = je_sakurada} 
+
+        		ig:ig_landowners = {
+	       			add_modifier = {
+	            		name = ansei_purge
+	            		months = 12
+	       			}
+				}
+       		}
+
+        ai_chance = {base = 9}
+
+	}
+
+	option = { # do nothing
+		name = kurofune.30.b						
+
+        c:JAP = {
+        	add_journal_entry = {type = je_sakurada}
+        }
+
+        ig:ig_landowners = {
+	        add_modifier = {
+	            name = satisfied_bakufu
+	            months = 60
+	        }
+		}
+
+		ai_chance = {base = 1}
+	}
+}
+
+kurofune.31 = {
+	type = country_event
+	placement = root
+	title = kurofune.31.t
+	desc = kurofune.31.d
+	flavor = kurofune.31.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+
+	}
+	option = { # Ansei purge
+		name = kurofune.31.a						
+        default_option = yes
+        c:JAP = {
+        	add_journal_entry = {type = je_sakurada}
+
+       		ig:ig_landowners = {
+	        	add_modifier = {
+	            	name = ansei_purge
+	            	months = 12
+	        		}
+				}
+        	}
+        ai_chance = {base = 5}
+
+	}
+
+	option = { # do nothing
+		name = kurofune.31.b						
+
+        ig:ig_landowners = {
+	        add_modifier = {
+	            name = satisfied_bakufu
+	            months = 60
+	        }
+		}
+
+		c:JAP = {
+        	add_journal_entry = {type = je_sakurada}
+        }
+
+		ai_chance = {base = 5}
+	}
+}
+
+kurofune.40 = {
+	type = country_event
+	placement = root
+	title = kurofune.40.t
+	desc = kurofune.40.d
+	flavor = kurofune.40.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+		every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			change_relations = {
+				country = c:JAP
+				value = -30
+			}
+		}	
+	}
+
+	option = { # Sakurada
+		name = kurofune.40.a						
+        default_option = yes
+        c:JAP = {
+       		ig:ig_landowners = {
+	        	add_modifier = {
+	            	name = sakurada
+	            	months = 12
+	        		}
+				}
+        	}
+
+	}
+}
+
+#Annex to Bakufu
+kurofune.41 = {
+	type = country_event
+	placement = root
+	title = kurofune.41.t
+	desc = kurofune.41.d
+	flavor = kurofune.41.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	option = { 
+		name = kurofune.41.a						
+        default_option = yes
+	}
+}
+
+#Annex to Emperor
+kurofune.42 = {
+	type = country_event
+	placement = root
+	title = kurofune.42.t
+	desc = kurofune.42.d
+	flavor = kurofune.42.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	option = { 
+		name = kurofune.42.a						
+        default_option = yes
+	}
+}
+
+kurofune.43 = {
+	type = country_event
+	placement = root
+	title = kurofune.43.t
+	desc = kurofune.43.d
+	flavor = kurofune.43.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { 
+		name = kurofune.43.a						
+        c:JAP = { annex = root }
+	}
+
+	option = { 
+		name = kurofune.43.b
+		default_option = yes
+		trigger = {
+			is_player = yes
+		}
+		annex = c:JAP
+		change_tag = JAP
+	}
+}
+
+kurofune.44 = {
+	type = country_event
+	placement = root
+	title = kurofune.44.t
+	desc = kurofune.44.d
+	flavor = kurofune.44.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { 
+		name = kurofune.44.a						
+        c:NIP = { annex = root }
+	}
+
+	option = { 
+		name = kurofune.44.b
+        default_option = yes
+		trigger = {
+			is_player = yes
+		}
+		annex = c:NIP
+		change_tag = NIP
+	}
+}
+
+
+kurofune.45 = {
+	type = country_event
+	placement = root
+	title = kurofune.45.t
+	desc = kurofune.45.d
+	flavor = kurofune.45.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { #to denno
+		name = kurofune.45.a
+		change_relations = {
+			country = c:NIP
+			value = 10
+		}
+		change_relations = {
+			country = c:JAP
+			value = -10
+		}
+		set_variable = {name = todenno}
+		ai_chance = {base = 0}
+	}
+
+	option = { #to bakufu
+		name = kurofune.45.b
+		change_relations = {
+			country = c:NIP
+			value = -10
+		}
+		change_relations = {
+			country = c:JAP
+			value = 10
+		}
+		set_variable = {name = tobakufu}
+		ai_chance = {base = 0}
+	}
+	option = { #nothing
+		name = kurofune.45.c
+		default_option = yes
+		ai_chance = {base = 10}
+	}
+}
+
+
+
+kurofune.50 = {
+	type = country_event
+	placement = root
+	title = kurofune.50.t
+	desc = kurofune.50.d
+	flavor = kurofune.50.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {	
+		every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			change_relations = {
+				country = c:JAP
+				value = -30
+			}
+		}	
+	}
+
+	option = { # Power to the emperor, really?
+		name = kurofune.50.a						
+        default_option = yes
+        c:JAP = {
+        		trigger_event = { id = kurofune.51 days = 90 }
+       		}
+        ai_chance = {base = 99}
+
+	}
+
+	option = { # Power to the emperor, really
+		name = kurofune.50.b						
+        
+        trigger_event = { id = kurofune.52 days = 90 }
+
+        ai_chance = {base = 1}
+	}
+}
+
+kurofune.51 = {
+	type = country_event
+	placement = root
+	title = kurofune.51.t
+	desc = kurofune.51.d
+	flavor = kurofune.51.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+	}
+
+
+	immediate = {
+		every_subject_or_below = {
+			limit = {is_subject_type = subject_type_daimyo}
+			make_independent = yes
+		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+	}
+	option = { # Japan unification
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+                              
+		name = kurofune.51.a						
+        default_option = yes
+		create_diplomatic_play = {
+			type = dp_annex_war
+			target_country = c:NIP
+
+			add_war_goal = {
+				holder = c:NIP
+				type = annex_country
+				target_country = c:JAP
+			}
+		}
+		change_infamy = -100
+	}
+}
+
+
+
+kurofune.52 = {
+	type = country_event
+	placement = root
+	title = kurofune.52.t
+	desc = kurofune.52.d
+	flavor = kurofune.52.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { # Japan unification
+		name = kurofune.52.a						
+        default_option = yes
+
+        c:NIP = {
+ 			annex = root
+ 		}
+		
+	}
+}
+
+kurofune.53 = {
+	type = country_event
+	placement = root
+	title = kurofune.51.t
+	desc = kurofune.51.d
+	flavor = kurofune.51.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+	}
+
+	immediate = {
+		c:JAP = {		
+			every_subject_or_below = {
+				limit = {is_subject_type = subject_type_daimyo}
+				make_independent = yes
+			}
+		}
+		every_state_region = {
+			limit = { region = sr:region_japan }
+			add_claim = c:JAP
+			add_claim = c:NIP
+		}
+	}
+	option = { # Japan unification
+		name = kurofune.51.a						
+        default_option = yes
+		set_global_variable = boshin_war
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+
+		create_diplomatic_play = {
+			type = dp_annex_war
+			target_country = c:JAP
+
+			add_war_goal = {
+				holder = c:JAP
+				type = annex_country
+				target_country = c:NIP
+			}
+		}
+		change_infamy = -100
+	}
+}
+
+kurofune.54 = {
+	type = country_event
+	placement = root
+	title = kurofune.54.t
+	desc = kurofune.54.d
+	flavor = kurofune.54.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+		has_global_variable = boshin_war
+		is_at_war = no
+		sr:region_japan = { has_diplomatic_play =no }
+	}
+
+
+	immediate = {
+	}
+	option = { # Japan unification
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+                              
+		name = kurofune.51.a						
+        default_option = yes
+		create_diplomatic_play = {
+			type = dp_annex_war
+			target_country = c:NIP
+
+			add_war_goal = {
+				holder = c:NIP
+				type = annex_country
+				target_country = c:JAP
+			}
+		}
+		change_infamy = -100
+	}
+}
+
+kurofune.55 = {
+	type = country_event
+	placement = root
+	title = kurofune.54.t
+	desc = kurofune.54.d
+	flavor = kurofune.54.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		exists = c:JAP
+		exists = c:NIP
+		has_global_variable = boshin_war
+		is_at_war = no
+		sr:region_japan = { has_diplomatic_play =no }
+	}
+
+	immediate = {
+	}
+	option = { # Japan unification
+		name = kurofune.51.a						
+        default_option = yes
+		set_global_variable = boshin_war
+		c:KOR = {
+			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
+		}
+
+		create_diplomatic_play = {
+			type = dp_annex_war
+			target_country = c:JAP
+
+			add_war_goal = {
+				holder = c:JAP
+				type = annex_country
+				target_country = c:NIP
+			}
+		}
+		change_infamy = -100
+	}
+}
+
+
+
+kurofune.100 = {
+	type = country_event
+	placement = root
+	title = kurofune.100.t
+	desc = kurofune.100.d
+	flavor = kurofune.100.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+		set_global_variable = kju_tenwin
+	}
+	option = { # Japan unification by the Emperor
+		name = kurofune.100.a						
+        default_option = yes
+        if = { limit = {exists = c:YON} annex = c:YON}
+ 		if = { limit = {exists = c:TOS} annex = c:TOS}
+ 		if = { limit = {exists = c:SAT} annex = c:SAT}
+ 		if = { limit = {exists = c:CHO} annex = c:CHO}
+ 		if = { limit = {exists = c:JAP} annex = c:JAP}
+ 		if = { limit = {exists = c:KAG} annex = c:KAG}
+ 		if = { limit = {exists = c:SEN} annex = c:SEN}
+ 		if = { limit = {exists = c:GIS} annex = c:GIS}
+ 		if = { limit = {exists = c:ODA} annex = c:ODA}
+ 		change_tag = JAP
+ 		trigger_event = { id = meiji.1 days=10 }
+	}
+	
+}
+
+kurofune.101 = {
+	type = country_event
+	placement = root
+	title = kurofune.101.t
+	desc = kurofune.101.d
+	flavor = kurofune.101.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { # Japan unification by Bakufu
+		name = kurofune.101.a						
+        default_option = yes
+    	if = { limit = {exists = c:YON} annex = c:YON}
+ 		if = { limit = {exists = c:TOS} annex = c:TOS}
+ 		if = { limit = {exists = c:SAT} annex = c:SAT}
+ 		if = { limit = {exists = c:CHO} annex = c:CHO}
+ 		if = { limit = {exists = c:NIP} annex = c:NIP}
+ 		if = { limit = {exists = c:KAG} annex = c:KAG}
+ 		if = { limit = {exists = c:SEN} annex = c:SEN}
+ 		if = { limit = {exists = c:GIS} annex = c:GIS}
+ 		if = { limit = {exists = c:ODA} annex = c:ODA}
+ 		trigger_event = { id = meiji.1 days=10 }
+	}
+}
+
+
+kurofune.102 = {
+	type = country_event
+	placement = root
+	title = kurofune.102.t
+	desc = kurofune.102.d
+	flavor = kurofune.102.f
+
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = root.ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+	option = { # Japan unification by foreign
+		name = kurofune.102.a						
+        default_option = yes
+    	if = { limit = {exists = c:YON} annex = c:YON}
+ 		if = { limit = {exists = c:TOS} annex = c:TOS}
+ 		if = { limit = {exists = c:SAT} annex = c:SAT}
+ 		if = { limit = {exists = c:CHO} annex = c:CHO}
+ 		if = { limit = {exists = c:NIP} annex = c:NIP}
+ 		if = { limit = {exists = c:KAG} annex = c:KAG}
+ 		if = { limit = {exists = c:SEN} annex = c:SEN}
+ 		if = { limit = {exists = c:GIS} annex = c:GIS}
+ 		if = { limit = {exists = c:ODA} annex = c:ODA}
+ 		change_tag = NIP
+	}
+}

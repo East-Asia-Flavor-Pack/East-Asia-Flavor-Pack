@@ -1,0 +1,853 @@
+namespace = before_kurofune_je
+
+before_kurofune_je.1 = { #대기근의 절정
+  type = country_event
+	event_image = {
+		video = "gfx/event_pictures/asia_dead_cattle_poor_harvest.bk2"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.1.t
+	desc = before_kurofune_je.1.d
+	flavor = before_kurofune_je.1.f
+
+    trigger = {
+        NOT = { has_variable = bkj1 }
+    }
+
+    immediate = {
+        random_scope_state = {
+			limit = {
+				any_scope_building = {
+					is_plantation_building = yes
+				}
+			}
+			save_scope_as = crop_fail_state
+			random_scope_building = {
+				limit = {
+					is_plantation_building = yes
+				}
+				save_scope_as = crop_failure_building
+			}
+		}
+        set_variable = bkj1
+        ai_chance = {
+            base = 50
+        }
+    }
+ 
+    option = { #해결 노력
+        name = before_kurofune_je.1.a
+        default_option = yes
+        add_modifier = {
+			name = modifier_crop_failure_relief
+			multiplier = money_amount_multiplier_small
+			months = short_modifier_time
+		}
+		scope:crop_fail_state = {
+			add_modifier = {
+				name = modifier_crop_failure
+				months = normal_modifier_time
+			}
+			add_modifier = {
+				name = modifier_crop_failure_relief_effect
+				months = normal_modifier_time
+			}
+            ai_chance = {
+            base = 50
+        }
+		}
+    }
+
+    option = { #해결 포기
+        name = before_kurofune_je.1.b
+        scope:crop_fail_state = {
+			add_modifier = {
+				name = modifier_crop_failure
+				months = normal_modifier_time
+			}
+		}
+		custom_tooltip = natural_disaster_variable_tt
+		hidden_effect = {
+			random_list = {
+				50 = {
+					random_scope_state = {
+						limit = {
+							is_incorporated = yes
+						}
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				50 = {
+				}
+			}
+		}
+    }
+}
+
+before_kurofune_je.2 = { #카모 봉기
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.2.t
+	desc = before_kurofune_je.2.d
+	flavor = before_kurofune_je.2.f
+
+    trigger = {
+          NOT = { has_variable = bkj2 }
+    }
+
+    immediate = {
+         set_variable = bkj2
+    }
+ 
+    option = { #진압한다
+        name = before_kurofune_je.2.a
+        default_option = yes
+        add_modifier = {
+            name = bkj_2_md1
+            months = 24
+        }
+        ai_chance = {
+            base = 70
+        }
+    }
+
+    option = { #의견을 들어본다
+        name = before_kurofune_je.2.b
+        add_modifier = {
+            name = bkj_2_md2
+            months = 24
+        }
+        ai_chance = {
+            base = 30
+        }
+    }
+}
+
+before_kurofune_je.3 = { #오시오헤이하치로의 제안
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.3.t
+	desc = before_kurofune_je.3.d
+	flavor = before_kurofune_je.3.f
+
+    trigger = {
+          NOT = { has_variable = bkj3 }
+    }
+
+    immediate = {
+         set_variable = bkj3
+    }
+ 
+    option = { #오시오의 제안을 무시한다
+        name = before_kurofune_je.3.a
+        default_option = yes
+        trigger_event = { id = before_kurofune.1 days = 10} 
+        #오시오헤이하치로의 난 발생
+        ai_chance = {
+            base = 100
+        }
+    }
+
+    option = { #오시오의 제안을 수락한다
+        name = before_kurofune_je.3.b
+        add_modifier = {
+            name = bkj_3
+            months = 24
+        }
+        ai_chance = {
+            base = 0
+        }
+    }
+}
+
+before_kurofune_je.5 = { #이쿠타 요로즈의 난
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.5.t
+	desc = before_kurofune_je.5.d
+	flavor = before_kurofune_je.5.f
+
+    trigger = {
+        has_global_variable = oshio_no_ran
+        NOT = { has_variable = bkj5 }
+    }
+
+    immediate = {
+         set_variable = bkj5
+    }
+ 
+    option = { #진압한다
+        name = before_kurofune_je.5.a
+        default_option = yes
+        add_modifier = {
+            name = bkj_2_md1
+            months = 36
+        }
+    }
+}
+
+before_kurofune_je.6 = { #모리슨 호 사건
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.6.t
+	desc = before_kurofune_je.6.d
+	flavor = before_kurofune_je.6.f
+
+    trigger = {
+        NOT = { has_variable = bkj6 }
+    }
+
+    immediate = {
+         set_variable = bkj6
+    }
+ 
+    option = { #포격한다
+        name = before_kurofune_je.6.a
+        default_option = yes
+        ROOT = {
+            change_relations = {
+					country = c:USA
+					value = -30
+			}
+        }
+        change_global_variable = {
+            name = japan_start_var
+            add = 1
+        }
+        hidden_effect = {
+            any_country = {
+                limit = {
+                    NOT = { c:SAT = ROOT }
+                    NOT = { c:JAP = ROOT }
+                    country_has_primary_culture = c:japanese
+                    }
+                trigger_event = { id = before_kurofune.301 days = 20 }
+                }
+            c:JAP = {
+                trigger_event = { id = before_kurofune.302 days = 20 }
+            }
+            }
+            ai_chance = {
+            base = 100
+        }
+        }
+
+    option = { #포격하지 않는다
+        name = before_kurofune_je.6.b
+        ai_chance = {
+            base = 0
+        }
+    }
+}
+
+before_kurofune_je.7 = { #이에요시 양위
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.7.t
+	desc = before_kurofune_je.7.d
+	flavor = before_kurofune_je.7.f
+
+    trigger = {
+        NOT = { has_variable = bkj7 }
+    }
+
+    immediate = {
+         set_variable = bkj7
+    }
+
+    option = { #양위
+        name = before_kurofune_je.7.a
+        default_option = yes
+         ruler = {
+			kill_character = yes
+		}
+        any_country = {
+            limit = { 
+                country_has_primary_culture = cu:japanese
+                NOT = { c:JAP = ROOT }
+                }
+            trigger_event = { id = before_kurofune.6 days = 5 }
+        }
+        set_variable = ieyoshi_var
+        ai_chance = {
+			base = 9
+		}
+    }
+
+    option = { #양위 안함
+        name = before_kurofune_je.7.b
+        default_option = yes
+        set_variable = ienari_var
+        ai_chance = {
+			base = 1
+		}
+    }
+}
+
+before_kurofune_je.8 = { #텐포 금화
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.8.t
+	desc = before_kurofune_je.8.d
+	flavor = before_kurofune_je.8.f
+
+    trigger = {
+        NOT = { has_variable = bkj8 }
+    }
+
+    immediate = {
+         set_variable = bkj8
+    }
+
+    option = { #금화발행
+        name = before_kurofune_je.8.a
+        default_option = yes
+        add_modifier = {
+            name = bkj_8
+            months = 60
+        }
+    }
+}
+
+before_kurofune_je.9 = { #만사의 옥
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.9.t
+	desc = before_kurofune_je.9.d
+	flavor = before_kurofune_je.9.f
+
+    trigger = {
+        NOT = { has_variable = bkj9 }
+    }
+
+    immediate = {
+         set_variable = bkj9
+    }
+
+    option = { #만사의 옥 발동
+        name = before_kurofune_je.9.a
+        default_option = yes
+        trigger_event = { id = before_kurofune.4 days = 10}
+        ai_chance = {
+            base = 100
+        }
+    }
+
+    option = { #넘어감
+        name = before_kurofune_je.9.b
+        ai_chance = {
+            base = 0
+        }
+    }
+}
+
+before_kurofune_je.10 = { #네덜란드 왕의 친서
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.10.t
+	desc = before_kurofune_je.10.d
+	flavor = before_kurofune_je.10.f
+
+    trigger = {
+        NOT = { has_variable = bkj10 }
+    }
+
+    immediate = {
+        set_variable = bkj10
+    }
+
+    option = { #네덜란드 친서 수락
+        name = before_kurofune_je.10.a
+        add_modifier = {
+            name = bkj_10
+            months = 36
+        }
+        ROOT = {
+            change_relations = {
+					country = c:NED
+					value = 30
+			}
+        }
+        ai_chance = {
+            base = 50
+        }
+    }
+
+    option = { #네덜란드 친서 거절
+        name = before_kurofune_je.10.b
+        default_option = yes
+        ROOT = {
+            change_relations = {
+					country = c:NED
+					value = -30
+			}
+        }
+        ai_chance = {
+            base = 50
+        }
+    }
+}
+
+before_kurofune_je.11 = { #고매이 덴노 즉위
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.11.t
+	desc = before_kurofune_je.11.d
+	flavor = before_kurofune_je.11.f
+
+    trigger = {
+        NOT = { has_variable = bkj11 }
+    }
+
+    immediate = {
+        set_variable = bkj11
+        ruler = {
+            kill_character = yes
+        }
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.11.a
+        hidden_effect = {
+            any_country = {
+            limit = { 
+                country_has_primary_culture = cu:japanese
+                NOT = { c:NIP = ROOT }
+                }
+            trigger_event = { id = before_kurofune.7 days = 5 } 
+            }
+        }
+        
+        trigger_event = { id = before_kurofune.8 years = 7 } #메이지 탄생
+    }
+}
+
+before_kurofune_je.12 = { #젠코지 대지진
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.12.t
+	desc = before_kurofune_je.12.d
+	flavor = before_kurofune_je.12.f
+
+    trigger = {
+        NOT = { has_variable = bkj12 }
+    }
+
+    immediate = {
+        set_variable = bkj12
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.12.a
+        c:JAP = {
+            trigger_event = { id = before_kurofune.9 days = 6 }
+        }
+    }
+}
+
+before_kurofune_je.13 = { #페리 내항에 대한 정보
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.13.t
+	desc = before_kurofune_je.13.d
+	flavor = before_kurofune_je.13.f
+
+    trigger = {
+        NOT = { has_variable = bkj13 }
+    }
+
+    immediate = {
+        set_variable = bkj13
+    }
+
+    option = {#페리 내항 대비
+        default_option = yes
+        name = before_kurofune_je.13.a
+        add_modifier = { 
+            name = bkj_14
+            months = 14
+        }
+        ai_chance = {
+            base = 60
+        }
+    }
+
+    option = {#정보 무시
+        name = before_kurofune_je.13.b
+    }
+    ai_chance = {
+            base = 30
+        }
+}
+
+before_kurofune_je.14 = { #오다와라 지진
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.14.t
+	desc = before_kurofune_je.14.d
+	flavor = before_kurofune_je.14.f
+
+    trigger = {
+        NOT = { has_variable = bkj14 }
+    }
+
+    immediate = {
+        set_variable = bkj14
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.14.a
+        c:JAP = {
+            trigger_event = { id = before_kurofune.10 days = 6 }
+        }
+    }
+}
+
+before_kurofune_je.15 = { #류큐 내항
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.15.t
+	desc = before_kurofune_je.15.d
+	flavor = before_kurofune_je.15.f
+
+    trigger = {
+        NOT = { has_variable = bkj15 }
+    }
+
+    immediate = {
+        set_variable = bkj15
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.15.a
+    }
+}
+
+before_kurofune_je.16 = { #다이묘 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.16.t
+	desc = before_kurofune_je.16.d
+	flavor = before_kurofune_je.16.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.16.a
+    }
+}
+
+before_kurofune_je.17 = { #사츠마 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.17.t
+	desc = before_kurofune_je.17.d
+	flavor = before_kurofune_je.17.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.17.a
+    }
+}
+
+before_kurofune_je.18 = { #쵸슈 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.18.t
+	desc = before_kurofune_je.18.d
+	flavor = before_kurofune_je.18.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.18.a
+    }
+}
+
+before_kurofune_je.19 = { #토사 저널완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.19.t
+	desc = before_kurofune_je.19.d
+	flavor = before_kurofune_je.19.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.19.a
+    }
+}
+
+before_kurofune_je.20 = { #천황 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.20.t
+	desc = before_kurofune_je.20.d
+	flavor = before_kurofune_je.20.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.20.a
+    }
+}
+
+before_kurofune_je.21 = { #아이즈 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.21.t
+	desc = before_kurofune_je.21.d
+	flavor = before_kurofune_je.21.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.21.a
+    }
+}
+
+before_kurofune_je.22 = { #쇼군 저널 완료
+    type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/japan/ikki.png"
+	}
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    duration = 3
+    
+    title = before_kurofune_je.22.t
+	desc = before_kurofune_je.22.d
+	flavor = before_kurofune_je.22.f
+
+    trigger = {
+    }
+
+    immediate = {
+    }
+
+    option = {
+        default_option = yes
+        name = before_kurofune_je.22.a
+        s:STATE_HOKKAIDO.region_state:AIN = {
+				set_state_owner = c:JAP
+			}
+    }
+}
