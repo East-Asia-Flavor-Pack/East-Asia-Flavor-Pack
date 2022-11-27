@@ -112,8 +112,211 @@ je_taiping = {
 				add = 1
 			}
 		}
+		hidden_trigger = {
+			random_list = {
+				1 = {
+					add_journal_entry = { type = je_taiping_truce_chi_attack }
+					c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_defence } }
+				}
+				1 = {
+					add_journal_entry = { type = je_taiping_truce_chi_defence }
+					c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_attack } }
+				}
+			}
+		}
 	}
 
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping2 = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	complete = {
+		custom_tooltip = {
+			text = taiping_destroyed
+			hidden_trigger = {
+				NOT = {
+					exists = c:TPG
+				}
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = heavenly.5 days = 0 }
+	}
+	
+	fail = {
+		exists = c:TPG
+		has_truce_with = c:TPG
+	}
+
+	on_fail = {
+		hidden_trigger = {
+			random_list = {
+				1 = {
+					add_journal_entry = { type = je_taiping_truce_chi_attack }
+					c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_defence } }
+				}
+				1 = {
+					add_journal_entry = { type = je_taiping_truce_chi_defence }
+					c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_attack } }
+				}
+			}
+		}
+	}
+	
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_tpg = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	complete = {
+		custom_tooltip = {
+			text = qing_destroyed
+			hidden_trigger = {
+				NOT = {
+					exists = c:CHI
+				}
+			}
+		}
+	}
+
+	on_complete = {
+		
+	}
+	
+	fail = {
+		exists = c:CHI
+		has_truce_with = c:CHI
+	}
+
+	on_fail = {
+		add_journal_entry = { type = je_taiping_truce_tpg }
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_truce_chi_attack = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	
+	timeout = 180
+
+	on_timeout = {
+		custom_tooltip = {
+			text = taiping_truce_chi_attack
+			hidden_trigger = {
+				trigger_event = {
+					id = lia_event_rtc.12
+				}
+			}
+		}
+	}
+	
+	fail = {
+		exists = c:TPG
+		has_war_with = c:TPG
+	}
+
+	on_fail = {
+		add_journal_entry = { type = je_taiping2 }
+	}
+	
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_truce_chi_defence = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	
+	timeout = 180
+
+	on_timeout = {
+		custom_tooltip = {
+			text = taiping_truce_chi_defence
+		}
+	}
+	
+	fail = {
+		exists = c:TPG
+		has_war_with = c:TPG
+	}
+
+	on_fail = {
+		add_journal_entry = { type = je_taiping2 }
+	}
+	
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_truce_tpg_attack = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	
+	timeout = 180
+
+	on_timeout = {
+		custom_tooltip = {
+			text = taiping_truce_tpg_attack
+			hidden_trigger = {
+				trigger_event = {
+					id = lia_event_rtc.11
+				}
+			}
+		}
+	}
+	
+	fail = {
+		exists = c:CHI
+		has_war_with = c:CHI
+	}
+
+	on_fail = {
+		add_journal_entry = { type = je_taiping_tpg }
+	}
+	
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_truce_tpg_defence = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	
+	timeout = 180
+
+	on_timeout = {
+		custom_tooltip = {
+			text = taiping_truce_tpg_defence
+		}
+	}
+	
+	fail = {
+		exists = c:CHI
+		has_war_with = c:CHI
+	}
+
+	on_fail = {
+		add_journal_entry = { type = je_taiping_tpg }
+	}
+	
 	weight = 1000
 	should_be_pinned_by_default = yes
 

@@ -722,7 +722,7 @@ lia_event_rtc.11 = {	#태평천국의 북벌
 
 	duration = 1
 	
-	#is_popup = yes
+	is_popup = yes
 
 	event_image = {
 		video = "gfx/event_pictures/unspecific_devastation.bk2"
@@ -736,18 +736,117 @@ lia_event_rtc.11 = {	#태평천국의 북벌
 	trigger = {
 	}
 
-	immediate = {		
+	immediate = {
+		# 클레임 새로 박음
+		every_state_region = {	
+			limit = {
+				any_scope_state = { owner = c:TPG }
+			}
+			add_claim = c:CHI
+		}		
+		every_state_region = {
+			limit = {
+				any_scope_state = { owner = c:CHI }
+			}
+			add_claim = c:TPG
+		}
+		# 청나라 요구 설정
+		c:TPG = {
+			random_scope_state = {	
+				limit = {
+					any_neighbouring_state = { owner = c:CHI }
+				}
+				add_to_list = chi_war_goals
+			}
+		}
+		while = {
+			count = 4
+			c:TPG = {
+				random_scope_state = {
+					limit = {
+						any_neighbouring_state = { owner = c:CHI }
+						NOT = { is_in_list = chi_war_goals }
+					}
+					add_to_list = chi_war_goals
+				}
+			}
+		}
+		# 태평천국 요구 설정
+		c:CHI = {
+			random_scope_state = {	
+				limit = {
+					any_neighbouring_state = { owner = c:TPG }
+				}
+				add_to_list = tpg_war_goals
+			}
+		}
+		while = {
+			count = 4
+			c:CHI = {
+				random_scope_state = {
+					limit = {
+						any_neighbouring_state = { owner = c:TPG }
+						NOT = { is_in_list = tpg_war_goals }
+					}
+					add_to_list = tpg_war_goals
+				}
+			}
+		}
 	}
 
 	option = {
 		name = lia_event_rtc.11.a
 		default_option = yes
+		create_diplomatic_play = {
+			name = lia_rtc_tpg_return
+			target_country = c:CHI
+			type = dp_return_state
+			war = yes	#즉발전쟁
+			# 태평천국의 요구
+			while = {
+				count = 5
+				random_in_list = {
+					list = chi_war_goals
+					save_scope_as = tpg_war_goal_state
+				}
+				add_war_goal = {
+					holder = c:TPG
+					type = return_state
+					target_state = scope:tpg_war_goal_state
+				}
+				scope:chi_war_goal_state = {
+					remove_from_list = tpg_war_goals
+				}
+			}
+			# 청나라의 요구
+			while = {
+				count = 5
+				random_in_list = {
+					list = chi_war_goals
+					save_scope_as = chi_war_goal_state
+				}
+				add_war_goal = {
+					holder = c:CHI
+					type = return_state
+					target_state = scope:chi_war_goal_state
+				}
+				scope:chi_war_goal_state = {
+					remove_from_list = chi_war_goals
+				}
+			}
+		}
+		
+		ai_chance = {
+			base = 4
+		}
+	}
+	option = {
+		name = lia_event_rtc.11.b
 
 		ai_chance = {
-			base = 100
+			base = 1
 		}
 	}	
-	
 }
 
 lia_event_rtc.12 = {	#청조의 역적토벌
@@ -760,7 +859,7 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 
 	duration = 1
 	
-	#is_popup = yes
+	is_popup = yes
 
 	event_image = {
 		video = "gfx/event_pictures/unspecific_devastation.bk2"
@@ -774,15 +873,116 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 	trigger = {
 	}
 
-	immediate = {		
+	immediate = {
+		# 클레임 새로 박음
+		every_state_region = {	
+			limit = {
+				any_scope_state = { owner = c:TPG }
+			}
+			add_claim = c:CHI
+		}		
+		every_state_region = {
+			limit = {
+				any_scope_state = { owner = c:CHI }
+			}
+			add_claim = c:TPG
+		}
+		# 청나라 요구 설정
+		c:TPG = {
+			random_scope_state = {	
+				limit = {
+					any_neighbouring_state = { owner = c:CHI }
+				}
+				add_to_list = chi_war_goals
+			}
+		}
+		while = {
+			count = 4
+			c:TPG = {
+				random_scope_state = {
+					limit = {
+						any_neighbouring_state = { owner = c:CHI }
+						NOT = { is_in_list = chi_war_goals }
+					}
+					add_to_list = chi_war_goals
+				}
+			}
+		}
+		# 태평천국 요구 설정
+		c:CHI = {
+			random_scope_state = {	
+				limit = {
+					any_neighbouring_state = { owner = c:TPG }
+				}
+				add_to_list = tpg_war_goals
+			}
+		}
+		while = {
+			count = 4
+			c:CHI = {
+				random_scope_state = {
+					limit = {
+						any_neighbouring_state = { owner = c:TPG }
+						NOT = { is_in_list = tpg_war_goals }
+					}
+					add_to_list = tpg_war_goals
+				}
+			}
+		}
 	}
 
 	option = {
 		name = lia_event_rtc.12.a
 		default_option = yes
+		create_diplomatic_play = {
+			name = lia_rtc_chi_return
+			target_country = c:TPG
+			type = dp_return_state
+			war = yes	#즉발전쟁
+			# 청나라의 요구
+			while = {
+				count = 5
+				random_in_list = {
+					list = chi_war_goals
+					save_scope_as = chi_war_goal_state
+				}
+				add_war_goal = {
+					holder = c:CHI
+					type = return_state
+					target_state = scope:chi_war_goal_state
+				}
+				scope:chi_war_goal_state = {
+					remove_from_list = chi_war_goals
+				}
+			}
+			# 태평천국의 요구
+			while = {
+				count = 5
+				random_in_list = {
+					list = chi_war_goals
+					save_scope_as = tpg_war_goal_state
+				}
+				add_war_goal = {
+					holder = c:TPG
+					type = return_state
+					target_state = scope:tpg_war_goal_state
+				}
+				scope:chi_war_goal_state = {
+					remove_from_list = tpg_war_goals
+				}
+			}
+		}
+		
+		ai_chance = {
+			base = 4
+		}
+	}
+
+	option = {
+		name = lia_event_rtc.12.b
 
 		ai_chance = {
-			base = 100
+			base = 1
 		}
 	}	
 	
