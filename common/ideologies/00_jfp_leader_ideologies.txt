@@ -1,5 +1,7 @@
-ideology_scholar_paternalistic = { #사대부
-	icon = icon = "gfx/interface/icons/ideology_icons/scholar_paternalistic.dds" #바닐라에 있는데 안 쓰는 아이콘
+ideology_scholar_paternalistic_leader = { #전통적 사대부
+	icon = "gfx/interface/icons/ideology_icons/scholar_paternalistic.dds"
+	
+	character_ideology = yes
 	
 	lawgroup_governance_principles = {
 		law_monarchy = strongly_approve
@@ -22,18 +24,12 @@ ideology_scholar_paternalistic = { #사대부
 		law_appointed_bureaucrats = approve
 		law_elected_bureaucrats = disapprove
 	}
-	lawgroup_policing = {
-		law_local_police = approve
-		law_dedicated_police = neutral
-		law_militarized_police = neutral
-		law_no_police = disapprove
-	}
 	lawgroup_economic_system = {		
 		law_traditionalism = strongly_approve
 		law_agrarianism = approve
 		law_interventionism = neutral
+		law_command_economy = neutral
 		law_laissez_faire = disapprove
-		law_command_economy = strongly_disapprove
 	}
 	lawgroup_trade_policy = {		
 		law_isolationism = approve
@@ -46,6 +42,50 @@ ideology_scholar_paternalistic = { #사대부
 		law_women_own_property = neutral
 		law_women_in_the_workplace = disapprove
 		law_womens_suffrage = strongly_disapprove
+	}
+
+	possible = {
+		owner = {
+			AND = { exists = c:KOR c:KOR = THIS }
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_landowners
+				is_interest_group_type = ig_devout
+			}
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+
+	leader_weight = {
+		value = 100	
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 50
+		}
+		# 기업가, 노동조합, 또는 지식인이 권세가 되면 전통 사대부가 등장할 가능성이 낮아지고, 온건 사대부 또는 성리학 근본주의의 가능성이 더 높아짐
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						ig:ig_industrialists = { is_powerful = yes }
+						ig:ig_trade_union = { is_powerful = yes }
+						ig:ig_intelligentsia = { is_powerful = yes }
+					}
+				}
+			}
+			add = -200
+		}
 	}
 }
 
