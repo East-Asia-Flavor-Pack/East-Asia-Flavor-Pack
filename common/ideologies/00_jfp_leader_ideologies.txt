@@ -1,0 +1,638 @@
+ideology_scholar_paternalistic = { #사대부
+	icon = icon = "gfx/interface/icons/ideology_icons/scholar_paternalistic.dds" #바닐라에 있는데 안 쓰는 아이콘
+	
+	show_in_list = no
+	
+	character_ideology = yes
+	
+	lawgroup_governance_principles = {
+		law_monarchy = strongly_approve
+		law_theocracy = approve			
+		law_presidential_republic = neutral
+		law_parliamentary_republic = neutral
+		law_council_republic = strongly_disapprove
+	}
+	lawgroup_distribution_of_power = {
+		law_landed_voting = strongly_approve
+		law_autocracy = strongly_approve
+		law_oligarchy = approve
+		law_wealth_voting = neutral
+		law_census_voting = disapprove
+		law_universal_suffrage = strongly_disapprove
+		law_anarchy = strongly_disapprove
+	}
+	lawgroup_bureaucracy = {
+		law_hereditary_bureaucrats = approve
+		law_appointed_bureaucrats = approve
+		law_elected_bureaucrats = disapprove
+	}
+	lawgroup_policing = {
+		law_local_police = approve
+		law_dedicated_police = neutral
+		law_militarized_police = neutral
+		law_no_police = disapprove
+	}
+	lawgroup_economic_system = {		
+		law_traditionalism = strongly_approve
+		law_agrarianism = approve
+		law_interventionism = neutral
+		law_laissez_faire = disapprove
+		law_command_economy = strongly_disapprove
+	}
+	lawgroup_trade_policy = {		
+		law_isolationism = approve
+		law_mercantilism = neutral
+		law_protectionism = neutral
+		law_free_trade = disapprove
+	}
+	lawgroup_rights_of_women = {
+		law_no_womens_rights = strongly_approve
+		law_women_own_property = neutral
+		law_women_in_the_workplace = disapprove
+		law_womens_suffrage = strongly_disapprove
+	}
+	
+	possible = {
+		owner = {
+			AND = { exists = c:KOR c:KOR = THIS }
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_landowners
+				is_interest_group_type = ig_devout
+			}
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 100	
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 50
+		}
+		# 기업가, 노동조합, 또는 지식인이 권세가 되면 일반 사대부가 등장할 가능성이 낮아지고, 온건 사대부 또는 성리학 근본주의의 가능성이 더 높아짐
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						ig:ig_industrialists = { is_powerful = yes }
+						ig:ig_trade_union = { is_powerful = yes }
+						ig:ig_intelligentsia = { is_powerful = yes }
+					}
+				}
+			}
+			add = -200
+		}
+	}
+}
+
+
+ideology_moderate_scholar_paternalistic = {
+	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_traditionalist.dds"
+	
+	character_ideology = yes
+	
+	lawgroup_governance_principles = {
+		law_monarchy = approve
+		law_presidential_republic = neutral
+		law_theocracy = neutral			
+		law_parliamentary_republic = neutral
+		law_council_republic = strongly_disapprove
+	}
+	
+	lawgroup_distribution_of_power = {
+		law_oligarchy = approve
+		law_landed_voting = approve
+		law_wealth_voting = approve
+		law_autocracy = neutral
+		law_census_voting = neutral
+		law_universal_suffrage = strongly_disapprove
+		law_anarchy = strongly_disapprove
+	}
+	
+	lawgroup_bureaucracy = {
+		law_appointed_bureaucrats = approve
+		law_elected_bureaucrats = disapprove
+		law_hereditary_bureaucrats = disapprove
+	}
+
+	lawgroup_policing = {
+		law_local_police = approve
+		law_dedicated_police = approve
+		law_militarized_police = neutral
+		law_no_police = disapprove
+	}
+	
+	lawgroup_rights_of_women = {
+		law_no_womens_rights = approve
+		law_women_own_property = approve
+		law_women_in_the_workplace = neutral
+		law_womens_suffrage = disapprove
+	}
+	
+	possible = {
+		owner = {
+			OR = {
+				AND = { exists = c:KOR c:KOR = THIS }
+			}
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_landowners
+				is_interest_group_type = ig_devout
+			}
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 100
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 50
+		}
+		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval >= 5
+				}
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval >= 10
+				}
+			}
+			add = 50
+		}
+	}
+}
+
+ideology_reformed_confucian = {
+	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_atheist.dds"
+	
+	character_ideology = yes
+	
+	lawgroup_church_and_state = {
+		law_state_religion = neutral
+		law_freedom_of_conscience = approve
+		law_total_separation = disapprove
+	}
+	
+	lawgroup_governance_principles = {
+		law_monarchy = approve	
+		law_theocracy = neutral
+		law_presidential_republic = neutral
+		law_parliamentary_republic = neutral
+		law_council_republic = strongly_disapprove
+	}
+	
+	lawgroup_distribution_of_power = {
+		law_census_voting = strongly_approve
+		law_landed_voting = approve
+		law_wealth_voting = approve
+		law_oligarchy = neutral
+		law_autocracy = disapprove
+		law_universal_suffrage = disapprove
+		law_anarchy = strongly_disapprove
+	}
+	
+	lawgroup_education_system = {
+		law_religious_schools = approve
+		law_public_schools = approve
+		law_no_schools = neutral
+		law_private_schools = disapprove		
+	}
+	
+	lawgroup_labor_rights = {
+		law_serfdom = disapprove
+		law_serfdom_banned = neutral
+		law_regulatory_bodies = neutral
+		law_worker_protections = neutral
+	}
+	
+	lawgroup_rights_of_women = {
+		law_no_womens_rights = disapprove
+		law_women_own_property = approve
+		law_women_in_the_workplace = approve
+		law_womens_suffrage = neutral
+	}
+	
+	possible = {
+		# 평등주의 해금해야 개혁 유교가 뜨기 시작
+		owner = {
+			has_technology_researched = egalitarianism
+			OR = {
+				AND = { exists = c:KOR c:KOR = THIS }
+			}
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_rural_folk
+				is_interest_group_type = ig_landowners
+				is_interest_group_type = ig_devout
+				is_interest_group_type = ig_trade_unions
+				is_interest_group_type = ig_petty_bourgeoisie
+				is_interest_group_type = ig_industrialists
+				is_interest_group_type = ig:ig_intelligentsia
+			}
+		}
+		scope:interest_group = {
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 100
+		# 성리학자, 양반 지주의 경우 기업가, 노동조합, 또는 지식인이 권세가 되어야만 개혁 유교가 등장할 가능성이 있음  
+		if = {
+			limit = {
+				scope:interest_group = {
+					OR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+				}
+				owner = {
+					NOR = {
+						owner.ig:ig_intelligentsia = { is_powerful = yes }
+						owner.ig:ig_industrialists = { is_powerful = yes }
+						owner.ig:ig_trade_unions = { is_powerful = yes }
+					}
+				}
+			}
+			add = -200
+		}
+		# 지식인은 가능성이 더 높음
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig:ig_intelligentsia
+				}
+			}
+			add = 100
+		}
+		# very unlikely for trade unions after socialism is researched
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_trade_unions
+				}
+				owner = {
+					has_technology_researched = socialism
+				}
+			}
+			add = -200
+		}
+	}
+}
+
+ideology_confucious_fundamentalism = {
+	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_republican.dds"
+	
+	character_ideology = yes
+	
+	# 개빡센 유교 탈레반 법 선호도
+	lawgroup_church_and_state = {
+		law_state_religion = strongly_approve
+		law_freedom_of_conscience = disapprove
+		law_total_separation = strongly_disapprove
+	}
+	
+	lawgroup_governance_principles = {
+		law_monarchy = strongly_approve	
+		law_theocracy = approve
+		law_presidential_republic = disapprove
+		law_parliamentary_republic = disapprove
+		law_council_republic = strongly_disapprove
+	}
+
+	lawgroup_bureaucracy = {
+		law_appointed_bureaucrats = approve
+		law_elected_bureaucrats = disapprove
+		law_hereditary_bureaucrats = approve
+	}
+	
+	lawgroup_labor_rights = {
+		law_serfdom = approve
+		law_serfdom_banned = neutral
+		law_regulatory_bodies = neutral
+		law_worker_protections = disapprove
+	}
+	
+	lawgroup_trade_policy = {		
+		law_isolationism = strongly_approve
+		law_mercantilism = disapprove
+		law_protectionism = neutral
+		law_free_trade = strongly_disapprove
+	}
+	
+	lawgroup_rights_of_women = {
+		law_no_womens_rights = strongly_approve
+		law_women_own_property = disapprove
+		law_women_in_the_workplace = strongly_disapprove
+		law_womens_suffrage = strongly_disapprove
+	}
+	
+	possible = {
+		owner = {
+			OR = {
+				AND = { exists = c:KOR c:KOR = THIS }
+			}
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_landowners
+				is_interest_group_type = ig_devout
+			}
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 100
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 50
+		}
+		# 주로 빡친 양반 지주랑 빡친 성리학자들이 성리학 근본주의자가 됨.
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval < -5
+				}
+			}
+			add = 100
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval < -10
+				}
+			}
+			add = 50
+		}
+	}
+}
+
+ideology_enlightenment = {
+	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_radical.dds"
+	
+	character_ideology = yes
+	
+		
+	lawgroup_governance_principles = {
+		law_monarchy = neutral
+		law_theocracy = disapprove
+		law_presidential_republic = approve
+		law_parliamentary_republic = approve
+		law_council_republic = neutral
+	}
+	
+	lawgroup_distribution_of_power = {
+		law_universal_suffrage = strongly_approve
+		law_census_voting = strongly_approve
+		law_wealth_voting = approve
+		law_landed_voting = neutral
+		law_oligarchy = disapprove
+		law_autocracy = disapprove
+		law_anarchy = strongly_disapprove
+	}	
+	
+	lawgroup_economic_system = {	
+		law_laissez_faire = approve
+		law_interventionism = approve
+		law_command_economy = neutral
+		law_traditionalism = disapprove	
+		law_agrarianism = strongly_disapprove
+	}
+	
+	lawgroup_trade_policy = {		
+		law_free_trade = approve
+		law_mercantilism = neutral
+		law_protectionism = approve
+		law_isolationism = strongly_disapprove
+	}
+	
+	lawgroup_labor_rights = {
+		law_serfdom = strongly_disapprove
+		law_serfdom_banned = approve
+		law_regulatory_bodies = approve
+		law_worker_protections = neutral
+	}
+	
+	lawgroup_free_speech = {
+		law_protected_speech = strongly_approve
+		law_right_of_assembly = approve
+		law_censorship = disapprove
+		law_outlawed_dissent = strongly_disapprove
+	}
+	
+	lawgroup_internal_security = {
+		law_guaranteed_liberties = approve
+		law_no_home_affairs = neutral
+		law_national_guard = neutral
+		law_secret_police = disapprove
+	}
+	
+	possible = {
+		owner = {
+			has_technology_researched = egalitarianism
+			OR = {
+				AND = { exists = c:KOR c:KOR = THIS }
+			}
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_intelligentsia
+				is_interest_group_type = ig_trade_unions
+				is_interest_group_type = ig_petty_bourgeoisie
+				is_interest_group_type = ig_industrialists
+			}
+		}
+		scope:interest_group = {
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 100
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_intelligentsia
+				}
+			}
+			add = 50
+		}
+		# 국가가 퇴행적인 상태일수록 개화파가 되기 쉬움
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						has_law = law_type:law_secret_police
+						has_law = law_type:law_outlawed_dissent
+						has_law = law_type:law_autocracy
+						has_law = law_type:law_oligarchy
+						has_law = law_type:law_hereditary_bureaucrats
+						has_law = law_type:law_isolationism
+						has_law = law_type:law_traditionalism
+						has_law = law_type:law_agrarianism
+						has_law = law_type:law_censorship
+						has_law = law_type:law_outlawed_dissent
+						has_law = law_type:law_serfdom
+					}
+				}
+			}
+			add = 100
+		}
+		# 나라가 개판이면 더더욱 개화파가 되려고 함
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						has_law = law_type:law_secret_police
+						has_law = law_type:law_serfdom
+						has_law = law_type:law_outlawed_dissent
+						has_law = law_type:law_autocracy
+					}
+					any_scope_state = {
+						is_incorporated = yes
+						turmoil >= 0.25
+					}
+				}
+			}
+			add = 100
+		}
+	}
+}
+
+ideology_donghak = {
+	icon = "gfx/interface/icons/ideology_icons/ideology_leader/unused/ideology_leader_moralist.dds"
+
+	character_ideology = yes
+	
+	lawgroup_governance_principles = {
+		law_council_republic = strongly_approve
+		law_theocracy = strongly_approve	
+		law_presidential_republic = neutral
+		law_parliamentary_republic = neutral
+		law_monarchy = neutral
+	}
+
+	lawgroup_church_and_state = {
+		law_state_religion = disapprove
+		law_freedom_of_conscience = strongly_approve
+		law_total_separation = disapprove
+	}
+
+	lawgroup_bureaucracy = {
+		law_hereditary_bureaucrats = disapprove
+		law_appointed_bureaucrats = neutral
+		law_elected_bureaucrats = approve
+	}
+	
+	possible = {
+		# 평등주의 연구 후에 나라가 개판이면 동학이 들고일어날 것.
+		owner = {
+			has_technology_researched = egalitarianism
+			OR = {
+				AND = { exists = c:KOR c:KOR = THIS }
+			}
+		}
+		scope:interest_group = {
+			OR = {
+				is_interest_group_type = ig_rural_folk
+				is_interest_group_type = ig_devout
+				is_interest_group_type = ig_trade_unions
+				is_interest_group_type = ig_petty_bourgeoisie
+				is_interest_group_type = ig_armed_forces
+			}
+		}
+		scope:interest_group = {
+			NOR = {
+				has_variable = communist_ig_var
+				has_variable = chose_vanguardism
+				has_variable = chose_fascism
+				has_variable = chose_conservatism
+				has_variable = chose_ethno_nationalism
+			}
+		}
+	}
+	
+	leader_weight = {
+		value = 0
+		if = {
+			limit = {
+				scope:interest_group = {
+					OR = {
+						is_interest_group_type = ig_rural_folk
+					}
+				}
+			}
+			add = 75
+		}
+		# 나라가 개판이면 전원 주민과 성리학자들은 더더욱 동학을 하려고 함
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_rural_folk
+					is_interest_group_type = ig_devout
+				}
+				owner = {
+					any_scope_state = {
+						is_incorporated = yes
+						turmoil >= 0.25
+					}
+				}
+			}
+			add = 100
+		}
+	}
+}
