@@ -3,6 +3,7 @@ ideology_scholar_paternalistic_leader = { #전통적 사대부
 	
 	character_ideology = yes
 	
+	#유교와 대동소이하나 조금 더 강경하게, 신정제도 옹호함
 	lawgroup_governance_principles = {
 		law_monarchy = strongly_approve
 		law_theocracy = approve			
@@ -52,6 +53,10 @@ ideology_scholar_paternalistic_leader = { #전통적 사대부
 			OR = {
 				is_interest_group_type = ig_landowners
 				is_interest_group_type = ig_devout
+				is_interest_group_type = ig_rural_folk
+				is_interest_group_type = ig_petty_bourgeoisie
+				is_interest_group_type = ig_intelligentsia
+				is_interest_group_type = ig_armed_forces
 			}
 			NOR = {
 				has_variable = communist_ig_var
@@ -64,14 +69,31 @@ ideology_scholar_paternalistic_leader = { #전통적 사대부
 	}
 
 	leader_weight = {
-		value = 100	
+		value = 100
+		# 사대부는 유교 믿는 지도자만
+		if = {
+			limit = {
+				scope:character = {
+					NOT = { has_religion = confucianism }
+				}
+			}
+			add = -200
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_landowners
+				}
+			}
+			add = 50
+		}
 		if = {
 			limit = {
 				scope:interest_group = {
 					is_interest_group_type = ig_devout
 				}
 			}
-			add = 50
+			add = 100
 		}
 		# 기업가, 노동조합, 또는 지식인이 권세가 되면 전통 사대부가 등장할 가능성이 낮아지고, 온건 사대부 또는 성리학 근본주의의 가능성이 더 높아짐
 		if = {
@@ -142,6 +164,10 @@ ideology_moderate_scholar_paternalistic = {
 			OR = {
 				is_interest_group_type = ig_landowners
 				is_interest_group_type = ig_devout
+				is_interest_group_type = ig_rural_folk
+				is_interest_group_type = ig_petty_bourgeoisie
+				is_interest_group_type = ig_intelligentsia
+				is_interest_group_type = ig_armed_forces
 			}
 			NOR = {
 				has_variable = communist_ig_var
@@ -155,11 +181,21 @@ ideology_moderate_scholar_paternalistic = {
 	
 	leader_weight = {
 		value = 100
-		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음
+		# 사대부는 유교 믿는 지도자만
+		if = {
+			limit = {
+				scope:character = {
+					NOT = { has_religion = confucianism }
+				}
+			}
+			add = -200
+		}
+		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음. 지식인은 개화파가 되는 것을 우선시해야 함
 		if = {
 			limit = {
 				scope:interest_group = {
 					ig_approval >= 5
+					NOT = { is_interest_group_type = ig_intelligentsia }
 				}
 			}
 			add = 50
@@ -168,6 +204,7 @@ ideology_moderate_scholar_paternalistic = {
 			limit = {
 				scope:interest_group = {
 					ig_approval >= 10
+					NOT = { is_interest_group_type = ig_intelligentsia }
 				}
 			}
 			add = 50
@@ -250,6 +287,15 @@ ideology_reformed_confucian = {
 	
 	leader_weight = {
 		value = 100
+		# 개혁 유교도 유교 믿는 지도자만
+		if = {
+			limit = {
+				scope:character = {
+					NOT = { has_religion = confucianism }
+				}
+			}
+			add = -200
+		}
 		# 성리학자, 양반 지주의 경우 기업가, 노동조합, 또는 지식인이 권세가 되어야만 개혁 유교가 등장할 가능성이 있음  
 		if = {
 			limit = {
@@ -312,7 +358,7 @@ ideology_confucious_fundamentalism = {
 		law_parliamentary_republic = strongly_disapprove
 		law_council_republic = strongly_disapprove
 	}
-
+	# 과거를 반대하지는 않겠지만, 대대로 성리학 공부한 계층을 등용하는 여러운 과거시험 외에는 관료 선발 루트를 모두 반대해서 사실상의 세습을 지지함 (세도정치 지지함)
 	lawgroup_bureaucracy = {
 		law_appointed_bureaucrats = approve
 		law_elected_bureaucrats = strongly_disapprove
@@ -370,6 +416,15 @@ ideology_confucious_fundamentalism = {
 	
 	leader_weight = {
 		value = 100
+		# 유교 탈레반은 유교 믿는 지도자만
+		if = {
+			limit = {
+				scope:character = {
+					NOT = { has_religion = confucianism }
+				}
+			}
+			add = -200
+		}
 		if = {
 			limit = {
 				scope:interest_group = {
