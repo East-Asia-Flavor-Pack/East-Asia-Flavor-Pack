@@ -1,64 +1,84 @@
-﻿ai_strategy_industrial_expansion = {
-	icon = "gfx/interface/icons/ai_strategy_icons/industrial_expansion.dds"
+﻿ai_strategy_territorial_expansion = {
+	icon = "gfx/interface/icons/ai_strategy_icons/territorial_expansion.dds"
 	
-	type = administrative
+	type = diplomatic
 	
-	wanted_construction_ratio = 1000000 # 1 level of construction sector per 1 million incorporated population
+	wanted_army_ratio = 200000 # 1 barrack per 150k incorporated population	150000>>200000
+	wanted_navy_ratio = 400000 # 1 naval base per 400k coastal incorporated population	
 	
-	desired_tax_level = high
-	max_tax_level = very_high
+	undesirable_infamy_level = 50
+	unacceptable_infamy_level = 100
 	
-	subsidies = {
-		building_motor_industry = wants_to_have
-		building_tooling_workshops = wants_to_have
-		building_coal_mine = wants_to_have
-		building_iron_mine = wants_to_have
-		building_steel_mills = wants_to_have
-		building_lead_mine = wants_to_have
-		building_sulfur_mine = wants_to_have
-		building_chemical_plants = wants_to_have
+	ideological_opinion_effect_mult = 0.75
+	
+	wargoal_maneuvers_fraction = {
+		value = 0.15
+	}		
+	
+	diplomatic_play_neutrality = 25 # Added to base neutrality in diplomatic plays
+	diplomatic_play_boldness = 25 # Added to base boldness in diplomatic plays		
+	
+	# Added to value from default strategy
+	bravery = {
+		value = 0.25
 	}
 	
-	goods_stances = {
-		electricity = { stance = wants_high_supply }
-		oil = { stance = wants_high_supply }
-		dye = { stance = wants_high_supply }
-		silk = { stance = wants_high_supply }
-		rubber = { stance = wants_high_supply }
-		tools = { stance = wants_high_supply }
-		coal = { stance = wants_high_supply }
-		iron = { stance = wants_high_supply }
-		steel = { stance = wants_high_supply }
-		lead = { stance = wants_high_supply }
-		sulfur = { stance = wants_high_supply }
-		wood = { stance = wants_high_supply }
-		sugar = { stance = wants_high_supply }
-		explosives = { stance = wants_export }	
-		fertilizer = { stance = wants_export }
-	}
-	
-	building_group_weights = {
-		bg_manufacturing = 1.25
-		bg_rubber = 1.25
-		bg_oil_extraction = 1.25
-		bg_mining = 1.25
-		bg_logging = 1.25		
-	}
-	
-	weight = {
-		value = 10
-				
+	# Added to value from default strategy
+	aggression = {
+		value = 1
+		
 		if = {
 			limit = { 
-				OR = {
-					country_is_in_europe = yes
-					country_is_in_north_america = yes
-				}
+				NOT = { is_country_type = unrecognized }
+				scope:target_country = { is_country_type = unrecognized } 
 			}
-			add = 20
-		}
-#일본
+			add = 2
+		}	
+
+		# Less aggressive against countries we're just antagonistic against, rather than belligerent/domineering
 		if = {
+			limit = {
+				has_attitude = {
+					who = scope:target_country
+					attitude = antagonistic
+				}					
+			}
+			multiply = 0.25
+		}			
+	}
+
+	building_group_weights = {
+		bg_army = 1.15	#1.5
+	}
+	
+	secret_goal_weights = {
+		protect = 0.5
+		conquer = 1.5
+	}
+
+	wargoal_weights = {
+		conquer_state = 1.5
+		return_state = 1.5
+	}	
+		
+	possible = {
+		always = yes
+	}
+
+	weight = {
+		value = 10
+			
+		if = {
+			limit = { ig:ig_armed_forces = { is_powerful = yes } }
+			multiply = 1.5
+		}			
+		
+		if = {
+			limit = { country_is_in_europe = yes }
+			multiply = 0.25
+		}
+		
+		if = {	#일본 추가
 			limit = { 
 					root.capital.region = sr:region_japan
 					has_global_variable = kurofune_complete
@@ -66,39 +86,11 @@
 			add = 100
 		}
 		
-		if = {
-			limit = { is_country_type = unrecognized }
-			multiply = 0.25
-		}	
-		
-		if = {
-			limit = { 
-				exists = ig:ig_industrialists
-				ig:ig_industrialists = { is_powerful = yes } 
-			}
-			multiply = 1.5
-		}	
-		
-		if = { 
-			limit = { literacy_rate < 0.25 }
-			multiply = 0.5
-		}
-		
-		if = { 
-			limit = { literacy_rate < 0.35 }
-			multiply = 0.5
-		}
-
-		if = { 
-			limit = { literacy_rate >= 0.50 }
-			multiply = 1.5
-		}	
-
-		if = {
+		if = { # 추가
 			limit = {
-				has_technology_researched = railways
+				has_modifier = lia_rtc_revival_modifier
 			}
-			multiply = 1.5
+			multiply = 10
 		}		
 	}
 }
