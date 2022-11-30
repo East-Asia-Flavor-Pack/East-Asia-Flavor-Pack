@@ -1,0 +1,1233 @@
+﻿ai_strategy_conservative_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/conservative_agenda.dds"
+	
+	type = political
+	
+	revolution_aversion = 5 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 20 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 50 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 50 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 20
+		
+		if = {
+			limit = { any_interest_group = { is_insurrectionary = yes } }
+			add = 80
+		}		
+	}		
+	
+	pro_interest_groups = {
+		ig_rural_folk
+		ig_devout
+		ig_landowners
+		ig_armed_forces
+		ig_petty_bourgeoisie
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 150			
+		}				
+		institution_social_security = {	
+			value = 50			
+		}
+		institution_workplace_safety = {	
+			value = 50			
+		}		
+		institution_schools = {	
+			value = 100			
+		}		
+		institution_police = {	
+			value = 150			
+		}		
+		institution_health_system = {	
+			value = 100		
+		}		
+		institution_home_affairs = {	
+			value = 150		
+		}				
+	}
+
+	possible = {
+		always = yes
+	}
+	
+	weight = {
+		value = 20	
+		
+		if = { #지도자, 보수주의
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_royalist
+						has_ideology = ideology_moderate
+					}
+				}
+			}
+			
+			add = 10
+		}
+				
+		if = { #지주, 권세
+			limit = {
+				exists = ig:ig_landowners
+				ig:ig_landowners = { is_powerful = yes }
+			}
+			
+			add = 10
+		}		
+		
+		if = { #비지주, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_rural_folk
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_powerful = yes
+				}			
+			}
+
+			add = 5
+		}
+		
+		
+		if = { #지주, 여당
+			limit = {
+				exists = ig:ig_landowners
+				ig:ig_landowners = { is_in_government = yes }
+			}
+			
+			add = 20
+		}		
+		
+		if = { #비지주, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_rural_folk
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #지주, 보수주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_rural_folk
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_royalist
+							has_ideology = ideology_moderate
+						}
+					}
+				}
+			}
+
+			add = 10
+		}
+		
+		if = { #지주, 보수주의, 비주류
+			limit = {}
+			any_interest_group = {
+				OR = {
+					is_interest_group_type = ig_landowners
+					is_interest_group_type = ig_rural_folk
+				}
+				is_in_government = yes
+				is_powerful = no
+				leader = {
+					OR = {
+						has_ideology = ideology_royalist
+						has_ideology = ideology_moderate
+					}
+				}
+			}
+			
+			add = 5
+		}
+		
+		if = { #비지주, 보수주의, 주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_rural_folk
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_royalist
+							has_ideology = ideology_moderate
+						}
+					}
+				}
+			}
+
+			add = 10
+		} 	
+		
+		if = { #비지주, 보수주의, 비주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_rural_folk
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_royalist
+							has_ideology = ideology_moderate
+						}
+					}
+				}
+			}
+
+			add = 5
+		} 	
+	}
+}
+
+ai_strategy_reactionary_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/reactionary_agenda.dds"
+	
+	revolution_aversion = 1 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 10 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 0 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 200 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 50
+			
+	}		
+	
+	type = political
+	
+	pro_interest_groups = {
+		ig_devout
+		ig_landowners
+		ig_rural_folk
+	}
+	
+	anti_interest_groups = {
+		ig_intelligentsia
+		ig_trade_unions
+		ig_industrialists
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 200			
+		}				
+		institution_social_security = {	
+			value = 50			
+		}
+		institution_workplace_safety = {	
+			value = 50			
+		}		
+		institution_schools = {	
+			value = 75		
+		}		
+		institution_police = {	
+			value = 200			
+		}		
+		institution_health_system = {	
+			value = 75			
+		}		
+		institution_home_affairs = {	
+			value = 200			
+		}				
+	}
+
+	possible = {
+		exists = ruler
+		ruler = {
+			interest_group = { 
+				NOR = {
+					is_interest_group_type = ig_intelligentsia
+					is_interest_group_type = ig_trade_unions
+					is_interest_group_type = ig_industrialists
+				}
+			}
+			OR = {
+				has_ideology = ideology_traditionalist
+				has_ideology = ideology_slaver
+				has_ideology = ideology_theocrat
+			}
+		}
+		OR = {
+			AND = {
+				exists = ig:ig_landowners
+				ig:ig_landowners = { is_marginal = no }		
+			}
+			AND = {			
+				exists = ig:ig_devout
+				ig:ig_devout = { is_marginal = no }
+			}
+		}			
+	}
+	
+	weight = {
+		value = 20	
+		
+		if = { #지도자, 반동주의
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_slaver
+						has_ideology = ideology_traditionalist
+						has_ideology = ideology_theocrat
+					}
+				}
+			}
+			
+			add = 10
+		}
+				
+		if = { #성직자, 권세
+			limit = {
+				exists = ig:ig_devout
+				ig:ig_devout = { is_powerful = yes }
+			}
+			
+			add = 10
+		}		
+		
+		if = { #비성직자, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_rural_folk
+					}
+					is_powerful = yes
+				}
+			}
+
+			add = 5
+		}
+		
+		
+		if = { #성직자, 여당
+			limit = {
+				exists = ig:ig_devout
+				ig:ig_devout = { is_in_government = yes }
+			}
+			
+			add = 20
+		}		
+		
+		if = { #비성직자, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_rural_folk
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #성직자, 반동주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_slaver
+							has_ideology = ideology_traditionalist
+							has_ideology = ideology_theocrat
+						}
+					}
+				}
+			}
+
+			add = 10
+		}
+		
+		if = { #성직자, 반동주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_slaver
+							has_ideology = ideology_traditionalist
+							has_ideology = ideology_theocrat
+						}
+					}
+				}
+			}
+	
+			add = 5
+		}
+		
+		if = { #비성직자, 반동주의, 주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_slaver
+							has_ideology = ideology_traditionalist
+							has_ideology = ideology_theocrat
+						}
+					}
+				}
+			}
+
+			add = 10
+		} 	
+		
+		if = { #비성직자, 반동주의, 비주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_slaver
+							has_ideology = ideology_traditionalist
+							has_ideology = ideology_theocrat
+						}
+					}
+				}
+			}
+
+			add = 5
+		} 	
+	}
+}
+
+ai_strategy_progressive_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/progressive_agenda.dds"
+	
+	type = political
+	
+	revolution_aversion = 2 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 15 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 100 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 25 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 40
+		
+		if = {
+			limit = { any_interest_group = { is_insurrectionary = yes } }
+			add = 60
+		}		
+	}		
+	
+	pro_interest_groups = {
+		ig_intelligentsia
+		ig_industrialists
+		ig_petty_bourgeoisie
+		ig_trade_unions
+	}
+
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 75	
+		}				
+		institution_social_security = {	
+			value = 100			
+		}
+		institution_workplace_safety = {	
+			value = 100			
+		}		
+		institution_schools = {	
+			value = 150			
+		}		
+		institution_police = {	
+			value = 75			
+		}		
+		institution_health_system = {	
+			value = 100			
+		}		
+		institution_home_affairs = {	
+			value = 100			
+		}				
+	}
+
+	possible = {
+		OR = {
+			AND = {
+				exists = ig:ig_intelligentsia
+				ig:ig_intelligentsia = { is_marginal = no }
+			}
+			AND = {			
+				exists = ig:ig_industrialists
+				ig:ig_industrialists = { is_marginal = no }
+			}
+		}	
+	}
+	
+	weight = {
+		value = 20	
+		
+		if = { #지도자, 자유주의
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_radical
+						has_ideology = ideology_atheist
+						has_ideology = ideology_feminist
+						has_ideology = ideology_abolitionist
+						has_ideology = ideology_market_liberal
+						has_ideology = ideology_reformer
+						has_ideology = ideology_pacifist
+						has_ideology = ideology_republican_leader
+					}
+				}
+			}
+			
+			add = 10
+		}
+				
+		if = { #지식인, 권세
+			limit = {
+				exists = ig:ig_intelligentsia
+				ig:ig_intelligentsia = { is_powerful = yes }
+			}
+			
+			add = 10
+		}		
+		
+		if = { #비지식인, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_industrialists
+						is_interest_group_type = ig_petty_bourgeoisie
+						is_interest_group_type = ig_trade_unions
+					}
+					is_powerful = yes
+				}
+			}
+
+			add = 5
+		}
+		
+		
+		if = { #지식인, 여당
+			limit = {
+				exists = ig:ig_intelligentsia
+				ig:ig_intelligentsia = { is_in_government = yes }
+			}
+			
+			add = 20
+		}		
+		
+		if = { #비지식인, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_industrialists
+						is_interest_group_type = ig_petty_bourgeoisie
+						is_interest_group_type = ig_trade_unions
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #지식인, 자유주의, 주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_industrialists
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_atheist
+							has_ideology = ideology_feminist
+							has_ideology = ideology_abolitionist
+							has_ideology = ideology_market_liberal
+							has_ideology = ideology_reformer
+							has_ideology = ideology_pacifist
+							has_ideology = ideology_republican_leader
+						}
+					}
+				}
+			}
+
+			add = 10
+		}
+		
+		if = { #지식인, 자유주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_industrialists
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_atheist
+							has_ideology = ideology_feminist
+							has_ideology = ideology_abolitionist
+							has_ideology = ideology_market_liberal
+							has_ideology = ideology_reformer
+							has_ideology = ideology_pacifist
+							has_ideology = ideology_republican_leader
+						}
+					}
+				}
+			}
+
+			add = 5
+		}
+		
+		if = { #비지식인, 자유주의, 주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_industrialists
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_atheist
+							has_ideology = ideology_feminist
+							has_ideology = ideology_abolitionist
+							has_ideology = ideology_market_liberal
+							has_ideology = ideology_reformer
+							has_ideology = ideology_pacifist
+							has_ideology = ideology_republican_leader
+						}
+					}
+				}
+			}
+
+			add = 10
+		} 	
+		
+		if = { #비지식인, 자유주의, 비주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_industrialists
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_atheist
+							has_ideology = ideology_feminist
+							has_ideology = ideology_abolitionist
+							has_ideology = ideology_market_liberal
+							has_ideology = ideology_reformer
+							has_ideology = ideology_pacifist
+							has_ideology = ideology_republican_leader
+						}
+					}
+				}
+			}
+
+			add = 5
+		}
+		
+		if = { #일본
+			limit = { 
+					root.capital.region = sr:region_japan
+					has_global_variable = kurofune_complete
+			}
+			add = 100
+		}
+		
+		if = { #동로마
+			limit = { 
+					has_journal_entry = je_sick_man_main
+			}
+			add = 100
+		}
+	}
+}
+
+ai_strategy_egalitarian_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/egalitarian_agenda.dds"
+	
+	type = political
+	
+	revolution_aversion = 1 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 10 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 200 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 0 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 70
+		
+		if = {
+			limit = { any_interest_group = { is_insurrectionary = yes } }
+			add = 30
+		}
+		
+	}		
+	
+	pro_interest_groups = {
+		ig_trade_unions
+		ig_intelligentsia
+		ig_armed_forces
+		ig_rural_folk
+	}
+	
+	anti_interest_groups = {
+		ig_landowners
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 50			
+		}				
+		institution_social_security = {	
+			value = 150			
+		}
+		institution_workplace_safety = {	
+			value = 150			
+		}		
+		institution_schools = {	
+			value = 150			
+		}		
+		institution_police = {	
+			value = 50			
+		}		
+		institution_health_system = {	
+			value = 150			
+		}		
+		institution_home_affairs = {	
+			value = 75			
+		}				
+	}
+
+	possible = {
+		has_technology_researched = egalitarianism
+		exists = ig:ig_trade_unions
+		ig:ig_trade_unions = { is_marginal = no }
+	}
+
+	weight = {
+		value = 20	
+		
+		if = { #지도자, 사회주의
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_radical
+						has_ideology = ideology_communist
+						has_ideology = ideology_vanguardist
+						has_ideology = ideology_anarchist
+						has_ideology = ideology_social_democrat
+					}
+				}
+			}
+			
+			add = 10
+		}
+				
+		if = { #노조, 권세
+			limit = {
+				exists = ig:ig_trade_unions
+				ig:ig_trade_unions = { is_powerful = yes }
+			}
+			
+			add = 10
+		}		
+		
+		if = { #비노조, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_rural_folk
+					}
+					is_powerful = yes
+				}
+			}
+
+			add = 5
+		}
+		
+		
+		if = { #노조, 여당
+			limit = {
+				exists = ig:ig_trade_unions
+				ig:ig_trade_unions = { is_in_government = yes }
+			}
+			
+			add = 20
+		}		
+		
+		if = { #비노조, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_rural_folk
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #노조, 사회주의, 주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_intelligentsia
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_communist
+							has_ideology = ideology_vanguardist
+							has_ideology = ideology_anarchist
+							has_ideology = ideology_social_democrat
+						}
+					}
+				}
+			}
+			
+			add = 10
+		}
+		
+		if = { #노조, 사회주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_intelligentsia
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_communist
+							has_ideology = ideology_vanguardist
+							has_ideology = ideology_anarchist
+							has_ideology = ideology_social_democrat
+						}
+					}
+				}
+			}
+			
+			add = 5
+		}
+		
+		if = { #비노조, 사회주의, 주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_intelligentsia
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_communist
+							has_ideology = ideology_vanguardist
+							has_ideology = ideology_anarchist
+							has_ideology = ideology_social_democrat
+						}
+					}
+				}
+			}
+
+			add = 10
+		} 	
+		
+		if = { #비노조, 사회주의, 비주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_intelligentsia
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_radical
+							has_ideology = ideology_communist
+							has_ideology = ideology_vanguardist
+							has_ideology = ideology_anarchist
+							has_ideology = ideology_social_democrat
+						}
+					}
+				}
+			}
+
+			add = 5
+		} 	
+	}
+}
+
+ai_strategy_nationalist_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/nationalist_agenda.dds"
+	
+	type = political
+	
+	revolution_aversion = 1 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 5 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 150 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 100 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 75
+	}		
+	
+	pro_interest_groups = {
+		ig_armed_forces
+		ig_petty_bourgeoisie
+		ig_industrialists
+		ig_landowners
+	}
+	
+	anti_interest_groups = {
+		ig_trade_unions
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 150			
+		}				
+		institution_social_security = {	
+			value = 75	
+		}
+		institution_workplace_safety = {	
+			value = 75		
+		}		
+		institution_schools = {	
+			value = 100			
+		}		
+		institution_police = {	
+			value = 200			
+		}		
+		institution_health_system = {	
+			value = 100			
+		}		
+		institution_home_affairs = {	
+			value = 150			
+		}				
+	}	
+
+	possible = {
+		has_technology_researched = nationalism
+		OR = {
+			AND = {
+				exists = ig:ig_armed_forces
+				ig:ig_armed_forces = { is_marginal = no }
+			}
+			AND = {			
+				exists = ig:ig_petty_bourgeoisie
+				ig:ig_petty_bourgeoisie = { is_marginal = no }
+			}
+		}			
+	}
+	
+	weight = {
+		value = 20	
+		
+		if = { #지도자, 국수주의
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_jingoist_leader
+						has_ideology = ideology_fascist
+						has_ideology = ideology_ethno_nationalist
+					}
+				}
+			}
+			
+			add = 10
+		}
+				
+		if = { #소시민, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_powerful = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #비소시민, 권세
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_industrialists		
+						is_interest_group_type = ig_landowners
+					}
+					is_powerful = yes
+				}
+			}
+
+			add = 5
+		}
+		
+		
+		if = { #소시민, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 20
+		}		
+		
+		if = { #비소시민, 여당
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_industrialists		
+						is_interest_group_type = ig_landowners
+					}
+					is_in_government = yes
+				}
+			}
+			
+			add = 10
+		}		
+		
+		if = { #소시민, 국수주의, 주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_jingoist_leader
+							has_ideology = ideology_fascist
+							has_ideology = ideology_ethno_nationalist
+						}
+					}
+				}
+			}
+			
+			add = 10
+		}
+		
+		if = { #소시민, 국수주의, 비주류
+			limit = {
+				any_interest_group = {
+					OR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_jingoist_leader
+							has_ideology = ideology_fascist
+							has_ideology = ideology_ethno_nationalist
+						}
+					}
+				}
+			}
+			
+			add = 5
+		}
+		
+		if = { #비소시민, 국수주의, 주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+					is_powerful = yes
+					leader = {
+						OR = {
+							has_ideology = ideology_jingoist_leader
+							has_ideology = ideology_fascist
+							has_ideology = ideology_ethno_nationalist
+						}
+					}
+				}
+			}
+
+			add = 10
+		} 	
+		
+		if = { #비소시민, 국수주의, 비주류
+			limit = {
+				any_interest_group = {
+					NOR = {
+						is_interest_group_type = ig_armed_forces		
+						is_interest_group_type = ig_petty_bourgeoisie
+					}
+					is_in_government = yes
+					is_powerful = no
+					leader = {
+						OR = {
+							has_ideology = ideology_jingoist_leader
+							has_ideology = ideology_fascist
+							has_ideology = ideology_ethno_nationalist
+						}
+					}
+				}
+			}
+
+			add = 5
+		} 	
+	}	
+}
+
+ai_strategy_maintain_mandate_of_heaven = {
+	icon = "gfx/interface/icons/ai_strategy_icons/reactionary_agenda.dds"
+	
+	type = political
+
+	revolution_aversion = 5 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~50% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 50 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 25 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 25 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 1
+	}	
+
+	pro_interest_groups = {
+		ig_landowners
+		ig_armed_forces
+	}
+	
+	anti_interest_groups ={
+		ig_industrialists
+		ig_trade_unions
+		ig_intelligentsia
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 50			
+		}				
+		institution_social_security = {	
+			value = 50			
+		}
+		institution_workplace_safety = {	
+			value = 50			
+		}		
+		institution_schools = {	
+			value = 50			
+		}		
+		institution_police = {	
+			value = 200			
+		}		
+		institution_health_system = {	
+			value = 50		
+		}		
+		institution_home_affairs = {	
+			value = 200			
+		}				
+	}	
+	
+	possible = {
+		exists = c:CHI
+		this = c:CHI
+		is_country_type = unrecognized
+		has_law = law_type:law_monarchy
+	}
+	
+	weight = { # 수정
+		value = 50
+		if = {
+			limit = {
+				OR = {
+					has_modifier = lia_modifier_rtc
+					has_modifier = opium_wars_lost
+				}
+			}
+			multiply = 4
+		}
+	}
+}
