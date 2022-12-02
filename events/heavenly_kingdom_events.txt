@@ -20,7 +20,7 @@ heavenly.1 = {
 
 	duration = 3
 
-	trigger = { # 남중국으로 강제
+	trigger = {
 		NOT = {
 			root.religion = {
 				has_discrimination_trait = christian
@@ -250,7 +250,9 @@ heavenly.3 = {
 				NOT = { has_variable = cult_center }
 				NOT = { is_capital = yes }
 				NOT = { state_region = s:STATE_YUNNAN }
+				NOT = { state_region = s:STATE_GUIZHOU }
 				NOT = { state_region = s:STATE_SICHUAN }
+				NOT = { state_region = s:STATE_CHONGQING }
 				any_neighbouring_state = {
 					has_variable = cult_center
 					any_scope_pop = {
@@ -518,20 +520,111 @@ heavenly.4 = {
 				set_state_owner = c:TPG
 				set_state_type = incorporated
 			}
-			every_scope_state = {
-				limit = {
-					region = sr:region_south_china
-					is_capital = no
-					NOT = { has_variable = cult_center }
-					any_neighbouring_state = {
-						has_variable = cult_center
-					}
-					turmoil > 0.3
+		}
+		every_scope_state = {
+			limit = {
+				region = sr:region_south_china
+				is_capital = no
+				NOT = { has_variable = cult_center }
+				any_neighbouring_state = {
+					has_variable = cult_center
 				}
-				set_state_owner = c:TPG
-				set_state_type = incorporated
+				
+			}
+			add_to_temporary_list = tpg_states
+		}
+		if = {
+			limit = {
+				any_in_list = {
+					list = tpg_states
+					turmoil < 0.1
+				}
+			}
+			set_local_variable = {
+				name = tpg_states_n
+				value = 1
 			}
 		}
+		else_if = {
+			limit = {
+				any_in_list = {
+					list = tpg_states
+					turmoil >= 0.1
+					turmoil < 0.2
+				}
+			}
+			set_local_variable = {
+				name = tpg_states_n
+				value = 2
+			}
+		}
+		else_if = {
+			limit = {
+				any_in_list = {
+					list = tpg_states
+					turmoil >= 0.2
+					turmoil < 0.3
+				}
+			}
+			set_local_variable = {
+				name = tpg_states_n
+				value = 3
+			}
+		}
+		else_if = {
+			limit = {
+				any_in_list = {
+					list = tpg_states
+					turmoil >= 0.3
+					turmoil < 0.4
+				}
+			}
+			set_local_variable = {
+				name = tpg_states_n
+				value = 4
+			}
+		}
+		else_if = {
+			limit = {
+				any_in_list = {
+					list = tpg_states
+					turmoil >= 0.4
+					turmoil < 0.5
+				}
+			}
+			set_local_variable = {
+				name = tpg_states_n
+				value = 5
+			}
+		}
+		else = {
+			set_local_variable = {
+				name = tpg_states_n
+				value = 6
+			}
+		}
+		s:STATE_YUNNAN.region_state:CHI = {
+			if = {
+				limit = { is_in_list = tpg_states }
+				remove_from_list = tpg_states
+			}
+		}
+		s:STATE_GUIZHOU.region_state:CHI = {
+			if = {
+				limit = { is_in_list = tpg_states }
+				remove_from_list = tpg_states
+			}
+		}
+		while = {
+			count = local_var:tpg_states_n
+			random_in_list = {
+				list = tpg_states
+				set_state_owner = c:TPG
+				set_state_type = incorporated
+				remove_from_list = tpg_states
+			}
+		}
+		
 	}
 
 	option = {
