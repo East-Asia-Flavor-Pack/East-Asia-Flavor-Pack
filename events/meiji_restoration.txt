@@ -1,5 +1,6 @@
 ﻿namespace = meiji
 
+# Emperor takes power
 meiji.1 = {
 	type = country_event
 	placement = root
@@ -19,6 +20,7 @@ meiji.1 = {
 	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
 
 	trigger = {
+		# triggered by meiji restoration JE
 	}
 
 	immediate = {
@@ -1682,12 +1684,66 @@ meiji.12 = {
 	}
 }
 
-meiji.13 = { #폐번치현
+meiji.13 = {
 	type = country_event
 	placement = root
 	title = meiji.13.t
 	desc = meiji.13.d
 	flavor = meiji.13.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/westeners_arriving_in_east_asia" 
+
+	trigger = {
+		exists = c:JAP
+		THIS = c:JAP
+		has_modifier = forced_market_opening
+		NOT = { has_variable = meiji_var }
+		NOT = { has_variable = japan_forced_to_open_market }
+	}
+
+	immediate = {
+		ig:ig_landowners = {
+			save_scope_as = shogunate_ig
+		}
+		ruler = {
+			save_scope_as = shogun_scope
+		}
+	}
+
+	option = {
+		name = meiji.13.a
+		set_variable = japan_forced_to_open_market # affects AI strategy
+		scope:shogunate_ig = {
+			add_modifier = {
+				name = shogun_ig_forced_to_open_market
+				months = very_long_modifier_time
+			}
+		}
+		scope:shogun_scope = {
+			add_modifier = {
+				name = shogun_forced_to_open_market
+				months = very_long_modifier_time
+			}
+		}
+	}
+}
+
+meiji.102 = { #폐번치현
+	type = country_event
+	placement = root
+	title = meiji.102.t
+	desc = meiji.102.d
+	flavor = meiji.102.f
 
 	duration = 3
 
@@ -1710,27 +1766,27 @@ meiji.13 = { #폐번치현
 	}
 
 	option = {
-		name = meiji.13.a
+		name = meiji.102.a
 		default_option = yes
 		set_variable = meiji_six_coup_var
-		if = { limit = {exists = c:YON} c:YON = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:TOS} c:TOS = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:SAT} c:SAT = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:CHO} c:CHO = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:AID} c:AID = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:KAG} c:KAG = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:SEN} c:SEN = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:GIS} c:GIS = { trigger_event = { id = meiji.14 } }}
- 		if = { limit = {exists = c:ODA} c:ODA = { trigger_event = { id = meiji.14 } }}
+		if = { limit = {exists = c:YON} c:YON = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:TOS} c:TOS = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:SAT} c:SAT = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:CHO} c:CHO = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:AID} c:AID = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:KAG} c:KAG = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:SEN} c:SEN = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:GIS} c:GIS = { trigger_event = { id = meiji.103 } }}
+ 		if = { limit = {exists = c:ODA} c:ODA = { trigger_event = { id = meiji.103 } }}
 	}
 }
 
-meiji.14 = { #폐번치현
+meiji.103 = { #폐번치현
 	type = country_event
 	placement = root
-	title = meiji.14.t
-	desc = meiji.14.d
-	flavor = meiji.14.f
+	title = meiji.103.t
+	desc = meiji.103.d
+	flavor = meiji.103.f
 
 	duration = 3
 
@@ -1750,7 +1806,7 @@ meiji.14 = { #폐번치현
 	}
 
 	option = {#수락
-		name = meiji.14.a
+		name = meiji.103.a
 		default_option = yes
 		play_as = c:JAP
 		c:JAP = { annex = root }
@@ -1759,7 +1815,7 @@ meiji.14 = { #폐번치현
 		}
 	}
 	option = {#거절
-		name = meiji.14.b
+		name = meiji.103.b
 		ai_chance = {
 			base = 0
 		}
