@@ -42,81 +42,32 @@ heavenly.1 = {
 		}
 	}
 	immediate = {
-		if = {
-			limit = {
-				any_scope_state = {
-					is_incorporated = yes
-					region = sr:region_south_china
-					any_scope_pop = {
-						NOT = {
-							religion = rel:protestant
-						}
-					}
-					any_neighbouring_state = {
-						is_treaty_port = yes
-						owner = {
-							religion = rel:protestant
-						}
+		random_scope_state = {
+			limit = { 
+				is_incorporated = yes
+				any_scope_pop = {
+					NOT = {
+						religion = rel:protestant
 					}
 				}
-			}
-			random_scope_state = {
-				limit = {
-					is_incorporated = yes
-					region = sr:region_south_china
-					any_scope_pop = {
-						NOT = {
-							religion = rel:protestant
-						}
-					}
-					any_neighbouring_state = {
-						is_treaty_port = yes
-						owner = {
-							religion = rel:protestant
-						}
-					}
-				}
-				save_scope_as = missionary_state
-				random_neighbouring_state = {
-					limit = {
-						is_treaty_port = yes
-						owner = {
-							religion = rel:protestant
-						}
-					}
-					save_scope_as = treaty_port_scope
+				any_neighbouring_state = {
+					is_treaty_port = yes
 					owner = {
-						save_scope_as = treaty_port_owner
+						religion = rel:protestant
 					}
 				}
 			}
-		}
-		else = {
-			random_scope_state = {
+			save_scope_as = missionary_state
+			random_neighbouring_state = {
 				limit = {
-					is_incorporated = yes
-					region = sr:region_south_china
-					is_coastal = yes
-					any_scope_pop = {
-						NOT = {
-							religion = rel:protestant
-						}
+					is_treaty_port = yes
+					owner = {
+						religion = rel:protestant
 					}
 				}
-				save_scope_as = missionary_state
-			}
-			ROOT = {
-				random_neighbouring_state = {
-					limit = {
-						is_treaty_port = yes
-						owner = {
-							religion = rel:protestant
-						}
-					}
-					save_scope_as = treaty_port_scope
-					owner = {
-						save_scope_as = treaty_port_owner
-					}
+				save_scope_as = treaty_port_scope
+				owner = {
+					save_scope_as = treaty_port_owner
 				}
 			}
 		}
@@ -653,6 +604,11 @@ heavenly.4 = {
 				target_country = c:CHI
 			}
 		}
+		c:TPG = {
+			every_scope_state = {
+				set_variable = taiping_rebellion_state
+			}
+		}
 	}
 	option = {
 		name = heavenly.4.b
@@ -677,6 +633,11 @@ heavenly.4 = {
 				holder = c:TPG
 				type = annex_country
 				target_country = c:CHI
+			}
+		}
+		c:TPG = {
+			every_scope_state = {
+				set_variable = taiping_rebellion_state
 			}
 		}
 		play_as = scope:heavenly_kingdom_scope
@@ -748,6 +709,17 @@ heavenly.5 = {
 
 	trigger = {
 		# triggered by journal entry
+	}
+
+	immediate = {
+		every_scope_state = {
+			limit = {
+				owner = ROOT
+				has_variable = taiping_rebellion_state
+			}
+			set_state_owner = c:CHI #Just in case.
+			set_state_type = incorporated
+		}
 	}
 
 	option = { # mass re-conversions
