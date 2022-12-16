@@ -19,6 +19,26 @@ chi_flavor.1 = { # 황위의 계승 - 시스템 상 자연사
 
 	immediate = {
 		ruler = { save_scope_as = new_emperor }
+		if = {
+			limit = {
+				scope:former_emperor = { has_variable = is_Yizhu_Aisin_Gioro }
+			}
+			create_character = {
+				first_name = Xingzhen
+				last_name = Yehe_Nara
+				culture = cu:manchu
+				ig_leader = yes
+				female = yes
+				religion = confucianism
+				ideology = ideology_traditionalist
+				interest_group = ig_landowners
+				dna = ecchi_dna_cixi # 없으면 말고...
+				birth_date = 1835.11.29
+				traits = { ambitious hedonist senile shengmu_huang_taihou }
+				on_created = {
+				}
+			}
+		}
 	}
 
 	option = {
@@ -31,91 +51,36 @@ chi_flavor.1 = { # 황위의 계승 - 시스템 상 자연사
 	}
 }
 
-chi_flavor.2 = { # 황위의 계승 - 함풍제 즉위
+chi_flavor.101 = { # 황위의 계승 - 함풍제 즉위
+	type = character_event
+	hidden = yes
+	
+	immediate = {
+		if = {
+			limit = { has_variable = is_Daoguang_Aisin_Gioro }
+			kill_character = yes
+		}
+	}
+}
+
+chi_flavor.201 = { # 황위의 계승 - 동치제 즉위
+	type = character_event
+	hidden = yes
+	
+	immediate = {
+		if = {
+			limit = { age >= 20 }
+			kill_character = yes
+		}
+	}
+}
+
+chi_flavor.2 = { # 황하 대개도
 	type = country_event
 	placement = ROOT
 
 	title = chi_flavor.2.t
 	desc = chi_flavor.2.d
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-		ruler = {
-			save_scope_as = former_emperor
-			kill_character = yes
-		}
-		ruler = { save_scope_as = new_emperor }
-	}
-
-	option = {
-		name = chi_flavor.2.a
-		default_option = yes
-		
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-chi_flavor.3 = { # 황위의 계승 - 동치제 즉위
-	type = country_event
-	placement = ROOT
-
-	title = chi_flavor.3.t
-	desc = chi_flavor.3.d
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	trigger = {
-		ruler = {
-			#first_name
-		}
-
-	}
-
-	immediate = {
-		ruler = {
-			save_scope_as = former_emperor
-			kill_character = yes
-		}
-		ruler = { save_scope_as = new_emperor }
-	}
-
-	option = {
-		name = chi_flavor.3.a
-		default_option = yes
-		
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-##################################################
-
-chi_flavor.101 = { # 황하 대개도
-	type = country_event
-	placement = ROOT
-
-	title = chi_flavor.101.t
-	desc = chi_flavor.101.d
 
 	duration = 3
 
@@ -128,16 +93,144 @@ chi_flavor.101 = { # 황하 대개도
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		ruler = {
-			save_scope_as = former_emperor
-			kill_character = yes
-		}
-		ruler = { save_scope_as = new_emperor }
+		s:STATE_HENAN.region_state:CHI = { save_scope_as = henan_scope }
+		s:STATE_SHANDONG.region_state:CHI = { save_scope_as = shandong_scope }
 	}
 
 	option = {
 		name = chi_flavor.2.a
 		default_option = yes
+		
+		s:STATE_HENAN = {
+			add_devastation = 35
+		}
+		s:STATE_ZHILI = {
+			add_devastation = 35
+		}
+		s:STATE_SHANDONG = {
+			add_devastation = 70
+		}
+		
+		s:STATE_BEIJING.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_ZHEJIANG.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_JIANGSU.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_NANJING.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_ZHILI.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_SHANDONG.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		s:STATE_SUZHOU.region_state:CHI = {
+			remove_modifier = grand_canal
+		}
+		
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+chi_flavor.3 = { # 원명원 파괴
+	type = country_event
+	placement = ROOT
+
+	title = chi_flavor.3.t
+	desc = chi_flavor.3.d
+	flavor = chi_flavor.3.f
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/china/flood.bik"
+	}
+
+	trigger = {
+		NOT = { p:xA8C9D2.controller = c:CHI }
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		p:xA8C9D2.controller = { save_scope_as = occupying_country }
+	}
+
+	option = {
+		name = chi_flavor.3.a
+		default_option = yes
+		
+		hidden_effect = {
+			ruler = {
+				trigger_event = {
+					id = chi_flavor.201
+					years = 3 5
+				}
+			}
+
+		}
+		
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+chi_flavor.4 = { # 원명원 파괴
+	type = country_event
+	placement = ROOT
+
+	title = chi_flavor.3.t
+	desc = chi_flavor.3.d
+	flavor = chi_flavor.3.f
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/china/flood.bik"
+	}
+
+	trigger = {
+		NOT = { p:xA8C9D2.controller = c:CHI }
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		p:xA8C9D2.controller = { save_scope_as = occupying_country }
+	}
+
+	option = {
+		name = chi_flavor.3.a
+		default_option = yes
+		
+		ruler = {
+			add_modifier = {
+				name = summer_palace_destroyed_ruler_modifier
+				years = 10
+				is_decaying = yes
+			}
+		}
+		hidden_effect = {
+			ruler = {
+				trigger_event = {
+					id = chi_flavor.201
+					years = 3 5
+				}
+			}
+			
+		}
 		
 		ai_chance = {
 			base = 100
