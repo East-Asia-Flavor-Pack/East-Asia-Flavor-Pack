@@ -1,5 +1,69 @@
 ﻿namespace = boshin_war
 
+boshin_war.101 = { #다이묘들의 마지막 진영 선택
+	type = country_event
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		texture = "gfx/event_pictures/bosin_war.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = boshin_war.101.t
+	desc = boshin_war.101.d
+	flavor = boshin_war.101.f
+
+	
+	immediate = {
+		c:NIP = {
+			save_scope_as = nip_scope
+		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
+	}
+
+	option = {# 천황 지지
+		name = boshin_war.101.a
+		trigger = {
+			can_support_tenno_trigger = yes
+		}
+		change_sonno_var_effect = {
+			AMOUNT = 100
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					likely_support_tenno_trigger = yes
+				}
+				add = 100
+			}
+		}
+	}
+
+	option = { #막부 지지
+		name = boshin_war.101.b
+		trigger = {
+			can_support_shogun_trigger = yes
+		}
+		change_sonno_var_effect = {
+			AMOUNT = -100
+		}
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					likely_support_shogun_trigger = yes
+				}
+				add = 100
+			}
+		}
+   }
+}
+
 boshin_war.1 = { #대정봉환 요구
 	type = country_event
 
@@ -19,78 +83,87 @@ boshin_war.1 = { #대정봉환 요구
 	}
 
 	immediate = {
-	   c:ODA = {
-		if = {
-			limit = {relations:root <= relations_threshold:natural}
-			save_scope_as = tobaku_scope1
+		c:CHO = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope1
+			}
 		}
-	   }
-	   c:SAT = {
-		if = {
-			limit = {relations:NIP >= relations_threshold:natural}
-			save_scope_as = tobaku_scope2
+		c:TOS = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope2
+			}
 		}
-	   }
-	   c:YON = {
-		if = {
-			limit = {relations:root <= relations_threshold:natural}
-			save_scope_as = tobaku_scope3
+		c:KAG = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope3
+			}
 		}
-	   }
-	   c:TOS = {
-		if = {
-			limit = {relations:NIP > relations_threshold:natural}
-			save_scope_as = tobaku_scope4
+		c:SAT = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope4
+			}
 		}
-	   }
-	   c:GIS = {
-		if = {
-			limit = {relations:NIP > relations_threshold:natural}
-			save_scope_as = tobaku_scope5
+		c:SEN = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope5
+			}
 		}
-	   }
-	   c:KAG = {
-		if = {
-			limit = {relations:root <= relations_threshold:natural}
-			save_scope_as = tobaku_scope6
+		c:YON = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope6
+			}
 		}
-	   }
-	   c:SEN = {
-		if = {
-			limit = {relations:root <= relations_threshold:natural}
-			save_scope_as = tobaku_scope7
-	   }
-	   }
-	   c:CHO = {
-		if = {
-			limit = {relations:NIP >= relations_threshold:natural}
-			save_scope_as = tobaku_scope8
-	   }
-	}
+		c:GIS = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope7
+			}
+		}
+		c:ODA = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope8
+			}
+		}
+		c:AID = {
+			if = {
+				limit = { can_support_tenno_trigger = yes }
+				save_scope_as = tobaku_scope9
+			}
+		}
 		scope:tobaku_scope1 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope2 = {
+		}
+		scope:tobaku_scope2 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope3 = {
+		}
+		scope:tobaku_scope3 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope4 = {
+		}
+		scope:tobaku_scope4 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope5 = {
+		}
+		scope:tobaku_scope5 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope6 = {
+		}
+		scope:tobaku_scope6 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope7 = {
+		}
+		scope:tobaku_scope7 = {
 			make_independent = yes
-		 }
-		 scope:tobaku_scope8 = {
+		}
+		scope:tobaku_scope8 = {
 			make_independent = yes
-		 }
+		}
+		scope:tobaku_scope9 = {
+			make_independent = yes
+		}
 		c:NIP = {
 			create_diplomatic_pact = {
 				country = scope:tobaku_scope1
@@ -139,6 +212,12 @@ boshin_war.1 = { #대정봉환 요구
 				type = daimyo
 			}
 		}
+		c:NIP = {
+			create_diplomatic_pact = {
+				country = scope:tobaku_scope9
+				type = daimyo
+			}
+		}
 	}
 
 
@@ -153,9 +232,12 @@ boshin_war.1 = { #대정봉환 요구
 			}
 		}
 		trigger_event = {
-				id = boshin_war.4
-				days = 80
-			}
+			id = boshin_war.4
+			days = 80
+		}
+		ai_chance = {
+			base = 100
+		}
 	}
 
 	option = { #안한다
@@ -166,7 +248,10 @@ boshin_war.1 = { #대정봉환 요구
 				days = 40
 			}
 		}
-   }
+		ai_chance = {
+			base = 0
+		}
+	}
 }
 boshin_war.2 = { #막부의 권위 떨어짐
 	type = country_event
@@ -266,8 +351,8 @@ boshin_war.4 = { #대정봉환 전쟁
 		c:KOR = {
 			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
 		}
-	c:NIP = {
-		add_journal_entry = {
+		c:NIP = {
+			add_journal_entry = {
 				type = je_meiji_formation
 			}
 		}
@@ -319,8 +404,8 @@ boshin_war.5 = { #대정봉환 전쟁
 		c:KOR = {
 			trigger_event = { id = bosin_intervention.1 days = 20 popup = yes }
 		}
-	c:JAP = {
-		add_journal_entry = {
+		c:JAP = {
+			add_journal_entry = {
 				type = je_bakufu_formation
 			}
 		}
