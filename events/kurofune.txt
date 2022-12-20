@@ -820,10 +820,13 @@ kurofune.14 = { #일미수호통상조약 - 조정의 반응
 		change_japan_start_var_effect = {
 			AMOUNT = 5
 		}
+		change_all_sonno_var_effect = {
+			AMOUNT = 1
+		}
 		c:JAP = {
 			trigger_event = {
 				id = kurofune.16
-				days = 7
+				days = 21
 			}
 		}
 		every_country = {
@@ -869,6 +872,9 @@ kurofune.15 = { #일미수호통상조약 - 다이묘의 반응
 		}
 		change_sonno_var_effect = {
 			AMOUNT = 1
+		}
+		set_variable = {
+			name = ansei_var
 		}
 		ai_chance = {
 			base = 70
@@ -943,8 +949,18 @@ kurofune.16 = { #안세이 대옥
 		hidden_effect = {
 			trigger_event = {
 				id = kurofune.17
-				months = 27
+				months = 12
 			}
+		}
+		every_country = {
+			limit = {
+				is_subject_type = subject_type_daimyo
+				has_variable = ansei_var
+			}
+			trigger_event = { id = kurofune.116 days = 7 }
+		}
+		change_japan_start_var_effect = {
+			AMOUNT = 3
 		}
 		ai_chance = {
 			base = 90
@@ -953,11 +969,92 @@ kurofune.16 = { #안세이 대옥
 
 	option = {#숙청하지 않는다.
 		name = kurofune.16.b
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
 		ai_chance = {
 			base = 10
 		}
 	}
 }
+
+kurofune.116 = { #안세이 대옥으로 다이묘가 은퇴를 명받음
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.116.t
+	desc = kurofune.116.d
+	flavor = kurofune.116.f
+
+	trigger = {
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = daimyo_retire_scope
+		}
+		c:JAP = {
+			ruler = {
+				save_scope_as = shogun_scope
+			}
+		}
+		remove_variable = ansei_var
+	}
+
+	option = { #정계은퇴를 받아들인다.
+		name = kurofune.116.a
+		default_option = yes
+
+		scope:daimyo_retire_scope = {
+			kill_character = yes
+		}
+
+		change_sonno_var_effect = {
+			AMOUNT = 2
+		}
+	
+		ai_chance = {
+			base = 75
+		}
+	}
+
+	option = { #근신에 그치는 대신 3종 패널티를 먹음
+		name = kurofune.116.b
+
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+
+		add_modifier = {
+			name = jrd1
+			months = 60
+			is_decaying = yes 
+		}
+		add_modifier = {
+			name = jrd2
+			months = 60
+			is_decaying = yes 
+		}
+		add_modifier = {
+			name = jrd3
+			months = 60
+			is_decaying = yes 
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+}
+
 
 kurofune.17 = { #사쿠라다 문 밖의 변
 	type = country_event
@@ -981,9 +1078,13 @@ kurofune.17 = { #사쿠라다 문 밖의 변
 	immediate = {
 	}
 
-	option = { #사망
+	option = { #이이 나오스케 사망
 		name = kurofune.17.a
 		default_option = yes
+
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
 	}
 }
 
@@ -1034,6 +1135,9 @@ kurofune.18 = { #나마무기 사건
 			change_relations = {
 				country = c:GBR
 				value = -50
+			}
+			change_japan_start_var_effect = {
+				AMOUNT = 5
 			}
 			hidden_effect = {
 				trigger_event = { id = kurofune.20 years = 1 }
@@ -1105,6 +1209,11 @@ kurofune.20 = {#사츠에이 전쟁
 	option = {# 항복
 		default_option = yes
 		name = kurofune.20.a
+
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+
 		ai_chance = {
 			base = 100
 		}
@@ -1120,6 +1229,11 @@ kurofune.20 = {#사츠에이 전쟁
 				target_country = c:SAT
 			}
 		}
+
+		change_japan_start_var_effect = {
+			AMOUNT = 3
+		}
+
 		ai_chance = {
 			base = 0
 		}
@@ -1213,7 +1327,7 @@ kurofune.32 = { #토막파의 합류
 	}
 }
 
-kurofune.33 = { #좌막파 합류 - 다이묘
+kurofune.33 = { #좌막파 합류 - 천황
 	type = country_event
 	placement = root
 
@@ -1233,6 +1347,7 @@ kurofune.33 = { #좌막파 합류 - 다이묘
 	}
 
 	immediate = {
+		save_scope_as = daimyo_scope
 	}
 
 	option = {
@@ -1242,7 +1357,7 @@ kurofune.33 = { #좌막파 합류 - 다이묘
 }
 
 
-kurofune.34 = { #토막파 합류 - 다이묘
+kurofune.34 = { #토막파 합류 - 천황
 	type = country_event
 	placement = root
 
@@ -1270,7 +1385,7 @@ kurofune.34 = { #토막파 합류 - 다이묘
 	}
 }
 
-kurofune.40 = { #강제 발동
+kurofune.40 = { #대정봉환 강제 발동
 	type = country_event
 	placement = root
 
@@ -1292,6 +1407,9 @@ kurofune.40 = { #강제 발동
 
 	immediate = {
 		set_variable = kf40
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
 	}
 
 	option = {
@@ -1300,5 +1418,46 @@ kurofune.40 = { #강제 발동
 		change_japan_start_var_effect = {
 			AMOUNT = 100
 		}
+		every_country = {
+			limit = {
+				country_has_primary_culture = cu:japanese
+				NOR = {
+					AND = { exists = c:JAP c:JAP = THIS }
+				}
+			}
+			trigger_event = {
+				id = kurofune.41
+			}
+		}
+	}
+}
+
+kurofune.41 = { #대정봉환 강제 발동 알림
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.41.t
+	desc = kurofune.41.d
+	flavor = kurofune.41.f
+
+	trigger = {
+		NOT = { has_variable = kf40 }
+	}
+
+	immediate = {
+		set_variable = kf40
+	}
+
+	option = {
+		name = kurofune.41.a
+		default_option = yes
 	}
 }
