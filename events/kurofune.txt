@@ -103,9 +103,15 @@ kurofune.2 = { #2차 내항
 					target_country = c:JAP
 				}
 			}
+			change_japan_start_var_effect = {
+				AMOUNT = -5
+			}
 			hidden_effect = {
 				c:KOR = {
 					trigger_event = { id = kurofune.7 days = 5 }
+				}
+				c:CHI = {
+					trigger_event = { id = kurofune.107 days = 5 }
 				}
 			}
 		}
@@ -138,16 +144,30 @@ kurofune.3 = { #일미화친조약
 	}
 
 	immediate = {
-		c:KOR = {
-			trigger_event = {
-				id = kurofune.5
-				days = 5
-			}	
+	}
+
+	option = {# 일미화친조약
+		default_option = yes
+		name = kurofune.3.a
+		if = {
+			limit = { exists = c:USA }
+			change_relations = {
+				country = c:USA
+				value = 20
+			}
 		}
-		c:CHI = {
-			trigger_event = {
-				id = kurofune.6
-				days = 7
+		hidden_effect = {
+			c:KOR = {
+				trigger_event = {
+					id = kurofune.5
+					days = 5
+				}	
+			}
+			c:CHI = {
+				trigger_event = {
+					id = kurofune.6
+					days = 7
+				}
 			}
 		}
 		every_country = {
@@ -160,16 +180,87 @@ kurofune.3 = { #일미화친조약
 				days = { 10 30 }
 			}
 		}
+
+		every_country = {
+			limit = {
+				country_has_primary_culture = cu:japanese
+				NOT = { THIS = c:JAP }
+			}
+			trigger_event = {
+				id = kurofune.103
+			}
+		}
+	}
+}
+
+kurofune.103 = { #일미화친조약에 대한 일본 국가들의 반응
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
 	}
 
-	option = {# 일미화친조약
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.103.t
+	desc = kurofune.103.d
+	flavor = kurofune.103.f
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
 		default_option = yes
-		name = kurofune.3.a
-		if = {
-			limit = { exists = c:USA }
-			change_relations = {
-				country = c:USA
-				value = 20
+		name = kurofune.103.a
+
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					OR = {
+						c:TOS = ROOT
+						c:SAT = ROOT
+						c:CHO = ROOT
+					}
+				}
+				add = 100
+			}
+		}
+	}
+
+	option = {
+		name = kurofune.103.b
+
+		change_sonno_var_effect = {
+			AMOUNT = -1
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					OR = {
+						c:SEN = ROOT
+						c:AID = ROOT
+						c:YON = ROOT
+					}
+				}
+				add = 100
 			}
 		}
 	}
@@ -351,6 +442,46 @@ kurofune.7 = { #미국의 일본 침략으로 인한 조선의 반응
 
 	option = {
 		name = kurofune.7.b
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
+kurofune.107 = { #미국의 일본 침략으로 인한 중국의 반응
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.107.t
+	desc = kurofune.107.d
+	flavor = kurofune.107.f
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = kurofune.107.a
+		default_option = yes
+		ai_chance = {
+			base = 50
+		}
+	}
+
+	option = {
+		name = kurofune.107.b
 		ai_chance = {
 			base = 50
 		}
@@ -724,6 +855,17 @@ kurofune.12 = { #일미수호통상조약
 					target_country = c:JAP
 				}
 			}
+			change_japan_start_var_effect = {
+				AMOUNT = -5
+			}
+			hidden_effect = {
+				c:KOR = {
+					trigger_event = { id = kurofune.7 days = 5 }
+				}
+				c:CHI = {
+					trigger_event = { id = kurofune.107 days = 5 }
+				}
+			}
 		}
 		ai_chance = {
 			base = 0
@@ -770,6 +912,18 @@ kurofune.13 = { #류미수호통상조약
 			name = forced_market_opening
 			years = 5
 			is_decaying = yes
+		}
+		if = {
+			limit = {
+				is_subject_of = c:SAT
+			}
+			make_independent = yes
+			c:JAP = {
+				create_diplomatic_pact = {
+					country = PREV
+					type = vassal
+				}
+			}
 		}
 		ai_chance = {
 			base = 100
