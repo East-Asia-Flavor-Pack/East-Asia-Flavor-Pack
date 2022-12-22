@@ -621,6 +621,14 @@ meiji.2 = {
 				add_claim = ROOT
 			}
 		}
+		if = {
+			limit = {
+				NOT = { owns_entire_state_region = STATE_YANGHO }
+			}
+			s:STATE_YANGHO = {
+				add_claim = ROOT
+			}
+		}
 	}
 	option = {
 		name = meiji.2.b
@@ -1647,9 +1655,11 @@ meiji.12 = {
 				country_is_in_europe = yes
 				has_interest_marker_in_region = root.capital.region
 			}
-			change_relations = {
-				country = root
-				value = 30
+			ROOT = {
+				change_relations = {
+					country = PREV
+					value = 30
+				}
 			}
 		}
 	}
@@ -1760,12 +1770,14 @@ meiji.102 = { #폐번치현
 	on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
 
 	trigger = {
-		NOT = { has_variable = meiji_13 }
-		year = 1871
+		NOT = { has_variable = meiji_102 }
 	}
 
 	immediate = {
-		set_variable = meiji_13
+		set_variable = meiji_102
+		ROOT = {
+			save_scope_as = jap_scope
+		}
 	}
 
 	option = {
@@ -1781,6 +1793,10 @@ meiji.102 = { #폐번치현
  		if = { limit = {exists = c:SEN} c:SEN = { trigger_event = { id = meiji.103 } }}
  		if = { limit = {exists = c:GIS} c:GIS = { trigger_event = { id = meiji.103 } }}
  		if = { limit = {exists = c:ODA} c:ODA = { trigger_event = { id = meiji.103 } }}
+		trigger_event = {
+			id = meiji.104
+			days = 21
+		}
 	}
 }
 
@@ -1808,11 +1824,13 @@ meiji.103 = { #폐번치현
 	immediate = {
 	}
 
-	option = {#수락
+	option = { #수락
 		name = meiji.103.a
 		default_option = yes
 		play_as = c:JAP
-		c:JAP = { annex = root }
+		c:JAP = {
+			annex = ROOT
+		}
 		ai_chance = {
 			base = 100
 		}
@@ -1824,5 +1842,49 @@ meiji.103 = { #폐번치현
 		}
 	}
 
+}
+
+meiji.104 = { # 폐번치현 완료
+	type = country_event
+	placement = root
+	title = meiji.104.t
+	desc = meiji.104.d
+	flavor = meiji.104.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/asia_confucianism_shinto.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.104.a
+		default_option = yes
+
+		every_scope_state = {
+			limit = {
+				OR = {
+					THIS = s:STATE_KYUSHU.region_state:JAP
+					THIS = s:STATE_SHIKOKU.region_state:JAP
+					THIS = s:STATE_CHUGOKU.region_state:JAP
+					THIS = s:STATE_KANSAI.region_state:JAP
+					THIS = s:STATE_CHUBU.region_state:JAP
+					THIS = s:STATE_TOHOKU.region_state:JAP
+				}
+			}
+			set_state_type = incorporated
+		}
+	}
 }
 
