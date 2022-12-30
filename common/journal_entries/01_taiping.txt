@@ -14,8 +14,9 @@
 				has_pop_religion = protestant
 			}
 			state_region = { is_homeland = cu:han } # 추가
+			NOT = { state_region = s:STATE_FORMOSA }	#추가, 대만에 첫 아지트 박히고 굶어죽는거 방지
 			is_capital = no
-			turmoil > 0.15
+			turmoil > 0.10	#0.15>>0.10로 수정
 		}
 	}
 
@@ -28,10 +29,11 @@
 				}
 				NOT = { is_capital = yes }
 				state_region = { is_homeland = cu:han } # 추가
+				NOT = { state_region = s:STATE_FORMOSA }	#추가
 			}
 			add_modifier = {
 				name = god_worshippers
-				months = 43	#3.5년
+				months = 60	#5년
 			}
 		}
 		trigger_event = {
@@ -59,14 +61,21 @@
 			has_modifier = god_worshippers
 			count >= 4
 		}
-		any_scope_state = {
-			has_modifier = god_worshippers
-			state_region = { is_homeland = cu:han } # 추가
-			any_scope_pop = {
-				has_pop_religion = protestant
-				religion_accepted = no
+		OR = {
+			any_scope_state = {
+				has_modifier = god_worshippers
+				state_region = { is_homeland = cu:han } # 추가
+				any_scope_pop = {
+					has_pop_religion = protestant
+					religion_accepted = no
+				}
+				turmoil >= 0.20 # 또 수정 0.25>>0.20
 			}
-			turmoil >= 0.25 # 수정
+			any_scope_state = {
+				has_modifier = god_worshippers
+				count >= 6
+			}
+			year > 1850
 		}
 	}
 

@@ -21,6 +21,7 @@ kurofune.1 = { #1차 내항
 
 	trigger = {
 		NOT = { has_variable = kuro1 }
+		exists = c:USA
 	}
 
 	immediate = {
@@ -45,6 +46,9 @@ kurofune.1 = { #1차 내항
 			id = kurofune.2
 			months = 7
 		}
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
 	}
 }
 
@@ -65,6 +69,7 @@ kurofune.2 = { #2차 내항
 	flavor = kurofune.2.f
 
 	trigger = {
+		exists = c:USA
 	}
 
 	immediate = {
@@ -91,24 +96,29 @@ kurofune.2 = { #2차 내항
 				country = c:USA
 				value = -50
 			}
-		c:USA = {
-			create_diplomatic_play = {
-				type = dp_take_treaty_port
-				target_state = s:STATE_KANTO.region_state:JAP
-				target_country = c:JAP
+			c:USA = {
+				create_diplomatic_play = {
+					type = dp_take_treaty_port
+					target_state = s:STATE_KANTO.region_state:JAP
+					target_country = c:JAP
+				}
+			}
+			change_japan_start_var_effect = {
+				AMOUNT = -5
+			}
+			hidden_effect = {
+				c:KOR = {
+					trigger_event = { id = kurofune.7 days = 5 }
+				}
+				c:CHI = {
+					trigger_event = { id = kurofune.107 days = 5 }
+				}
 			}
 		}
-		hidden_effect = {
-			c:KOR = {
-				trigger_event = { id = kurofune.7 days = 5 }
-			}
+		ai_chance = {
+				base = 0
 		}
 	}
-	ai_chance = {
-			base = 0
-		}
-}
-
 }
 
 kurofune.3 = { #일미화친조약
@@ -130,19 +140,34 @@ kurofune.3 = { #일미화친조약
 	flavor = kurofune.3.f
 
 	trigger = {
+		exists = c:USA
 	}
 
 	immediate = {
-		c:KOR = {
-			trigger_event = {
-				id = kurofune.5
-				days = 5
-			}	
+	}
+
+	option = {# 일미화친조약
+		default_option = yes
+		name = kurofune.3.a
+		if = {
+			limit = { exists = c:USA }
+			change_relations = {
+				country = c:USA
+				value = 20
+			}
 		}
-		c:CHI = {
-			trigger_event = {
-				id = kurofune.6
-				days = 7
+		hidden_effect = {
+			c:KOR = {
+				trigger_event = {
+					id = kurofune.5
+					days = 5
+				}	
+			}
+			c:CHI = {
+				trigger_event = {
+					id = kurofune.6
+					days = 7
+				}
 			}
 		}
 		every_country = {
@@ -153,18 +178,89 @@ kurofune.3 = { #일미화친조약
 			trigger_event = {
 				id = kurofune.4
 				days = { 10 30 }
-			}			
+			}
+		}
+
+		every_country = {
+			limit = {
+				country_has_primary_culture = cu:japanese
+				NOT = { THIS = c:JAP }
+			}
+			trigger_event = {
+				id = kurofune.103
+			}
+		}
+	}
+}
+
+kurofune.103 = { #일미화친조약에 대한 일본 국가들의 반응
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.103.t
+	desc = kurofune.103.d
+	flavor = kurofune.103.f
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		default_option = yes
+		name = kurofune.103.a
+
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					OR = {
+						c:TOS = ROOT
+						c:SAT = ROOT
+						c:CHO = ROOT
+					}
+				}
+				add = 100
+			}
 		}
 	}
 
-	option = {# 일미화친조약
-		default_option = yes
-		name = kurofune.3.a
-		if = {
-			limit = { exists = c:USA }
-			change_relations = {
-				country = c:USA
-				value = 50
+	option = {
+		name = kurofune.103.b
+
+		change_sonno_var_effect = {
+			AMOUNT = -1
+		}
+
+		ai_chance = {
+			base = 50
+			modifier = {
+				trigger = {
+					OR = {
+						c:SEN = ROOT
+						c:AID = ROOT
+						c:YON = ROOT
+					}
+				}
+				add = 100
 			}
 		}
 	}
@@ -196,6 +292,9 @@ kurofune.4 = { #일본 개항에 따른 열강의 반응
 			limit = { country_has_primary_culture = cu:japanese }
 			save_scope_as = japan_nations
 		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
 	}
 
 	option = {
@@ -205,6 +304,10 @@ kurofune.4 = { #일본 개항에 따른 열강의 반응
 			country = scope:japan_nations
 		}
 		change_infamy = 10
+		custom_tooltip = {
+			text = kurofune.4.a_tt
+			set_variable = japan_mfn_var # 최혜국 대우
+		}
 		ai_chance = {
 			base = 50
 		}
@@ -345,6 +448,46 @@ kurofune.7 = { #미국의 일본 침략으로 인한 조선의 반응
 	}
 }
 
+kurofune.107 = { #미국의 일본 침략으로 인한 중국의 반응
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_westerners_arriving.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.107.t
+	desc = kurofune.107.d
+	flavor = kurofune.107.f
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = kurofune.107.a
+		default_option = yes
+		ai_chance = {
+			base = 50
+		}
+	}
+
+	option = {
+		name = kurofune.107.b
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
 kurofune.8 = { #안세이 대지진
 	type = country_event
 	placement = root
@@ -371,52 +514,63 @@ kurofune.8 = { #안세이 대지진
 		set_variable = kf8
 	}
 
-	option = { #구호조치
-		name = kurofune.8.a
-		default_option = yes
-	}
-
 	option = { #아무것도 안함
 		name = kurofune.8.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
 	}
 
 	option = { #쇼군에게 부탁함 - 오다와라
 		name = kurofune.8.b
 		trigger = {
-			this = c:ODA
+			THIS = c:ODA
 		}
 		c:JAP = {
 			trigger_event = { id = kurofune.9 days = { 5 30 } }
+		}
+		ai_chance = {
+			base = 99
 		}
 	}
 
 	option = { #쇼군에게 부탁함 - 카가
 		name = kurofune.8.c
 		trigger = {
-			this = c:KAG
+			THIS = c:KAG
 		}
 		c:JAP = {
 			trigger_event = { id = kurofune.10 days = { 5 30 } }
+		}
+		ai_chance = {
+			base = 99
 		}
 	}
 
 	option = { #쇼군에게 부탁함 - 키슈
 		name = kurofune.8.e
 		trigger = {
-			this = c:GIS
+			THIS = c:GIS
 		}
 		c:JAP = {
 			trigger_event = { id = kurofune.11 days = { 5 30 } }
+		}
+		ai_chance = {
+			base = 99
 		}
 	}
 
 	option = { #쇼군에게 부탁함 - 토사
 		name = kurofune.8.g
 		trigger = {
-			this = c:TOS
+			THIS = c:TOS
 		}
 		c:JAP = {
 			trigger_event = { id = kurofune.110 days = { 5 30 } }
+		}
+		ai_chance = {
+			base = 99
 		}
 	}
 }
@@ -452,13 +606,19 @@ kurofune.9 = { # 안세이 대지진의 구호 요청 - 오다와라
 		}
 		c:ODA = {
 			add_modifier = {
-			name = ansei
-			months = 36
+				name = ansei
+				months = 36
 			}
-		 change_relations = {
-					country = c:JAP
-					value = 30
-			}   
+		 	change_relations = {
+				country = c:JAP
+				value = 30
+			}
+			change_sonno_var_effect = {
+				AMOUNT = -1
+			}
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 
@@ -471,9 +631,14 @@ kurofune.9 = { # 안세이 대지진의 구호 요청 - 오다와라
 				value = -15
 			}
 		}
-		change_global_variable = {
-			name = japan_start_var
-			add = 1
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 }
@@ -508,13 +673,19 @@ kurofune.10 = { # 안세이 대지진의 구호 요청 - 카가
 		}
 		c:KAG = {
 			add_modifier = {
-			name = ansei
-			months = 36
+				name = ansei
+				months = 36
 			}
-		 change_relations = {
-					country = c:JAP
-					value = 30
-			}   
+		 	change_relations = {
+				country = c:JAP
+				value = 30
+			}
+			change_sonno_var_effect = {
+				AMOUNT = -1
+			}
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 
@@ -526,10 +697,15 @@ kurofune.10 = { # 안세이 대지진의 구호 요청 - 카가
 				country = c:JAP
 				value = -15
 			}
+			change_sonno_var_effect = {
+				AMOUNT = 1
+			}
 		}
-		change_global_variable = {
-			name = japan_start_var
-			add = 1
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 }
@@ -564,13 +740,19 @@ kurofune.11 = { # 안세이 대지진의 구호 요청 - 기슈
 		}
 		c:GIS = {
 			add_modifier = {
-			name = ansei
-			months = 36
+				name = ansei
+				months = 36
 			}
-		 change_relations = {
-					country = c:JAP
-					value = 30
-			}   
+		 	change_relations = {
+				country = c:JAP
+				value = 30
+			}
+			change_sonno_var_effect = {
+				AMOUNT = -1
+			}
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 
@@ -582,11 +764,16 @@ kurofune.11 = { # 안세이 대지진의 구호 요청 - 기슈
 				country = c:JAP
 				value = -15
 			}
+			change_sonno_var_effect = {
+				AMOUNT = 1
+			}
 		}
-		change_global_variable = {
-			name = japan_start_var
-			add = 1
-		} 
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+		ai_chance = {
+			base = 50
+		}
 	}
 }
 
@@ -620,13 +807,19 @@ kurofune.110 = { # 안세이 대지진의 구호 요청 - 토사
 		}
 		c:TOS = {
 			add_modifier = {
-			name = ansei
-			months = 36
+				name = ansei
+				months = 36
 			}
-		 change_relations = {
-					country = c:JAP
-					value = 30
-			}   
+			change_relations = {
+				country = c:JAP
+				value = 30
+			}
+			change_sonno_var_effect = {
+				AMOUNT = -1
+			}
+		}
+		ai_chance = {
+			base = 50
 		}
 	}
 
@@ -638,11 +831,16 @@ kurofune.110 = { # 안세이 대지진의 구호 요청 - 토사
 				country = c:JAP
 				value = -15
 			}
+			change_sonno_var_effect = {
+				AMOUNT = 1
+			}
 		}
-		change_global_variable = {
-			name = japan_start_var
-			add = 1
-		} 
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+		ai_chance = {
+			base = 50
+		}
 	}
 }
 
@@ -663,7 +861,7 @@ kurofune.12 = { #일미수호통상조약
 	desc = kurofune.12.d
 	flavor = kurofune.12.f
 
-	 trigger = {
+	trigger = {
 		NOT = { has_variable = kf12 }
 	}
 
@@ -674,6 +872,29 @@ kurofune.12 = { #일미수호통상조약
 	option = {# 요구 받아들임
 		default_option = yes
 		name = kurofune.12.a
+		activate_law = law_type:law_protectionism
+		c:USA = {
+			create_diplomatic_pact = {
+				country = PREV
+				type = trade_agreement
+			}
+		}
+		add_modifier = {
+			name = forced_market_opening
+			months = very_long_modifier_time
+			is_decaying = yes
+		}
+		every_country = {
+			limit = {
+				country_rank = rank_value:great_power
+				NOT = { c:USA = THIS }
+				has_variable = japan_mfn_var # 악명 감수하면서 최혜국 대우 설정 시
+			}
+			create_diplomatic_pact = {
+				country = PREV
+				type = trade_agreement
+			}
+		}
 		c:NIP = {
 			trigger_event = { id = kurofune.14 }
 		}
@@ -690,18 +911,29 @@ kurofune.12 = { #일미수호통상조약
 				country = c:USA
 				value = -50
 			}
-		c:USA = {
-			create_diplomatic_play = {
-				type = dp_take_treaty_port
-				target_state = s:STATE_KANTO.region_state:JAP
-				target_country = c:JAP
+			c:USA = {
+				create_diplomatic_play = {
+					type = dp_take_treaty_port
+					target_state = s:STATE_KANTO.region_state:JAP
+					target_country = c:JAP
+				}
+			}
+			change_japan_start_var_effect = {
+				AMOUNT = -5
+			}
+			hidden_effect = {
+				c:KOR = {
+					trigger_event = { id = kurofune.7 days = 5 }
+				}
+				c:CHI = {
+					trigger_event = { id = kurofune.107 days = 5 }
+				}
 			}
 		}
-	}
-	ai_chance = {
+		ai_chance = {
 			base = 0
 		}
-}
+	}
 
 }
 
@@ -721,7 +953,7 @@ kurofune.13 = { #류미수호통상조약
 	desc = kurofune.13.d
 	flavor = kurofune.13.f
 
-	 trigger = {
+	trigger = {
 		NOT = { has_variable = kf13 }
 	}
 
@@ -732,6 +964,30 @@ kurofune.13 = { #류미수호통상조약
 	option = {# 요구 받아들임
 		default_option = yes
 		name = kurofune.13.a
+		activate_law = law_type:law_protectionism
+		c:USA = {
+			create_diplomatic_pact = {
+				country = PREV
+				type = trade_agreement
+			}
+		}
+		add_modifier = {
+			name = forced_market_opening
+			months = very_long_modifier_time
+			is_decaying = yes
+		}
+		if = {
+			limit = {
+				is_subject_of = c:SAT
+			}
+			make_independent = yes
+			c:JAP = {
+				create_diplomatic_pact = {
+					country = PREV
+					type = vassal
+				}
+			}
+		}
 		ai_chance = {
 			base = 100
 		}
@@ -745,18 +1001,18 @@ kurofune.13 = { #류미수호통상조약
 				country = c:USA
 				value = -50
 			}
-		c:USA = {
-			create_diplomatic_play = {
-				type = dp_take_treaty_port
-				target_state = s:STATE_RYUKYU_ISLANDS.region_state:RYU
-				target_country = c:RYU
+			c:USA = {
+				create_diplomatic_play = {
+					type = dp_take_treaty_port
+					target_state = s:STATE_RYUKYU_ISLANDS.region_state:RYU
+					target_country = c:RYU
+				}
 			}
 		}
-	}
-	ai_chance = {
+		ai_chance = {
 			base = 0
 		}
-}
+	}
 }
 
 kurofune.14 = { #일미수호통상조약 - 조정의 반응
@@ -783,6 +1039,9 @@ kurofune.14 = { #일미수호통상조약 - 조정의 반응
 
 	option = {# 윤허함
 		name = kurofune.14.a
+		change_japan_start_var_effect = {
+			AMOUNT = 3
+		}
 		ai_chance = {
 			base = 10
 		}
@@ -791,17 +1050,21 @@ kurofune.14 = { #일미수호통상조약 - 조정의 반응
 	option = {# 윤허하지않음
 		default_option = yes
 		name = kurofune.14.b
-		hidden_effect = {
-			c:JAP = {
-				trigger_event = {
-					id = kurofune.16
-					days = 60
-				}
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
+		change_all_sonno_var_effect = {
+			AMOUNT = 1
+		}
+		c:JAP = {
+			trigger_event = {
+				id = kurofune.16
+				days = 21
 			}
 		}
 		every_country = {
 			limit = { is_subject_type = subject_type_daimyo }
-			trigger_event = { id = kurofune.15 }
+			trigger_event = { id = kurofune.15 days = 7 }
 		}
 		ai_chance = {
 			base = 90
@@ -834,20 +1097,29 @@ kurofune.15 = { #일미수호통상조약 - 다이묘의 반응
 	option = {# 조정편을 든다
 		name = kurofune.15.a
 		change_relations = {
-				country = c:JAP
-				value = -15
+			country = c:JAP
+			value = -15
 		}
-		change_global_variable = {
-			name = japan_start_var
-			add = 1
-		} 
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+		set_variable = {
+			name = ansei_var
+		}
 		ai_chance = {
 			base = 70
 			modifier = {
+				trigger = {
+					OR = {
+						c:TOS = ROOT
+						c:SAT = ROOT
+						c:CHO = ROOT
+					}
+				}
 				add = 80
-				c:TOS = ROOT
-				c:SAT = ROOT
-				c:CHO = ROOT
 			}
 		}
 	}
@@ -855,17 +1127,27 @@ kurofune.15 = { #일미수호통상조약 - 다이묘의 반응
 	option = {# 막부편을 든다
 		name = kurofune.15.b
 		default_option = yes
-	change_relations = {
-				country = c:JAP
-				value = 20
+		change_relations = {
+			country = c:JAP
+			value = 20
+		}
+		change_japan_start_var_effect = {
+			AMOUNT = 3
+		}
+		change_sonno_var_effect = {
+			AMOUNT = -1
 		}
 		ai_chance = {
 			base = 30
 			modifier = {
+				trigger = {
+					OR = {
+						c:SEN = ROOT
+						c:AID = ROOT
+						c:YON = ROOT
+					}
+				}
 				add = 100
-				c:SEN = ROOT
-				c:AID = ROOT
-				c:YON = ROOT
 			}
 		}
 	}
@@ -900,8 +1182,18 @@ kurofune.16 = { #안세이 대옥
 		hidden_effect = {
 			trigger_event = {
 				id = kurofune.17
-				months = 27
+				months = 12
 			}
+		}
+		every_country = {
+			limit = {
+				is_subject_type = subject_type_daimyo
+				has_variable = ansei_var
+			}
+			trigger_event = { id = kurofune.116 days = 7 }
+		}
+		change_japan_start_var_effect = {
+			AMOUNT = 3
 		}
 		ai_chance = {
 			base = 90
@@ -910,11 +1202,92 @@ kurofune.16 = { #안세이 대옥
 
 	option = {#숙청하지 않는다.
 		name = kurofune.16.b
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
 		ai_chance = {
 			base = 10
 		}
 	}
 }
+
+kurofune.116 = { #안세이 대옥으로 다이묘가 은퇴를 명받음
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.116.t
+	desc = kurofune.116.d
+	flavor = kurofune.116.f
+
+	trigger = {
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = daimyo_retire_scope
+		}
+		c:JAP = {
+			ruler = {
+				save_scope_as = shogun_scope
+			}
+		}
+		remove_variable = ansei_var
+	}
+
+	option = { #정계은퇴를 받아들인다.
+		name = kurofune.116.a
+		default_option = yes
+
+		scope:daimyo_retire_scope = {
+			kill_character = yes
+		}
+
+		change_sonno_var_effect = {
+			AMOUNT = 2
+		}
+	
+		ai_chance = {
+			base = 75
+		}
+	}
+
+	option = { #근신에 그치는 대신 3종 패널티를 먹음
+		name = kurofune.116.b
+
+		change_sonno_var_effect = {
+			AMOUNT = 1
+		}
+
+		add_modifier = {
+			name = jrd1
+			months = 60
+			is_decaying = yes 
+		}
+		add_modifier = {
+			name = jrd2
+			months = 60
+			is_decaying = yes 
+		}
+		add_modifier = {
+			name = jrd3
+			months = 60
+			is_decaying = yes 
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+}
+
 
 kurofune.17 = { #사쿠라다 문 밖의 변
 	type = country_event
@@ -938,9 +1311,13 @@ kurofune.17 = { #사쿠라다 문 밖의 변
 	immediate = {
 	}
 
-	option = { #사망
+	option = { #이이 나오스케 사망
 		name = kurofune.17.a
 		default_option = yes
+
+		change_japan_start_var_effect = {
+			AMOUNT = 5
+		}
 	}
 }
 
@@ -961,7 +1338,7 @@ kurofune.18 = { #나마무기 사건
 	desc = kurofune.18.d
 	flavor = kurofune.18.f
 
-	 trigger = {
+	trigger = {
 		NOT = { has_variable = kf18 }
 	}
 
@@ -970,7 +1347,7 @@ kurofune.18 = { #나마무기 사건
 		every_country = {
 			limit = { 
 				country_has_primary_culture = cu:japanese
-				NOT = { this = c:SAT } 
+				NOT = { THIS = c:SAT } 
 			}
 			trigger_event = { id = kurofune.19 days = { 4 10 } }
 		}
@@ -992,14 +1369,17 @@ kurofune.18 = { #나마무기 사건
 				country = c:GBR
 				value = -50
 			}
-		hidden_effect = {
-		trigger_event = { id = kurofune.20 years = 1 }
+			change_japan_start_var_effect = {
+				AMOUNT = 5
+			}
+			hidden_effect = {
+				trigger_event = { id = kurofune.20 years = 1 }
+			}
 		}
-	}
-	ai_chance = {
+		ai_chance = {
 			base = 40
 		}
-}
+	}
 
 }
 
@@ -1037,7 +1417,7 @@ kurofune.20 = {#사츠에이 전쟁
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-   event_image = {
+	event_image = {
 		texture = "gfx/event_pictures/japan/event_defalut.png"
 	}
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -1053,7 +1433,7 @@ kurofune.20 = {#사츠에이 전쟁
 		every_country = {
 			limit = { 
 				country_has_primary_culture = cu:japanese
-				NOT = { this = c:SAT } 
+				NOT = { THIS = c:SAT } 
 			}
 			trigger_event = { id = kurofune.21 days = { 4 10 } }
 		}
@@ -1062,6 +1442,11 @@ kurofune.20 = {#사츠에이 전쟁
 	option = {# 항복
 		default_option = yes
 		name = kurofune.20.a
+
+		change_japan_start_var_effect = {
+			AMOUNT = 1
+		}
+
 		ai_chance = {
 			base = 100
 		}
@@ -1077,6 +1462,11 @@ kurofune.20 = {#사츠에이 전쟁
 				target_country = c:SAT
 			}
 		}
+
+		change_japan_start_var_effect = {
+			AMOUNT = 3
+		}
+
 		ai_chance = {
 			base = 0
 		}
@@ -1148,7 +1538,7 @@ kurofune.32 = { #토막파의 합류
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-   event_image = {
+	event_image = {
 		texture = "gfx/event_pictures/japan/event_defalut.png"
 	}
 
@@ -1170,7 +1560,7 @@ kurofune.32 = { #토막파의 합류
 	}
 }
 
-kurofune.33 = { #좌막파 합류 - 다이묘
+kurofune.33 = { #좌막파 합류 - 천황
 	type = country_event
 	placement = root
 
@@ -1190,6 +1580,7 @@ kurofune.33 = { #좌막파 합류 - 다이묘
 	}
 
 	immediate = {
+		save_scope_as = daimyo_scope
 	}
 
 	option = {
@@ -1199,7 +1590,7 @@ kurofune.33 = { #좌막파 합류 - 다이묘
 }
 
 
-kurofune.34 = { #토막파 합류 - 다이묘
+kurofune.34 = { #토막파 합류 - 천황
 	type = country_event
 	placement = root
 
@@ -1227,7 +1618,7 @@ kurofune.34 = { #토막파 합류 - 다이묘
 	}
 }
 
-kurofune.40 = { #강제 발동
+kurofune.40 = { #대정봉환 강제 발동
 	type = country_event
 	placement = root
 
@@ -1249,14 +1640,57 @@ kurofune.40 = { #강제 발동
 
 	immediate = {
 		set_variable = kf40
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
 	}
 
 	option = {
 		name = kurofune.40.a
 		default_option = yes
-		change_global_variable = {
-			name = japan_start_var
-			add = 100
-		} 
+		change_japan_start_var_effect = {
+			AMOUNT = 125
+		}
+		every_country = {
+			limit = {
+				country_has_primary_culture = cu:japanese
+				NOR = {
+					AND = { exists = c:JAP c:JAP = THIS }
+				}
+			}
+			trigger_event = {
+				id = kurofune.41
+			}
+		}
+	}
+}
+
+kurofune.41 = { #대정봉환 강제 발동 알림
+	type = country_event
+	placement = root
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		texture = "gfx/event_pictures/japan/event_defalut.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	title = kurofune.41.t
+	desc = kurofune.41.d
+	flavor = kurofune.41.f
+
+	trigger = {
+		NOT = { has_variable = kf40 }
+	}
+
+	immediate = {
+		set_variable = kf40
+	}
+
+	option = {
+		name = kurofune.41.a
+		default_option = yes
 	}
 }
