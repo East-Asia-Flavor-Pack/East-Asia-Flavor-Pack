@@ -1,0 +1,219 @@
+﻿ai_strategy_progressive_agenda = {
+	icon = "gfx/interface/icons/ai_strategy_icons/progressive_agenda.dds"
+	
+	type = political
+	
+	revolution_aversion = 2 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~25% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 15 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 100 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 25 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 40
+		
+		if = {
+			limit = { any_interest_group = { is_insurrectionary = yes } }
+			add = 60
+		}		
+	}		
+	
+	pro_interest_groups = {
+		ig_intelligentsia
+		ig_industrialists
+		ig_petty_bourgeoisie
+		ig_trade_unions
+	}
+
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 75	
+		}				
+		institution_social_security = {	
+			value = 100			
+		}
+		institution_workplace_safety = {	
+			value = 100			
+		}		
+		institution_schools = {	
+			value = 150			
+		}		
+		institution_police = {	
+			value = 75			
+		}		
+		institution_health_system = {	
+			value = 100			
+		}		
+		institution_home_affairs = {	
+			value = 100			
+		}				
+	}
+
+	possible = {
+		OR = {
+			AND = {
+				exists = ig:ig_intelligentsia
+				ig:ig_intelligentsia = { is_marginal = no }
+			}
+			AND = {			
+				exists = ig:ig_industrialists
+				ig:ig_industrialists = { is_marginal = no }
+			}
+		}	
+	}
+	
+	weight = {
+		value = 5	
+		
+		if = {
+			limit = {
+				exists = ruler
+				ruler = {
+					OR = {
+						has_ideology = ideology_radical
+						has_ideology = ideology_atheist
+						has_ideology = ideology_feminist
+						has_ideology = ideology_abolitionist
+						has_ideology = ideology_market_liberal
+					}
+				}
+			}
+			
+			add = 20
+		}	
+
+		if = {
+			limit = {
+				exists = ruler
+				ruler = {
+					has_ideology = ideology_republican_leader
+				}
+			}
+			
+			add = 40
+		}			
+				
+		if = {
+			limit = {
+				exists = ig:ig_intelligentsia
+				ig:ig_intelligentsia = { is_powerful = yes }
+			}
+			
+			add = 10
+		}
+		
+		if = {
+			limit = {
+				exists = ig:ig_industrialists
+				ig:ig_industrialists = { is_powerful = yes }
+			}
+			
+			add = 10
+		}
+
+		if = {
+			limit = {
+				has_variable = japan_forced_to_open_market
+			}
+			add = 100
+		}
+		
+		# 일본
+		## 모드
+		if = { 
+			limit = { 
+					root.capital.region = sr:region_japan
+					has_global_variable = kurofune_complete
+			}
+			add = 100
+		}
+		## 바닐라
+		## TODO: japan_forced_to_open_market 분석 필요
+		if = {
+			limit = {
+				has_variable = japan_forced_to_open_market
+			}
+			add = 100
+		}
+		
+		if = { #동로마
+			limit = { 
+					has_journal_entry = je_sick_man_main
+			}
+			add = 100
+		}
+	}
+}
+
+
+
+ai_strategy_maintain_mandate_of_heaven = {
+	icon = "gfx/interface/icons/ai_strategy_icons/reactionary_agenda.dds"
+	
+	type = political
+
+	revolution_aversion = 5 # Chance each day that the AI will stop enacting a law that is going to spark a civil war (1 aversion should translate into ~50% chance of avoiding a civil war) - also influences how flexible the AI is willing to be about its max progressiveness/regressiveness to avoid a revolution
+	min_law_chance_to_pass = 50 # If base chance for law to pass is below this, don't enact it
+	max_progressiveness = 25 # How progressive is the AI willing to be when passing laws
+	max_regressiveness = 25 # How regressive is the AI willing to be when passing laws
+	
+	# Chance each update that the AI is willing to start changing a law (1 = 1%)
+	change_law_chance = { 
+		value = 1
+	}	
+
+	pro_interest_groups = {
+		ig_landowners
+		ig_armed_forces
+	}
+	
+	anti_interest_groups ={
+		ig_industrialists
+		ig_trade_unions
+		ig_intelligentsia
+	}
+	
+	institution_scores = {
+		institution_colonial_affairs = {	
+			value = 50			
+		}				
+		institution_social_security = {	
+			value = 50			
+		}
+		institution_workplace_safety = {	
+			value = 50			
+		}		
+		institution_schools = {	
+			value = 50			
+		}		
+		institution_police = {	
+			value = 200			
+		}		
+		institution_health_system = {	
+			value = 50		
+		}		
+		institution_home_affairs = {	
+			value = 200			
+		}				
+	}	
+	
+	possible = {
+		exists = c:CHI
+		this = c:CHI
+		is_country_type = unrecognized
+		has_law = law_type:law_monarchy
+	}
+	
+	weight = { # 수정
+		value = 50
+		if = {
+			limit = {
+				OR = {
+					has_modifier = tianming
+					has_modifier = opium_wars_lost
+				}
+			}
+			multiply = 4
+		}
+	}
+}
