@@ -25,23 +25,59 @@ hui_revolt.1 = {
 
 	immediate = {
 		save_scope_as = chi_scope
-		random_scope_state = {
+		random_state = {
 			limit = {
 				OR = {
 					AND = {
 						NOT = { has_variable = PNG_start }
 						OR = {
-							this = s:STATE_SICHUAN.region_state:CHI
-							this = s:STATE_YUNNAN.region_state:CHI
+							AND = {
+								state_region = s:STATE_SICHUAN
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
+							AND = {
+								state_region = s:STATE_YUNNAN
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
 						}
 					}
 					AND = {
 						NOT = { has_variable = YTS_start }
 						OR = {
-							this = s:STATE_GANSU.region_state:CHI
-							this = s:STATE_QINGHAI.region_state:CHI
-							this = s:STATE_DZUNGARIA.region_state:CHI
-							this = s:STATE_TIANSHAN.region_state:CHI
+							AND = {
+								state_region = s:STATE_GANSU
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
+							AND = {
+								state_region = s:STATE_QINGHAI
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
+							AND = {
+								state_region = s:STATE_DZUNGARIA
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
+							AND = {
+								state_region = s:STATE_TIANSHAN
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+							}
 						}
 					}
 				}
@@ -64,19 +100,45 @@ hui_revolt.1 = {
 					months = 18
 				}
 				if = {
-					limit = { s:STATE_YUNNAN.region_state:CHI = { has_modifier = hui_revolt_3 } }
+					limit = {
+						s:STATE_YUNNAN = {
+							any_scope_state = {
+								OR = {
+									owner = c:CHI
+									top_overlord = c:CHI
+								}
+								has_modifier = hui_revolt_3
+							}
+						}
+					}
 					c:CHI = { trigger_event = { id = hui_revolt.4 } }
 				}
 				else_if = {
 					limit = {
 						AND = {
-							OR = {
-								s:STATE_TIANSHAN.region_state:CHI = { has_modifier = hui_revolt_2 }
-								s:STATE_TIANSHAN.region_state:CHI = { has_modifier = hui_revolt_3 }
+							s:STATE_TIANSHAN = {
+								any_scope_state = {
+									OR = {
+										owner = c:CHI
+										top_overlord = c:CHI
+									}
+									OR = {
+										has_modifier = hui_revolt_2
+										has_modifier = hui_revolt_3
+									}
+								}
 							}
-							OR = {
-								s:STATE_DZUNGARIA.region_state:CHI = { has_modifier = hui_revolt_2 }
-								s:STATE_DZUNGARIA.region_state:CHI = { has_modifier = hui_revolt_3 }
+							s:STATE_DZUNGARIA = {
+								any_scope_state = {
+									OR = {
+										owner = c:CHI
+										top_overlord = c:CHI
+									}
+									OR = {
+										has_modifier = hui_revolt_2
+										has_modifier = hui_revolt_3
+									}
+								}
 							}
 						}
 					}
@@ -156,7 +218,7 @@ hui_revolt.3 = {
 
 hui_revolt.4 = {
 	type = country_event
-	placement = s:STATE_YUNNAN.region_state:CHI
+	placement = scope:revolt_state
 
 	title = hui_revolt.4.t
 	desc = hui_revolt.4.d
@@ -180,39 +242,52 @@ hui_revolt.4 = {
 	immediate = {
 		save_scope_as = chi_scope
 		set_variable = PNG_start
-		s:STATE_SICHUAN.region_state:CHI = {
-			save_scope_as = revolt_state
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
+		s:STATE_SICHUAN = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_target_state
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
 		}
-		s:STATE_YUNNAN.region_state:CHI = {
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
+		s:STATE_YUNNAN = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_state
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
 		}
 		create_country = {
 			tag = PNG
 			origin = this
-			state = s:STATE_YUNNAN.region_state:CHI
+			state = scope:revolt_state
 			on_created = {
 				create_character = {
 					first_name = "Wenxiu"
@@ -432,6 +507,9 @@ hui_revolt.4 = {
 	option = {
 		name = hui_revolt.4.a
 		default_option = yes
+		scope:revolt_target_state.state_region = {
+			add_claim = c:PNG
+		}
 		c:PNG = {
 			create_diplomatic_play = {
 				name = yunnan_hui_rebellion
@@ -442,6 +520,11 @@ hui_revolt.4 = {
 					holder = c:CHI
 					type = annex_country
 					target_country = c:PNG
+				}
+				add_war_goal = {
+					holder = c:PNG
+					type = return_state
+					target_state = scope:revolt_target_state
 				}
 			}
 		}
@@ -455,7 +538,7 @@ hui_revolt.4 = {
 
 hui_revolt.5 = {
 	type = country_event
-	placement = s:STATE_TIANSHAN.region_state:CHI
+	placement = scope:revolt_state_TIANSHAN
 
 	title = hui_revolt.5.t
 	desc = hui_revolt.5.d
@@ -478,67 +561,94 @@ hui_revolt.5 = {
 	immediate = {
 		save_scope_as = chi_scope
 		set_variable = YTS_start
-		s:STATE_GANSU.region_state:CHI = {
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
-			}
-		}
-		s:STATE_QINGHAI.region_state:CHI = {
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
+		s:STATE_GANSU = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_target_state_GANSU
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
 		}
-		s:STATE_DZUNGARIA.region_state:CHI = {
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
+		s:STATE_QINGHAI = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_target_state_QINGHAI
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
 		}
-		s:STATE_TIANSHAN.region_state:CHI = {
-			save_scope_as = revolt_state
-			if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
+		s:STATE_DZUNGARIA = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_state_DZUNGARIA
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
-			if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-			}
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				remove_modifier = hui_revolt_3
+		}
+		s:STATE_TIANSHAN = {
+			random_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				save_scope_as = revolt_state_TIANSHAN
+				if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_3 }
+					remove_modifier = hui_revolt_3
+				}
 			}
 		}
 		create_country = {
 			tag = YTS
 			origin = this
-			state = s:STATE_TIANSHAN.region_state:CHI
+			state = scope:revolt_state_TIANSHAN
 			on_created = {
 				create_character = {
 					first_name = "Yaqub"
@@ -743,7 +853,7 @@ hui_revolt.5 = {
 		s:STATE_TIANSHAN.region_state:YTS = {
 			activate_building = { building = building_conscription_center }
 		}
-		s:STATE_DZUNGARIA.region_state:CHI = {
+		scope:revolt_state_DZUNGARIA = {
 			set_state_owner = c:YTS
 			set_state_type = incorporated
 		}
@@ -767,6 +877,12 @@ hui_revolt.5 = {
 	option = {
 		name = hui_revolt.5.a
 		default_option = yes
+		scope:revolt_target_state_GANSU.state_region = {
+			add_claim = c:YTS
+		}
+		scope:revolt_target_state_QINGHAI.state_region = {
+			add_claim = c:YTS
+		}
 		c:YTS = {
 			create_diplomatic_play = {
 				name = tongzhi_hui_revolt
@@ -777,6 +893,16 @@ hui_revolt.5 = {
 					holder = c:CHI
 					type = annex_country
 					target_country = c:YTS
+				}
+				add_war_goal = {
+					holder = c:YTS
+					type = return_state
+					target_state = scope:revolt_target_state_GANSU
+				}
+				add_war_goal = {
+					holder = c:YTS
+					type = return_state
+					target_state = scope:revolt_target_state_QINGHAI
 				}
 			}
 		}
@@ -884,7 +1010,9 @@ hui_revolt.8 = {
 
 	immediate = {
 		c:CHI = { save_scope_as = chi_scope }
-		s:STATE_JETISY.region_state:CHI = { save_scope_as = ili_scope }
+		s:STATE_JETISY = {
+			random_scope_state = { save_scope_as = ili_scope }
+		}
 		c:YTS = { ruler = { save_scope_as = yts_ruler } }
 	}
 
@@ -924,7 +1052,9 @@ hui_revolt.9 = {
 
 	immediate = {
 		c:RUS = { save_scope_as = rus_scope }
-		s:STATE_JETISY.region_state:CHI = { save_scope_as = ili_scope }
+		s:STATE_JETISY = {
+			random_scope_state = { save_scope_as = ili_scope }
+		}
 		c:YTS = { ruler = { save_scope_as = yts_ruler } }
 	}
 
@@ -972,7 +1102,9 @@ hui_revolt.10 = {
 
 	immediate = {
 		c:CHI = { save_scope_as = chi_scope }
-		s:STATE_JETISY.region_state:CHI = { save_scope_as = ili_scope }
+		s:STATE_JETISY = {
+			random_scope_state = { save_scope_as = ili_scope }
+		}
 	}
 
 	option = {
@@ -982,16 +1114,16 @@ hui_revolt.10 = {
 		create_diplomatic_play = {
 			war = yes
 			type = dp_return_state
-			target_state = s:STATE_JETISY.region_state:CHI
+			target_state = s:STATE_JETISY.region_state:ILI
 			add_war_goal = {
 				holder = c:RUS
 				type = return_state
-				target_state = s:STATE_KIRGHIZIA.region_state:CHI
+				target_state = s:STATE_KIRGHIZIA.region_state:ILI
 			}
 			add_war_goal = {
 				holder = c:RUS
 				type = return_state
-				target_state = s:STATE_TOMSK.region_state:CHI
+				target_state = s:STATE_TOMSK.region_state:ULI
 			}
 		}
 		ai_chance = {
@@ -1026,24 +1158,56 @@ hui_revolt.11 = {
 
 	immediate = {
 		c:CHI = { save_scope_as = chi_scope }
-		s:STATE_JETISY.region_state:CHI = { save_scope_as = ili_scope }
+		s:STATE_JETISY = {
+			random_scope_state = { save_scope_as = ili_scope }
+		}
 	}
 
 	option = {
 		name = hui_revolt.11.a
 		default_option = yes
 		
-		s:STATE_JETISY.region_state:CHI = {
-			set_state_owner = c:RUS
-			set_state_type = unincorporated
+		s:STATE_JETISY = {
+			every_scope_state = {
+				limit = {
+					owner = {
+						OR = {
+							this = c:CHI
+							overlord = c:CHI
+						}
+					}
+				}
+				set_state_owner = c:RUS
+				set_state_type = unincorporated
+			}
 		}
-		s:STATE_KIRGHIZIA.region_state:CHI = {
-			set_state_owner = c:RUS
-			set_state_type = unincorporated
+		s:STATE_KIRGHIZIA = {
+			every_scope_state = {
+				limit = {
+					owner = {
+						OR = {
+							this = c:CHI
+							overlord = c:CHI
+						}
+					}
+				}
+				set_state_owner = c:RUS
+				set_state_type = unincorporated
+			}
 		}
-		s:STATE_TOMSK.region_state:CHI = {
-			set_state_owner = c:RUS
-			set_state_type = unincorporated
+		s:STATE_TOMSK = {
+			every_scope_state = {
+				limit = {
+					owner = {
+						OR = {
+							this = c:CHI
+							overlord = c:CHI
+						}
+					}
+				}
+				set_state_owner = c:RUS
+				set_state_type = unincorporated
+			}
 		}
 		ai_chance = {
 			base = 1

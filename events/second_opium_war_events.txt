@@ -108,7 +108,9 @@ second_opium_war.3 = {
 	immediate = {
 		c:GBR = { save_scope_as = gbr_scope }
 		c:CHI = { save_scope_as = chi_scope }
-		s:STATE_OUTER_MANCHURIA.region_state:CHI = { save_scope_as = outer_manchuria_scope }
+		s:STATE_OUTER_MANCHURIA = {
+			random_scope_state = { save_scope_as = outer_manchuria_scope }
+		}
 	}
 
 	option = {
@@ -147,7 +149,9 @@ second_opium_war.4 = {
 	immediate = {
 		c:GBR = { save_scope_as = gbr_scope }
 		c:RUS = { save_scope_as = rus_scope }
-		s:STATE_OUTER_MANCHURIA.region_state:CHI = { save_scope_as = outer_manchuria_scope }
+		s:STATE_OUTER_MANCHURIA = {
+			random_scope_state = { save_scope_as = outer_manchuria_scope }
+		}
 	}
 
 	option = {
@@ -194,7 +198,9 @@ second_opium_war.5 = {
 	immediate = {
 		c:GBR = { save_scope_as = gbr_scope }
 		c:RUS = { save_scope_as = rus_scope }
-		s:STATE_OUTER_MANCHURIA.region_state:CHI = { save_scope_as = outer_manchuria_scope }
+		s:STATE_OUTER_MANCHURIA = {
+			random_scope_state = { save_scope_as = outer_manchuria_scope }
+		}
 	}
 
 	option = {
@@ -203,20 +209,31 @@ second_opium_war.5 = {
 		
 		create_diplomatic_play = {
 			war = yes
-			type = dp_return_state
-			target_state = s:STATE_OUTER_MANCHURIA.region_state:CHI
-			
+			type = dp_humiliation
+			target_country = c:CHI
+		}	
+		every_diplomatic_play = {
+			limit = {
+				initiator = c:RUS
+				target = c:CHI
+			}
+			add_war_goal = {
+				holder = c:RUS
+				type = return_state
+				target_state = s:STATE_OUTER_MANCHURIA.region_state:HLJ
+			}
+			add_war_goal = {
+				holder = c:RUS
+				type = return_state
+				target_state = s:STATE_OUTER_MANCHURIA.region_state:JLN
+			}
 			add_war_goal = {
 				holder = c:RUS
 				type = war_reparations
 				target_country = c:CHI
 			}
-			add_war_goal = {
-				holder = c:RUS
-				type = humiliation
-				target_country = c:CHI
-			}
-		}	
+		}
+		
 		ai_chance = {
 			base = 1
 		}
@@ -249,15 +266,27 @@ second_opium_war.6 = {
 	immediate = {
 		c:GBR = { save_scope_as = gbr_scope }
 		c:RUS = { save_scope_as = rus_scope }
-		s:STATE_OUTER_MANCHURIA.region_state:CHI = { save_scope_as = outer_manchuria_scope }
+		s:STATE_OUTER_MANCHURIA = {
+			random_scope_state = { save_scope_as = outer_manchuria_scope }
+		}
 	}
 
 	option = {
 		name = second_opium_war.6.a
 		default_option = yes
-		s:STATE_OUTER_MANCHURIA.region_state:CHI = {
-			set_state_owner = c:RUS
-			set_state_type = unincorporated
+		s:STATE_OUTER_MANCHURIA = {
+			every_scope_state = {
+				limit = {
+					owner = {
+						OR = {
+							this = c:CHI
+							top_overlord = c:CHI
+						}
+					}
+				}
+				set_state_owner = c:RUS
+				set_state_type = unincorporated
+			}
 		}
 		ai_chance = {
 			base = 1
