@@ -1,0 +1,58 @@
+﻿namespace = eafp_debug
+
+# 조선이 커스텀기가 있는 모든 국가 속국화
+# 거꾸로 말해서 여기서 속국이 되는 모든 국가는
+# 커스텀 식민지기가 있어야 함
+#
+# **오방색**
+# - 동-청: 태평양, 북아메리카, 남아메리카
+# - 서-백: 중국, 인도차이나, 인도, 아프리카
+# - 남-적: 동남아시아, 오세아니아
+# - 북-흑: 만주
+# - 중-황: 일본 열도
+eafp_debug.1 = {
+	hidden = yes
+
+	immediate = {
+		if = {
+			limit = {
+				exists = c:KOR
+				exists = cu:japanese
+				exists = cu:ainu
+			}
+			c:KOR = {
+				set_variable = national_flag
+				# make_independent = yes
+			}
+			every_country = {
+				limit = {
+					NOT = {
+						is_country_type = decentralized
+					}
+					OR = {
+						capital = {
+							OR = {
+								region = sr:region_japan
+								region = sr:region_indochina
+								region = sr:region_indonesia
+								region = sr:region_oceania
+							}
+						}
+						this = c:MAD
+					}
+				}
+				save_scope_as = target_country
+				c:KOR = {
+					create_diplomatic_pact = {
+						country = scope:target_country
+						type = vassal
+					}
+					set_relations = {
+						country = scope:target_country
+						value = 100
+					}
+				}
+			}
+		}
+	}
+}
