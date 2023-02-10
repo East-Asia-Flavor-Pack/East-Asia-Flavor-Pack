@@ -308,6 +308,138 @@ chinese_westernization.302 = { # 철도 공포
 	}
 }
 
+chinese_westernization.303 = { # 관독상판?
+	type = country_event
+	placement = scope:first_railroad_state
+
+	title = chinese_westernization.303.t
+	desc = chinese_westernization.303.d
+	flavor = chinese_westernization.303.f
+	
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		this = c:CHI
+		NOT = { has_variable = chi_kuan-tu_shang-pan }
+		any_scope_building = {
+			is_building_type = building_railway
+			is_under_construction = no
+		}
+	}
+
+	immediate = {
+		set_variable = chi_kuan-tu_shang-pan
+		random_scope_building = {
+			limit = {
+				is_building_type = building_railway
+				is_under_construction = no
+			}
+			state = { save_scope_as = first_railroad_state }
+			owner = { save_scope_as = chi_scope }
+		}
+		if = {
+			limit = { NOT = { has_variable = chiwes304 } }
+			set_variable = chiwes304
+		}
+	}
+
+	option = {
+		name = chinese_westernization.303.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chinese_westernization.303.b
+		# TODO 관리 모디파이어 (생산성 깎는 대신 기업가로 전환 확률 높이기)
+		ai_chance = {
+			base = 10
+		}
+	}
+}
+
+chinese_westernization.304 = { # 관료들의 반발 (관독관판 -> 관독상판)
+	type = country_event
+	placement = root
+
+	title = chinese_westernization.304.t
+	desc = chinese_westernization.304.d
+	flavor = chinese_westernization.304.f
+	
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		this = c:CHI
+		NOT = { has_variable = chiwes304 }
+		any_scope_building = {
+			is_building_type = building_railway
+			is_under_construction = yes
+		}
+	}
+
+	immediate = {
+		set_variable = chiwes304
+		random_scope_building = {
+			limit = {
+				is_building_type = building_railway
+				is_under_construction = yes
+			}
+			state = { save_scope_as = first_railroad_state }
+			owner = { save_scope_as = chi_scope }
+		}
+	}
+
+	option = {
+		name = chinese_westernization.304.a
+		default_option = yes
+		# TODO - 다시 생산방식을 정부 투자로 되돌리기
+		ai_chance = {
+			base = 0.5
+		}
+	}
+
+	option = {
+		name = chinese_westernization.304.b
+		add_modifier = {
+			name = chiwes304b
+			is_decaying = yes
+			years = 3
+		}
+		add_radicals = {
+			pop_type = bureaucrats
+			value = medium_radicals
+		}
+		add_radicals = {
+			pop_type = bureaucrats
+			value = medium_radicals
+		}
+		ai_chance = {
+			base = 0.5
+		}
+	}
+}
+
+
 # 윤선초상국 (주식회사, 조선소)
 
 # K'ai-p'ing Coal Mines 1877년
