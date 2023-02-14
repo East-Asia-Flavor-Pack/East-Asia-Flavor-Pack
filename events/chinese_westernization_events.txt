@@ -145,13 +145,13 @@ chinese_westernization.102 = { # (도시 이름) 병공창
 	}
 }
 
-chinese_westernization.103 = { # (도시 이름) 무비학당 설립 시도
+chinese_westernization.121 = { # (도시 이름) 무비학당 설립 시도
 	type = country_event
 	placement = scope:military_academy_state
 
-	title = chinese_westernization.103.t
-	desc = chinese_westernization.103.d
-	flavor = chinese_westernization.103.f
+	title = chinese_westernization.121.t
+	desc = chinese_westernization.121.d
+	flavor = chinese_westernization.121.f
 	
 	duration = 3
 
@@ -165,28 +165,95 @@ chinese_westernization.103 = { # (도시 이름) 무비학당 설립 시도
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-
+		# je_chi_military_academy로 트리거
 	}
 
 	immediate = {
-		set_variable = chi_first_modern_arsenal
-		save_scope_as = chi_scope
-		random_scope_building = {
-			limit = {
-				# is_building_type = building_arms_industry
-				has_active_production_method = pm_rifles
-				is_under_construction = no
+		random_scope_state = {
+			limit = { NOT = { has_variable = chi_military_academy } }
+			weight = {
+				base = 0
+				modifier = {
+					add = 10
+					state_is_in_china = yes
+				}
+				modifier = {
+					add = 1
+					state_population > [ arable land 값 ] * 얼마 # TODO
+				}
+				modifier = {
+					add = 100
+					this = s:STATE_BEIJING.region_state:CHI
+				}
 			}
-			state = { save_scope_as = military_academy_state }
+			save_scope_as = military_academy_state
 		}
+		save_scope_as = chi_scope
 	}
 
 	option = {
-		name = chinese_westernization.103.a
+		name = chinese_westernization.121.a
 		default_option = yes
 		ai_chance = {
 			base = 1
 		}
+	}
+}
+
+expedition_events.40 = { #Crew member drowns
+	type = country_event
+    placement = scope:current_expedition_location
+
+    title = expedition_events.40.t
+    desc = expedition_events.40.d
+    flavor = expedition_events.40.f
+
+    event_image = {
+		video = "gfx/event_pictures/middleeast_jungle_expedition.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/middleeast/jungle_expedition"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+    duration = 3
+	
+	trigger = {
+		trigger_if = {
+			limit = { has_variable = congo_river_expedition_var }
+			var:expedition_progress >= 2
+			NOT = { has_variable = crew_member_drowns }
+		}
+		trigger_else_if = {
+			limit = { has_variable = niger_river_expedition_var }
+			NOT = { has_variable = crew_member_drowns }
+		}
+	}
+	
+	immediate = {
+		set_variable = crew_member_drowns
+		if = {
+			limit = { has_variable = congo_river_expedition_var }
+			congo_river_expedition_location = yes
+		}
+		else_if = {
+			limit = { has_variable = niger_river_expedition_var }
+			niger_river_expedition_location = yes
+		}
+	}
+
+	option = {
+		name = expedition_events.40.a
+		add_medium_peril_effect = yes
+		expedition_moderate_progress_effect = yes
+	}
+
+	option = {
+		name = expedition_events.40.b
+		default_option = yes
+		add_small_peril_effect = yes
+		custom_tooltip = expedition_event_delayed_tt
 	}
 }
 
