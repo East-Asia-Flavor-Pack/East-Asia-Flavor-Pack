@@ -169,25 +169,6 @@ chinese_westernization.121 = { # (도시 이름) 무비학당 설립 시도
 	}
 
 	immediate = {
-		random_scope_state = {
-			limit = { NOT = { has_variable = chi_military_academy } }
-			weight = {
-				base = 0
-				modifier = {
-					add = 10
-					state_is_in_china = yes
-				}
-				modifier = {
-					add = 1
-					state_population > [ arable land 값 ] * 얼마 # TODO
-				}
-				modifier = {
-					add = 100
-					this = s:STATE_BEIJING.region_state:CHI
-				}
-			}
-			save_scope_as = military_academy_state
-		}
 		save_scope_as = chi_scope
 	}
 
@@ -200,62 +181,59 @@ chinese_westernization.121 = { # (도시 이름) 무비학당 설립 시도
 	}
 }
 
-expedition_events.40 = { #Crew member drowns
+chinese_westernization.122 = { # 반발
 	type = country_event
-    placement = scope:current_expedition_location
+    placement = scope:military_academy_state
 
-    title = expedition_events.40.t
-    desc = expedition_events.40.d
-    flavor = expedition_events.40.f
+    title = chinese_westernization.122.t
+    desc = chinese_westernization.122.d
+    flavor = chinese_westernization.122.f
 
-    event_image = {
-		video = "gfx/event_pictures/middleeast_jungle_expedition.bk2"
+    duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/middleeast/jungle_expedition"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
 
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-    duration = 3
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 	
 	trigger = {
-		trigger_if = {
-			limit = { has_variable = congo_river_expedition_var }
-			var:expedition_progress >= 2
-			NOT = { has_variable = crew_member_drowns }
-		}
-		trigger_else_if = {
-			limit = { has_variable = niger_river_expedition_var }
-			NOT = { has_variable = crew_member_drowns }
-		}
+		
 	}
 	
 	immediate = {
-		set_variable = crew_member_drowns
-		if = {
-			limit = { has_variable = congo_river_expedition_var }
-			congo_river_expedition_location = yes
-		}
-		else_if = {
-			limit = { has_variable = niger_river_expedition_var }
-			niger_river_expedition_location = yes
-		}
+		
 	}
 
 	option = {
-		name = expedition_events.40.a
+		name = chinese_westernization.122.a
 		add_medium_peril_effect = yes
 		expedition_moderate_progress_effect = yes
 	}
 
 	option = {
-		name = expedition_events.40.b
+		name = chinese_westernization.122.b
 		default_option = yes
 		add_small_peril_effect = yes
 		custom_tooltip = expedition_event_delayed_tt
 	}
+
+	option = {
+		name = chinese_westernization.122.c
+		custom_tooltip = {
+			text = chi_military_academy_fail_tt
+			change_variable = {
+				name = chi_military_academy_peril
+				add = 8
+			}
+		}
+	}
 }
+
+
 
 # 천진무비학당 1885년
 
