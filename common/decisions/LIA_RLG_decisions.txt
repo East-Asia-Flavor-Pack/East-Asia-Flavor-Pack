@@ -8,11 +8,62 @@
 #	}
 #
 #	when_taken = {
-#        add_treasury = 10000
-#        save_scope_as = lia_rlg_scope_deci_nametest
-#        add_modifier = {
-#            name = lia_rlg_modi_deci_nametest
+#        set_variable = {
+#            name = lia_rlg_city_pop_alpha
+#            value = {
+#                s:STATE_YANGHO.region_state:KOR = {
+#                    add = state_population
+#                }
+#            }
 #        }
+#        set_variable = {
+#            name = lia_rlg_city_pop_beta
+#            value = {
+#                s:STATE_YANGHO.region_state:KOR = {
+#                    add = state_population
+#                }
+#                add = -50000
+#            }
+#        }
+#        while = {
+#            limit = {
+#                var:lia_rlg_city_pop_alpha >= var:lia_rlg_city_pop_beta
+#            }
+#            s:STATE_YANGHO.region_state:KOR = {
+#                every_scope_pop = {
+#                    limit = {
+#                        has_pop_culture = korean
+#                    }
+#                    change_pop_culture = {
+#                        target = cu:wanjang_kor
+#                        value = 0.001
+#                    }
+#                }
+#                every_scope_pop = {
+#                    limit = {
+#                        has_pop_culture = wanjang_kor
+#                    }
+#                    move_pop = s:STATE_LIA_SEOUL.region_state:KOR
+#                }
+#            }
+#            change_variable = {
+#                name = lia_rlg_city_pop_alpha
+#                multiply = 0.999
+#            }
+#        }
+#        s:STATE_LIA_SEOUL.region_state:KOR = {
+#            every_scope_pop = {
+#                limit = {
+#                    has_pop_culture = wanjang_kor
+#                }
+#                change_pop_culture = {
+#                    target = cu:korean
+#                    value = 1.00
+#                }
+#            }
+#        }
+#        remove_variable = lia_rlg_city_pop_alpha
+#        remove_variable = lia_rlg_city_pop_beta
 #	}
 #	
 #	ai_chance = {
@@ -34,6 +85,35 @@ lia_rlg_qudvnd = {
 	when_taken = {
         add_treasury = 10000
         set_variable = lia_var_rlg_qudvnd
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_support = {   #인구과밀 모디파이어 달릴시 경작지 조금 늘려서 완화가능하도록 뚫어주는 디시전이 될 것
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_metropolis
+        var:lia_var_rlg_metropolis >= 0
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_support }
+        scaled_debt < 0.3
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 3달.
+			name = lia_var_rlg_support
+			value = 1
+			months = 3
+		}
+        trigger_event = {
+            id = lia_event_rlg.5
+        }
 	}
 	
 	ai_chance = {
@@ -136,11 +216,22 @@ lia_rlg_deci_add = {
 	possible = {
         NOT = { has_variable = lia_var_rlg_add }
         custom_tooltip = {
-            text = lia_rlg_deci_add_con
+            text = lia_rlg_deci_add_con1
             OR = {
                 var:lia_var_rlg_count < 3
                 has_variable = lia_var_rlg_add_2
             }
+        }
+        custom_tooltip = {
+            text = lia_rlg_deci_add_con2
+            OR = {
+                var:lia_var_rlg_count < 5
+                has_variable = lia_var_rlg_add_3
+            }
+        }
+        custom_tooltip = {
+            text = lia_rlg_deci_add_con3
+            var:lia_var_rlg_count < 7
         }
 	}
 
