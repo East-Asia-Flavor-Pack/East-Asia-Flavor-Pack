@@ -271,6 +271,13 @@ chinese_westernization.121 = { # (도시 이름) 무비학당 설립 시도
 
 	immediate = {
 		save_scope_as = chi_scope
+		if = {
+			limit = { NOT = { has_variable = chi_num_military_academy } }
+			set_variable = {
+				name = chi_num_military_academy
+				value = 0
+			}
+		}
 	}
 
 	option = {
@@ -1142,6 +1149,10 @@ chinese_westernization.140 = { # (도시 이름) 무비학당 개교
 	option = {
 		name = chinese_westernization.140.a
 		default_option = yes
+		change_variable = {
+			name = chi_num_military_academy
+			add = 1
+		}
 		add_modifier = {
 			name = chiwes140a
 			months = normal_modifier_time
@@ -1251,9 +1262,7 @@ chinese_westernization.201 = { # (항구 이름) 조선소 (steamship 1868년)
 
 # 해외 유학
 
-# 북양군벌
-
-# 상해. 남경, 천진, 복주, 광주, 한구
+# 상해. 남경, 천진, 복주, 광주, 한구 <- 거의 이 순서로 조계지 세워짐
 
 #################### 산업 ####################
 
@@ -1483,7 +1492,67 @@ chinese_westernization.401 = { # 경사동문관
 	}
 }
 
+# 캉유웨이 좀 찾아보기 TODO
+
 #################### 국제적 위상 ####################
 
-# 만국공법
+chinese_westernization.501 = { # 위대한 회수
+	type = country_event
+	placement = root
+
+	title = chinese_westernization.501.t
+	desc = chinese_westernization.501.d
+	flavor = chinese_westernization.501.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/london_center"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	trigger = {
+		this = c:CHI
+		NOT = { has_variable = chi_the_restoration_of_land_sovereignty }
+		sr:region_north_china = {
+			any_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				count = all
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				OR = {
+					owner = c:CHI
+					top_overlord = c:CHI
+				}
+				count = all
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = chi_the_restoration_of_land_sovereignty
+		save_scope_as = chi_scope
+	}
+
+	option = {
+		name = chinese_westernization.501.a
+		default_option = yes
+		add_modifier = {
+			name = chi_the_restoration_of_land_sovereignty
+			months = very_long_modifier_time
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
 
