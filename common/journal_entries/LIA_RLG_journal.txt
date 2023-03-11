@@ -205,6 +205,21 @@ je_rlg_metropolis = {
 je_rlg_rural_exodus = {
 	icon = "gfx/interface/icons/event_icons/event_map.dds"
 
+	is_shown_when_inactive = {
+        exists = c:KOR
+        this = c:KOR
+        var:lia_var_rlg_metropolis >= 1
+	}
+
+    possible = {
+        exists = c:KOR
+        this = c:KOR
+        custom_tooltip = {
+            text = je_rlg_metropolis_goal
+            var:lia_var_rlg_metropolis >= 3
+        }
+	}
+
 	immediate = {
 	}
 
@@ -542,11 +557,11 @@ je_rlg_seoul_2 = {
                 }
                 any_scope_building = {
                     is_building_type = building_barracks
-                    level >= 20
+                    level >= 10
                 }
                 any_scope_building = {
                     is_building_type = building_power_plant
-                    level >= 10
+                    level >= 5
                 }
                 custom_tooltip = {
                     text = je_rlg_seoul_2_con2
@@ -637,7 +652,7 @@ je_rlg_seoul_2 = {
                         region_state:KOR = {
                             any_scope_building = {
                                 is_building_type = building_barracks
-                                level >= 20
+                                level >= 10
                             }
                         }
                     }
@@ -653,7 +668,7 @@ je_rlg_seoul_2 = {
                         region_state:KOR = {
                             any_scope_building = {
                                 is_building_type = building_power_plant
-                                level >= 10
+                                level >= 5
                             }
                         }
                     }
@@ -21168,6 +21183,1758 @@ je_rlg_gwangju_b_4 = {
     
 	current_value = {
 		value = root.var:lia_var_rlg_gwangju_b_4
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+
+je_rlg_jeju_a_1 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_1_con1
+                    state_population > 250000
+                }
+                any_scope_building = {
+                    is_building_type = building_port
+                    level >= 3
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_1_con2
+                    state_unemployment_rate < 0.05
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_1_con3
+                    total_urbanization >= 500
+                }
+            }
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_a_1
+			value = 0
+		}
+        change_variable = {
+            name = lia_var_rlg_count
+            add = 1
+        }
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_a_2
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_a_1
+            add_modifier = {
+                name = lia_rlg_modi_jeju_a_2
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1400
+            }
+            trigger_event = {
+                id = lia_event_rlg.1401
+            }
+            trigger_event = {
+                id = lia_event_rlg.1402
+            }
+            trigger_event = {
+                id = lia_event_rlg.1403
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1408
+		#	5 = lia_event_rlg.1409
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 250000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1400
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_port
+                                level >= 3
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1401
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_unemployment_rate < 0.05
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1402
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 500
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1403
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_1
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_1
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_a_1
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_a_1
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_a_2 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_2_con1
+                    state_population > 500000
+                }
+                any_scope_building = {
+                    is_building_type = building_port
+                    level >= 5
+                }
+                any_scope_building = {
+                    is_building_type = building_shipyards
+                    level >= 3
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_2_con2
+                    total_urbanization >= 750
+                }
+            }
+        }
+        OR = {
+            has_law = law_type:law_mercantilism
+            has_law = law_type:law_protectionism
+            has_law = law_type:law_free_trade
+        }
+        OR = {
+            has_law = law_type:law_no_migration_controls
+            has_law = law_type:law_migration_controls
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_a_2
+			value = 0
+		}
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_a_3
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_a_2
+            add_modifier = {
+                name = lia_rlg_modi_jeju_a_3
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1410
+            }
+            trigger_event = {
+                id = lia_event_rlg.1411
+            }
+            trigger_event = {
+                id = lia_event_rlg.1412
+            }
+            trigger_event = {
+                id = lia_event_rlg.1413
+            }
+        }
+        change_variable = {
+            name = lia_var_rlg_metropolis
+            add = 1
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1418
+		#	5 = lia_event_rlg.1419
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 500000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1410
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_port
+                                level >= 5
+                            }
+                        }
+                    }
+                    OR = {
+                        has_law = law_type:law_mercantilism
+                        has_law = law_type:law_protectionism
+                        has_law = law_type:law_free_trade
+                    }
+                    OR = {
+                        has_law = law_type:law_no_migration_controls
+                        has_law = law_type:law_migration_controls
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1411
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_shipyards
+                                level >= 3
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1412
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 750
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1413
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_2
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_2
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_a_2
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_a_2
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_a_3 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_3_con1
+                    state_population > 750000
+                }
+                any_scope_building = {
+                    is_building_type = building_port
+                    level >= 7
+                }
+                any_scope_building = {
+                    is_building_type = building_fishing_wharf
+                    level >= 5
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_3_con2
+                    total_urbanization >= 1000
+                }
+            }
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_a_3
+			value = 0
+		}
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_a_4
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_a_3
+            add_modifier = {
+                name = lia_rlg_modi_jeju_a_4
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1420
+            }
+            trigger_event = {
+                id = lia_event_rlg.1421
+            }
+            trigger_event = {
+                id = lia_event_rlg.1422
+            }
+            trigger_event = {
+                id = lia_event_rlg.1423
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1428
+		#	5 = lia_event_rlg.1429
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 750000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1420
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_port
+                                level >= 7
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1421
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_fishing_wharf
+                                level >= 5
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1422
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 1000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1423
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_3
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_3
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_a_3
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_a_3
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_a_4 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_4_con1
+                    state_population > 1000000
+                }
+                any_scope_building = {
+                    is_building_type = building_port
+                    level >= 9
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_a_4_con2
+                    total_urbanization >= 1500
+                }
+            }
+        }
+        AND = {
+            has_technology_researched = camera
+            has_technology_researched = steel_railway_cars
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_a_4
+			value = 0
+		}
+	}
+
+	on_complete = {
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_a_4
+            add_modifier = {
+                name = lia_rlg_modi_jeju_a_5
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1430
+            }
+            trigger_event = {
+                id = lia_event_rlg.1431
+            }
+            trigger_event = {
+                id = lia_event_rlg.1432
+            }
+            trigger_event = {
+                id = lia_event_rlg.1433
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1438
+		#	5 = lia_event_rlg.1439
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 1000000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1430
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_port
+                                level >= 9
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1431
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    AND = {
+                        has_technology_researched = camera
+                        has_technology_researched = steel_railway_cars
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1432
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 1500
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1433
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_4
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_a_4
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_a_4
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_a_4
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+
+je_rlg_jeju_b_1 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_1_con1
+                    state_population > 250000
+                }
+                any_scope_building = {
+                    is_building_type = building_naval_base
+                    level >= 5
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_1_con2
+                    state_unemployment_rate < 0.05
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_1_con3
+                    total_urbanization >= 500
+                }
+            }
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_b_1
+			value = 0
+		}
+        change_variable = {
+            name = lia_var_rlg_count
+            add = 1
+        }
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_b_2
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_b_1
+            add_modifier = {
+                name = lia_rlg_modi_jeju_b_2
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1450
+            }
+            trigger_event = {
+                id = lia_event_rlg.1451
+            }
+            trigger_event = {
+                id = lia_event_rlg.1452
+            }
+            trigger_event = {
+                id = lia_event_rlg.1453
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1458
+		#	5 = lia_event_rlg.1459
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 250000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1450
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_naval_base
+                                level >= 5
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1451
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_unemployment_rate < 0.05
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1452
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 500
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1453
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_1
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_1
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_b_1
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_b_1
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_b_2 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+        owns_entire_state_region = STATE_SEOUL
+        owns_entire_state_region = STATE_LIA_SEOUL
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_2_con1
+                    state_population > 500000
+                }
+                any_scope_building = {
+                    is_building_type = building_naval_base
+                    level >= 10
+                }
+                any_scope_building = {
+                    is_building_type = building_port
+                    level >= 3
+                }
+                any_scope_building = {
+                    is_building_type = building_shipyards
+                    level >= 3
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_2_con2
+                    total_urbanization >= 750
+                }
+            }
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_b_2
+			value = 0
+		}
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_b_3
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_b_2
+            add_modifier = {
+                name = lia_rlg_modi_jeju_b_3
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1460
+            }
+            trigger_event = {
+                id = lia_event_rlg.1461
+            }
+            trigger_event = {
+                id = lia_event_rlg.1462
+            }
+            trigger_event = {
+                id = lia_event_rlg.1463
+            }
+        }
+        change_variable = {
+            name = lia_var_rlg_metropolis
+            add = 1
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1468
+		#	5 = lia_event_rlg.1469
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 500000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1460
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_naval_base
+                                level >= 10
+                            }
+                            any_scope_building = {
+                                is_building_type = building_shipyards
+                                level >= 3
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1461
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_port
+                                level >= 3
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1462
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 750
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1463
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_2
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_2
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_b_2
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_b_2
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_b_3 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_3_con1
+                    state_population > 750000
+                }
+                any_scope_building = {
+                    is_building_type = building_naval_base
+                    level >= 15
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_3_con2
+                    total_urbanization >= 1000
+                }
+            }
+        }
+        OR = {
+            has_law = law_type:law_colonial_resettlement
+            has_law = law_type:law_colonial_exploitation
+        }
+        AND = {
+            has_technology_researched = electric_telegraph
+            has_technology_researched = civilizing_mission
+        }
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_b_3
+			value = 0
+		}
+	}
+
+	on_complete = {
+		add_journal_entry = {
+			type = je_rlg_jeju_b_4
+		}
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_b_3
+            add_modifier = {
+                name = lia_rlg_modi_jeju_b_4
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1470
+            }
+            trigger_event = {
+                id = lia_event_rlg.1471
+            }
+            trigger_event = {
+                id = lia_event_rlg.1472
+            }
+            trigger_event = {
+                id = lia_event_rlg.1473
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1478
+		#	5 = lia_event_rlg.1479
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 750000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1470
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_naval_base
+                                level >= 15
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1471
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_colonial_resettlement
+                        has_law = law_type:law_colonial_exploitation
+                    }
+                    AND = {
+                        has_technology_researched = electric_telegraph
+                        has_technology_researched = civilizing_mission
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1472
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 1000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1473
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_3
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_3
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_b_3
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_b_3
+	}
+
+	goal_add_value = {
+		add = 240
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+je_rlg_jeju_b_4 = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    complete = {
+        exists = c:KOR
+        this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+		s:STATE_LIA_JEJU = {
+            region_state:KOR = {
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_4_con1
+                    state_population > 1000000
+                }
+                any_scope_building = {
+                    is_building_type = building_naval_base
+                    level >= 20
+                }
+                market = {
+                    AND = {
+                        mg:liquor = {
+                            market_goods_sell_orders >= 300
+                        }
+                        mg:meat = {
+                            market_goods_sell_orders >= 300
+                        }
+                        mg:fruit = {
+                            market_goods_sell_orders >= 300
+                        }
+                        mg:sugar = {
+                            market_goods_sell_orders >= 300
+                        }
+                    }
+                }
+                any_scope_building = {
+                    is_building_type = building_fishing_wharf
+                    has_active_production_method = pm_refrigerated_storage_building_fishing_wharf
+                }
+                custom_tooltip = {
+                    text = je_rlg_jeju_b_4_con2
+                    total_urbanization >= 1500
+                }
+            }
+        }
+        has_technology_researched = sea_lane_strategies
+        has_technology_researched = human_rights
+        has_technology_researched = pasteurization
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_busan_b_4
+			value = 0
+		}
+	}
+
+	on_complete = {
+        s:STATE_LIA_JEJU.region_state:KOR = {
+            remove_modifier = lia_rlg_modi_jeju_b_4
+            add_modifier = {
+                name = lia_rlg_modi_jeju_b_5
+            }
+        }
+        hidden_effect = {   #저널목표 달성이벤트 출력 체크는 한달마다지만 저널 깨지는건 바로니까, 혹시라도 놓친 이벤트 있으면 보고 넘어가도록 하는 조치.
+            trigger_event = {
+                id = lia_event_rlg.1480
+            }
+            trigger_event = {
+                id = lia_event_rlg.1481
+            }
+            trigger_event = {
+                id = lia_event_rlg.1482
+            }
+            trigger_event = {
+                id = lia_event_rlg.1483
+            }
+        }
+	}
+    
+    on_monthly_pulse = {
+		#random_events = {  확률 3 이하는 전 도시개발 컨텐츠 저널퀘 공통이벤트, 확률 5이상 이벤트는 해당 저널퀘 고유 이벤트
+		#	120 = 0
+		#	2 = lia_event_rlg.140 국고보조금
+		#	2 = lia_event_rlg.141
+		#	2 = lia_event_rlg.142
+		#	2 = lia_event_rlg.143
+		#	2 = lia_event_rlg.144
+		#	2 = lia_event_rlg.145
+		#	2 = lia_event_rlg.146
+		#	2 = lia_event_rlg.147
+		#	2 = lia_event_rlg.148
+		#	2 = lia_event_rlg.149
+        
+		#	5 = lia_event_rlg.1488
+		#	5 = lia_event_rlg.1489
+		#}
+
+        effect = {
+            if = {  #목표별 달성시 이벤트
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            state_population > 1000000
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1480
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            any_scope_building = {
+                                is_building_type = building_naval_base
+                                level >= 20
+                            }
+                        }
+                    }
+                    has_technology_researched = sea_lane_strategies
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1481
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    has_technology_researched = human_rights
+                    has_technology_researched = pasteurization
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            market = {
+                                AND = {
+                                    mg:liquor = {
+                                        market_goods_sell_orders >= 300
+                                    }
+                                    mg:meat = {
+                                        market_goods_sell_orders >= 300
+                                    }
+                                    mg:fruit = {
+                                        market_goods_sell_orders >= 300
+                                    }
+                                    mg:sugar = {
+                                        market_goods_sell_orders >= 300
+                                    }
+                                }
+                            }
+                            any_scope_building = {
+                                is_building_type = building_fishing_wharf
+                                has_active_production_method = pm_refrigerated_storage_building_fishing_wharf
+                            }
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1482
+                    days = { 1 7 }
+                }
+            }
+            if = {
+                limit = {
+                    s:STATE_LIA_JEJU = {
+                        region_state:KOR = {
+                            total_urbanization >= 1500
+                        }
+                    }
+                }
+                trigger_event = {
+                    id = lia_event_rlg.1483
+                    days = { 1 7 }
+                }
+            }
+
+            if = {  #정부체제별 기본진행도
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_census_voting
+                        has_law = law_type:law_universal_suffrage
+                        has_law = law_type:law_anarchy
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_4
+                    add = 4
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        has_law = law_type:law_presidential_republic
+                        has_law = law_type:law_parliamentary_republic
+                        has_law = law_type:law_council_republic
+                    }
+                    OR = {
+                        has_law = law_type:law_autocracy
+                        has_law = law_type:law_oligarchy
+                        has_law = law_type:law_landed_voting
+                        has_law = law_type:law_wealth_voting
+                    }
+                }
+                change_variable = {
+                    name = lia_var_rlg_busan_b_4
+                    add = 3
+                }
+            }
+            else = {
+                change_variable = {
+                    name = lia_var_rlg_busan_b_4
+                    add = 2
+                }
+            }
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_busan_b_4
 	}
 
 	goal_add_value = {
