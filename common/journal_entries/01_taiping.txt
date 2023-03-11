@@ -13,10 +13,15 @@
 			any_scope_pop = {
 				has_pop_religion = protestant
 			}
-			state_region = { is_homeland = cu:han } # 추가
-			NOT = { state_region = s:STATE_FORMOSA }	#추가, 대만에 첫 아지트 박히고 굶어죽는거 방지
 			is_capital = no
-			turmoil > 0.10	#0.15>>0.10로 수정
+			state_region = { 
+				OR = {
+					is_homeland = cu:han 
+					is_homeland = cu:hakka 
+				}
+			}
+			turmoil > 0.15
+			NOT = { state_region = s:STATE_FORMOSA }	#추가, 대만에 첫 아지트 박히고 굶어죽는거 방지
 		}
 	}
 
@@ -27,13 +32,18 @@
 				any_scope_pop = {
 					has_pop_religion = protestant
 				}
-				NOT = { is_capital = yes }
-				state_region = { is_homeland = cu:han } # 추가
-				NOT = { state_region = s:STATE_FORMOSA }	#추가
+				is_capital = no
+				state_region = { 
+					OR = {
+						is_homeland = cu:han 
+						is_homeland = cu:hakka 
+					}
+				}
+				turmoil > 0.15
 			}
 			add_modifier = {
 				name = god_worshippers
-				months = 60	#5년
+				months = short_modifier_time
 			}
 		}
 		trigger_event = {
@@ -64,23 +74,20 @@
 		OR = {
 			any_scope_state = {
 				has_modifier = god_worshippers
-				state_region = { is_homeland = cu:han } # 추가
 				any_scope_pop = {
 					has_pop_religion = protestant
 					religion_accepted = no
 				}
-				turmoil >= 0.20 # 또 수정 0.25>>0.20
+				turmoil >= 0.15
 			}
-			any_scope_state = {
-				has_modifier = god_worshippers
-				count >= 6
-			}
-			year > 1850
+			year > 1850 # 추가
 		}
 	}
 
 	on_fail = {
-		trigger_event = { id = heavenly.4 }
+		trigger_event = {
+			id = heavenly.4
+		}
 	}
 
 	weight = 10000
@@ -93,12 +100,25 @@ je_taiping = {
 	complete = {
 		custom_tooltip = {
 			text = taiping_destroyed
-			hidden_trigger = { NOT = { exists = c:TPG } }
+			hidden_trigger = {
+				NOT = {
+					exists = c:TPG
+				}
+			}
+		}
+	}
+
+	immediate = {
+		c:TPG = {
+			save_scope_as = taiping_scope
 		}
 	}
 
 	on_complete = {
 		trigger_event = { id = heavenly.5 days = 0 }
+		hidden_effect = {
+			remove_modifier = taiping_taiping_rebellion
+		}
 	}
 
 	fail = {
@@ -116,6 +136,10 @@ je_taiping = {
 			}
 		}
 		hidden_effect = {
+			remove_modifier = taiping_taiping_rebellion
+			c:TPG = {
+				remove_modifier = taiping_taiping_rebellion
+			}
 			random_list = {
 				1 = {
 					add_journal_entry = { type = je_taiping_truce_chi_attack }
@@ -135,13 +159,17 @@ je_taiping = {
 	inheritable = no
 }
 
-je_taiping2 = {
+je_taiping2 = { # 추가
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	complete = {
 		custom_tooltip = {
 			text = taiping_destroyed
-			hidden_trigger = { NOT = { exists = c:TPG } }
+			hidden_trigger = {
+				NOT = {
+					exists = c:TPG
+				}
+			}
 		}
 	}
 
@@ -175,17 +203,91 @@ je_taiping2 = {
 	inheritable = no
 }
 
-je_taiping_tpg = {
+je_taiping_revolution = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	complete = {
+		custom_tooltip = { # 중국과 휴전 중 조건 뺌
+			text = china_destroyed
+			hidden_trigger = {
+				NOT = {
+					exists = c:CHI
+				}
+			}
+		}
+		
+	}
+
+	immediate = {
+		c:CHI = {
+			save_scope_as = china_scope
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = heavenly.6 days = 0 }
+		custom_tooltip = {
+			text = rebellion_effects_remove
+			remove_modifier = taiping_taiping_rebellion
+			every_interest_group = {
+				limit = {
+					has_modifier = taiping_taiping_revolution
+				}
+				remove_modifier = taiping_taiping_revolution
+			}
+		}
+		
+	}
+
+	fail = {
+		# NOT = {
+		# 	exists = c:TPG
+		# }
+		exists = c:CHI # 추가
+		has_truce_with = c:CHI # 추가
+	}
+
+	on_fail = { # 추가
+		trigger_event = { id = heavenly.6 days = 0 }
+		custom_tooltip = {
+			text = rebellion_effects_remove
+			remove_modifier = taiping_taiping_rebellion
+			every_interest_group = {
+				limit = {
+					has_modifier = taiping_taiping_revolution
+				}
+				remove_modifier = taiping_taiping_revolution
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_taiping_revolution2 = { # 추가
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	complete = {
 		custom_tooltip = {
-			text = qing_destroyed
+			text = china_destroyed
 			hidden_trigger = { NOT = { exists = c:CHI } }
 		}
 	}
 
 	on_complete = {
+		custom_tooltip = {
+			text = rebellion_effects_remove
+			remove_modifier = taiping_taiping_rebellion
+			every_interest_group = {
+				limit = {
+					has_modifier = taiping_taiping_revolution
+				}
+				remove_modifier = taiping_taiping_revolution
+			}
+		}
 		
 	}
 	
@@ -278,7 +380,7 @@ je_taiping_truce_tpg_attack = {
 	}
 
 	on_fail = {
-		add_journal_entry = { type = je_taiping_tpg }
+		add_journal_entry = { type = je_taiping_revolution2 }
 	}
 	
 	weight = 1000
@@ -304,7 +406,7 @@ je_taiping_truce_tpg_defence = {
 	}
 
 	on_fail = {
-		add_journal_entry = { type = je_taiping_tpg }
+		add_journal_entry = { type = je_taiping_revolution2 }
 	}
 	
 	weight = 1000
