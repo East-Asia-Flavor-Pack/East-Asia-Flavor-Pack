@@ -69,16 +69,20 @@
 	fail = {
 		any_scope_state = {
 			has_modifier = god_worshippers
-			count >= 4
+			count >= 3
+		}
+		any_scope_state = {
+			has_modifier = god_worshippers
+			any_scope_pop = {
+				has_pop_religion = protestant
+				religion_accepted = no
+			}
+			turmoil >= 0.15
 		}
 		OR = {
 			any_scope_state = {
 				has_modifier = god_worshippers
-				any_scope_pop = {
-					has_pop_religion = protestant
-					religion_accepted = no
-				}
-				turmoil >= 0.15
+				count >= 4
 			}
 			year > 1850 # 추가
 		}
@@ -92,6 +96,67 @@
 
 	weight = 10000
 	should_be_pinned_by_default = yes
+}
+
+je_taiping_timer = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	complete = {
+		custom_tooltip = {
+			text = taiping_timer_complete
+			hidden_trigger = {
+				NOT = {
+					exists = c:TPG
+				}
+			}
+		}
+	}
+
+	immediate = {
+	}
+	
+	timeout = 540	#시간제한
+
+	on_timeout = {
+		custom_tooltip = {
+			text = taiping_time_attack
+			hidden_effect = {
+				every_diplomatic_play = {
+					limit = {
+						initiator_is = c:TPG
+						target_is = c:CHI
+					}
+					end_play = yes
+				}
+				create_truce = {
+					country = c:TPG
+					months = 48
+				}
+				every_country = {
+					limit = {
+						OR = {
+							this = c:CHI
+							this = c:TPG
+							country_is_in_east_asia = yes
+							country_rank = rank_value:great_power
+						}
+					}
+					trigger_event = {
+						id = lia_event_rtc.13
+						days = { 1 7 }
+					}
+				}
+			}
+		}
+	}
+	
+	on_complete = {
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
 }
 
 je_taiping = {
@@ -113,7 +178,7 @@ je_taiping = {
 			save_scope_as = taiping_scope
 		}
 	}
-
+	
 	on_complete = {
 		trigger_event = { id = heavenly.5 days = 0 }
 		hidden_effect = {
@@ -308,7 +373,7 @@ je_taiping_revolution2 = { # 추가
 je_taiping_truce_chi_attack = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	
-	timeout = 180
+	timeout = 540	#반년에서 수정
 
 	on_timeout = {
 		custom_tooltip = {
@@ -337,7 +402,7 @@ je_taiping_truce_chi_attack = {
 je_taiping_truce_chi_defence = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	
-	timeout = 180
+	timeout = 540	#반년에서 수정
 
 	on_timeout = {
 		custom_tooltip = {
@@ -363,7 +428,7 @@ je_taiping_truce_chi_defence = {
 je_taiping_truce_tpg_attack = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	
-	timeout = 180
+	timeout = 540	#반년에서 수정
 
 	on_timeout = {
 		custom_tooltip = {
@@ -392,7 +457,7 @@ je_taiping_truce_tpg_attack = {
 je_taiping_truce_tpg_defence = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	
-	timeout = 180
+	timeout = 540	#반년에서 수정
 
 	on_timeout = {
 		custom_tooltip = {
