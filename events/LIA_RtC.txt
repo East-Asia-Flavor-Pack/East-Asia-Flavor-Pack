@@ -321,17 +321,17 @@ lia_event_rtc.7 = {	#태평천국 반란-전세계 열강,강대국
 				trigger = {
 					any_country = {
 						this = c:CHI
-						total_population < 160000000	#인구 1억6천만명 밑일때
+						total_population < 190000000	#인구 1억9천만명 밑일때
 						GDP < 100000000	#GDP 1억 밑일때
 					}
 				}
-				add = 20	
+				add = 10	
 			}
 			modifier = {				
 				trigger = {
 					any_country = {
 						this = c:CHI
-						total_population < 130000000	#인구 1억3천만명 밑일때
+						total_population < 150000000	#인구 1억5천만명 밑일때
 						GDP < 85000000	#GDP 8천5백만 밑일때
 					}
 				}
@@ -345,7 +345,7 @@ lia_event_rtc.7 = {	#태평천국 반란-전세계 열강,강대국
 						GDP < 70000000	#GDP 7천만 밑일때
 					}
 				}
-				add = 20	
+				add = 30	
 			}			
 		}
 	}
@@ -379,7 +379,10 @@ lia_event_rtc.7 = {	#태평천국 반란-전세계 열강,강대국
 			base = 50
 			modifier = {				
 				trigger = {
-					has_treaty_port_in_country = c:CHI
+					OR = {
+						has_treaty_port_in_country = c:TPG
+						has_treaty_port_in_country = c:CHI
+					}
 				}
 				add = -30
 			}
@@ -551,15 +554,12 @@ lia_event_rtc.10 = {	#천국의 분열
 			}
 			add_modifier = {
 				name = internal_conflict_in_tpg
-				months = 160
+				months = 180
 				is_decaying = yes
 			}
 			random_scope_character = {
 				limit = {
-					or = {
-						has_role = general
-						has_role = admiral
-					}
+					has_role = general
 					is_ruler = no
 				}
 				kill_character = yes
@@ -704,10 +704,13 @@ lia_event_rtc.11 = {	#태평천국의 북벌
 	option = {
 		name = lia_event_rtc.11.a
 		default_option = yes
+		end_truce = {
+			country = c:CHI
+		}
 		create_diplomatic_play = {
 			name = lia_rtc_tpg_return
 			target_country = c:CHI
-			type = dp_return_state
+			type = dp_tpg_return
 			war = yes	#즉발전쟁
 			# 태평천국 요구
 			add_war_goal = {
@@ -730,11 +733,11 @@ lia_event_rtc.11 = {	#태평천국의 북벌
 				type = return_state
 				target_state = scope:tpg_4
 			}
-			add_war_goal = {
-				holder = c:TPG
-				type = return_state
-				target_state = scope:tpg_5
-			}			
+			#add_war_goal = {	#반반
+			#	holder = c:TPG
+			#	type = return_state
+			#	target_state = scope:tpg_5
+			#}			
 			add_war_goal = {
 				holder = c:TPG
 				type = annex_country
@@ -766,12 +769,15 @@ lia_event_rtc.11 = {	#태평천국의 북벌
 				type = return_state
 				target_state = scope:chi_5
 			}
-			add_war_goal = {
-				holder = c:CHI
-				type = annex_country
-				target_country = c:TPG
-			}
+			#add_war_goal = {	#무지성 끝장전 방지
+			#	holder = c:CHI
+			#	type = annex_country
+			#	target_country = c:TPG
+			#}
 		}
+		
+		add_journal_entry = { type = je_taiping_revolution2 }
+		c:CHI = { add_journal_entry = { type = je_taiping2 } }
 		
 		ai_chance = {
 			base = 4
@@ -924,10 +930,13 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 	option = {
 		name = lia_event_rtc.12.a
 		default_option = yes
+		end_truce = {
+			country = c:TPG
+		}
 		create_diplomatic_play = {
 			name = lia_rtc_chi_return
 			target_country = c:TPG
-			type = dp_return_state
+			type = dp_chi_return
 			war = yes	#즉발전쟁
 			# 태평천국 요구
 			add_war_goal = {
@@ -955,11 +964,11 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 				type = return_state
 				target_state = scope:tpg_5
 			}			
-			add_war_goal = {
-				holder = c:TPG
-				type = annex_country
-				target_country = c:CHI
-			}
+			#add_war_goal = {	#무지성 끝장전 방지
+			#	holder = c:TPG
+			#	type = annex_country
+			#	target_country = c:CHI
+			#}
 			# 청나라 요구
 			add_war_goal = {
 				holder = c:CHI
@@ -981,17 +990,20 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 				type = return_state
 				target_state = scope:chi_4
 			}
-			add_war_goal = {
-				holder = c:CHI
-				type = return_state
-				target_state = scope:chi_5
-			}
+			#add_war_goal = {	#반반
+			#	holder = c:CHI
+			#	type = return_state
+			#	target_state = scope:chi_5
+			#}
 			add_war_goal = {
 				holder = c:CHI
 				type = annex_country
 				target_country = c:TPG
 			}
 		}
+		
+		add_journal_entry = { type = je_taiping2 }
+		c:TPG = { add_journal_entry = { type = je_taiping_revolution2 } }
 		
 		ai_chance = {
 			base = 4
@@ -1007,7 +1019,6 @@ lia_event_rtc.12 = {	#청조의 역적토벌
 		}
 		add_journal_entry = { type = je_taiping_truce_chi_defence }
 		c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_attack } }
-		
 		ai_chance = {
 			base = 1
 		}
