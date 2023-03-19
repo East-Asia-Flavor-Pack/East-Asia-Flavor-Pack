@@ -85,7 +85,6 @@ je_chinese_westernization_army = {
 			occupancy >= 0.5
 			is_subsidized = no
 		}
-		NOT = { has_law = law_type:law_serfdom }
 		has_technology_researched = napoleonic_warfare
 		has_technology_researched = general_staff
 		has_technology_researched = shell_gun
@@ -151,7 +150,10 @@ je_chinese_westernization_navy = {
 	}
 
 	complete = {
-		
+		custom_tooltip = {
+			text = chi_naval_academy_established_tt
+			has_variable = chi_naval_academy_established
+		}
 	}
 
 	on_complete = {
@@ -191,7 +193,7 @@ je_chinese_westernization_industry = {
 	}
 
 	complete = {
-		
+		NOT = { has_law = law_type:law_serfdom }
 	}
 
 	on_complete = {
@@ -455,6 +457,140 @@ je_chi_military_academy = {
 	
 	current_value = {
 		value = var:chi_military_academy_progress
+	}
+
+	goal_add_value = {
+		add = 8
+	}
+	
+	progressbar = yes
+	
+    weight = 200
+    inheritable = no
+    should_be_pinned_by_default = yes
+}
+
+je_chi_naval_academy = {
+
+	on_monthly_pulse = {
+		random_events = {
+			800 = 0
+			
+			20 = chinese_westernization.222
+			20 = chinese_westernization.223
+			20 = chinese_westernization.224
+			40 = chinese_westernization.225
+			40 = chinese_westernization.226
+			20 = chinese_westernization.227
+			20 = chinese_westernization.230
+			20 = chinese_westernization.231
+			40 = chinese_westernization.232
+			20 = chinese_westernization.233
+			20 = chinese_westernization.234
+			40 = chinese_westernization.235
+			20 = chinese_westernization.236
+			40 = chinese_westernization.237
+			20 = chinese_westernization.238
+		}
+	}
+	
+	immediate = {
+		set_variable = {
+			name = chi_naval_academy_peril
+			value = 0
+		}
+		set_variable = {
+			name = chi_naval_academy_progress
+			value = 0
+		}
+		random_scope_state = {
+			limit = {
+				NOT = { has_variable = chi_naval_academy }
+				state_is_in_china = yes
+			}
+			weight = {
+				base = {
+					value = state_population
+					divide = arable_land
+					divide = 1000
+					round = yes
+				}
+				modifier = {
+					factor = {
+						value = state_population
+						divide = arable_land
+						divide = 1000
+						round = yes
+					}
+					always = yes
+				}
+				modifier = {
+					factor = 2
+					is_coastal = yes
+				}
+				modifier = {
+					factor = 10
+					is_capital = yes
+				}
+			}
+			save_scope_as = naval_academy_state
+		}
+		trigger_event = { id = chinese_westernization.221 }
+	}
+	
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = expedition_low_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril < 4
+				}
+			}
+			triggered_desc = {
+				desc = expedition_medium_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril <= 4
+				}
+			}
+			triggered_desc = {
+				desc = expedition_high_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril >= 6
+				}
+			}
+		}
+	}
+	
+    complete = {
+		custom_tooltip = {
+			text = je_expedition_success
+			scope:journal_entry = {
+				is_goal_complete = yes
+			}
+		}
+	}
+	
+	on_complete = {
+		remove_variable = chi_naval_academy_peril
+		remove_variable = chi_naval_academy_progress
+		trigger_event = { id = chinese_westernization.240 }
+	}
+    
+   fail = {
+		custom_tooltip = {
+			text = je_expedition_fail
+			var:chi_naval_academy_peril >= 8
+		}
+    }
+	
+	on_fail = {
+		remove_variable = chi_naval_academy_peril
+		remove_variable = chi_naval_academy_progress
+		trigger_event = { id = chinese_westernization.239 }
+	}
+	
+	current_value = {
+		value = var:chi_naval_academy_progress
 	}
 
 	goal_add_value = {
