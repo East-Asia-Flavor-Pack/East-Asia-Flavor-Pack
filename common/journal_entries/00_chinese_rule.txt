@@ -1,0 +1,72 @@
+﻿je_chinese_rule = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	
+	complete = {
+		OR = {
+			NOT = { is_subject_type = subject_type_military_headquarters_china }
+			NOT = { is_subject_of = c:CHI }
+		}
+	}
+
+	on_complete = {
+		if = {
+			limit = { country_has_primary_culture = cu:han }
+			remove_primary_culture = cu:han
+		}
+		if = {
+			limit = { country_has_primary_culture = cu:manchu }
+			remove_primary_culture = cu:manchu
+		}
+
+		ruler = { kill_character = yes }
+		if = {
+			limit = { any_scope_character = { is_heir = yes } }
+			heir = { kill_character = yes }
+		}
+	}
+	
+	weight = 500
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
+
+je_home_of_the_manchus = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	
+	complete = {
+		OR = {
+			NOT = { is_subject_type = subject_type_military_headquarters_china }
+			NOT = { is_subject_of = c:CHI }
+		}
+	}
+	
+	on_complete = {
+		if = {
+			limit = { country_has_primary_culture = cu:han }
+			remove_primary_culture = cu:han
+		}
+
+		ruler = { kill_character = yes }
+		if = {
+			limit = { any_scope_character = { is_heir = yes } }
+			heir = { kill_character = yes }
+		}
+	}
+
+	fail = {
+		this = { NOT = { country_has_primary_culture = cu:manchu } }
+		c:CHI = { NOT = { country_has_primary_culture = cu:manchu } }
+	}
+
+	on_fail = {
+		add_journal_entry = {
+			type = je_chinese_rule
+		}
+	}
+	
+	weight = 500
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
