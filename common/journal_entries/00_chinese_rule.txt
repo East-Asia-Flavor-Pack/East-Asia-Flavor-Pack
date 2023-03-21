@@ -1,6 +1,12 @@
 ﻿je_chinese_rule = {
 	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 	
+	immediate = {
+		trigger_event = {
+			id = chi_military_headquarters.1
+		}
+	}
+
 	complete = {
 		OR = {
 			NOT = { is_subject_type = subject_type_military_headquarters_china }
@@ -17,11 +23,13 @@
 			limit = { country_has_primary_culture = cu:manchu }
 			remove_primary_culture = cu:manchu
 		}
-
-		ruler = { kill_character = yes }
-		if = {
-			limit = { any_scope_character = { is_heir = yes } }
-			heir = { kill_character = yes }
+		
+		hidden_effect = {
+			if = {
+				limit = { any_scope_character = { is_heir = yes } }
+				heir = { kill_character = { hidden = yes } }
+			}
+			ruler = { kill_character = { hidden = yes } }
 		}
 	}
 	
@@ -47,22 +55,21 @@ je_home_of_the_manchus = {
 			remove_primary_culture = cu:han
 		}
 
-		ruler = { kill_character = yes }
-		if = {
-			limit = { any_scope_character = { is_heir = yes } }
-			heir = { kill_character = yes }
+		hidden_effect = {
+			if = {
+				limit = { any_scope_character = { is_heir = yes } }
+				heir = { kill_character = { hidden = yes } }
+			}
+			ruler = { kill_character = { hidden = yes } }
 		}
 	}
 
 	fail = {
-		this = { NOT = { country_has_primary_culture = cu:manchu } }
 		c:CHI = { NOT = { country_has_primary_culture = cu:manchu } }
 	}
 
 	on_fail = {
-		add_journal_entry = {
-			type = je_chinese_rule
-		}
+		add_journal_entry = { type = je_chinese_rule }
 	}
 	
 	weight = 500
