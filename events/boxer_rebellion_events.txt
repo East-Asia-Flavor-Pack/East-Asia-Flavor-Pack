@@ -30,36 +30,14 @@ boxer_rebellion_events.1 = { # 좀 많이 수정했음
 		cu:manchu = {
 			save_scope_as = manchu_culture
 		}
-		random_scope_building = { # 추가
+		random_scope_state = { # 추가
 			limit = {
-				is_building_type = building_urban_center
-				state = {
-					is_capital = no
-					state_is_in_china = yes
-				}
+				is_capital = no
+				is_coastal = yes
+				region = sr:region_north_china
+				state_region = { is_homeland = cu:han }
 			}
-			weight = {
-				base = {
-					value = level
-				}
-				modifier = {
-					factor = level
-					always = yes
-				}
-				modifier = {
-					factor = 2
-					state = { is_coastal = yes }
-				}
-				modifier = {
-					factor = 2
-					state = {
-						any_neighbouring_state = {
-							is_treaty_port = yes
-						}
-					}
-				}
-			}
-			state = { save_scope_as = boxer_appeared_state }
+			save_scope_as = boxer_appeared_state
 		}
 	}
 	option = {
@@ -314,6 +292,7 @@ boxer_rebellion_events.101 = { # 추가, 의화단의 확산
 		any_scope_state = {
 			is_capital = no
 			state_is_in_china = yes
+			state_region = { is_homeland = cu:han }
 			NOT = {
 				has_modifier = boxer_presence
 				has_modifier = boxer_agitation
@@ -328,36 +307,23 @@ boxer_rebellion_events.101 = { # 추가, 의화단의 확산
 	}
 
 	immediate = {
-		random_scope_building = {
+		random_scope_state = {
 			limit = {
-				is_building_type = building_urban_center
-				state = {
-					is_capital = no
-					state_is_in_china = yes
-					NOT = {
+				is_capital = no
+				state_is_in_china = yes
+				state_region = { is_homeland = cu:han }
+				NOT = {
+					has_modifier = boxer_presence
+					has_modifier = boxer_agitation
+				}
+				any_neighbouring_state = {
+					OR = {
 						has_modifier = boxer_presence
 						has_modifier = boxer_agitation
 					}
-					any_neighbouring_state = {
-						OR = {
-							has_modifier = boxer_presence
-							has_modifier = boxer_agitation
-						}
-					}
 				}
 			}
-			weight = {
-				base = { value = level }
-				modifier = {
-					factor = 2
-					state = { is_coastal = yes }
-				}
-				modifier = {
-					factor = 2
-					state = { any_neighbouring_state = { is_treaty_port = yes } }
-				}
-			}
-			state = { save_scope_as = boxer_appeared_state }
+			save_scope_as = boxer_appeared_state
 		}
 	}
 
@@ -448,38 +414,48 @@ boxer_rebellion_events.102 = { # 추가, 의화단의 외국인 공격
 
 	trigger = { # Triggered by JE
 		any_scope_state = {
+			is_capital = no
+			state_is_in_china = yes
+			state_region = { is_homeland = cu:han }
 			has_modifier = boxer_presence
 			NOT = { has_modifier = boxer_agitation }
+			OR = {
+				any_neighbouring_state = {
+					count = 2
+					OR = {
+						has_modifier = boxer_presence
+						has_modifier = boxer_agitation
+					}
+				}
+				any_neighbouring_state = {
+					has_modifier = boxer_agitation
+				}
+			}
 		}
 	}
 
 	immediate = {
-		random_scope_building = {
+		random_scope_state = {
 			limit = {
-				is_building_type = building_urban_center
-				state = {
-					has_modifier = boxer_presence
-					NOT = { has_modifier = boxer_agitation }
+				is_capital = no
+				state_is_in_china = yes
+				state_region = { is_homeland = cu:han }
+				has_modifier = boxer_presence
+				NOT = { has_modifier = boxer_agitation }
+				OR = {
+					any_neighbouring_state = {
+						count = 2
+						OR = {
+							has_modifier = boxer_presence
+							has_modifier = boxer_agitation
+						}
+					}
+					any_neighbouring_state = {
+						has_modifier = boxer_agitation
+					}
 				}
 			}
-			weight = {
-				base = {
-					value = level
-				}
-				modifier = {
-					factor = 2
-					state = { is_coastal = yes }
-				}
-				modifier = {
-					factor = 2
-					state = { any_neighbouring_state = { has_modifier = boxer_agitation } }
-				}
-				modifier = {
-					factor = 5
-					state = { any_neighbouring_state = { is_treaty_port = yes } }
-				}
-			}
-			state = { save_scope_as = boxer_state }
+			save_scope_as = boxer_state
 		}
 	}
 
@@ -628,11 +604,24 @@ boxer_rebellion_events.103 = { # 추가, 의화단의 수도 입성, 공사관 �
 
 	trigger = { # Triggered by JE
 		capital = {
-			any_neighbouring_state = {
-				OR = {
-					has_modifier = boxer_presence
+			OR = {
+				any_neighbouring_state = {
+					count = 2
+					OR = {
+						has_modifier = boxer_presence
+						has_modifier = boxer_agitation
+					}
+				}
+				any_neighbouring_state = {
 					has_modifier = boxer_agitation
 				}
+			}
+		}
+		any_scope_state = {
+			count = 4
+			OR = {
+				has_modifier = boxer_presence
+				has_modifier = boxer_agitation
 			}
 		}
 	}

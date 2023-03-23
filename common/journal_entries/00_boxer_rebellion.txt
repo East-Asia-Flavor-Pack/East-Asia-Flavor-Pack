@@ -1,0 +1,83 @@
+﻿je_boxer_rebellion = {
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+    is_shown_when_inactive = {
+        exists = c:CHI
+        THIS = c:CHI
+        has_technology_researched = pan-nationalism
+        country_has_primary_culture = cu:manchu
+        country_has_primary_culture = cu:han
+    }
+    possible = {
+        has_technology_researched = political_agitation
+        any_state = {
+        	state_region = { is_homeland = cu:han }
+	        NOT = { owner = ROOT }
+        }
+    }
+    immediate = {
+        trigger_event = { id = boxer_rebellion_events.1 } # The Yihetuan Movement
+    }
+    complete = {
+        NOT = {
+	        any_state = {
+	        	state_region = { is_homeland = cu:han }
+		        NOT = { owner = ROOT }
+	        }
+        }
+    }
+    on_complete = {
+        trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
+    }
+    fail = { # 추가
+        exists = c:BXR
+        has_war_with = c:BXR
+    }
+    on_fail = { # 추가
+        add_journal_entry = { type = je_boxer_rebellion2 }
+    }
+    timeout = 1825
+    on_timeout = {
+        trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
+    }
+    on_monthly_pulse = {
+        effect = {
+            random_list = {
+                15 = {}
+                2 = { trigger_event = { id = boxer_rebellion_events.101 } }
+                1 = { trigger_event = { id = boxer_rebellion_events.102 } }
+                2 = { trigger_event = { id = boxer_rebellion_events.103 } }
+            }
+        }
+    }
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+
+je_boxer_rebellion2 = { # 추가
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	fail = {
+		exists = c:BXR
+		has_truce_with = c:BXR
+	}
+
+	on_fail = {
+		if = {
+			limit = { has_journal_entry = je_warlord_china }
+			post_notification = warlord_china_explosion_point_add
+			change_variable = {
+				name = china_warlord_explosion
+				add = 1
+			}
+		}
+	}
+
+    complete = {
+        NOT = { exists = c:BXR }
+    }
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	inheritable = no
+}
