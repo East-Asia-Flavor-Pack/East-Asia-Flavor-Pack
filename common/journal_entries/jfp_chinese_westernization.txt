@@ -6,11 +6,26 @@
 			name = chinese_westernization_var
 			value = 0
 		}
-		add_journal_entry = { type = je_chinese_westernization_army }
-		add_journal_entry = { type = je_chinese_westernization_navy }
-		add_journal_entry = { type = je_chinese_westernization_industry }
-		add_journal_entry = { type = je_chinese_westernization_government_reform }
-		add_journal_entry = { type = je_chinese_westernization_international_prestige }
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_army } }
+			add_journal_entry = { type = je_chinese_westernization_army }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_navy } }
+			add_journal_entry = { type = je_chinese_westernization_navy }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_industry } }
+			add_journal_entry = { type = je_chinese_westernization_industry }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_government_reform } }
+			add_journal_entry = { type = je_chinese_westernization_government_reform }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_international_prestige } }
+			add_journal_entry = { type = je_chinese_westernization_international_prestige }
+		}
 	}
 
 	complete = {
@@ -71,26 +86,25 @@ je_chinese_westernization_army = {
 			text = chi_military_academy_established_tt
 			has_variable = chi_military_academy_established
 		}
+		NOT = { has_law = law_type:law_peasant_levies }
 		any_scope_building = {
-			filter = {
-				is_building_type = building_arms_industry
-			}
+			filter = { is_building_type = building_arms_industry }
+			count >= 5
 			percent >= 0.75
+			level >= 5
 			OR = {
 				has_active_production_method = pm_rifles
 				has_active_production_method = pm_repeaters
 				has_active_production_method = pm_bolt_action_rifles
 			}
 			weekly_profit > 0
-			occupancy >= 0.5
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
 			is_subsidized = no
 		}
-		has_technology_researched = napoleonic_warfare
-		has_technology_researched = general_staff
-		has_technology_researched = shell_gun
 		NOT = {
 			any_scope_building = {
-				is_building_type = building_barracks
+				filter = { is_building_type = building_barracks }
 				OR = {
 					has_active_production_method = pm_irregular_infantry
 					has_active_production_method = pm_no_artillery
@@ -98,6 +112,9 @@ je_chinese_westernization_army = {
 				}
 			}
 		}
+		has_technology_researched = napoleonic_warfare
+		has_technology_researched = general_staff
+		has_technology_researched = shell_gun
 	}
 
 	on_complete = {
@@ -154,6 +171,35 @@ je_chinese_westernization_navy = {
 			text = chi_naval_academy_established_tt
 			has_variable = chi_naval_academy_established
 		}
+		NOT = { has_law = law_type:law_peasant_levies }
+		any_scope_building = {
+			filter = { is_building_type = building_arms_industry }
+			count >= 5
+			percent >= 0.75
+			level >= 5
+			OR = {
+				has_active_production_method = pm_rifles
+				has_active_production_method = pm_repeaters
+				has_active_production_method = pm_bolt_action_rifles
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+		NOT = {
+			any_scope_building = {
+				filter = { is_building_type = building_barracks }
+				OR = {
+					has_active_production_method = pm_irregular_infantry
+					has_active_production_method = pm_no_artillery
+					has_active_production_method = pm_cannon_artillery
+				}
+			}
+		}
+		has_technology_researched = napoleonic_warfare
+		has_technology_researched = general_staff
+		has_technology_researched = shell_gun
 	}
 
 	on_complete = {
@@ -194,6 +240,99 @@ je_chinese_westernization_industry = {
 
 	complete = {
 		NOT = { has_law = law_type:law_serfdom }
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			percent >= 0.5
+			any_scope_building = { is_building_type = building_railway }
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_railway }
+			level >= 5
+		}
+
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			percent >= 0.5
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+		}
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 10
+			}
+		}
+
+		any_scope_building = {
+			filter = { is_building_type = building_textile_mills }
+			count >= 5
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_sewing_machines
+				has_active_production_method = pm_electric_sewing_machines
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			filter = { is_building_type = building_furniture_manufacturies }
+			count >= 5
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_lathe
+				has_active_production_method = pm_mechanized_workshops
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			filter = { is_building_type = building_tooling_workshops }
+			count >= 5
+			percent >= 0.75
+			has_active_production_method = pm_steel
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			filter = {
+				OR = {
+					is_building_type = building_coal_mine
+					is_building_type = building_iron_mine
+					is_building_type = building_lead_mine
+					is_building_type = building_sulfur_mine
+				}
+			}
+			count >= 5
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_condensing_engine_pump_building_coal_mine
+				has_active_production_method = pm_condensing_engine_pump_building_iron_mine
+				has_active_production_method = pm_condensing_engine_pump_building_lead_mine
+				has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+				has_active_production_method = pm_diesel_pump_building_coal_mine
+				has_active_production_method = pm_diesel_pump_building_iron_mine
+				has_active_production_method = pm_diesel_pump_building_lead_mine
+				has_active_production_method = pm_diesel_pump_building_sulfur_mine
+            }
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		has_technology_researched = central_banking
 	}
 
 	on_complete = {
@@ -218,8 +357,8 @@ je_chinese_westernization_industry = {
 	on_weekly_pulse = {
 		events = {
 			chinese_westernization.301
-			chinese_westernization.302
 			chinese_westernization.303
+			chinese_westernization.304
 		}
 	}
 
@@ -228,7 +367,7 @@ je_chinese_westernization_industry = {
 }
 
 je_chinese_westernization_government_reform = {
-	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
 
 	immediate = {
 		
@@ -304,7 +443,7 @@ je_chinese_westernization_international_prestige = {
 				count = all
 			}
 		}
-		any_neighbouring_state = { is_treaty_port = yes }
+		NOT = { any_neighbouring_state = { is_treaty_port = yes } }
 	}
 
 	on_complete = {
@@ -340,7 +479,7 @@ je_chi_military_academy = {
 
 	on_monthly_pulse = {
 		random_events = {
-			600 = 0
+			300 = 0
 			
 			20 = chinese_westernization.122
 			20 = chinese_westernization.123
@@ -443,7 +582,7 @@ je_chi_naval_academy = {
 
 	on_monthly_pulse = {
 		random_events = {
-			800 = 0
+			400 = 0
 			
 			20 = chinese_westernization.222
 			20 = chinese_westernization.223

@@ -22,12 +22,12 @@ chinese_westernization.1 = {
 
 	trigger = {
 		NOT = { has_journal_entry = je_chinese_westernization }
-		# chi_flavor.3 터지고 5~7년 뒤 시작
-		# 또는 적당히 시간 지난 다음에 하던가 - TODO
+		# chi_flavor.3 터지고 5-7년 뒤 시작
+		# (한족 또는 만주 본토) && (북중국 또는 남중국 또는 만주) 빼앗기면 (조약항 X) 시작
 	}
 
 	immediate = {
-		
+		add_journal_entry = { type = je_chinese_westernization }
 	}
 
 	option = {
@@ -106,7 +106,6 @@ chinese_westernization.102 = { # (도시 이름) 병공창
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chi_first_modern_arsenal }
 		any_scope_building = {
 			# is_building_type = building_arms_industry
@@ -1178,7 +1177,6 @@ chinese_westernization.201 = { # (항구 이름) 조선소 (steamship 1868년)
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chi_first_modern_shipyard }
 		any_scope_building = {
 			# is_building_type = building_shipyards
@@ -2036,7 +2034,7 @@ chinese_westernization.240 = { # (항구 이름) 수사학당 개교
 
 # 해외 유학
 
-# 상해. 남경, 천진, 복주, 광주, 한구 <- 거의 이 순서로 조계지 세워짐
+# 상해, 천진, 한구 - 복주, 광주, 하문, 항주 <- 거의 이 순서로 조계지 세워짐
 
 #################### 산업 ####################
 
@@ -2060,7 +2058,6 @@ chinese_westernization.301 = { # 최초의 철도
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chi_first_railroad }
 		any_scope_building = {
 			is_building_type = building_railway
@@ -2121,7 +2118,6 @@ chinese_westernization.302 = { # 철도 공포
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chiwes302 }
 		any_scope_building = {
 			is_building_type = building_railway
@@ -2183,7 +2179,6 @@ chinese_westernization.303 = { # (광산 이름) 광산 (개평광산 1881년)
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chi_first_modern_mine }
 		any_scope_building = {
 			OR = {
@@ -2191,6 +2186,10 @@ chinese_westernization.303 = { # (광산 이름) 광산 (개평광산 1881년)
 				has_active_production_method = pm_condensing_engine_pump_building_iron_mine
 				has_active_production_method = pm_condensing_engine_pump_building_lead_mine
 				has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+				has_active_production_method = pm_diesel_pump_building_coal_mine
+				has_active_production_method = pm_diesel_pump_building_iron_mine
+				has_active_production_method = pm_diesel_pump_building_lead_mine
+				has_active_production_method = pm_diesel_pump_building_sulfur_mine
             }
 		}
 	}
@@ -2205,6 +2204,10 @@ chinese_westernization.303 = { # (광산 이름) 광산 (개평광산 1881년)
 					has_active_production_method = pm_condensing_engine_pump_building_iron_mine
 					has_active_production_method = pm_condensing_engine_pump_building_lead_mine
 					has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+					has_active_production_method = pm_diesel_pump_building_coal_mine
+					has_active_production_method = pm_diesel_pump_building_iron_mine
+					has_active_production_method = pm_diesel_pump_building_lead_mine
+					has_active_production_method = pm_diesel_pump_building_sulfur_mine
 				}
 				is_under_construction = no
 			}
@@ -2229,12 +2232,63 @@ chinese_westernization.303 = { # (광산 이름) 광산 (개평광산 1881년)
 	}
 }
 
+chinese_westernization.304 = { # (도시 이름) 방직 공장 (상해궤기직포국 1889년)
+	type = country_event
+	placement = scope:first_modern_cotton_mill_state
 
+	title = chinese_westernization.303.t
+	desc = chinese_westernization.303.d
+	flavor = chinese_westernization.303.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		NOT = { has_variable = chi_first_modern_cotton_mill }
+		any_scope_building = {
+			has_active_production_method = pm_sewing_machines
+		}
+	}
+
+	immediate = {
+		set_variable = chi_first_modern_cotton_mill
+		save_scope_as = chi_scope
+		random_scope_building = {
+			limit = {
+				has_active_production_method = pm_sewing_machines
+				is_under_construction = no
+			}
+			save_scope_as = first_modern_cotton_mill
+			state = { save_scope_as = first_modern_cotton_mill_state }
+		}
+	}
+
+	option = {
+		name = chinese_westernization.303.a
+		scope:first_modern_cotton_mill = {
+			add_modifier = {
+				name = chi_first_modern_cotton_mill
+				months = long_modifier_time
+				is_decaying = yes
+			}
+		}
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
 
 
 # 윤선초상국 (주식회사, 조선소)
-
-# Shanghai Cotton Cloth Mill 1878년
 
 #################### 정부 개혁 ####################
 
@@ -2290,7 +2344,6 @@ chinese_westernization.501 = { # 위대한 회수
 	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 
 	trigger = {
-		this = c:CHI
 		NOT = { has_variable = chi_the_restoration_of_land_sovereignty }
 		sr:region_north_china = {
 			any_scope_state = {
