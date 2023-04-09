@@ -59,13 +59,13 @@ chi_flavor.102 = { # 황위의 계승 - 동치제 즉위 - 아마
 	
 	immediate = {
 		if = {
-			limit = { has_modifier = summer_palace_destroyed_ruler_modifier }
+			limit = { has_modifier = old_summer_palace_destroyed_ruler_modifier }
 			kill_character = yes
 		}
 	}
 }
 
-chi_flavor.2 = { # 황하 대개도
+chi_flavor.2 = { # 1851년 황하 대개도
 	type = country_event
 	placement = ROOT
 
@@ -96,18 +96,18 @@ chi_flavor.2 = { # 황하 대개도
 
 		hidden_effect = {
 			random_list = {
-				15 = {
+				20 = {
 					trigger = {
 						exists = s:STATE_HENAN.region_state:CHI
 					}
-					s:STATE_ZHILI.region_state:CHI = {
+					s:STATE_HENAN.region_state:CHI = {
 						set_variable = {
 							name = natural_disaster_variable
 							months = short_modifier_time
 						}
 					}
 				}
-				15 = {
+				20 = {
 					trigger = {
 						exists = s:STATE_ZHILI.region_state:CHI
 					}
@@ -129,7 +129,7 @@ chi_flavor.2 = { # 황하 대개도
 						}
 					}
 				}
-				20 = {
+				10 = {
 				}
 			}
 		}
@@ -189,6 +189,7 @@ chi_flavor.3 = { # 원명원 파괴
 	trigger = {
 		s:STATE_BEIJING.region_state:CHI = { exists = yes }
 		NOT = { s:STATE_BEIJING.region_state:CHI.controller = c:CHI }
+		NOT = { has_variable = summer_palace_destroyed }
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -207,17 +208,118 @@ chi_flavor.3 = { # 원명원 파괴
 		hidden_effect = {
 			ruler = {
 				add_modifier = {
-					name = summer_palace_destroyed_ruler_modifier
+					name = old_summer_palace_destroyed_ruler_modifier
 				}
 				trigger_event = {
 					id = chi_flavor.102
 					years = { 3 5 }
 				}
 			}
+			set_variable = summer_palace_destroyed
 			trigger_event = {
 				id = chinese_westernization.1
 				years = { 5 7 }
 			}
+		}
+		
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+chi_flavor.4 = { # 1851년 황하 대개도
+	type = country_event
+	placement = ROOT
+
+	title = chi_flavor.4.t
+	desc = chi_flavor.4.d
+	flavor = chi_flavor.4.f
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/china/flood.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/unspecific/destruction"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		s:STATE_HENAN.region_state:CHI = { save_scope_as = henan_scope }
+		s:STATE_SHANDONG.region_state:CHI = { save_scope_as = shandong_scope }
+	}
+
+	option = {
+		name = chi_flavor.4.a
+		default_option = yes
+		
+		custom_tooltip = natural_disaster_variable_tt
+
+		hidden_effect = {
+			random_list = {
+				20 = {
+					trigger = {
+						exists = s:STATE_HENAN.region_state:CHI
+					}
+					s:STATE_HENAN.region_state:CHI = {
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				55 = {
+					trigger = {
+						exists = s:STATE_NORTHERN_ANHUI.region_state:CHI
+					}
+					s:STATE_NORTHERN_ANHUI.region_state:CHI = {
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				10 = {
+					trigger = {
+						exists = s:STATE_JIANGSU.region_state:CHI
+					}
+					s:STATE_JIANGSU.region_state:CHI = {
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				5 = {
+					trigger = {
+						exists = s:STATE_NANJING.region_state:CHI
+					}
+					s:STATE_NANJING.region_state:CHI = {
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				10 = {
+				}
+			}
+		}
+
+		s:STATE_HENAN = {
+			add_devastation = 40
+		}
+		s:STATE_NORTHERN_ANHUI = {
+			add_devastation = 100
+		}
+		s:STATE_JIANGSU = {
+			add_devastation = 10
+		}
+		s:STATE_NANJING = {
+			add_devastation = 10
 		}
 		
 		ai_chance = {
