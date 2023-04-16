@@ -7,18 +7,31 @@
 			value = 0
 		}
 		set_variable = {
-			name = china_warlord_explosion_sum
+			name = china_warlord_explosion_percent
+			value = 0
+		}
+		set_variable = {
+			name = china_warlord_explosion_percent_radical
 			value = {
 				value = radical_fraction
-				multiply = 5
+				multiply = 100
 			}
+		}
+		set_variable = {
+			name = china_warlord_explosion_percent_loyalist
+			value = {
+				value = loyalist_fraction
+				multiply = 100
+			}
+		}
+
+		set_variable = {
+			name = china_warlord_explosion_sum
+			value = var:china_warlord_explosion_percent_radical
 		}
 		change_variable = {
 			name = china_warlord_explosion_sum
-			subtract = {
-				value = loyalist_fraction
-				multiply = 5
-			}
+			subtract = var:china_warlord_explosion_percent_loyalist
 		}
 		random_law = {
 			limit = { type = law_type:law_monarchy }
@@ -53,6 +66,9 @@
 	on_complete = {
 		hidden_effect = { # 추가
 			remove_variable = china_warlord_explosion
+			remove_variable = china_warlord_explosion_percent
+			remove_variable = china_warlord_explosion_percent_radical
+			remove_variable = china_warlord_explosion_percent_loyalist
 			remove_variable = china_warlord_explosion_sum
 		}
 		trigger_event = { id = warlord_china_events.100 }
@@ -61,6 +77,9 @@
 	on_fail = { # 추가
 		hidden_effect = {
 			remove_variable = china_warlord_explosion
+			remove_variable = china_warlord_explosion_percent
+			remove_variable = china_warlord_explosion_percent_radical
+			remove_variable = china_warlord_explosion_percent_loyalist
 			remove_variable = china_warlord_explosion_sum
 		}
 	}
@@ -70,7 +89,7 @@
 	}
 
 	goal_add_value = {
-		add = 5
+		add = 100
 	}
 	
 	progressbar = yes
@@ -167,22 +186,38 @@
 				trigger_event = { id = chinese_westernization.1 }
 			}
 			set_variable = {
-				name = china_warlord_explosion_sum
-				value = var:china_warlord_explosion
+				name = china_warlord_explosion_percent
+				value = {
+					value = var:china_warlord_explosion
+					multiply = 20
+				}
 			}
-			change_variable = {
-				name = china_warlord_explosion_sum
-				add = {
+			set_variable = {
+				name = china_warlord_explosion_percent_radical
+				value = {
 					value = radical_fraction
-					multiply = 5
+					multiply = 100
 				}
+			}
+			set_variable = {
+				name = china_warlord_explosion_percent_loyalist
+				value = {
+					value = loyalist_fraction
+					multiply = 100
+				}
+			}
+	
+			set_variable = {
+				name = china_warlord_explosion_sum
+				value = var:china_warlord_explosion_percent
 			}
 			change_variable = {
 				name = china_warlord_explosion_sum
-				subtract = {
-					value = loyalist_fraction
-					multiply = 5
-				}
+				add = var:china_warlord_explosion_percent_radical
+			}
+			change_variable = {
+				name = china_warlord_explosion_sum
+				subtract = var:china_warlord_explosion_percent_loyalist
 			}
 		}
 	}
