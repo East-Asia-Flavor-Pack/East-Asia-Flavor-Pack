@@ -11,6 +11,8 @@ hui_revolt.1 = {
 	
 	duration = 3
 
+	cooldown = { months = 6 }
+
 	event_image = {
 		video = "gfx/event_pictures/asia_union_leader.bk2"
 	}
@@ -32,144 +34,65 @@ hui_revolt.1 = {
 					AND = {
 						NOT = { has_variable = PNG_start }
 						OR = {
-							AND = {
-								state_region = s:STATE_SICHUAN
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
-							AND = {
-								state_region = s:STATE_YUNNAN
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
+							this = s:STATE_SICHUAN.region_state:CHI
+							this = s:STATE_YUNNAN.region_state:CHI
 						}
 					}
 					AND = {
 						NOT = { has_variable = YTS_start }
 						OR = {
-							AND = {
-								state_region = s:STATE_GANSU
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
-							AND = {
-								state_region = s:STATE_QINGHAI
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
-							AND = {
-								state_region = s:STATE_DZUNGARIA
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
-							AND = {
-								state_region = s:STATE_TIANSHAN
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-							}
+							this = s:STATE_GANSU.region_state:CHI
+							this = s:STATE_QINGHAI.region_state:CHI
 						}
 					}
 				}
-				NOT = { has_modifier = hui_revolt_3 }
 			}
 			save_scope_as = revolt_state
 		}
 		scope:revolt_state = {
 			if = {
-				limit = {
-					has_modifier = hui_revolt_2
-				}
-				if = {
-					limit = { has_modifier = hui_revolt_1 }
-					remove_modifier = hui_revolt_1
-				}
-				remove_modifier = hui_revolt_2
-				add_modifier = {
-					name = hui_revolt_3
-					months = 18
-				}
+				limit = { has_modifier = hui_revolt_3 }
 				if = {
 					limit = {
-						s:STATE_YUNNAN = {
-							any_scope_state = {
-								OR = {
-									owner = c:CHI
-									overlord = c:CHI
-								}
-								has_modifier = hui_revolt_3
-							}
+						OR = {
+							this = s:STATE_SICHUAN.region_state:CHI
+							this = s:STATE_YUNNAN.region_state:CHI
 						}
 					}
 					c:CHI = { trigger_event = { id = hui_revolt.4 } }
 				}
-				else_if = {
-					limit = {
-						AND = {
-							s:STATE_TIANSHAN = {
-								any_scope_state = {
-									OR = {
-										owner = c:CHI
-										overlord = c:CHI
-									}
-									OR = {
-										has_modifier = hui_revolt_2
-										has_modifier = hui_revolt_3
-									}
-								}
-							}
-							s:STATE_DZUNGARIA = {
-								any_scope_state = {
-									OR = {
-										owner = c:CHI
-										overlord = c:CHI
-									}
-									OR = {
-										has_modifier = hui_revolt_2
-										has_modifier = hui_revolt_3
-									}
-								}
-							}
-						}
-					}
-					c:CHI = { trigger_event = { id = hui_revolt.5 } }
-				}
 				else = {
-					trigger_event = {
-						id = hui_revolt.2
-						months = 6
-					}
+					c:CHI = { trigger_event = { id = hui_revolt.5 } }
 				}
 			}
 			else_if = {
-				limit = {
-					has_modifier = hui_revolt_1
+				limit = { has_modifier = hui_revolt_2 }
+				remove_modifier = hui_revolt_2
+				add_modifier = {
+					name = hui_revolt_3
+					months = 72
 				}
+				trigger_event = {
+					id = hui_revolt.2
+					months = 4
+				}
+			}
+			else_if = {
+				limit = { has_modifier = hui_revolt_1 }
 				remove_modifier = hui_revolt_1
 				add_modifier = {
 					name = hui_revolt_2
-					months = 12
+					months = 48
 				}
 				trigger_event = {
 					id = hui_revolt.3
-					months = 6
+					months = 24
 				}
 			}
 			else = {
 				add_modifier = {
 					name = hui_revolt_1
-					months = 6
+					months = 24
 				}
 			}
 		}
@@ -193,7 +116,7 @@ hui_revolt.2 = {
 		remove_modifier = hui_revolt_3
 		add_modifier = {
 			name = hui_revolt_2
-			months = 12
+			months = 48
 		}
 	}
 }
@@ -209,7 +132,7 @@ hui_revolt.3 = {
 			remove_modifier = hui_revolt_2
 			add_modifier = {
 				name = hui_revolt_1
-				months = 6
+				months = 24
 			}
 		}
 	}
@@ -307,6 +230,27 @@ hui_revolt.4 = {
 						experienced_defensive_strategist
 						brave
 					}
+				}
+				create_character = {
+					first_name = Cai
+					last_name = Fachun
+					is_general = yes
+					hq = region_south_china
+					commander_rank = commander_rank_2
+				}
+				create_character = {
+					first_name = Ma
+					last_name = Jinbao
+					is_general = yes
+					hq = region_south_china
+					commander_rank = commander_rank_2
+				}
+				create_character = {
+					first_name = Li
+					last_name = Guolun
+					is_general = yes
+					hq = region_south_china
+					commander_rank = commander_rank_2
 				}
 				if = {
 					limit = {
