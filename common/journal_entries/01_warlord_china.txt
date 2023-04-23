@@ -18,6 +18,14 @@
 			name = china_warlord_explosion_percent_loyalist
 			value = loyalist_fraction
 		}
+		set_variable = {
+			name = china_warlord_explosion_percent_treaty_port
+			value = 0
+		}
+		set_variable = {
+			name = china_warlord_explosion_percent_lost_state
+			value = 0
+		}
 
 		set_variable = {
 			name = china_warlord_explosion_sum
@@ -30,6 +38,10 @@
 		random_law = {
 			limit = { type = law_type:law_monarchy }
 			save_scope_as = monarchy_scope
+		}
+		random_law = {
+			limit = { type = law_type:law_free_trade } # 추가
+			save_scope_as = free_trade_scope
 		}
 	}
 
@@ -134,6 +146,18 @@
 					trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
 				}
 			}
+			if = { # 추가
+				limit = {
+					NOT = { has_variable = china_warlord_explosion_free_trade }
+					has_law = law_type:law_free_trade
+				}
+				post_notification = warlord_china_explosion_point_add
+				change_variable = {
+					name = china_warlord_explosion
+					add = 1
+				}
+				set_variable = china_warlord_explosion_free_trade
+			}
 			random_list = {
 				1 = {
 					if = {
@@ -194,6 +218,55 @@
 				name = china_warlord_explosion_percent_loyalist
 				value = loyalist_fraction
 			}
+			set_variable = {
+				name = china_warlord_explosion_percent_treaty_port
+				value = 0
+			}
+			set_variable = {
+				name = china_warlord_explosion_percent_lost_state
+				value = 0
+			}
+			every_state_region = {
+				limit = {
+					OR = {
+						region = sr:region_north_china
+						region = sr:region_south_china
+					}
+				}
+				if = {
+					limit = {
+						any_scope_state = {
+							NOT = { owner = ROOT }
+							is_treaty_port = yes
+							any_neighbouring_state = { owner = ROOT }
+						}
+					}
+					change_variable = {
+						name = china_warlord_explosion_percent_treaty_port
+						add = 1
+					}
+				}
+				if = {
+					limit = {
+						any_scope_state = {
+							NOT = { owner = ROOT }
+							is_treaty_port = no
+						}
+					}
+					change_variable = {
+						name = china_warlord_explosion_percent_lost_state
+						add = 1
+					}
+				}
+			}
+			change_variable = {
+				name = china_warlord_explosion_percent_treaty_port
+				multiply = 0.05
+			}
+			change_variable = {
+				name = china_warlord_explosion_percent_lost_state
+				multiply = 0.10
+			}
 	
 			set_variable = {
 				name = china_warlord_explosion_sum
@@ -207,6 +280,20 @@
 				name = china_warlord_explosion_sum
 				subtract = var:china_warlord_explosion_percent_loyalist
 			}
+			change_variable = {
+				name = china_warlord_explosion_sum
+				add = var:china_warlord_explosion_percent_treaty_port
+			}
+			change_variable = {
+				name = china_warlord_explosion_sum
+				add = var:china_warlord_explosion_percent_lost_state
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			chi_flavor.10 # 만주와 한
 		}
 	}
 

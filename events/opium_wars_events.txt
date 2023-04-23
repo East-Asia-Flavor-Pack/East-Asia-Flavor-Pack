@@ -157,7 +157,7 @@ opium_wars.1 = {
 			months = normal_modifier_time
 		}
 		ai_chance = {
-			base = 0	#10에서 0으로 날림
+			base = 0	# 10에서 수정
 		}
 	}
 }
@@ -267,7 +267,7 @@ opium_wars.2 = {
 			}		
 		}		
 		ai_chance = {
-			base = 0	#5에서 0으로 날림
+			base = 0	# 5에서 수정
 		}
 	}
 }
@@ -333,14 +333,14 @@ opium_wars.3 = {
 				save_scope_as = opium_wars_aggressor_country
 			}
 		}
-		if = {
-			limit = { has_journal_entry = je_warlord_china }
-			post_notification = warlord_china_explosion_point_remove
-			change_variable = {
-				name = china_warlord_explosion
-				subtract = 1
-			}
-		}
+		# if = { 제거
+		# 	limit = { has_journal_entry = je_warlord_china }
+		# 	post_notification = warlord_china_explosion_point_remove
+		# 	change_variable = {
+		# 		name = china_warlord_explosion
+		# 		subtract = 1
+		# 	}
+		# }
 	}
 
 	option = {
@@ -456,10 +456,17 @@ opium_wars.4 = {
 		if = {
 			limit = { has_journal_entry = je_warlord_china }
 			set_variable = lost_opium_wars
-			post_notification = warlord_china_explosion_point_add
-			change_variable = {
-				name = china_warlord_explosion
-				add = 1
+			# post_notification = warlord_china_explosion_point_add 제거
+			# change_variable = {
+			# 	name = china_warlord_explosion
+			# 	add = 1
+			# }
+			every_country = { # 추가
+				limit = { country_rank >= rank_value:great_power }
+				set_secret_goal = {
+					country = root
+					secret_goal = antagonize			
+				}	
 			}
 		}
 	}
@@ -471,7 +478,6 @@ opium_wars.4 = {
 			name = opium_wars_lost
 			months = very_long_modifier_time
 		}
-		
 		add_radicals = {
 			value = very_large_radicals
 		}
@@ -570,6 +576,7 @@ opium_wars.5 = {
 			name = opium_wars_navy_modifier
 			months = normal_modifier_time
 		}
+		remove_variable = opium_wars_aggressor
 	}
 
 	option = {
@@ -578,6 +585,7 @@ opium_wars.5 = {
 			name = opium_wars_export_modifier
 			months = normal_modifier_time
 		}
+		remove_variable = opium_wars_aggressor
 	}
 }
 
@@ -805,6 +813,11 @@ opium_wars.8 = {
 				name = opium_addiction_state_mod
 				months = short_modifier_time
 			}
+			add_culture_standard_of_living_modifier = {
+				culture = scope:opium_addiction_pop
+				months = normal_modifier_time
+				multiplier = -2
+			}
 		}
 	}
 	option = {
@@ -816,9 +829,10 @@ opium_wars.8 = {
 			}
 		}
 		scope:opium_addiction_state = {
-			add_modifier = {
-				name = lesser_opium_addiction_state_mod
-				months = short_modifier_time
+			add_culture_standard_of_living_modifier = {
+				culture = scope:opium_addiction_pop
+				months = normal_modifier_time
+				multiplier = -1
 			}
 		}
 	}
