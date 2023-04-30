@@ -142,6 +142,63 @@ chinese_westernization.102 = { # (도시 이름) 병공창
 	}
 }
 
+chinese_westernization.103 = { # 군대 훈련 일원화 TODO
+	type = country_event
+	placement = root
+	title = chinese_westernization.103.t
+	desc = chinese_westernization.103.d
+	flavor = tchinese_westernization.103.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		NOT = { has_variable = chi_unifying_military_training }
+		AND = {
+			OR = { # TODO
+				has_law = law_type:law_no_schools
+				has_law = law_type:law_religious_schools
+			}
+			OR = {
+				is_enacting_law = law_type:law_private_schools
+				is_enacting_law = law_type:law_public_schools
+			}
+		}
+	}
+	immediate = {
+		currently_enacting_law = { save_scope_as = current_law_scope }
+		set_variable = chi_unifying_military_training
+	}
+	option = { # 함
+		name = chinese_westernization.103.a
+		default_option = yes
+		ig:ig_devout = {
+			add_modifier = {
+				name = confucian_education_ig_devout
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = { # 안함
+		name = chinese_westernization.103.b
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
 chinese_westernization.121 = { # (도시 이름) 무비학당 설립 시도
 	type = country_event
 	placement = scope:military_academy_state
@@ -2694,6 +2751,183 @@ chinese_westernization.424 = { # 유학 교육?
 	}
 }
 
+chinese_westernization.425 = { # 행정 개혁 중 만주족에 힘 싣기
+	type = country_event
+	placement = root
+	title = chinese_westernization.425.t
+	desc = chinese_westernization.425.d
+	flavor = tchinese_westernization.425.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		NOT = { has_variable = chi_abolish_dual_presidency }
+		AND = {
+			OR = {
+				has_law = law_type:law_no_schools
+				has_law = law_type:law_religious_schools
+			}
+			OR = {
+				is_enacting_law = law_type:law_private_schools
+				is_enacting_law = law_type:law_public_schools
+			}
+		}
+	}
+	immediate = {
+		set_variable = chi_abolish_dual_presidency
+	}
+	option = { # 완전히 만주쪽
+		name = chinese_westernization.425.a
+		add_radicals = {
+			strata = rich
+			culture = cu:han
+			value = 0.2
+		}
+		add_radicals = {
+			strata = middle
+			culture = cu:han
+			value = 0.1
+		}
+		add_loyalists = {
+			culture = cu:manchu
+			value = 0.2
+		}
+		custom_tooltip = {
+			text = chinese_westernization.425.tta
+			random_list = {
+				1 = { trigger_event = { id = chinese_westernization.426 days = { 30 60 } } }
+				1 = { trigger_event = { id = chinese_westernization.427 days = { 30 60 } } }
+			}
+		}
+		custom_tooltip = {
+			text = warlord_china_explosion_point_remove_5_tt
+			post_notification = warlord_china_explosion_point_remove
+			change_variable = {
+				name = china_warlord_explosion
+				subtract = 0.25
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = { # 약간 만주쪽
+		name = chinese_westernization.425.b
+		add_radicals = {
+			strata = rich
+			culture = cu:han
+			value = 0.1
+		}
+		add_radicals = {
+			strata = middle
+			culture = cu:han
+			value = 0.05
+		}
+		custom_tooltip = {
+			text = chinese_westernization.425.ttb
+			random_list = {
+				1 = {}
+				1 = { trigger_event = { id = chinese_westernization.426 days = { 30 60 } } }
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 공평하게
+		name = chinese_westernization.425.c
+		default_option = yes
+		add_radicals = {
+			culture = cu:manchu
+			value = 0.2
+		}
+		custom_tooltip = {
+			text = warlord_china_explosion_point_add_5_tt
+			post_notification = warlord_china_explosion_point_add
+			change_variable = {
+				name = china_warlord_explosion
+				add = 0.25
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+chinese_westernization.426 = { # 한인의 반발
+	type = country_event
+	placement = root
+	title = chinese_westernization.426.t
+	desc = chinese_westernization.426.d
+	flavor = tchinese_westernization.426.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	option = {
+		name = chinese_westernization.426.a
+		default_option = yes
+		add_radicals = {
+			culture = cu:han
+			value = 0.05
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+chinese_westernization.427 = { # 한인의 반발2
+	type = country_event
+	placement = root
+	title = chinese_westernization.427.t
+	desc = chinese_westernization.427.d
+	flavor = tchinese_westernization.427.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	option = {
+		name = chinese_westernization.427.a
+		default_option = yes
+		add_radicals = {
+			culture = cu:han
+			value = 0.075
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# chinese_westernization.431 선거권 제정 시작했을 때 뜰 이벤트, 
+
 chinese_westernization.462 = { # 국폐칙례 (화폐 표준화) 币制则例
 	type = country_event
 	placement = root
@@ -2990,6 +3224,8 @@ chinese_westernization.463 = { # 민간 조폐 말소
 # 예비입헌공회 (헌법)
 
 # 헌법 관련 이벤트 (만약 전제정치 유지 선택하면 중국 분열 +하는 식으로)
+# 황제의 권력을 얼마나 제한하고 의회에 얼마나 권력을 실어주느냐가 관건이 될듯
+# 만약 너무 의회에 힘을 실어주면 한족 권력 강화 -> 중국 불안정 순으로 진행할듯
 
 # 흠정헌법대강 (헌법)
 
