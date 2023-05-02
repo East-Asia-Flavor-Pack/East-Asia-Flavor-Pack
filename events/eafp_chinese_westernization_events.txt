@@ -22,8 +22,28 @@ chinese_westernization.1 = {
 
 	trigger = {
 		NOT = { has_journal_entry = je_chinese_westernization }
-		# chi_flavor.4 터지고 5-7년 뒤 시작
-		# (한족 또는 만주 본토) && (북중국 또는 남중국 또는 만주) 빼앗기면 (조약항 X) 시작
+		any_state_region = {
+			OR = {
+				is_homeland = cu:han
+				is_homeland = cu:manchu
+			}
+			OR = {
+				region = sr:region_south_china
+				region = sr:region_north_china
+				region = sr:region_manchuria
+			}
+			any_scope_state = {
+				NOT = {
+					owner = {
+						OR = {
+							this = ROOT
+							top_overlord = ROOT
+						}
+					}
+				}
+				is_treaty_port = no
+			}
+		}
 	}
 
 	immediate = {
@@ -163,29 +183,36 @@ chinese_westernization.103 = { # 군대 훈련 일원화 TODO
 	trigger = {
 		NOT = { has_variable = chi_unifying_military_training }
 		AND = {
-			OR = { # TODO
-				has_law = law_type:law_no_schools
-				has_law = law_type:law_religious_schools
+			OR = {
+				has_law = law_type:law_peasant_levies
+				has_law = law_type:law_national_militia
 			}
 			OR = {
-				is_enacting_law = law_type:law_private_schools
-				is_enacting_law = law_type:law_public_schools
+				is_enacting_law = law_type:law_mass_conscription
+				is_enacting_law = law_type:law_professional_army
 			}
 		}
 	}
 	immediate = {
-		currently_enacting_law = { save_scope_as = current_law_scope }
 		set_variable = chi_unifying_military_training
 	}
 	option = { # 함
 		name = chinese_westernization.103.a
 		default_option = yes
-		ig:ig_devout = {
+		ig:ig_landowners = {
 			add_modifier = {
-				name = confucian_education_ig_devout
+				name = military_training_unified_ig_landowners
 				months = very_long_modifier_time
 				is_decaying = yes
 			}
+		}
+		add_radicals = {
+			pop_type = aristocrats
+			value = 0.15
+		}
+		add_radicals = {
+			pop_type = clergymen
+			value = 0.15
 		}
 		ai_chance = {
 			base = 0
@@ -2488,7 +2515,7 @@ chinese_westernization.421 = { # 보갑제 개편?
 		}
 		add_loyalists = {
 			pop_type = aristocrats
-			value = 0.2
+			value = 0.1
 		}
 		add_loyalists = {
 			pop_type = clergymen
@@ -2515,7 +2542,7 @@ chinese_westernization.421 = { # 보갑제 개편?
 		}
 		add_loyalists = {
 			pop_type = clergymen
-			value = 0.05
+			value = 0.1
 		}
 		ai_chance = {
 			base = 1
@@ -2531,14 +2558,6 @@ chinese_westernization.421 = { # 보갑제 개편?
 		add_radicals = {
 			strata = poor
 			value = 0.02
-		}
-		add_loyalists = {
-			pop_type = aristocrats
-			value = 0.1
-		}
-		add_loyalists = {
-			pop_type = clergymen
-			value = 0.05
 		}
 		ai_chance = {
 			base = 0
@@ -2571,7 +2590,7 @@ chinese_westernization.421 = { # 보갑제 개편?
 		}
 		add_radicals = {
 			pop_type = aristocrats
-			value = 0.2
+			value = 0.1
 		}
 		add_radicals = {
 			pop_type = clergymen
@@ -2799,7 +2818,7 @@ chinese_westernization.425 = { # 행정 개혁 중 만주족에 힘 싣기
 		}
 		add_loyalists = {
 			culture = cu:manchu
-			value = 0.2
+			value = 0.3
 		}
 		custom_tooltip = {
 			text = chinese_westernization.425.tta
@@ -2848,7 +2867,7 @@ chinese_westernization.425 = { # 행정 개혁 중 만주족에 힘 싣기
 		default_option = yes
 		add_radicals = {
 			culture = cu:manchu
-			value = 0.2
+			value = 0.3
 		}
 		custom_tooltip = {
 			text = warlord_china_explosion_point_add_5_tt
