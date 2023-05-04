@@ -786,22 +786,42 @@ chi_flavor.201 = { # 외국인 선교사 살인
 	option = {
 		name = chi_flavor.201.a
 		
+		change_relations = {
+			country = scope:conflict_country
+			value = -30
+		}
+		custom_tooltip = {
+			text = chi_flavor.201.tta
+			set_variable = {
+				name = 
+				value = 
+			}
+		}
+
 		ai_chance = {
-			base = 3
+			base = 4
 		}
 	}
 
 	option = {
 		name = chi_flavor.201.b
 
+		change_relations = {
+			country = scope:conflict_country
+			value = -10
+		}
 		ai_chance = {
-			base = 5
+			base = 6
 		}
 	}
 
 	option = {
 		name = chi_flavor.201.c
 		
+		change_relations = {
+			country = scope:conflict_country
+			value = 10
+		}
 		ai_chance = {
 			base = 1
 		}
@@ -811,8 +831,136 @@ chi_flavor.201 = { # 외국인 선교사 살인
 		name = chi_flavor.201.d
 		default_option = yes
 		
+		change_relations = {
+			country = scope:conflict_country
+			value = -50
+		}
 		ai_chance = {
-			base = 0
+			base = 1
+		}
+	}
+}
+
+chi_flavor.202 = { # 외국인 선교사 살인
+	type = country_event
+	placement = ROOT
+
+	title = chi_flavor.202.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = chi_flavor.202.d1
+				trigger = {
+					has_law = law_type:law_free_trade
+				}
+			}
+			triggered_desc = {
+				desc = opium_wars.4.d2
+				trigger = {
+					any_country = {
+						has_variable = opium_wars_aggressor
+						any_scope_state = {
+							market = {
+								owner = ROOT
+							}
+						}
+					}
+				}
+			}
+			triggered_desc = {
+				desc = opium_wars.4.d3
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	flavor = chi_flavor.202.f
+
+	duration = 1
+
+	event_image = {
+		video = "gfx/event_pictures/middleeast_courtroom_upheaval.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/middleeast/courtroom_upheaval"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	immediate = {
+		random_country = {
+			limit = {
+				country_rank >= rank_value:great_power
+				OR = {
+					country_has_state_religion = rel:catholic
+					country_has_state_religion = rel:protestant
+					country_has_state_religion = rel:orthodox
+					country_has_state_religion = rel:oriental_orthodox
+				}
+				OR = {
+					has_interest_marker_in_region = sr:region_north_china
+					has_interest_marker_in_region = sr:region_south_china
+				}
+			}
+			save_scope_as = conflict_country
+		}
+		random_list = {
+			1 = {
+				trigger = {
+					scope:conflict_country = { has_interest_marker_in_region = sr:region_north_china }
+				}
+				sr:region_north_china = {
+					random_scope_state = {
+						limit = { is_coastal = yes is_capital = no }
+						save_scope_as = conflict_state
+					}
+				}
+			}
+			1 = {
+				trigger = {
+					scope:conflict_country = { has_interest_marker_in_region = sr:region_south_china }
+				}
+				sr:region_north_china = {
+					random_scope_state = {
+						limit = { is_coastal = yes is_capital = no }
+						save_scope_as = conflict_state
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = chi_flavor.201.a
+		
+		ai_chance = {
+			base = 5
+		}
+	}
+
+	option = {
+		name = chi_flavor.201.b
+
+		ai_chance = {
+			base = 7
+		}
+	}
+
+	option = {
+		name = chi_flavor.201.c
+		
+		ai_chance = {
+			base = 3
+		}
+	}
+
+	option = {
+		name = chi_flavor.201.d
+		default_option = yes
+		
+		ai_chance = {
+			base = 1
 		}
 	}
 }
