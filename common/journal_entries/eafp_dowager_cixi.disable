@@ -1,0 +1,145 @@
+﻿je_dowager_cixi = { # dowager_cixi_events.1에서 트리거
+    icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+    immediate = {
+        random_scope_character = {
+            limit = { has_variable = is_Xingzhen_Yehe_Nara }
+            save_scope_as = Xingzhen_Yehe_Nara_scope
+        }
+        set_variable = {
+            name = cixi_coup
+            value = 0 # 0~20
+        }
+        set_variable = {
+            name = cixi_influence
+            value = 0 # 0~10 
+        }
+        set_variable = {
+            name = cixi_approval
+            value = 0 # 0~10
+        }
+        je_dowager_cixi_calc = yes
+    }
+    complete = {
+        always = no
+    }
+    on_complete = {
+        hidden_effect = {
+            remove_variable = cixi_coup
+            remove_variable = cixi_approval
+            remove_variable = cixi_influence
+        }
+    }
+    fail = {
+        scope:Xingzhen_Yehe_Nara_scope = {
+            is_character_alive = no
+            custom_tooltip = {
+                text = cixi_not_removed
+                has_variable = is_Xingzhen_Yehe_Nara
+            }
+        }
+    }
+    on_fail = {
+        trigger_event = { id = dowager_cixi_events.3 }
+        hidden_effect = {
+            remove_variable = cixi_coup
+            remove_variable = cixi_approval
+            remove_variable = cixi_influence
+        }
+    }
+    status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_dowager_cixi_influence1
+				trigger = {
+					var:cixi_influence < 2
+				}
+			}
+			triggered_desc = {
+				desc = je_dowager_cixi_influence2
+				trigger = {
+					var:cixi_influence < 4
+				}
+			}
+			triggered_desc = {
+				desc = je_dowager_cixi_influence3
+				trigger = {
+					var:cixi_influence <= 6
+				}
+			}
+            triggered_desc = {
+				desc = je_dowager_cixi_influence4
+				trigger = {
+					var:cixi_influence <= 8
+				}
+			}
+            desc = je_dowager_cixi_influence5
+		}
+        first_valid = {
+			triggered_desc = {
+				desc = je_dowager_cixi_approval1
+				trigger = {
+					var:cixi_approval < -7
+				}
+			}
+			triggered_desc = {
+				desc = je_dowager_cixi_approval2
+				trigger = {
+					var:cixi_approval < -2
+				}
+			}
+			triggered_desc = {
+				desc = je_dowager_cixi_approval3
+				trigger = {
+					var:cixi_approval <= 2
+				}
+			}
+            triggered_desc = {
+				desc = je_dowager_cixi_approval4
+				trigger = {
+					var:cixi_approval <= 7
+				}
+			}
+            desc = je_dowager_cixi_approval5
+		}
+	}
+    on_monthly_pulse = {
+        effect = {
+            je_dowager_cixi_calc = yes
+            change_variable = {
+                name = cixi_coup
+                add = {
+                    value = {
+                        value = var:cixi_influence
+                        add = 20
+                    }
+                    divide = {
+                        value = var:cixi_approval
+                        add = 20
+                    }
+                    add = -1
+                }
+            }
+            change_variable = {
+                name = cixi_coup
+                min = 0
+            }
+            if = {
+                limit = { var:cixi_coup >= 20 }
+                set_variable = {
+                    name = cixi_coup
+                    value = 0
+                }
+                trigger_event = {
+                    id = dowager_cixi_events.5
+                    days = { 30 60 }
+                }
+            }
+        }
+        random_events = {
+            100 = 0
+            # TODO
+        }
+    }
+    weight = 1000
+    should_be_pinned_by_default = yes
+}

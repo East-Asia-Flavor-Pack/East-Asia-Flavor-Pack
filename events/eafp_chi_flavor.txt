@@ -29,37 +29,76 @@ chi_flavor.1 = { # 황위의 계승 - 시스템 상 자연사
 				months = { 1 3 }
 			}
 		}
+		if = {
+			limit = {
+				any_scope_character = { has_variable = is_Xingzhen_Yehe_Nara }
+			}
+			random_scope_character = {
+				limit = { has_variable = is_Xingzhen_Yehe_Nara }
+				save_scope_as = Xingzhen_Yehe_Nara_scope
+			}
+		}
 	}
 
 	option = {
 		name = chi_flavor.1.a
 		default_option = yes
-		
+		trigger = {
+			scope:new_emperor = {
+				age < 17
+			}
+			any_scope_character = { has_variable = is_Xingzhen_Yehe_Nara }
+		}
+
+		scope:Xingzhen_Yehe_Nara_scope = {
+			add_trait = chi_regent
+		}
+		scope:new_emperor = {
+			add_trait = chi_child_emperor
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = chi_flavor.1.a
+		default_option = yes
+		trigger = {
+			NOT = {
+				scope:new_emperor = {
+					age < 17
+				}
+				any_scope_character = { has_variable = is_Xingzhen_Yehe_Nara }
+			}
+		}
+
 		ai_chance = {
 			base = 100
 		}
 	}
 }
 
-chi_flavor.2 = { # 황위의 계승 - 함풍제 즉위
+chi_flavor.2 = { # 황위의 계승 - 함풍제, 동치제 즉위
 	type = character_event
 	hidden = yes
 	
 	immediate = {
 		if = {
-			limit = { has_variable = is_Daoguang_Aisin_Gioro }
+			limit = { is_character_alive = yes }
 			kill_character = yes
 		}
 	}
 }
 
-chi_flavor.3 = { # 황위의 계승 - 동치제 즉위 - 아마
+chi_flavor.3 = { # 황위의 계승 - 이화원 방화에 충격 받고 사망
 	type = character_event
 	hidden = yes
 	
 	immediate = {
 		if = {
-			limit = { has_modifier = old_summer_palace_destroyed_ruler_modifier }
+			limit = { is_character_alive = yes has_modifier = old_summer_palace_destroyed_ruler_modifier }
 			kill_character = yes
 		}
 	}
@@ -115,6 +154,77 @@ chi_flavor.4 = { # 원명원 파괴
 			}
 		}
 		
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+chi_flavor.5 = { # 황제가 성년이 됨
+	type = country_event
+	placement = ROOT
+
+	title = chi_flavor.5.t
+	desc = chi_flavor.5.d
+	flavor = chi_flavor.5.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+		ruler = {
+			has_trait = chi_child_emperor
+			age >= 17
+		}
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		if = {
+			limit = {
+				any_scope_character = { has_trait = chi_regent }
+			}
+			random_scope_character = {
+				limit = { has_trait = chi_regent }
+				save_scope_as = regent_scope
+			}
+		}
+	}
+
+	option = {
+		name = chi_flavor.5.a
+		default_option = yes
+		
+		trigger = {
+			any_scope_character = { has_trait = chi_regent }
+		}
+
+		scope:regent_scope = {
+			remove_trait = chi_regent
+		}
+		ruler = {
+			remove_trait = chi_child_emperor
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = chi_flavor.5.a
+		default_option = yes
+		
+		trigger = {
+			NOT = { any_scope_character = { has_trait = chi_regent } }
+		}
+
 		ai_chance = {
 			base = 100
 		}
@@ -723,11 +833,44 @@ chi_flavor.106 = { # 1875-9년 가뭄 중 1879년
 
 chi_flavor.201 = { # 외국인 선교사 살인
 	type = country_event
-	placement = ROOT
+	placement = scope:conflict_state
 
-	title = chi_flavor.201.t
-	desc = chi_flavor.201.d
-	flavor = chi_flavor.201.f
+	title = {
+		first_valid = {
+			triggered_desc = {
+				desc = chi_flavor.201.t1
+				trigger = { var:eafp_during_diplomatic_crisis = 1 }
+			}
+			triggered_desc = {
+				desc = chi_flavor.201.t2
+				trigger = { var:eafp_during_diplomatic_crisis = 2 }
+			}
+		}
+	}
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = chi_flavor.201.d1
+				trigger = { var:eafp_during_diplomatic_crisis = 1 }
+			}
+			triggered_desc = {
+				desc = chi_flavor.201.d2
+				trigger = { var:eafp_during_diplomatic_crisis = 2 }
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = chi_flavor.201.f1
+				trigger = { var:eafp_during_diplomatic_crisis = 1 }
+			}
+			triggered_desc = {
+				desc = chi_flavor.201.f2
+				trigger = { var:eafp_during_diplomatic_crisis = 2 }
+			}
+		}
+	}
 
 	duration = 1
 
@@ -740,7 +883,25 @@ chi_flavor.201 = { # 외국인 선교사 살인
 
 	icon = "gfx/interface/icons/event_icons/event_default.dds"
 
+	trigger = {
+		NOT = { has_variable = eafp_during_diplomatic_crisis }
+	}
+
 	immediate = {
+		random_list = {
+			1 = {
+				set_variable = {
+					name = eafp_during_diplomatic_crisis
+					value = 1
+				}
+			}
+			1 = {
+				set_variable = {
+					name = eafp_during_diplomatic_crisis
+					value = 2
+				}
+			}
+		}
 		random_country = {
 			limit = {
 				country_rank >= rank_value:great_power
@@ -757,47 +918,48 @@ chi_flavor.201 = { # 외국인 선교사 살인
 			}
 			save_scope_as = conflict_country
 		}
-		random_list = {
-			1 = {
-				trigger = {
-					scope:conflict_country = { has_interest_marker_in_region = sr:region_north_china }
-				}
-				sr:region_north_china = {
-					random_scope_state = {
-						limit = { is_coastal = yes is_capital = no }
-						save_scope_as = conflict_state
+		random_scope_state = {
+			limit = {
+				is_coastal = yes
+				is_capital = no
+				OR = {
+					AND = {
+						region = sr:region_north_china
+						scope:conflict_country = { has_interest_marker_in_region = sr:region_north_china }
+					}
+					AND = {
+						region = sr:region_south_china
+						scope:conflict_country = { has_interest_marker_in_region = sr:region_south_china }
 					}
 				}
 			}
-			1 = {
-				trigger = {
-					scope:conflict_country = { has_interest_marker_in_region = sr:region_south_china }
-				}
-				sr:region_north_china = {
-					random_scope_state = {
-						limit = { is_coastal = yes is_capital = no }
-						save_scope_as = conflict_state
-					}
-				}
-			}
+			save_scope_as = conflict_state
 		}
 	}
 
 	option = {
 		name = chi_flavor.201.a
-		
-		change_relations = {
-			country = scope:conflict_country
-			value = -30
+
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = -40
+			}
 		}
 		custom_tooltip = {
 			text = chi_flavor.201.tta
 			set_variable = {
-				name = 
-				value = 
+				name = chiflavor201temp
+				value = 2
+			}
+			scope:conflict_country = {
+				trigger_event = {
+					id = chi_flavor.202
+					days = { 3 5 }
+				}
 			}
 		}
-
+		
 		ai_chance = {
 			base = 4
 		}
@@ -806,9 +968,24 @@ chi_flavor.201 = { # 외국인 선교사 살인
 	option = {
 		name = chi_flavor.201.b
 
-		change_relations = {
-			country = scope:conflict_country
-			value = -10
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+		}
+		custom_tooltip = {
+			text = chi_flavor.201.ttb
+			set_variable = {
+				name = chiflavor201temp
+				value = 3
+			}
+			scope:conflict_country = {
+				trigger_event = {
+					id = chi_flavor.202
+					days = { 3 5 }
+				}
+			}
 		}
 		ai_chance = {
 			base = 6
@@ -818,9 +995,18 @@ chi_flavor.201 = { # 외국인 선교사 살인
 	option = {
 		name = chi_flavor.201.c
 		
-		change_relations = {
-			country = scope:conflict_country
-			value = 10
+		custom_tooltip = {
+			text = chi_flavor.201.ttc
+			set_variable = {
+				name = chiflavor201temp
+				value = 4
+			}
+			scope:conflict_country = {
+				trigger_event = {
+					id = chi_flavor.202
+					days = { 3 5 }
+				}
+			}
 		}
 		ai_chance = {
 			base = 1
@@ -831,9 +1017,28 @@ chi_flavor.201 = { # 외국인 선교사 살인
 		name = chi_flavor.201.d
 		default_option = yes
 		
-		change_relations = {
-			country = scope:conflict_country
-			value = -50
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = -60
+			}
+		}
+		add_modifier = {
+			name = chifla203a3
+			months = 12
+		}
+		custom_tooltip = {
+			text = chi_flavor.201.ttd
+			set_variable = {
+				name = chiflavor201temp
+				value = 1
+			}
+			scope:conflict_country = {
+				trigger_event = {
+					id = chi_flavor.202
+					days = { 3 5 }
+				}
+			}
 		}
 		ai_chance = {
 			base = 1
@@ -841,37 +1046,29 @@ chi_flavor.201 = { # 외국인 선교사 살인
 	}
 }
 
-chi_flavor.202 = { # 외국인 선교사 살인
+chi_flavor.202 = { # 외국인 선교사 살인 - 대상국 반응
 	type = country_event
 	placement = ROOT
 
 	title = chi_flavor.202.t
 	desc = {
+		desc = chi_flavor.202.d
 		first_valid = {
 			triggered_desc = {
 				desc = chi_flavor.202.d1
-				trigger = {
-					has_law = law_type:law_free_trade
-				}
+				trigger = { c:CHI.var:chiflavor201temp = 2 }
 			}
 			triggered_desc = {
-				desc = opium_wars.4.d2
-				trigger = {
-					any_country = {
-						has_variable = opium_wars_aggressor
-						any_scope_state = {
-							market = {
-								owner = ROOT
-							}
-						}
-					}
-				}
+				desc = chi_flavor.202.d2
+				trigger = { c:CHI.var:chiflavor201temp = 3 }
 			}
 			triggered_desc = {
-				desc = opium_wars.4.d3
-				trigger = {
-					always = yes
-				}
+				desc = chi_flavor.202.d3
+				trigger = { c:CHI.var:chiflavor201temp = 4 }
+			}
+			triggered_desc = {
+				desc = chi_flavor.202.d4
+				trigger = { c:CHI.var:chiflavor201temp = 1 }
 			}
 		}
 	}
@@ -889,82 +1086,205 @@ chi_flavor.202 = { # 외국인 선교사 살인
 	icon = "gfx/interface/icons/event_icons/event_default.dds"
 
 	immediate = {
-		random_country = {
-			limit = {
-				country_rank >= rank_value:great_power
-				OR = {
-					country_has_state_religion = rel:catholic
-					country_has_state_religion = rel:protestant
-					country_has_state_religion = rel:orthodox
-					country_has_state_religion = rel:oriental_orthodox
-				}
-				OR = {
-					has_interest_marker_in_region = sr:region_north_china
-					has_interest_marker_in_region = sr:region_south_china
-				}
-			}
-			save_scope_as = conflict_country
-		}
-		random_list = {
-			1 = {
-				trigger = {
-					scope:conflict_country = { has_interest_marker_in_region = sr:region_north_china }
-				}
-				sr:region_north_china = {
-					random_scope_state = {
-						limit = { is_coastal = yes is_capital = no }
-						save_scope_as = conflict_state
-					}
-				}
-			}
-			1 = {
-				trigger = {
-					scope:conflict_country = { has_interest_marker_in_region = sr:region_south_china }
-				}
-				sr:region_north_china = {
-					random_scope_state = {
-						limit = { is_coastal = yes is_capital = no }
-						save_scope_as = conflict_state
-					}
-				}
-			}
-		}
 	}
 
 	option = {
 		name = chi_flavor.201.a
 		
+		c:CHI = {
+			trigger_event = {
+				id = chi_flavor.203
+				days = { 3 5 }
+			}
+		}
+
 		ai_chance = {
-			base = 5
+			base = 4
+			modifier = {
+				add = {
+					value = c:CHI.relations:root
+					divide = 40
+				}
+			}
+			modifier = {
+				add = {
+					value = c:CHI.var:chiflavor201temp
+					multiply = 4
+				}
+			}
 		}
 	}
 
 	option = {
 		name = chi_flavor.201.b
 
+		create_diplomatic_play = {
+			target_country = c:CHI
+			type = dp_humiliation
+			add_war_goal = {
+				holder = THIS
+				type = war_reparations
+				target_country = c:CHI
+				primary_demand = yes
+			}
+		}
+
+		hidden_effect = {
+			if = {
+				limit = {
+					is_ai = yes
+					NOT = {
+						any_scope_state = {
+							is_treaty_port = yes
+							state_region = {
+								any_scope_state = {
+									owner = c:CHI
+								}
+							}
+						}
+					}
+				}
+				random_diplomatic_play = {
+					limit = {
+						initiator = ROOT
+						target = c:CHI
+						is_diplomatic_play_type = dp_humiliation
+					}
+					add_war_goal = {
+						holder = ROOT
+						type = take_treaty_port
+						target_state = scope:conflict_state
+						primary_demand = yes
+					}
+				}
+			}
+			c:CHI = {
+				remove_variable = chiflavor201temp
+				remove_variable = eafp_during_diplomatic_crisis
+			}
+		}
+
 		ai_chance = {
-			base = 7
+			base = 10
 		}
 	}
+}
 
-	option = {
-		name = chi_flavor.201.c
+chi_flavor.203 = { # 외국인 선교사 살인 - 조건 받아들임
+	type = country_event
+	placement = scope:conflict_state
+
+	title = chi_flavor.203.t
+	desc = chi_flavor.203.d
+
+	duration = 1
+
+	event_image = {
+		video = "gfx/event_pictures/middleeast_courtroom_upheaval.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/middleeast/courtroom_upheaval"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	immediate = {
 		
-		ai_chance = {
-			base = 3
-		}
 	}
 
 	option = {
-		name = chi_flavor.201.d
-		default_option = yes
+		name = chi_flavor.203.a
+
+		trigger = { var:chiflavor201temp = 2 }
+
+		change_relations = {
+			country = scope:conflict_country
+			value = 10
+		}
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
 		
 		ai_chance = {
 			base = 1
 		}
 	}
+
+	option = {
+		name = chi_flavor.203.a
+
+		trigger = { var:chiflavor201temp = 3 }
+
+		add_modifier = {
+			name = chifla203a1
+			months = 12
+		}
+		scope:conflict_country = {
+			add_modifier = {
+				name = chifla203a2
+				months = 12
+			}
+		}
+		change_relations = {
+			country = scope:conflict_country
+			value = 10
+		}
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chi_flavor.203.a
+
+		trigger = { var:chiflavor201temp = 4 }
+
+		add_modifier = {
+			name = chifla203a1
+			months = 12
+		}
+		create_diplomatic_pact = {
+			country = scope:conflict_country
+			type = war_reparations
+		}
+		scope:conflict_country = {
+			add_modifier = {
+				name = chifla203a2
+				months = 12
+			}
+		}
+		change_relations = {
+			country = scope:conflict_country
+			value = 10
+		}
+		scope:conflict_country = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	after = {
+		remove_variable = chiflavor201temp
+		remove_variable = eafp_during_diplomatic_crisis
+	}
 }
 
-# 성당 방화
+# chi_flavor.204 비었음
 
 #
