@@ -2206,20 +2206,26 @@ chinese_westernization.302 = { # 철도 공포
 	}
 
 	immediate = {
-		set_variable = chiwes302
 		save_scope_as = chi_scope
 		random_scope_building = {
 			limit = {
 				is_building_type = building_railway
 				is_under_construction = yes
 			}
-			state = { save_scope_as = first_railroad_state }
+			save_scope_as = first_railroad
+			state = {
+				save_scope_as = first_railroad_state
+				unset_available_for_autonomous_investment = scope:first_railroad.type
+			}
 		}
 	}
 
 	option = {
 		name = chinese_westernization.302.a
 		default_option = yes
+		scope:first_railroad_state = {
+			remove_building = building_railway
+		}
 		# TODO - 철도 건설 못 하게 막기
 		ai_chance = {
 			base = 0.8
@@ -2228,6 +2234,12 @@ chinese_westernization.302 = { # 철도 공포
 
 	option = {
 		name = chinese_westernization.302.b
+		hidden_effect = {
+			set_variable = chiwes302
+			scope:first_railroad_state = {
+				set_available_for_autonomous_investment = scope:first_railroad.type
+			}
+		}
 		add_modifier = {
 			name = chiwes302b
 			is_decaying = yes
