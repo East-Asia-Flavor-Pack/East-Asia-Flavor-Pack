@@ -32,14 +32,115 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			order_by = radical_fraction
 			save_scope_as = revolt_state
 		}
+		create_country = {
+			tag = KMT # TODO 이 태그 달린 국가 만들기
+			origin = this
+			state = scope:revolt_state
+			on_created = {
+				every_interest_group = {
+					limit = {
+						OR = {
+							is_interest_group_type = ig_intelligentsia
+							is_interest_group_type = ig_armed_forces
+							is_interest_group_type = ig_rural_folk
+							is_interest_group_type = ig_devout
+						}
+					}
+					add_modifier = {
+						name = xinhai_revolution_ig_modifier
+						months = long_modifier_time
+					}
+				}
+				add_modifier = {
+					name = xinhai_revolution_army_modifier
+					months = normal_modifier_time
+				}
+			}
+		}
+		c:KMT = {		
+			create_diplomatic_play = {
+				name = xinhai_revolution
+				target_country = c:CHI
+				type = dp_revolution
+			}
+			hidden_effect = {
+				change_infamy = -500
+			}
+		}
+		random_diplomatic_play = {
+			limit = {
+				c:KMT = {
+					is_diplomatic_play_initiator = yes
+				}
+				c:CHI = {
+					is_diplomatic_play_target = yes
+				}
+			}
+			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
+			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
+		}
 	}
 
 	option = {
-		name = warlord_china_events.1.a
+		name = warlord_china_events.2.a
 		default_option = yes
-		
-		remove_modifier = summer_palace_reconstruction_modifier
 
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.2 = { # (도시 이름) 봉기
+	type = country_event
+	placement = c:KMT.capital
+
+	title = warlord_china_events.2.t
+	desc = warlord_china_events.2.d
+	flavor = warlord_china_events.2.f
+
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 5
+			ordered_scope_state = {
+				limit = {
+					OR = {
+						state_region = sr:region_north_china
+						state_region = sr:region_south_china
+					}
+					NOT = { has_variable = xinhai_revolution_state }
+				}
+				order_by = radical_fraction
+				set_variable = xinhai_revolution_state
+			}
+		}
+		every_scope_state = {
+			limit = { has_variable = xinhai_revolution_state }
+			remove_variable = xinhai_revolution_state
+			set_state_owner = c:TPG
+			set_state_type = incorporated
+		}
+	}
+
+	option = {
+		name = warlord_china_events.2.a
+		default_option = yes
+
+		
 		ai_chance = {
 			base = 100
 		}
