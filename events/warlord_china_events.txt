@@ -55,6 +55,15 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 					name = xinhai_revolution_army_modifier
 					months = normal_modifier_time
 				}
+				add_modifier = {
+					name = xinhai_revolution_army_modifier_short
+					months = 13
+				}
+				add_modifier = {
+					name = xinhai_revolution_land_socialization_modifier
+					months = long_modifier_time
+					is_decaying = yes
+				}
 			}
 		}
 		c:KMT = {		
@@ -76,15 +85,19 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 					is_diplomatic_play_target = yes
 				}
 			}
+			add_escalation = 90
 			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
 			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
+		}
+		trigger_event = {
+			id = warlord_china_events.2
+			days = 7
 		}
 	}
 
 	option = {
-		name = warlord_china_events.2.a
+		name = warlord_china_events.1.a
 		default_option = yes
-
 
 		ai_chance = {
 			base = 100
@@ -92,7 +105,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	}
 }
 
-warlord_china_events.2 = { # (도시 이름) 봉기
+warlord_china_events.2 = { # 군대의 배신 - 청
 	type = country_event
 	placement = c:KMT.capital
 
@@ -114,25 +127,9 @@ warlord_china_events.2 = { # (도시 이름) 봉기
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		while = {
-			count = 5
-			ordered_scope_state = {
-				limit = {
-					OR = {
-						state_region = sr:region_north_china
-						state_region = sr:region_south_china
-					}
-					NOT = { has_variable = xinhai_revolution_state }
-				}
-				order_by = radical_fraction
-				set_variable = xinhai_revolution_state
-			}
-		}
-		every_scope_state = {
-			limit = { has_variable = xinhai_revolution_state }
-			remove_variable = xinhai_revolution_state
-			set_state_owner = c:TPG
-			set_state_type = incorporated
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = short_modifier_time
 		}
 	}
 
@@ -140,6 +137,68 @@ warlord_china_events.2 = { # (도시 이름) 봉기
 		name = warlord_china_events.2.a
 		default_option = yes
 
+		hidden_effect = {
+			remove_modifier = xinhai_revolution_republican_propaganda
+		}
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = short_modifier_time
+			is_decaying = yes
+		}
+		
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.3 = { # 
+	type = country_event
+	placement = c:KMT.capital
+
+	title = warlord_china_events.2.t
+	desc = warlord_china_events.2.d
+	flavor = warlord_china_events.2.f
+
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		save_scope_as = tpg_defector_state
+				custom_tooltip = {
+					text = taiping_state_defection
+					set_state_owner = c:TPG
+					set_state_type = incorporated
+					add_culture_standard_of_living_modifier = {
+						culture = cu:manchu
+						months = long_modifier_time
+						multiplier = -5
+					}
+				}
+	}
+
+	option = {
+		name = warlord_china_events.3.a
+		default_option = yes
+
+		hidden_effect = {
+			remove_modifier = xinhai_revolution_republican_propaganda
+		}
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = short_modifier_time
+			is_decaying = yes
+		}
 		
 		ai_chance = {
 			base = 100
