@@ -8,7 +8,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	desc = warlord_china_events.1.d
 	flavor = warlord_china_events.1.f
 
-	duration = 1
+	duration = 3
 
 	event_image = {
 		texture = "gfx/event_pictures/china/coronation.png"
@@ -75,6 +75,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			hidden_effect = {
 				change_infamy = -500
 			}
+			add_journal_entry = { type = je_xinhai_revolution_kmt }
 		}
 		random_diplomatic_play = {
 			limit = {
@@ -113,7 +114,7 @@ warlord_china_events.2 = { # 군대의 배신 - 청
 	desc = warlord_china_events.2.d
 	flavor = warlord_china_events.2.f
 
-	duration = 1
+	duration = 3
 
 	event_image = {
 		texture = "gfx/event_pictures/china/coronation.png"
@@ -152,21 +153,22 @@ warlord_china_events.2 = { # 군대의 배신 - 청
 	}
 }
 
-warlord_china_events.3 = { # 
+warlord_china_events.3 = { # War dynamism - 주 강탈 당함
 	type = country_event
-	placement = c:KMT.capital
+	placement = scope:defector_state
 
-	title = warlord_china_events.2.t
-	desc = warlord_china_events.2.d
-	flavor = warlord_china_events.2.f
+	title = warlord_china_events.3.t
+	desc = warlord_china_events.3.d
+	flavor = warlord_china_events.3.f
 
-	duration = 1
+	duration = 3
 
 	event_image = {
 		texture = "gfx/event_pictures/china/coronation.png"
 	}
 
 	trigger = {
+		any_scope_state = { NOT = { owner = this.controller } }
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -174,38 +176,97 @@ warlord_china_events.3 = { #
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		save_scope_as = tpg_defector_state
-				custom_tooltip = {
-					text = taiping_state_defection
-					set_state_owner = c:TPG
-					set_state_type = incorporated
-					add_culture_standard_of_living_modifier = {
-						culture = cu:manchu
-						months = long_modifier_time
-						multiplier = -5
-					}
-				}
+		random_scope_state = {
+			limit = { NOT = { owner = this.controller } }
+			save_scope_as = defector_state
+		}
+		scope:defector_state = {
+			controller = { trigger_event = warlord_china_events.4 }
+			set_state_owner = this.controller
+			set_state_type = incorporated
+		}
 	}
 
 	option = {
 		name = warlord_china_events.3.a
 		default_option = yes
 
-		hidden_effect = {
-			remove_modifier = xinhai_revolution_republican_propaganda
-		}
-		add_modifier = {
-			name = xinhai_revolution_republican_propaganda
-			months = short_modifier_time
-			is_decaying = yes
+		trigger = {
+			this = c:CHI
 		}
 		
+		custom_tooltip = chi_state_defection_to_kmt
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = warlord_china_events.3.b
+		default_option = yes
+
+		trigger = {
+			this = c:KMT
+		}
+		
+		custom_tooltip = chi_state_defection_to_kmt
+
 		ai_chance = {
 			base = 100
 		}
 	}
 }
 
+warlord_china_events.4 = { # War dynamism - 주 획득
+	type = country_event
+	placement = scope:defector_state
+
+	title = warlord_china_events.4.t
+	desc = warlord_china_events.4.d
+	flavor = warlord_china_events.4.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+
+	option = {
+		name = warlord_china_events.4.a
+		default_option = yes
+
+		trigger = {
+			this = c:KMT
+		}
+		
+		custom_tooltip = chi_state_defection_to_kmt
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = warlord_china_events.4.b
+		default_option = yes
+
+		trigger = {
+			this = c:CHI
+		}
+		
+		custom_tooltip = chi_state_defection_to_kmt
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
 
 warlord_china_events.100 = { #Split china up into warlord states
 	type = country_event
