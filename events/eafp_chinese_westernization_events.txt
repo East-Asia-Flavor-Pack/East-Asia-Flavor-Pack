@@ -1138,13 +1138,28 @@ chinese_westernization.140 = { # (도시 이름) 무비학당 개교
 	}
 
 	immediate = {
-
+		if = {
+			limit = { has_variable = chi_military_academy_established }
+			change_variable = {
+				name = chi_military_academy_established
+				add = 1
+			}
+		}
+		else = {
+			set_variable = {
+				name = chi_military_academy_established
+				value = 1
+			}
+		}
+		scope:military_academy_state = {
+			set_variable = chi_military_academy_state
+		}
 	}
 
 	option = {
 		name = chinese_westernization.140.a
 		default_option = yes
-		set_variable = { name = chi_military_academy_established }
+		decrease_decadent_bannermen_effect = yes
 		add_modifier = {
 			name = chiwes140a
 			months = normal_modifier_time
@@ -1173,6 +1188,21 @@ chinese_westernization.181 = { # 신건육군
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
+		has_law = law_type:law_professional_army
+		any_scope_building = {
+			filter = { is_building_type = building_barracks }
+			percent >= 0.5
+			NOT = {
+				OR = {
+					has_active_production_method = pm_irregular_infantry
+					has_active_production_method = pm_no_artillery
+					has_active_production_method = pm_cannon_artillery
+				}
+			}
+		}
+		has_technology_researched = napoleonic_warfare
+		has_technology_researched = general_staff
+		has_technology_researched = shell_gun
 	}
 
 	immediate = {
@@ -1186,7 +1216,12 @@ chinese_westernization.181 = { # 신건육군
 			remove_ideology = ideology_stratocratic
 			add_ideology = ideology_jingoist
 			leader = { remove_as_interest_group_leader = yes }
+			add_modifier = {
+				name = chi_triumphant_armed_forces
+				months = long_modifier_time
+			}
 		}
+		largely_decrease_decadent_bannermen_effect = yes
 
 		default_option = yes
 		ai_chance = {
@@ -1214,16 +1249,15 @@ chinese_westernization.199 = { # 육군의 완전한 현대화
 
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
-	immediate = {
-		save_scope_as = chi_scope
-		capital = {
-			save_scope_as = capital_state
-		}
-	}
-
 	option = {
 		name = chinese_westernization.199.a
 		default_option = yes
+		
+		add_modifier = {
+			name = chiwes199a
+			months = normal_modifier_time
+		}
+
 		ai_chance = {
 			base = 1
 		}
@@ -1231,6 +1265,12 @@ chinese_westernization.199 = { # 육군의 완전한 현대화
 
 	option = {
 		name = chinese_westernization.199.b
+
+		add_modifier = {
+			name = chiwes199b
+			months = normal_modifier_time
+		}
+
 		ai_chance = {
 			base = 1
 		}
@@ -2114,6 +2154,56 @@ chinese_westernization.240 = { # (항구 이름) 수사학당 개교
 	}
 }
 
+chinese_westernization.299 = { # 해군의 완전한 현대화
+	type = country_event
+	placement = root
+
+	title = chinese_westernization.299.t
+	desc = chinese_westernization.299.d
+	flavor = chinese_westernization.299.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	immediate = {
+	}
+
+	option = {
+		name = chinese_westernization.299.a
+		default_option = yes
+		
+		add_modifier = {
+			name = chiwes299a
+			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chinese_westernization.299.b
+
+		add_modifier = {
+			name = chiwes299b
+			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
 # 상해, 천진, 한구 - 복주, 광주, 하문, 항주 <- 거의 이 순서로 조계지 세워짐
 
 #################### 산업 ####################
@@ -2644,7 +2734,10 @@ chinese_westernization.422 = { # 과거제의 행방
 		has_journal_entry = je_chinese_westernization_government_reform
 		NOT = { has_variable = chi_imperial_examination }
 		AND = {
-			has_law = law_type:law_no_schools
+			OR = {
+				has_law = law_type:law_no_schools
+				has_law = law_type:law_religious_schools
+			}
 			OR = {
 				# is_enacting_law = law_type:law_religious_schools
 				is_enacting_law = law_type:law_private_schools
@@ -3296,21 +3389,15 @@ chinese_westernization.501 = { # 위대한 회수
 	trigger = {
 		NOT = { has_variable = chi_the_restoration_of_land_sovereignty }
 		sr:region_north_china = {
-			any_scope_state = {
-				OR = {
-					owner = c:CHI
-					top_overlord = c:CHI
-				}
-				count = all
+			every_scope_state = {
+				owner = c:CHI
+				controller = c:CHI
 			}
 		}
 		sr:region_south_china = {
-			any_scope_state = {
-				OR = {
-					owner = c:CHI
-					top_overlord = c:CHI
-				}
-				count = all
+			every_scope_state = {
+				owner = c:CHI
+				controller = c:CHI
 			}
 		}
 	}
