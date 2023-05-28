@@ -2904,13 +2904,13 @@ chinese_westernization.425 = { # 행정 개혁 중 만주족에 힘 싣기
 	trigger = {
 		NOT = { has_variable = chi_abolish_dual_presidency }
 		AND = {
+			has_law = law_type:law_autocracy
 			OR = {
-				has_law = law_type:law_no_schools
-				has_law = law_type:law_religious_schools
-			}
-			OR = {
-				is_enacting_law = law_type:law_private_schools
-				is_enacting_law = law_type:law_public_schools
+				is_enacting_law = law_type:law_landed_voting
+				is_enacting_law = law_type:law_wealth_voting
+				is_enacting_law = law_type:law_census_voting
+				is_enacting_law = law_type:law_universal_suffrage
+				is_enacting_law = law_type:law_single_party_state
 			}
 		}
 	}
@@ -3051,6 +3051,98 @@ chinese_westernization.427 = { # 한인의 반발2
 		add_radicals = {
 			culture = cu:han
 			value = 0.075
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+chinese_westernization.428 = { # 관제개혁에 따른 반발
+	type = country_event
+	placement = root
+	title = chinese_westernization.428.t
+	desc = chinese_westernization.428.d
+	flavor = tchinese_westernization.428.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		NOT = { has_variable = chi_abolish_junji_chu }
+		AND = {
+			has_law = law_type:law_autocracy
+			OR = {
+				is_enacting_law = law_type:law_landed_voting
+				is_enacting_law = law_type:law_wealth_voting
+				is_enacting_law = law_type:law_census_voting
+				is_enacting_law = law_type:law_universal_suffrage
+				is_enacting_law = law_type:law_single_party_state
+			}
+		}
+	}
+	immediate = {
+		set_variable = chi_gov_departments_reform
+	}
+	option = { # 기존 내각과 군기처를 없애기
+		name = chinese_westernization.428.a
+		add_radicals = {
+			culture = cu:han
+			value = 0.1
+		}
+		add_loyalists = {
+			culture = cu:manchu
+			value = 0.3
+		}
+		ig:ig_landowners = {
+			add_modifier = {
+				name = abolish_junji_chu_ig_landowners
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = abolish_junji_chu_ig_intelligentsia
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+	option = { # 싫음 ㅅㄱ
+		name = chinese_westernization.428.b
+		add_loyalists = {
+			culture = cu:han
+			value = 0.1
+		}
+		add_radicals = {
+			culture = cu:manchu
+			value = 0.3
+		}
+		ig:ig_landowners = {
+			add_modifier = {
+				name = retain_junji_chu_ig_landowners
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = retain_junji_chu_ig_intelligentsia
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
 		}
 		ai_chance = {
 			base = 1
@@ -3343,7 +3435,90 @@ chinese_westernization.463 = { # 민간 조폐 말소
 	}
 }
 
-# chinese_westernization.464
+chinese_westernization.464 = { # 광산법 제정에 따른 반발 TODO
+	type = country_event
+	placement = root
+	title = chinese_westernization.464.t
+	desc = chinese_westernization.464.d
+	flavor = tchinese_westernization.464.f
+
+	event_image = {
+		video = "gfx/event_pictures/asia_politician_parliament_motion.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	duration = 3
+
+	trigger = {
+		has_journal_entry = je_chinese_westernization_government_reform
+		NOT = { has_variable = chi_mining_law }
+		AND = {
+			has_law = law_type:law_traditionalism
+			currently_enacting_law.type = {
+				is_same_law_group_as = law_type:law_traditionalism
+			}
+		}
+	}
+	immediate = {
+		currently_enacting_law = { save_scope_as = current_law_scope }
+		set_variable = chi_mining_law
+	}
+	option = { # 밀어붙이기
+		name = chinese_westernization.464.a
+		default_option = yes
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = mining_law_enacted_ig_industrialists
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		add_radicals = {
+			pop_type = capitalists
+			value = 0.2
+		}
+		add_radicals = {
+			pop_type = aristocrats
+			value = 0.1
+		}
+		add_radicals = {
+			pop_type = bureaucrats
+			value = 0.1
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 그냥 놔두기
+		name = chinese_westernization.464.b
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = imperial_examination_reformed_ig_industrialists
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+		add_loyalists = {
+			pop_type = capitalists
+			value = 0.1
+		}
+		add_loyalists = {
+			pop_type = aristocrats
+			value = 0.05
+		}
+		add_loyalists = {
+			pop_type = bureaucrats
+			value = 0.05
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+}
 
 # 토지조사 (토지세 깎는 모디파이어 효과 완화)
 
