@@ -1,0 +1,142 @@
+﻿je_manchus_and_han = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	immediate = {
+		#every_scope_state = {
+		#	if = {
+		#		limit = { state_is_in_china = yes }
+		#		set_variable = manchu_power_var
+		#		set_variable = han_power_var
+		#	}
+		#}
+		set_variable = {
+			name = the_empire_of_chimera_var
+			value = 4
+		}
+		add_modifier = {
+			name = the_empire_of_chimera
+			multiplier = var:the_empire_of_chimera_var
+		}
+	}
+
+	complete = {
+		has_law = law_type:law_multicultural
+	}
+
+	on_complete = {
+		remove_modifier = the_empire_of_chimera
+		hidden_effect = {
+			remove_variable = the_empire_of_chimera_var
+		}
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_fail = {
+		remove_modifier = the_empire_of_chimera
+		hidden_effect = {
+			remove_variable = the_empire_of_chimera_var
+		}
+	}
+	
+	on_yearly_pulse = {
+		if = {
+			limit = {
+				has_technology_researched = nationalism
+				NOT = { has_variable = manhan1 }
+			}
+			set_variable = manhan1
+			trigger_event = {
+				id = manchus_and_han_events.1
+				months = { 0 12 }
+			}
+		}
+		if = {
+			limit = {
+				has_technology_researched = pan-nationalism
+				NOT = { has_variable = manhan2 }
+			}
+			set_variable = manhan2
+			trigger_event = {
+				id = manchus_and_han_events.2
+				months = { 12 60 }
+			}
+		}
+		if = {
+			limit = { has_variable = manhan1 }
+			random_list = {
+				40 = 0
+				5 = {
+					modifier = {
+						if = {
+							limit = { cu:han = { culture_is_discriminated_in = ROOT } }
+							factor = 2
+						}
+					}
+					modifier = {
+						if = {
+							limit = { has_variable = manhan2 }
+							factor = 2
+						}
+					}
+					modifier = {
+						if = {
+							limit = { has_law = law_type:law_landed_voting }
+							factor = 0.9
+						}
+					}
+					modifier = {
+						if = {
+							limit = { has_law = law_type:law_census_voting }
+							factor = 0.8
+						}
+					}
+					modifier = {
+						if = {
+							limit = { has_law = law_type:law_wealth_voting }
+							factor = 0.7
+						}
+					}
+					modifier = {
+						if = {
+							limit = { has_law = law_type:law_universal_suffrage }
+							factor = 0.6
+						}
+					}
+					trigger_event = {
+						id = manchus_and_han_events.3
+						months = { 0 12 }
+					}
+				}
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		#every_state = {
+		#	if = {
+		#		limit = { state_is_in_china = yes owner = c:CHI }
+		#		if = {
+		#			NOT = { has_variable = manchu_power_var }
+		#			set_variable = manchu_power_var
+		#		}
+		#		if = {
+		#			NOT = { has_variable = han_power_var }
+		#			set_variable = han_power_var
+		#		}
+		#	}
+		#	else = {
+		#		remove_variable = manchu_power_var
+		#		remove_variable = han_power_var
+		#	}
+		#}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = no
+}
