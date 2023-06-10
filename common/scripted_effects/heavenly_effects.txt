@@ -79,7 +79,7 @@
 						}
 					}
 					50 = {
-						add_radicals = {
+						add_radicals_in_state = {
 							value = very_large_radicals
 							religion = rel:protestant
 						}
@@ -108,6 +108,16 @@ create_taiping_characters = { # 바닐라 꺼 수정
 	if = {
 		limit = {
 			game_date < 1880.1.1
+			NOT = { #If you exiled Hong and he got recruited somewhere else, he doesn't get to be here.
+				any_country = {
+					NOT = {
+						this = c:CHI
+					}
+					any_scope_character = {
+						has_variable = hong_var
+					}
+				}
+			}
 		}
 		create_character = {
 			first_name = Hong
@@ -122,6 +132,13 @@ create_taiping_characters = { # 바닐라 꺼 수정
 				inspirational_orator
 				persistent
 				psychological_affliction
+			}
+			on_created = {
+				set_variable = hong_var
+				add_modifier = {
+					name = modifier_brother_of_christ
+					months = long_modifier_time
+				}
 			}
 		}
 		if = {
@@ -143,6 +160,33 @@ create_taiping_characters = { # 바닐라 꺼 수정
 			}
 		}
 	}
+	else = { #Fallback chars if Hong is unavailable.
+		create_character = {
+			religion = rel:protestant
+			interest_group = ig_devout
+			ideology = ideology_theocrat
+			ruler = yes
+			traits = {
+				inspirational_orator
+				persistent
+				psychological_affliction
+			}
+			on_created = {
+				add_modifier = {
+					name = modifier_brother_of_christ
+					months = long_modifier_time
+				}
+			}
+		}
+
+		create_character = {
+			religion = rel:protestant
+			interest_group = ig_devout
+			heir = yes
+			ideology = ideology_moderate
+		}
+	}
+
 	if = {
 		limit = {
 			game_date > 1841.1.1
