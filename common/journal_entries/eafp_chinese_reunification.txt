@@ -1,11 +1,16 @@
 ﻿je_chinese_reunification = {
+	
 	icon = "gfx/interface/icons/event_icons/event_military"
 
-	possible = {
+	is_shown_when_inactive = {
 		OR = {
 			ROOT = c:CHI
 			country_has_primary_culture = cu:han
 		}
+		aggressive_diplomatic_plays_permitted = yes
+	}
+
+	possible = {
 		any_country = {
 			has_war_with = ROOT
 			OR = {
@@ -13,7 +18,6 @@
 				country_has_primary_culture = cu:han
 			}
 		}
-		aggressive_diplomatic_plays_permitted = yes
 	}
 
 	scripted_button = chi_war_dynamism_GUIZHOU_button
@@ -48,19 +52,22 @@
 	scripted_button = chi_war_dynamism_SHENGJING_button
 
 	invalid = {
-		NOT = {
+		NOR = {
 			OR = {
 				ROOT = c:CHI
 				country_has_primary_culture = cu:han
 			}
-			any_country = {
-				has_war_with = ROOT
-				OR = {
-					THIS = c:CHI
-					country_has_primary_culture = cu:han
-				}
-			}
 			aggressive_diplomatic_plays_permitted = yes
+		}
+	}
+
+	on_invalid = {
+		every_state = {
+			limit = {
+				has_modifier = chi_war_dynamism_modifier
+				owner = controller
+			}
+			remove_modifier = chi_war_dynamism_modifier
 		}
 	}
 
@@ -76,7 +83,7 @@
 			every_scope_state = {
 				limit = {
 					has_modifier = chi_war_dynamism_modifier
-					NOT = { controller = ROOT }
+					owner = controller
 				}
 				remove_modifier = chi_war_dynamism_modifier
 			}
