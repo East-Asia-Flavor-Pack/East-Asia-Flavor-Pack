@@ -104,48 +104,29 @@ je_taiping_timer = {
 	complete = {
 		custom_tooltip = {
 			text = taiping_timer_complete
-			hidden_trigger = {
-				NOT = {
-					exists = c:TPG
-				}
-			}
+			NOT = { exists = c:TPG }
 		}
 	}
-
-	immediate = {
-	}
 	
-	timeout = 540	#시간제한
+	timeout = 540
 
 	on_timeout = {
 		custom_tooltip = {
 			text = taiping_time_attack
-			hidden_effect = {
-				every_diplomatic_play = {
-					limit = {
-						initiator_is = c:TPG
-						target_is = c:CHI
-					}
-					end_play = yes
+			every_country = {
+				limit = { country_rank >= rank_value:great_power }
+				trigger_event = {
+					id = heavenly.101
+					days = { 1 7 }
 				}
-				create_truce = {
-					country = c:TPG
-					months = 48
-				}
-				every_country = {
-					limit = {
-						OR = {
-							this = c:CHI
-							this = c:TPG
-							country_is_in_east_asia = yes
-							country_rank = rank_value:great_power
-						}
-					}
-					trigger_event = {
-						id = lia_event_rtc.13
-						days = { 1 7 }
-					}
-				}
+			}
+		}
+		custom_tooltip = {
+			text = warlord_china_explosion_point_add_10_tt
+			post_notification = warlord_china_explosion_point_add
+			change_variable = {
+				name = china_warlord_explosion
+				add = 0.5
 			}
 		}
 	}
@@ -192,14 +173,6 @@ je_taiping = {
 	}
 
 	on_fail = {
-		if = {
-			limit = { has_journal_entry = je_warlord_china }
-			post_notification = warlord_china_explosion_point_add
-			change_variable = {
-				name = china_warlord_explosion
-				add = 0.5
-			}
-		}
 		hidden_effect = {
 			remove_modifier = taiping_taiping_rebellion
 			c:TPG = {
@@ -380,7 +353,7 @@ je_taiping_truce_chi_attack = {
 		custom_tooltip = {
 			text = taiping_truce_chi_attack
 			hidden_effect = {
-				trigger_event = { id = lia_event_rtc.12 }
+				trigger_event = { id = heavenly.104 }
 			}
 		}
 	}
@@ -435,7 +408,7 @@ je_taiping_truce_tpg_attack = {
 		custom_tooltip = {
 			text = taiping_truce_tpg_attack
 			hidden_effect = {
-				trigger_event = { id = lia_event_rtc.11 }
+				trigger_event = { id = heavenly.103 }
 			}
 		}
 	}

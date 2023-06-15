@@ -299,7 +299,7 @@ heavenly.4 = {
 
 	}
 	immediate = {
-		save_scope_as = chi_scope # 추가
+		save_scope_as = chi_scope
 		set_global_variable = heavenly_kingdom_start_var # 추가
 		every_state = {
 			limit = {
@@ -444,6 +444,9 @@ heavenly.4 = {
 				months = long_modifier_time
 			}
 		}
+		set_variable = { # 추가
+			name = taiping_happened
+		}
 	}
 
 	option = {
@@ -581,18 +584,14 @@ heavenly.4 = {
 	after = {
 		c:CHI = {
 			trigger_event = {
-				id = lia_event_rtc.5
-				days = 3
-			}
-			trigger_event = {
 				id = chinese_westernization.101
 				months = 12
 			}
 		}
 		c:TPG = {
 			trigger_event = {
-				id = lia_event_rtc.6
-				days = 3
+				id = heavenly.102
+				days = { 730 1460 }	# 2~4년
 			}
 		}
 		every_country = {
@@ -600,18 +599,6 @@ heavenly.4 = {
 				OR = {
 					country_rank = rank_value:great_power
 					country_rank = rank_value:major_power
-				}
-				NOT = { this = c:CHI }
-				NOT = { this = c:TPG }
-			}
-			trigger_event = {
-				id = lia_event_rtc.7
-				days = { 14 30 }
-			}
-		}
-		every_country = {
-			limit = {
-				OR = {
 					country_rank = rank_value:minor_power
 					country_rank = rank_value:unrecognized_major_power
 					country_rank = rank_value:unrecognized_regional_power	
@@ -619,10 +606,7 @@ heavenly.4 = {
 				NOT = { this = c:CHI }
 				NOT = { this = c:TPG }
 			}
-			trigger_event = {
-				id = lia_event_rtc.8
-				days = { 30 45 }
-			}
+			trigger_event = { id = lia_event_rtc.7 }
 		}
 	}
 }
@@ -902,4 +886,346 @@ heavenly.6 = {
 			months = long_modifier_time
 		}
 	}
+}
+
+# 태평천국의 난 장기화 - 추가
+heavenly.101 = {	
+	type = country_event
+	placement = ROOT
+
+	title = heavenly.101.t
+	desc = heavenly.101.d
+	flavor = heavenly.101.f
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_naval_battle.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = heavenly.101.a
+
+		change_relations = {
+			country = c:CHI
+			value = 25
+		}
+		change_relations = {
+			country = c:TPG
+			value = -50
+		}		
+		add_modifier = {
+			name = lia_modifier_rtc_tp_support
+			months = 6
+		}
+		every_country = {
+			limit = {
+				this = c:CHI
+			}
+			add_modifier = {
+				name = lia_modifier_rtc_tp_qing
+				months = 18
+			}
+		}
+
+		ai_chance = {
+			base = 40	
+		}
+	}
+	option = {
+		name = heavenly.101.b
+
+		change_relations = {
+			country = c:TPG
+			value = 25
+		}
+		change_relations = {
+			country = c:CHI
+			value = -50
+		}		
+		add_modifier = {
+			name = lia_modifier_rtc_tp_support
+			months = 6
+		}
+		every_country = {
+			limit = {
+				this = c:TPG
+			}
+			add_modifier = {
+				name = lia_modifier_rtc_tp_rebel
+				months = 18
+				is_decaying = yes
+			}			
+		}
+		
+		ai_chance = {
+			base = 10	
+		}
+	}
+	option = {
+		name = heavenly.101.c
+		default_option = yes		
+		
+		ai_chance = {
+			base = 50
+			modifier = {				
+				trigger = {
+					OR = {
+						has_interest_marker_in_region = sr:region_north_china
+						has_interest_marker_in_region = sr:region_south_china
+					}
+				}
+				add = -50
+			}	
+		}
+	}	
+}
+
+# 천국의 분열 - 추가
+heavenly.102 = {
+	type = country_event
+	placement = ROOT
+
+	title = heavenly.102.t
+	desc = heavenly.102.d
+	flavor = heavenly.102.f
+
+	duration = 1
+	
+	is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	option = {
+		name = heavenly.102.a
+		default_option = yes
+
+		if = {
+			limit = {
+				exists = c:TPG
+				THIS = c:TPG
+			}
+			add_modifier = {
+				name = internal_conflict_in_tpg
+				months = 180
+				is_decaying = yes
+			}
+			random_scope_character = {
+				limit = {
+					has_role = general
+					is_ruler = no
+				}
+				kill_character = yes
+			}			
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}	
+	
+}
+
+# 태평천국의 북벌 - 추가
+heavenly.103 = {
+	type = country_event
+	placement = ROOT
+
+	title = heavenly.103.t
+	desc = heavenly.103.d
+	flavor = heavenly.103.f
+
+	duration = 1
+	
+	is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_devastation.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		# 클레임 새로 박음
+		every_state_region = {	
+			limit = {
+				any_scope_state = { owner = c:TPG }
+			}
+			add_claim = c:CHI
+		}		
+		every_state_region = {
+			limit = {
+				any_scope_state = { owner = c:CHI }
+			}
+			add_claim = c:TPG
+		}
+	}
+
+	option = {
+		name = heavenly.103.a
+		default_option = yes
+		end_truce = {
+			country = c:CHI
+		}
+		create_diplomatic_play = {
+			name = lia_rtc_tpg_return
+			target_country = c:CHI
+			type = dp_tpg_return		
+			add_war_goal = {
+				holder = c:TPG
+				type = annex_country
+				target_country = c:CHI
+			}
+			add_war_goal = {
+				holder = c:CHI
+				type = annex_country
+				target_country = c:TPG
+			}
+		}
+		random_diplomatic_play = {
+			limit = {
+				initiator = c:TPG
+				target = c:CHI
+			}
+			add_escalation = 90
+		}
+
+		add_journal_entry = { type = je_taiping_revolution2 }
+		c:CHI = { add_journal_entry = { type = je_taiping2 } }
+		
+		ai_chance = {
+			base = 4
+		}
+	}
+	option = {
+		name = heavenly.103.b
+		
+		add_modifier = {
+			name = lia_modi_rtc_lowlegi
+			months = 24
+		}
+		add_journal_entry = { type = je_taiping_truce_tpg_defence }
+		c:CHI = { add_journal_entry = { type = je_taiping_truce_chi_attack } }
+		
+		ai_chance = {
+			base = 1
+		}
+	}	
+}
+
+# 청조의 역적토벌 - 추가
+heavenly.104 = {
+	type = country_event
+	placement = ROOT
+
+	title = heavenly.104.t
+	desc = heavenly.104.d
+	flavor = heavenly.104.f
+
+	duration = 1
+	
+	is_popup = yes
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_devastation.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		every_state_region = {	
+			limit = {
+				any_scope_state = { owner = c:TPG }
+			}
+			add_claim = c:CHI
+		}		
+		every_state_region = {
+			limit = {
+				any_scope_state = { owner = c:CHI }
+			}
+			add_claim = c:TPG
+		}
+	}
+
+	option = {
+		name = heavenly.104.a
+		default_option = yes
+		end_truce = {
+			country = c:TPG
+		}
+		create_diplomatic_play = {
+			name = lia_rtc_chi_return
+			target_country = c:TPG
+			type = dp_chi_return
+			add_war_goal = {
+				holder = c:TPG
+				type = annex_country
+				target_country = c:CHI
+			}
+			add_war_goal = {
+				holder = c:CHI
+				type = annex_country
+				target_country = c:TPG
+			}
+		}
+		random_diplomatic_play = {
+			limit = {
+				initiator = c:CHI
+				target = c:TPG
+			}
+			add_escalation = 90
+		}
+		
+		add_journal_entry = { type = je_taiping2 }
+		c:TPG = { add_journal_entry = { type = je_taiping_revolution2 } }
+		
+		ai_chance = {
+			base = 4
+		}
+	}
+
+	option = {
+		name = heavenly.104.b
+		
+		add_modifier = {
+			name = lia_modi_rtc_lowlegi
+			months = 24
+		}
+		add_journal_entry = { type = je_taiping_truce_chi_defence }
+		c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg_attack } }
+		ai_chance = {
+			base = 1
+		}
+	}	
+	
 }
