@@ -12,7 +12,7 @@
 
 	possible = {
 		any_country = {
-			has_war_with = ROOT
+			is_diplomatic_play_enemy_of = ROOT
 			OR = {
 				THIS = c:CHI
 				country_has_primary_culture = cu:han
@@ -52,12 +52,14 @@
 	scripted_button = chi_war_dynamism_SHENGJING_button
 
 	complete = {
-		NOR = {
-			ROOT = c:CHI
-			country_has_primary_culture = cu:han
+		NAND = {
+			OR = {
+				ROOT = c:CHI
+				country_has_primary_culture = cu:han
+			}
 			aggressive_diplomatic_plays_permitted = yes
 			any_country = {
-				has_war_with = ROOT
+				is_diplomatic_play_enemy_of = ROOT
 				OR = {
 					THIS = c:CHI
 					country_has_primary_culture = cu:han
@@ -67,12 +69,18 @@
 	}
 
 	on_complete = {
-		every_state = {
-			limit = {
-				has_modifier = chi_war_dynamism_modifier
-				owner = controller
+		hidden_effect = {
+			every_state = {
+				limit = {
+					has_variable_list = chi_war_dynamism_varlist
+					is_target_in_variable_list = {
+						name = chi_war_dynamism_varlist
+						target = ROOT
+					}
+				}
+				clear_variable_list = chi_war_dynamism_varlist
+				remove_modifier = chi_war_dynamism_modifier
 			}
-			remove_modifier = chi_war_dynamism_modifier
 		}
 	}
 
@@ -87,9 +95,14 @@
 			}
 			every_scope_state = {
 				limit = {
-					has_modifier = chi_war_dynamism_modifier
-					owner = controller
+					has_variable_list = chi_war_dynamism_varlist
+					is_target_in_variable_list = {
+						name = chi_war_dynamism_varlist
+						target = ROOT
+					}
+					NOT = {	controller = ROOT }
 				}
+				clear_variable_list = chi_war_dynamism_varlist
 				remove_modifier = chi_war_dynamism_modifier
 			}
 		}

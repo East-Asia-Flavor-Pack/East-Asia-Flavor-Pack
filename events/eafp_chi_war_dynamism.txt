@@ -5,35 +5,51 @@ chi_war_dynamism.1 = { # 아직 변동치 있고 조건 만족하면 주 소유 
 	hidden = yes
 
 	trigger = {
-		has_modifier = chi_war_dynamism_modifier
-		controller = {
-			OR = {
-				THIS = c:CHI
-				country_has_primary_culture = cu:han
-			}
-			has_war_with = ROOT.owner
-		}
-		any_neighbouring_state = { owner = ROOT.controller }
+		
 	}
 
 	immediate = {
-		owner = {
-			random_scope_war = {
-				limit = {
-					is_war_participant = root.controller
-				}
-				add_war_war_support = {
-					target = ROOT.controller
-					value = 10
-				}
-				add_war_war_support = {
+		if = {
+			limit = {
+				has_variable_list = chi_war_dynamism_varlist
+				is_target_in_variable_list = {
+					name = chi_war_dynamism_varlist
 					target = ROOT.owner
-					value = -5
 				}
 			}
+			if = {
+				limit = {
+					controller = {
+						OR = {
+							THIS = c:CHI
+							country_has_primary_culture = cu:han
+						}
+						has_war_with = ROOT.owner
+					}
+					any_neighbouring_state = { owner = ROOT.controller }
+				}
+				owner = {
+					random_scope_war = {
+						limit = {
+							is_war_participant = ROOT.controller
+						}
+						add_war_war_support = {
+							target = ROOT.controller
+							value = 10
+						}
+						add_war_war_support = {
+							target = ROOT.owner
+							value = -5
+						}
+					}
+				}
+				clear_variable_list = chi_war_dynamism_varlist
+				set_state_owner = controller
+				set_state_type = incorporated
+			}
+			else = {
+				clear_variable_list = chi_war_dynamism_varlist
+			}
 		}
-		remove_modifier = chi_war_dynamism_modifier
-		set_state_owner = controller
-		set_state_type = incorporated
 	}
 }
