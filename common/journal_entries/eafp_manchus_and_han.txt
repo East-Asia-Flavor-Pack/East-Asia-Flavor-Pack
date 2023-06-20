@@ -2,13 +2,6 @@
 	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 
 	immediate = {
-		#every_scope_state = {
-		#	if = {
-		#		limit = { state_is_in_china = yes }
-		#		set_variable = manchu_power_var
-		#		set_variable = han_power_var
-		#	}
-		#}
 		set_variable = {
 			name = the_empire_of_chimera_var
 			value = 4
@@ -19,28 +12,23 @@
 		}
 	}
 
-	complete = {
-		has_law = law_type:law_multicultural
-	}
-
-	on_complete = {
-		remove_modifier = the_empire_of_chimera
-		hidden_effect = {
-			remove_variable = the_empire_of_chimera_var
-		}
-	}
-
-	fail = {
+	invalid = {
 		custom_tooltip = {
 			text = china_shatters_tt
 			has_global_variable = china_shatters
 		}
 	}
 
-	on_fail = {
-		remove_modifier = the_empire_of_chimera
+	on_invalid = {
 		hidden_effect = {
-			remove_variable = the_empire_of_chimera_var
+			if = {
+				limit = { has_variable = the_empire_of_chimera_var }
+				remove_variable = the_empire_of_chimera_var
+			}
+		}
+		if = {
+			limit = { has_modifier = the_empire_of_chimera }
+			remove_modifier = the_empire_of_chimera
 		}
 	}
 	
@@ -118,23 +106,23 @@
 	}
 
 	on_monthly_pulse = {
-		#every_state = {
-		#	if = {
-		#		limit = { state_is_in_china = yes owner = c:CHI }
-		#		if = {
-		#			NOT = { has_variable = manchu_power_var }
-		#			set_variable = manchu_power_var
-		#		}
-		#		if = {
-		#			NOT = { has_variable = han_power_var }
-		#			set_variable = han_power_var
-		#		}
-		#	}
-		#	else = {
-		#		remove_variable = manchu_power_var
-		#		remove_variable = han_power_var
-		#	}
-		#}
+		if = {
+			limit = {
+				has_law = law_type:law_multicultural
+				has_modifier = the_empire_of_chimera
+			}
+			remove_modifier = the_empire_of_chimera
+		}
+		else_if = {
+			limit = {
+				NOT = { has_law = law_type:law_multicultural }
+				NOT = { has_modifier = the_empire_of_chimera }
+			}
+			add_modifier = {
+				name = the_empire_of_chimera
+				multiplier = var:the_empire_of_chimera_var
+			}
+		}
 	}
 
 	weight = 1000
