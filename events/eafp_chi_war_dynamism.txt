@@ -1,52 +1,102 @@
 ﻿namespace = chi_war_dynamism
 
-chi_war_dynamism.1 = { # 아직 변동치 있고 조건 만족하면 주 소유 넘김
-	type = state_event
+chi_war_dynamism.1 = { # 아직 변동치 있고 조건 만족하면 주 소유 받음
+	type = country_event
+	
 	hidden = yes
 
-	trigger = {
-		
-	}
-
 	immediate = {
-		if = {
-			limit = {
-				has_variable_list = chi_war_dynamism_varlist
-				is_target_in_variable_list = {
-					name = chi_war_dynamism_varlist
-					target = ROOT.owner
-				}
-			}
-			clear_variable_list = chi_war_dynamism_varlist
+		scope:target_state = {
 			if = {
 				limit = {
-					controller = {
-						OR = {
-							THIS = c:CHI
-							country_has_primary_culture = cu:han
-						}
-						has_war_with = ROOT.owner
-					}
-					any_neighbouring_state = { owner = ROOT.controller }
-				}
-				owner = {
-					random_scope_war = {
-						limit = {
-							is_war_participant = ROOT.controller
-						}
-						add_war_war_support = {
-							target = ROOT.controller
-							value = 10
-						}
-						add_war_war_support = {
-							target = ROOT.owner
-							value = -5
-						}
+					has_variable_list = chi_war_dynamism_varlist
+					is_target_in_variable_list = {
+						name = chi_war_dynamism_varlist
+						target = scope:target_state.controller
 					}
 				}
-				set_state_owner = controller
-				set_state_type = incorporated
+				clear_variable_list = chi_war_dynamism_varlist
+				if = {
+					limit = {
+						controller = {
+							OR = {
+								THIS = c:CHI
+								country_has_primary_culture = cu:han
+							}
+							has_war_with = scope:target_state.owner
+						}
+						any_neighbouring_state = { owner = scope:target_state.controller }
+					}
+					owner = { save_scope_as = state_owner }
+					controller = { save_scope_as = state_controller }
+					set_state_owner = controller
+					set_state_type = incorporated
+				}
 			}
 		}
+		scope:state_owner = { trigger_event = chi_war_dynamism.2 }
+		scope:state_controller = { trigger_event = chi_war_dynamism.3 }
+	}
+}
+
+chi_war_dynamism.2 = { # 주 빼앗김
+	type = country_event
+	placement = scope:target_state
+
+	title = chi_war_dynamism.2.t
+	desc = chi_war_dynamism.2.d
+
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	duration = 1
+
+	option = {
+		name = chi_war_dynamism.2.a
+		default_option = yes
+		random_scope_war = {
+			limit = { is_war_participant = scope:state_controller }
+			add_war_war_support = {
+				target = ROOT
+				value = -5
+			}
+		}
+		ai_chance = { base = 1 }
+	}
+}
+
+chi_war_dynamism.3 = { # 주 차지함
+	type = country_event
+	placement = scope:target_state
+
+	title = chi_war_dynamism.3.t
+	desc = chi_war_dynamism.3.d
+
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	duration = 1
+
+	option = {
+		name = chi_war_dynamism.3.a
+		default_option = yes
+		random_scope_war = {
+			limit = { is_war_participant = scope:state_owner }
+			add_war_war_support = {
+				target = ROOT
+				value = 10
+			}
+		}
+		ai_chance = { base = 1 }
 	}
 }
