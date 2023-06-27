@@ -2483,6 +2483,14 @@ chinese_westernization.401 = { # 경사동문관
 	
 	duration = 1
 
+	immediate = {
+		ig:ig_devout = {
+			leader = {
+				save_scope_as = devout_leader
+			}
+		}
+	}
+
 	event_image = {
 		texture = "gfx/event_pictures/china/coronation.png"
 	}
@@ -2528,10 +2536,14 @@ chinese_westernization.402 = { # 호부의 은행 설립 건의
 	trigger = {
 		ROOT = c:CHI
 		has_technology_researched = central_banking
+		NOT = { has_variable = chi_central_bank }
 	}
 	option = { # 대청은행 설립
 		name = chinese_westernization.402.a
 		chi_mint_centralization_progress = yes
+		hidden_effect = {
+			set_variable = chi_central_bank
+		}
 	}
 }
 
@@ -2554,9 +2566,12 @@ chinese_westernization.403 = { # 동문관 커리큘럼 조정
 	duration = 3
 
 	immediate = {
-		ig:ig_devout = {
-			leader = {
-				save_scope_as = devout_leader
+		if = {
+			limit = { scope:devout_leader = { is_character_alive = no } }
+			ig:ig_devout = {
+				leader = {
+					save_scope_as = devout_leader
+				}
 			}
 		}
 	}
@@ -2628,10 +2643,8 @@ chinese_westernization.405 = { # 조폐 중앙화 완료
 
 	option = {
 		name = chinese_westernization.405.a
-		custom_tooltip = {
-			text = chi_finished_mint_centralization_tt
-			remove_variable = chi_non_centralized_minting_var
-		}
+		remove_modifier = chi_non_centralized_minting
+		hidden_effect = { remove_variable = chi_non_centralized_minting_var }
 		ai_chance = {
 			base = 1
 		}
