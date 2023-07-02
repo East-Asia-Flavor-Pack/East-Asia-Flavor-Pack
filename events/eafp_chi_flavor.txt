@@ -118,12 +118,6 @@ chi_flavor.4 = { # 원명원 파괴
 		video = "gfx/event_pictures/china/flood.bik"
 	}
 
-	trigger = {
-		s:STATE_BEIJING.region_state:CHI = { exists = yes }
-		NOT = { s:STATE_BEIJING.region_state:CHI.controller = c:CHI }
-		NOT = { has_variable = summer_palace_destroyed }
-	}
-
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 	on_opened_soundeffect = "event:/SFX/Events/unspecific/destruction"
 
@@ -137,20 +131,33 @@ chi_flavor.4 = { # 원명원 파괴
 		name = chi_flavor.4.a
 		default_option = yes
 		
+		ruler = {
+			add_modifier = {
+				name = old_summer_palace_destroyed_ruler_modifier
+			}
+		}
 		hidden_effect = {
 			ruler = {
-				add_modifier = {
-					name = old_summer_palace_destroyed_ruler_modifier
-				}
 				trigger_event = {
 					id = chi_flavor.3
 					years = { 3 5 }
 				}
 			}
-			set_variable = summer_palace_destroyed
 			trigger_event = {
 				id = chinese_westernization.1
-				years = { 5 7 }
+				months = { 60 84 }
+			}
+			scope:war_scope = {
+				add_war_war_support = {
+					target = c:CHI
+					value = 30
+				}
+			}
+		}
+		scope:war_scope = {
+			add_war_war_support = {
+				target = c:CHI
+				value = -30
 			}
 		}
 		
