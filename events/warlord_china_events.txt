@@ -28,6 +28,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 					state_region = sr:region_north_china
 					state_region = sr:region_south_china
 				}
+				NOT = { THIS = c:CHI.capital }
 			}
 			order_by = radical_fraction
 			save_scope_as = revolt_state
@@ -84,7 +85,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 				initiator = c:KMT
 				target = c:CHI
 			}
-			add_escalation = 90
+			add_escalation = 80
 			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
 			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
 		}
@@ -110,15 +111,176 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	}
 }
 
-# warlord_china_events.2
+warlord_china_events.2 = { # 혁명 전파
+	type = country_event
+	placement = root
 
-warlord_china_events.3 = { # 군부의 최후통첩 (북양군)
+	title = warlord_china_events.2.t
+	desc = warlord_china_events.2.d
+	flavor = warlord_china_events.2.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 4
+			c:KMT = {		
+				ordered_neighbouring_state = {
+					limit = {
+						owner = c:CHI
+						OR = {
+							state_region = sr:region_north_china
+							state_region = sr:region_south_china
+						}
+						NOT = { THIS = c:CHI.capital }
+					}
+					order_by = radical_fraction
+					set_state_owner = c:KMT
+					set_state_type = incorporated
+				}
+			}
+		}
+	}
+
+	option = {
+		name = warlord_china_events.2.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.3 = { # 또 혁명 전파
 	type = country_event
 	placement = root
 
 	title = warlord_china_events.3.t
 	desc = warlord_china_events.3.d
 	flavor = warlord_china_events.3.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 4
+			c:KMT = {		
+				ordered_neighbouring_state = {
+					limit = {
+						owner = c:CHI
+						OR = {
+							state_region = sr:region_north_china
+							state_region = sr:region_south_china
+						}
+						NOT = { THIS = c:CHI.capital }
+					}
+					order_by = radical_fraction
+					set_state_owner = c:KMT
+					set_state_type = incorporated
+				}
+			}
+		}
+	}
+
+	option = {
+		name = warlord_china_events.3.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.4 = { # 몽골 위구르 종속국 탈주
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.4.t
+	desc = warlord_china_events.4.d
+	flavor = warlord_china_events.4.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		every_subject_or_below = {
+			if = {
+				limit = { is_subject_type = subject_type_military_headquarters_china }
+				warlord_setup_effect = yes
+			}
+			make_independent = yes
+		}
+		if = {
+			limit = { exists = c:MGL }
+			s:STATE_HINGGAN = { add_claim = c:MGL }
+			s:STATE_ALXA = { add_claim = c:MGL }
+		}
+		if = {
+			limit = { exists = s:STATE_TUVA.region_state:MGL }
+			create_country = {
+				tag = TUV
+				origin = this
+				state = s:STATE_TUVA.region_state:MGL
+	
+				on_created = {
+					warlord_setup_effect = yes
+				}
+			}
+			c:TUV = { save_scope_as = scope_TUV }
+		}
+	}
+
+	option = {
+		name = warlord_china_events.4.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.5.t
+	desc = warlord_china_events.5.d
+	flavor = warlord_china_events.5.f
 
 	duration = 1
 
@@ -132,7 +294,7 @@ warlord_china_events.3 = { # 군부의 최후통첩 (북양군)
 
 
 	option = { # 항복
-		name = warlord_china_events.3.a
+		name = warlord_china_events.5.a
 		
 		default_option = yes
 
@@ -144,7 +306,7 @@ warlord_china_events.3 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 만주로 몽진
-		name = warlord_china_events.3.b
+		name = warlord_china_events.5.b
 
 		trigger = {
 			exists = c:MCH
@@ -170,7 +332,7 @@ warlord_china_events.3 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 결사 항전
-		name = warlord_china_events.3.c
+		name = warlord_china_events.5.c
 		
 		default_option = yes
 
@@ -188,31 +350,6 @@ warlord_china_events.3 = { # 군부의 최후통첩 (북양군)
 				}
 			}
 			annex = c:MCH
-		}
-		every_subject_or_below = {
-			if = {
-				limit = { is_subject_type = subject_type_military_headquarters_china }
-				warlord_setup_effect = yes
-			}
-			make_independent = yes
-		}
-		if = {
-			limit = { exists = c:MGL }
-			s:STATE_HINGGAN = { add_claim = c:MGL }
-			s:STATE_ALXA = { add_claim = c:MGL }
-		}
-		if = {
-			limit = { exists = s:STATE_TUVA.region_state:MGL }
-			create_country = {
-				tag = TUV
-				origin = this
-				state = s:STATE_TUVA.region_state:MGL
-	
-				on_created = {
-					warlord_setup_effect = yes
-				}
-			}
-			c:TUV = { save_scope_as = scope_TUV }
 		}
 		if = {
 			limit = { has_variable = imperial_family_exiled }
