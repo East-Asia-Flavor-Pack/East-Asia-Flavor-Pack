@@ -38,38 +38,99 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			origin = this
 			state = scope:revolt_state
 			on_created = {
-				every_interest_group = {
-					limit = {
-						OR = {
-							is_interest_group_type = ig_intelligentsia
-							is_interest_group_type = ig_armed_forces
-							is_interest_group_type = ig_rural_folk
-							is_interest_group_type = ig_devout
-						}
-					}
-					add_modifier = {
-						name = xinhai_revolution_ig_modifier
-						months = long_modifier_time
-					}
-				}
-				add_modifier = {
-					name = xinhai_revolution_army_modifier
-					months = normal_modifier_time
-					is_decaying = yes
-				}
-				add_modifier = {
-					name = xinhai_revolution_army_modifier_short
-					months = 13
-					is_decaying = yes
-				}
-				add_modifier = {
-					name = xinhai_revolution_land_socialization_modifier
-					months = long_modifier_time
-					is_decaying = yes
-				}
+				
 			}
 		}
-		c:KMT = {		
+		c:KMT = {
+			activate_law = law_type:law_presidential_republic
+
+			# 쑨원을 지도자로
+			if = {
+				limit = {
+					NOR = {
+						any_character = {
+							has_template = chi_sun_character_template
+						}
+						any_character_in_exile_pool = {
+							has_template = chi_sun_character_template
+						}
+					}
+				}
+				create_character = {
+					template = chi_sun_character_template
+					on_created = {
+						set_character_as_ruler = yes
+						add_character_role = politician
+						set_variable = sun_yat_sen_var
+						set_global_variable = sun_yat_sen_spawn
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_character = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character = {
+					limit = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+				}
+			}	
+			else_if = {
+				limit = {
+					any_character_in_exile_pool = {
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character_in_exile_pool = {
+					limit = {
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+				}
+			}
+
+			# 각종 변동치
+			every_interest_group = {
+				limit = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_rural_folk
+						is_interest_group_type = ig_devout
+					}
+				}
+				add_modifier = {
+					name = xinhai_revolution_ig_modifier
+					months = long_modifier_time
+				}
+			}
+			add_modifier = {
+				name = xinhai_revolution_army_modifier
+				months = normal_modifier_time
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = xinhai_revolution_army_modifier_short
+				months = 13
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = xinhai_revolution_land_socialization_modifier
+				months = long_modifier_time
+				is_decaying = yes
+			}
+
+			# 신해 혁명 외교 행동
 			create_diplomatic_play = {
 				name = xinhai_revolution
 				target_country = c:CHI
@@ -163,7 +224,7 @@ warlord_china_events.2 = { # 혁명 전파
 	}
 }
 
-warlord_china_events.3 = { # 또 혁명 전파
+warlord_china_events.3 = { # 더 혁명 전파
 	type = country_event
 	placement = root
 
@@ -298,7 +359,20 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		
 		default_option = yes
 
-		# TODO 정부 변경
+		custom_tooltip = {
+			text = warlord_china_events.5.tta
+			activate_law = law_type:law_presidential_republic
+			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
+			random_character = {
+				limit = {
+					is_character_alive = yes
+					has_variable = sun_yat_sen_var
+				}
+				transfer_character = c:CHI
+				set_character_as_ruler = yes
+				add_character_role = politician
+			}
+		}
 
 		ai_chance = {
 			base = 1
@@ -322,7 +396,7 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		}
 		
 		custom_tooltip = {
-			text = chi_imp_exile_to_mch
+			text = warlord_china_events.5.ttb
 			set_variable = imperial_family_exiled
 		}
 
