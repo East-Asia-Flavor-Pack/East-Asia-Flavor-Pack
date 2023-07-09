@@ -7,9 +7,12 @@
         }
         set_variable = {
             name = cixi_coup
-            value = 0 # 0~40
+            value = 0 # 0~1
         }
-        
+        set_variable = {
+            name = cixi_coup_d
+            value = 0
+        }
     }
     complete = {
 		always = no
@@ -17,6 +20,7 @@
     on_complete = {
         hidden_effect = {
             remove_variable = cixi_coup
+            remove_variable = cixi_coup_d
         }
     }
     fail = {
@@ -32,62 +36,65 @@
         trigger_event = { id = dowager_cixi_events.3 }
         hidden_effect = {
             remove_variable = cixi_coup
+            remove_variable = cixi_coup_d
         }
     }
     status_desc = {
 	}
     on_monthly_pulse = {
         effect = {
-            change_variable = {
-                name = cixi_coup
-                add = {
+            set_variable = {
+                name = cixi_coup_d
+                value = {
                     value = {
                         value = scope:Xingzhen_Yehe_Nara_scope.popularity # 서태후의 인기
-                        divide = 50
+                        divide = 6000
                     }
-                }
-                add = {
-                    value = {
+                    add = {
+                        value = ruler.popularity # 군주의 인기
+                        divide = -6000
+                    }
+                    add = {
                         value = ig:ig_landowners.ig_approval # 지주 지지도
                         multiply = {
                             value = 1
                             add = ig:ig_landowners.ig_government_power_share # 정부에 있으면 영향 추가
-                            multiply = ig:ig_landowners.ig_clout  # 지주 정치력
                         }
-                        divide = -8
+                        multiply = ig:ig_landowners.ig_clout  # 지주 정치력
+                        divide = -600
                     }
-                }
-                add = {
-                    value = {
+                    add = {
                         value = ig:ig_devout.ig_approval # 종교인 지지도
                         multiply = {
                             value = 1
                             add = ig:ig_devout.ig_government_power_share # 정부에 있으면 영향 추가
-                            multiply = ig:ig_devout.ig_clout  # 종교인 정치력
                         }
-                        divide = -8
+                        multiply = ig:ig_devout.ig_clout  # 종교인 정치력
+                        divide = -600
                     }
                 }
             }
             if = {
                 limit = { ig:ig_armed_forces = { has_ideology = ideology_stratocratic } } # 군대 현대화 안 했다면
                 change_variable = {
-                    name = cixi_coup
+                    name = cixi_coup_d
                     add = {
-                        value = {
-                            value = ig:ig_armed_forces.ig_approval # 군부 지지도
-                            multiply = {
-                                value = 1
-                                add = ig:ig_armed_forces.ig_government_power_share # 정부에 있으면 영향 추가
-                                multiply = ig:ig_armed_forces.ig_clout  # 군부 정치력
-                            }
-                            divide = -8
+                        value = ig:ig_armed_forces.ig_approval # 군부 지지도
+                        multiply = {
+                            value = 1
+                            add = ig:ig_armed_forces.ig_government_power_share # 정부에 있으면 영향 추가
                         }
+                        multiply = ig:ig_armed_forces.ig_clout  # 군부 정치력
+                        divide = -600
                     }
                 }
             }
+            change_variable = {
+                name = cixi_coup
+                add = var:cixi_coup_d
+            }
             if = {
-                limit = { var:cixi_coup >= 40 }
+                limit = { var:cixi_coup >= 1 }
                 set_variable = {
                     name = cixi_coup
                     value = 0
