@@ -11,8 +11,6 @@ hui_revolt.1 = {
 	
 	duration = 3
 
-	cooldown = { months = 6 }
-
 	event_image = {
 		video = "gfx/event_pictures/asia_union_leader.bk2"
 	}
@@ -21,82 +19,6 @@ hui_revolt.1 = {
 	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
 
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-
-	trigger = {
-		# triggered by je_hui_revolt_pre
-	}
-
-	immediate = {
-		save_scope_as = chi_scope
-		random_state = {
-			limit = {
-				OR = {
-					AND = {
-						NOT = { has_variable = PNG_start }
-						OR = {
-							this = s:STATE_SICHUAN.region_state:CHI
-							this = s:STATE_YUNNAN.region_state:CHI
-						}
-					}
-					AND = {
-						NOT = { has_variable = YTS_start }
-						OR = {
-							this = s:STATE_GANSU.region_state:CHI
-							this = s:STATE_QINGHAI.region_state:CHI
-						}
-					}
-				}
-			}
-			save_scope_as = revolt_state
-		}
-		scope:revolt_state = {
-			if = {
-				limit = { has_modifier = hui_revolt_3 }
-				if = {
-					limit = {
-						OR = {
-							this = s:STATE_SICHUAN.region_state:CHI
-							this = s:STATE_YUNNAN.region_state:CHI
-						}
-					}
-					c:CHI = { trigger_event = { id = hui_revolt.4 } }
-				}
-				else = {
-					c:CHI = { trigger_event = { id = hui_revolt.5 } }
-				}
-			}
-			else_if = {
-				limit = { has_modifier = hui_revolt_2 }
-				remove_modifier = hui_revolt_2
-				add_modifier = {
-					name = hui_revolt_3
-					months = 72
-				}
-				trigger_event = {
-					id = hui_revolt.2
-					months = 4
-				}
-			}
-			else_if = {
-				limit = { has_modifier = hui_revolt_1 }
-				remove_modifier = hui_revolt_1
-				add_modifier = {
-					name = hui_revolt_2
-					months = 48
-				}
-				trigger_event = {
-					id = hui_revolt.3
-					months = 24
-				}
-			}
-			else = {
-				add_modifier = {
-					name = hui_revolt_1
-					months = 24
-				}
-			}
-		}
-	}
 
 	option = {
 		name = hui_revolt.1.a
@@ -948,6 +870,132 @@ hui_revolt.7 = {
 
 # 이 아래로 회족 봉기 발단 이벤트
 
+hui_revolt.10 = {
+	type = country_event
+	hidden = yes
+
+	cooldown = { months = 6 }
+
+	immediate = {
+		random_list = {
+			1 = {
+				trigger_event = hui_revolt.1
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev11var }
+				}
+				trigger_event = hui_revolt.11
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev12var }
+				}
+				trigger_event = hui_revolt.12
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev13var }
+				}
+				trigger_event = hui_revolt.13
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev14var }
+				}
+				trigger_event = hui_revolt.14
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev15var }
+				}
+				trigger_event = hui_revolt.15
+			}
+			2 = {
+				trigger = {
+					NOT = { has_variable = huirev16var }
+				}
+				trigger_event = hui_revolt.16
+			}
+		}
+		scope:revolt_state = {
+			if = {
+				limit = { has_modifier = hui_revolt_3 }
+				if = {
+					limit = {
+						OR = {
+							this = s:STATE_SICHUAN.region_state:CHI
+							this = s:STATE_YUNNAN.region_state:CHI
+						}
+					}
+					c:CHI = { trigger_event = { id = hui_revolt.4 } }
+				}
+				else = {
+					c:CHI = { trigger_event = { id = hui_revolt.5 } }
+				}
+			}
+			else = {
+				random_list = {
+					1 = {
+						trigger = {
+							NOT = { has_variable = PNG_start }
+						}
+						random_state = {
+							limit = {
+								this = s:STATE_SICHUAN.region_state:CHI
+								this = s:STATE_YUNNAN.region_state:CHI
+							}
+							save_scope_as = revolt_state
+						}
+					}
+					1 = {
+						trigger = {
+							NOT = { has_variable = PNG_start }
+						}
+						random_state = {
+							limit = {
+								this = s:STATE_SICHUAN.region_state:CHI
+								this = s:STATE_YUNNAN.region_state:CHI
+							}
+							save_scope_as = revolt_state
+						}
+					}
+				}
+				if = {
+					limit = { has_modifier = hui_revolt_2 }
+					remove_modifier = hui_revolt_2
+					add_modifier = {
+						name = hui_revolt_3
+						months = 72
+					}
+					trigger_event = {
+						id = hui_revolt.2
+						months = 4
+					}
+				}
+				else_if = {
+					limit = { has_modifier = hui_revolt_1 }
+					remove_modifier = hui_revolt_1
+					add_modifier = {
+						name = hui_revolt_2
+						months = 48
+					}
+					trigger_event = {
+						id = hui_revolt.3
+						months = 24
+					}
+				}
+				else = {
+					add_modifier = {
+						name = hui_revolt_1
+						months = 24
+					}
+				}
+			}
+		}
+	}
+}
+
 hui_revolt.11 = {
 	type = country_event
 	placement = scope:revolt_state
@@ -967,8 +1015,172 @@ hui_revolt.11 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+	immediate = {
+		set_variable = huirev11var
+	}
+
 	option = {
 		name = hui_revolt.11.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+hui_revolt.12 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.12.t
+	desc = hui_revolt.12.d
+	flavor = hui_revolt.12.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = huirev12var
+	}
+
+	option = {
+		name = hui_revolt.12.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+hui_revolt.13 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.13.t
+	desc = hui_revolt.13.d
+	flavor = hui_revolt.13.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = huirev13var
+	}
+
+	option = {
+		name = hui_revolt.13.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+hui_revolt.14 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.14.t
+	desc = hui_revolt.14.d
+	flavor = hui_revolt.14.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = huirev14var
+	}
+
+	option = {
+		name = hui_revolt.14.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+hui_revolt.15 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.15.t
+	desc = hui_revolt.15.d
+	flavor = hui_revolt.15.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = huirev15var
+	}
+
+	option = {
+		name = hui_revolt.15.a
+		default_option = yes
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+hui_revolt.16 = {
+	type = country_event
+	placement = scope:revolt_state
+
+	title = hui_revolt.16.t
+	desc = hui_revolt.16.d
+	flavor = hui_revolt.16.f
+	
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/asia_union_leader.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		set_variable = huirev16var
+	}
+
+	option = {
+		name = hui_revolt.16.a
 		default_option = yes
 		ai_chance = {
 			base = 1
