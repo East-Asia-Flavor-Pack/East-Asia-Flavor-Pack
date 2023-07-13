@@ -270,6 +270,13 @@ opium_wars.2 = {
 			base = 0	# 5에서 수정
 		}
 	}
+
+	after = { # 추가
+		trigger_event = {
+			id = opium_wars.101
+			days = { 360 720 }
+		}
+	}
 }
 
 # Obssessed country succeeds
@@ -834,6 +841,119 @@ opium_wars.8 = {
 				months = normal_modifier_time
 				multiplier = -1
 			}
+		}
+	}
+}
+
+opium_wars.101 = { # 아편 전쟁 회피 꼼수 좆같아서 추가함, 중국 vs 영국 전용
+	type = country_event
+	
+	hidden = yes
+
+	trigger = {
+		this = c:GBR
+		exists = c:GBR
+	}
+
+	immediate = {
+		save_scope_as = opium_wars_aggressor_country
+		c:CHI = { save_scope_as = opium_wars_target_country }
+		cu:han = { save_scope_as = opium_addicted_culture }
+		trigger_event = opium_wars.102
+	}
+}
+
+opium_wars.102 = { # 아편 전쟁 회피 꼼수 좆같아서 추가함, 중국 vs 영국 전용
+	type = country_event
+	placement = ROOT
+
+	title = opium_wars.102.t
+	desc = opium_wars.102.d
+	flavor = opium_wars.102.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_politicians_arguing"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		has_journal_entry = je_opium_wars
+		je:je_opium_wars.target = c:CHI
+		has_truce_with = c:CHI
+	}
+
+	immediate = {
+		end_truce = {
+			country = c:CHI
+		}
+	}
+
+	option = { # 다시 전쟁
+		name = opium_wars.102.a
+		default_option = yes
+		end_truce = {
+			country = c:CHI
+		}
+		change_infamy = 10
+		hidden_effect = {
+			c:CHI = {
+				set_secret_goal = {
+					country = root
+					secret_goal = antagonize
+				}
+				trigger_event = opium_wars.103
+			}
+			set_secret_goal = {
+				country = c:CHI
+				secret_goal = conquer
+			}		
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # not interested
+		name = opium_wars.102.b
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+opium_wars.103 = { # 중국의 반응
+	type = country_event
+	placement = ROOT
+
+	title = opium_wars.103.t
+	desc = opium_wars.103.d
+	flavor = opium_wars.103.f
+
+	duration = 3
+
+	event_image = {
+		video = "gfx/event_pictures/europenorthamerica_opium_smoker.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/opium_smoker"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	option = { # 다시 전쟁
+		name = opium_wars.103.a
+		default_option = yes
+		show_as_tooltip = {
+			end_truce = {
+				country = c:GBR
+			}
+		}
+		ai_chance = {
+			base = 1
 		}
 	}
 }
