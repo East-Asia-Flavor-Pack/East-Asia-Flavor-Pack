@@ -21,71 +21,58 @@
 				}
 			}
 		}
-		every_scope_state = {
-			limit = {
-				is_capital = no
-				NOT = { 
-					has_variable = cult_center 
-					state_region = { 
-						is_homeland = cu:manchu
-					}
-				}
-				any_neighbouring_state = {
-					has_variable = cult_center
-				}
-				turmoil >= 0.1
-                NOT = { state_region = s:STATE_YUNNAN } # 추가
-                NOT = { state_region = s:STATE_GUIZHOU } # 추가
-                NOT = { state_region = s:STATE_SICHUAN } # 추가
-                NOT = { state_region = s:STATE_CHONGQING } # 추가
-            }
-			if = {
+		while = {
+			count = 3
+			ordered_scope_state = {
 				limit = {
-					this = {
+					is_capital = no
+					NOT = { 
+						has_variable = cult_center 
 						state_region = { 
-							OR = {
-								is_homeland = cu:han 
-								is_homeland = cu:hakka 
+							is_homeland = cu:manchu
+						}
+					}
+					any_neighbouring_state = {
+						has_variable = cult_center
+					}
+					# turmoil >= 0.1
+					NOT = { state_region = s:STATE_YUNNAN } # 추가
+					NOT = { state_region = s:STATE_GUIZHOU } # 추가
+					NOT = { state_region = s:STATE_SICHUAN } # 추가
+					NOT = { state_region = s:STATE_CHONGQING } # 추가
+				}
+				order_by = turmoil # 추가
+				if = {
+					limit = {
+						this = {
+							state_region = { 
+								OR = {
+									is_homeland = cu:han 
+									is_homeland = cu:hakka 
+								}
 							}
 						}
 					}
-				}
-				save_scope_as = tpg_defector_state
-				custom_tooltip = {
-					text = taiping_state_defection
-					set_state_owner = c:TPG
-					set_state_type = incorporated
-					add_culture_standard_of_living_modifier = {
-						culture = cu:manchu
-						months = long_modifier_time
-						multiplier = -5
-					}
-				}
-				
-			}
-			else = { # 수정, 오타?
-				random_list = {
-					50 = {
-						save_scope_as = tpg_defector_state
-						custom_tooltip = {
-							text = taiping_state_defection
-							set_state_owner = c:TPG
-							set_state_type = incorporated
-							add_culture_standard_of_living_modifier = {
-								culture = cu:manchu
-								months = long_modifier_time
-								multiplier = -5
-							}
+					save_scope_as = tpg_defector_state
+					custom_tooltip = {
+						text = taiping_state_defection
+						set_state_owner = c:TPG
+						set_state_type = incorporated
+						add_culture_standard_of_living_modifier = {
+							culture = cu:manchu
+							months = long_modifier_time
+							multiplier = -5
 						}
 					}
-					50 = {
-						add_radicals_in_state = {
-							value = very_large_radicals
-							religion = rel:protestant
-						}
-						this.state_region = {
-							add_claim = c:TPG
-						}
+					
+				}
+				else = {
+					add_radicals_in_state = {
+						value = very_large_radicals
+						religion = rel:protestant
+					}
+					this.state_region = {
+						add_claim = c:TPG
 					}
 				}
 			}
