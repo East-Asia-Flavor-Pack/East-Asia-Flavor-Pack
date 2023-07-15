@@ -151,6 +151,7 @@ chinese_westernization.102 = { # (도시 이름) 병공창
 			save_scope_as = first_modern_arsenal
 			state = { save_scope_as = first_modern_arsenal_state }
 		}
+		ig:ig_intelligentsia.leader = { save_scope_as = intelligentsia_leader }
 	}
 
 	option = {
@@ -205,7 +206,7 @@ chinese_westernization.103 = { # 군대 훈련 일원화 TODO
 	immediate = {
 		set_variable = chi_unifying_military_training
 	}
-	option = { # 함
+	option = { # 밀어붙임
 		name = chinese_westernization.103.a
 		default_option = yes
 		ig:ig_landowners = {
@@ -227,10 +228,26 @@ chinese_westernization.103 = { # 군대 훈련 일원화 TODO
 			base = 0
 		}
 	}
-	option = { # 안함
+	option = { # 구슬리기
 		name = chinese_westernization.103.b
 		ai_chance = {
 			base = 1
+		}
+		add_modifier = {
+			name = military_training_unified_country
+			months = very_long_modifier_time
+			is_decaying = yes
+		}
+		add_radicals = {
+			pop_type = aristocrats
+			value = 0.075
+		}
+		add_radicals = {
+			pop_type = clergymen
+			value = 0.075
+		}
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -2370,9 +2387,9 @@ chinese_westernization.302 = { # 철도 공포
 		scope:first_railroad_state = {
 			remove_building = building_railway
 		}
-		add_technology_progress = { technology = railways progress = -7000 } # TODO 테스트
+		add_technology_progress = { technology = railways progress = -2500 } # TODO 테스트
 		ai_chance = {
-			base = 0.8
+			base = 0
 		}
 	}
 
@@ -2384,13 +2401,15 @@ chinese_westernization.302 = { # 철도 공포
 				set_available_for_autonomous_investment = scope:first_railroad.type
 			}
 		}
-		add_modifier = {
-			name = chiwes302b
-			is_decaying = yes
-			years = 3
+		ig:ig_landowners = {
+			add_modifier = {
+				name = chiwes302b
+				is_decaying = yes
+				years = 5
+			}
 		}
 		ai_chance = {
-			base = 0.2
+			base = 1
 		}
 	}
 }
@@ -3820,6 +3839,12 @@ chinese_westernization.462 = { # 국폐칙례 (화폐 표준화) 币制则例
 		exists = c:CHI
 		ROOT = c:CHI
 		NOT = { has_variable = chi_currency_standardization }
+		AND = {
+			has_law = law_type:law_traditionalism
+			currently_enacting_law.type = {
+				is_same_law_group_as = law_type:law_traditionalism
+			}
+		}
 	}
 	immediate = {
 		currently_enacting_law = { save_scope_as = current_law_scope }
@@ -3933,34 +3958,34 @@ chinese_westernization.462 = { # 국폐칙례 (화폐 표준화) 币制则例
 			base = 1
 		}
 	}
-	option = { # 미루기
-		name = chinese_westernization.462.c
-		default_option = yes
-		ig:ig_landowners = {
-			add_modifier = {
-				name = chi_currency_standardization_postponed_ig_landowners
-				months = long_modifier_time
-				is_decaying = yes
-			}
-		}
-		ig:ig_intelligentsia = {
-			add_modifier = {
-				name = chi_currency_standardization_postponed_ig_intelligentsia
-				months = long_modifier_time
-				is_decaying = yes
-			}
-		}
-		ig:ig_rural_folk = {
-			add_modifier = {
-				name = chi_currency_standardization_postponed_ig_rural_folk
-				months = long_modifier_time
-				is_decaying = yes
-			}
-		}
-		ai_chance = {
-			base = 0
-		}
-	}
+	#option = { # 미루기
+	#	name = chinese_westernization.462.c
+	#	default_option = yes
+	#	ig:ig_landowners = {
+	#		add_modifier = {
+	#			name = chi_currency_standardization_postponed_ig_landowners
+	#			months = long_modifier_time
+	#			is_decaying = yes
+	#		}
+	#	}
+	#	ig:ig_intelligentsia = {
+	#		add_modifier = {
+	#			name = chi_currency_standardization_postponed_ig_intelligentsia
+	#			months = long_modifier_time
+	#			is_decaying = yes
+	#		}
+	#	}
+	#	ig:ig_rural_folk = {
+	#		add_modifier = {
+	#			name = chi_currency_standardization_postponed_ig_rural_folk
+	#			months = long_modifier_time
+	#			is_decaying = yes
+	#		}
+	#	}
+	#	ai_chance = {
+	#		base = 0
+	#	}
+	#}
 }
 
 chinese_westernization.463 = { # 민간 조폐 말소
@@ -3985,6 +4010,12 @@ chinese_westernization.463 = { # 민간 조폐 말소
 		exists = c:CHI
 		ROOT = c:CHI
 		NOT = { has_variable = chi_abolished_private_mints }
+		AND = {
+			has_law = law_type:law_traditionalism
+			currently_enacting_law.type = {
+				is_same_law_group_as = law_type:law_traditionalism
+			}
+		}
 	}
 	immediate = {
 		currently_enacting_law = { save_scope_as = current_law_scope }
@@ -4016,6 +4047,7 @@ chinese_westernization.463 = { # 민간 조폐 말소
 	}
 	option = { # 적당히 구슬려서
 		name = chinese_westernization.463.b
+		chi_mint_centralization_progress = yes
 		hidden_effect = {
 			set_variable = chi_abolished_private_mints
 			add_modifier = {
@@ -4024,7 +4056,6 @@ chinese_westernization.463 = { # 민간 조폐 말소
 				is_decaying = yes
 			}
 		}
-		chi_mint_centralization_progress = yes
 		add_modifier = {
 			name = chi_abolished_private_mints_with_carrot
 			months = long_modifier_time
@@ -4045,40 +4076,40 @@ chinese_westernization.463 = { # 민간 조폐 말소
 			base = 1
 		}
 	}
-	option = { # 그냥 포기
-		name = chinese_westernization.463.c
-		default_option = yes
-		ig:ig_landowners = {
-			add_modifier = {
-				name = chi_abolished_private_mints_postponed
-				months = very_long_modifier_time
-			}
-		}
-		ig:ig_intelligentsia = {
-			add_modifier = {
-				name = chi_abolished_private_mints_postponed
-				months = very_long_modifier_time
-			}
-		}
-		add_enactment_modifier = {
-			name = governors_pleased
-		}
-		add_radicals = {
-			strata = poor
-			value = 0.04
-		}
-		add_loyalists = {
-			pop_type = aristocrats
-			value = 0.2
-		}
-		add_loyalists = {
-			pop_type = clergymen
-			value = 0.1
-		}
-		ai_chance = {
-			base = 0
-		}
-	}
+	#option = { # 그냥 포기
+	#	name = chinese_westernization.463.c
+	#	default_option = yes
+	#	ig:ig_landowners = {
+	#		add_modifier = {
+	#			name = chi_abolished_private_mints_postponed
+	#			months = very_long_modifier_time
+	#		}
+	#	}
+	#	ig:ig_intelligentsia = {
+	#		add_modifier = {
+	#			name = chi_abolished_private_mints_postponed
+	#			months = very_long_modifier_time
+	#		}
+	#	}
+	#	add_enactment_modifier = {
+	#		name = governors_pleased
+	#	}
+	#	add_radicals = {
+	#		strata = poor
+	#		value = 0.04
+	#	}
+	#	add_loyalists = {
+	#		pop_type = aristocrats
+	#		value = 0.2
+	#	}
+	#	add_loyalists = {
+	#		pop_type = clergymen
+	#		value = 0.1
+	#	}
+	#	ai_chance = {
+	#		base = 0
+	#	}
+	#}
 }
 
 chinese_westernization.464 = { # 광산법 제정에 따른 반발
