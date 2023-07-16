@@ -3847,6 +3847,8 @@ ai_strategy_default = {
 			}
 			if = {
 				limit = {
+					exists = c:GBR
+					this = c:GBR
 					has_journal_entry = je_opium_wars
 					scope:target_country = {
 						has_variable = opium_wars_target
@@ -3855,7 +3857,91 @@ ai_strategy_default = {
 						state_region = s:STATE_SHAOZHOU
 					}					
 				}
+				add = 2000	#1000
+			}
+			if = {	#영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
+				limit = {
+					exists = c:GBR
+					this = c:GBR
+					has_journal_entry = je_opium_wars
+					scope:target_country = {
+						has_variable = opium_wars_target
+					}
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHAOZHOU
+						}
+					}
+				}
+				add = -100
+			}
+			if = {	#북도길계 열강은 산둥반도에
+				limit = {
+					country_has_primary_culture = cu:north_german
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					scope:target_state = {
+						state_region = s:STATE_SHANDONG
+					}					
+				}
 				add = 1000
+			}
+			if = {	#조약항을 우선해서 먹으려 하도록
+				limit = {
+					country_has_primary_culture = cu:north_german
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHANDONG
+						}
+					}
+				}
+				add = -75
+			}
+			if = {	#러샤계 열강은 성경에
+				limit = {
+					any_primary_culture = {
+						has_discrimination_trait = east_slavic
+					}
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					scope:target_state = {
+						state_region = s:STATE_SHENGJING
+					}					
+				}
+				add = 1000
+			}
+			if = {	#조약항을 우선해서 먹으려 하도록
+				limit = {
+					any_primary_culture = {
+						has_discrimination_trait = east_slavic
+					}
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHENGJING
+						}
+					}
+				}
+				add = -75
 			}
 			if = {
 				limit = {
@@ -3867,9 +3953,8 @@ ai_strategy_default = {
 						state_region = s:STATE_FORMOSA
 					}					
 				}
-				add = -100
+				add = -150
 			}
-
 			if = { #Carving up China
 				limit = {
 					country_rank >= rank_value:great_power
