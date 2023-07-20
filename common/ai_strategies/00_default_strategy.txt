@@ -665,9 +665,31 @@ ai_strategy_default = {
 				scope:target_country = {
 					THIS = c:CHI
 					has_modifier = opium_wars_lost
-				}				
+				}
 			}
-			add = 20	
+			add = 25
+		}
+		if = {
+			limit = {
+				country_rank >= rank_value:major_power
+				exists = c:CHI
+				exists = c:RUS
+				exists = c:MCH
+				THIS = c:RUS
+				c:CHI = {
+					has_modifier = opium_wars_lost
+				}
+				scope:target_country = {
+					THIS = c:MCH
+				}
+				NOT = {
+					any_scope_state = {
+						region = sr:region_north_china
+						is_treaty_port = yes
+					}
+				}
+			}
+			add = 75
 		}
 		if = {
 			limit = {
@@ -679,7 +701,7 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}				
 			}
-			add = -20	
+			add = -25	
 		}
 		if = {
 			limit = {
@@ -690,8 +712,25 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}				
 			}
+			add = -15
+		}
+		if = {
+			limit = {
+				exists = c:MCH
+				exists = c:CHI
+				has_treaty_port_in_country = c:MCH
+				scope:target_country = {
+					OR = {
+						THIS = c:MCH
+						THIS = c:CHI
+					}
+				}
+				c:CHI = {
+					has_modifier = opium_wars_lost
+				}
+			}
 			add = -10
-		}	
+		}
 		####중국상대용 가중치
 
 		# Higher aggression against pariah countries
@@ -1765,6 +1804,35 @@ ai_strategy_default = {
 					country_has_primary_culture = cu:north_german
 					country_rank >= rank_value:great_power
 				}
+				add = 100
+			}
+			if = { # 추가, 러시아 북중국 전략지역 가중치
+				limit = {
+					any_primary_culture = {
+						has_discrimination_trait = east_slavic
+					}
+					country_rank >= rank_value:great_power
+				}
+				add = 75
+			}
+			if = {	#새로 추가한 조건. 요즘 애들이 중국에 관심지역을 안박아서 조약항도 잘 못뜯더라
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					any_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
 				add = 50
 			}
 		}	
@@ -1813,6 +1881,43 @@ ai_strategy_default = {
 					}
 				}
 				add = 50
+			}
+			if = {	#새로 추가한 조건. 요즘 애들이 중국에 관심지역을 안박아서 조약항도 잘 못뜯더라
+				limit = {
+					country_rank >= rank_value:great_power
+					NOT = {
+						any_primary_culture = {
+							has_discrimination_trait = east_slavic
+						}
+					}
+					NOT = {
+						country_has_primary_culture = cu:north_german
+					}
+					exists = c:CHI
+					any_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = { has_interest_marker_in_region = region_north_china }
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 100
+			}
+		}
+		region_east_siberia = {	#동시베리아 전략지역 가중치 새로 추가
+			if = {
+				limit = {
+					always = yes
+				}
+				add = -50
 			}
 		}
 		region_pacific_coast = {
@@ -1951,6 +2056,60 @@ ai_strategy_default = {
 		befriend = {
 			value = 200
 			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -50
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_north_china
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -75
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_manchuria
+						}
+					}
+				}
+				add = -75
+			}
+			####
+			
 			if = {
 				limit = {	
 					country_rank <= scope:target_country.country_rank
@@ -2084,6 +2243,60 @@ ai_strategy_default = {
 		reconcile = {
 			value = 0
 
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -125
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_north_china
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -75
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_manchuria
+						}
+					}
+				}
+				add = -75
+			}
+			####
+			
 			if = {
 				limit = {
 					OR = {
@@ -2205,6 +2418,60 @@ ai_strategy_default = {
 		}		
 		protect = {
 			value = 0
+			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -50
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_north_china
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -50
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_manchuria
+						}
+					}
+				}
+				add = -50
+			}
+			####
 			
 			if = {
 				limit = {
@@ -2358,6 +2625,29 @@ ai_strategy_default = {
 		}		
 		antagonize = {
 			value = 0
+			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = -50
+			}
+			####
 			
 			if = {
 				limit = {
@@ -2551,7 +2841,61 @@ ai_strategy_default = {
 		}
 		conquer = {
 			value = 0
-	
+			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 350
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_north_china
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 150
+			}
+			if = {	#러시아용
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							region = sr:region_manchuria
+						}
+					}
+				}
+				add = 150
+			}
+			####
+			
 			if = {
 				limit = {
 					can_reach_target_country = yes
@@ -2952,6 +3296,29 @@ ai_strategy_default = {
 		}		
 		dominate = {
 			value = 0		
+			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						has_modifier = opium_wars_lost
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 25
+			}
+			####
 			
 			if = {
 				limit = {
@@ -3628,7 +3995,21 @@ ai_strategy_default = {
 					}
 				}
 				add = 50
-			}				
+			}
+			####중국상대용 가중치
+			if = {
+				limit = {
+					country_rank >= rank_value:major_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						#has_modifier = opium_wars_lost
+					}
+					year < 1870
+				}
+				add = -50
+			}
+			####중국상대용 가중치
 			
 			min = 0
 			max = 100			
@@ -3873,7 +4254,7 @@ ai_strategy_default = {
 						state_region = s:STATE_SHAOZHOU
 					}					
 				}
-				add = 2000	# 수정, 1000에서
+				add = 2500	# 수정, 1000에서
 			}
 			if = { # 추가, 영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
 				limit = {
@@ -3889,7 +4270,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = -100
+				add = -150
 			}
 			if = { # 추가, 북독일계 열강은 산둥반도에
 				limit = {
@@ -3904,7 +4285,7 @@ ai_strategy_default = {
 						state_region = s:STATE_SHANDONG
 					}					
 				}
-				add = 1000
+				add = 2000
 			}
 			if = { # 추가, 조약항을 우선해서 먹으려 하도록
 				limit = {
@@ -3921,7 +4302,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = -75
+				add = -175
 			}
 			if = { # 추가, 러시아계 열강은 성경에
 				limit = {
@@ -3930,15 +4311,23 @@ ai_strategy_default = {
 					}
 					country_rank >= rank_value:great_power
 					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
+					OR = {
+						scope:target_country = {
+							THIS = c:CHI
+							has_modifier = opium_wars_lost
+						}
+						AND = {
+							exists = c:MCH
+							scope:target_country = {
+								THIS = c:MCH
+							}
+						}
 					}
 					scope:target_state = {
 						state_region = s:STATE_SHENGJING
 					}					
 				}
-				add = 1000
+				add = 2000
 			}
 			if = { # 추가, 조약항을 우선해서 먹으려 하도록
 				limit = {
@@ -3957,7 +4346,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = -75
+				add = -175
 			}
 			if = {
 				limit = {
@@ -3969,7 +4358,7 @@ ai_strategy_default = {
 						state_region = s:STATE_FORMOSA
 					}					
 				}
-				add = -150 # 추가, -100에서
+				add = -175 # 추가, -100에서
 			}
 			if = { #Carving up China
 				limit = {
@@ -4093,8 +4482,39 @@ ai_strategy_default = {
 						multiply = 1.25
 					}						
 				}			
-			}				
-		
+			}
+			####중국상대용 가중치
+			if = { #추가댐. 장군부 통째로 들고 날르지 말도록.
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					OR = {
+						scope:target_country = {
+							THIS = c:CHI
+						}
+						AND = {
+							exists = c:MCH
+							scope:target_country = {
+								THIS = c:MCH
+							}
+						}
+						AND = {
+							exists = c:MGL
+							scope:target_country = {
+								THIS = c:MGL
+							}
+						}
+						AND = {
+							exists = c:XIN
+							scope:target_country = {
+								THIS = c:XIN
+							}
+						}
+					}
+				}
+				add = -75
+			}
+			####
 			if = {
 				limit = { 
 					wants_to_solve_schleswig_holstein = yes
