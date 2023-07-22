@@ -1,16 +1,13 @@
-﻿protectorate = {
+﻿tributary = {
 	requires_approval = yes
 	should_notify_third_parties = yes
 	can_use_obligations = yes
 
 	possible = {
-		scope:target_country = { 
-			is_at_war = no 
-			NOT = { is_diplomatic_play_enemy_of = ROOT }
-		}
+		is_at_war = no
+		scope:target_country = { is_at_war = no }
 		has_diplomatic_relevance = scope:target_country
 		is_revolutionary = no
-		NOT = { is_subject_type = subject_type_tributary } # 추가
 		scope:target_country = {
 			is_revolutionary = no
 		}
@@ -32,16 +29,20 @@
 
 	pact = {	
 		cost = 25
-		is_customs_union = yes
+		is_customs_union = no # 수정
 		has_junior_participant = yes
-		recipient_pays_maintenance = no	
+		recipient_pays_maintenance = no
+
+		income_transfer = 0.2
+		recipient_gets_income_transfer = no
+		income_transfer_based_on_recipient = yes
 		
 		relations_progress_per_day = 1
 		relations_improvement_max = 50
-	
+
 		target_requires_approval_to_break = yes	
 		
-		subject_type = subject_type_protectorate	
+		subject_type = subject_type_tributary
 		
 		actor_can_break = {
 			is_diplomatic_play_committed_participant = no
@@ -49,8 +50,8 @@
 
 		target_can_break = {
 			is_diplomatic_play_committed_participant = no
-		}		
-
+		}
+		
 		break_effect = {
 			create_truce = { country = scope:target_country months = 12 }
 		}
@@ -61,7 +62,6 @@
 			country = scope:target_country
 			value = 5
 		}
-		create_truce = { country = scope:target_country months = 60 }
 	}
 	
 	ai = {
@@ -69,7 +69,8 @@
 		check_acceptance_for_will_propose = yes
 		
 		will_propose = { 
-			country_rank >= rank_value:major_power
+			country_rank = rank_value:unrecognized_major_power
+			scope:target_country = { is_country_type = unrecognized }
 			OR = {
 				AND = {
 					infamy < infamy_threshold:infamous
@@ -85,7 +86,7 @@
 						attitude = domineering
 					}				
 				}			
-			}
+			}		
 		}
 	
 		will_break = {
@@ -361,7 +362,7 @@
 							is_diplomatic_action_type = alliance
 							is_diplomatic_action_type = customs_union
 							is_diplomatic_action_type = defensive_pact
-						}					
+						}
 						NOR = { 
 							first_country = scope:actor
 							second_country = scope:actor
@@ -378,7 +379,7 @@
 					desc = "DIPLOMATIC_ACCEPTANCE_POWERFUL_PROTECTORS_THEM"
 					value = -25
 				}	
-			}		
+			}			
 		}	
 		
 		accept_break_score = {
@@ -424,10 +425,10 @@
 				add = {
 					desc = "DIPLOMATIC_ACCEPTANCE_IDEOLOGICAL_OPINION_NEGATIVE"
 					value = "scope:actor.ai_ideological_opinion(root)"
-					multiply = -0.25
+					multiply = 0.25
 					max = 10
 				}					
-			}							
+			}						
 			
 			add = {
 				desc = "DIPLOMATIC_ACCEPTANCE_ATTITUDE"	
@@ -544,38 +545,19 @@
 	}
 }
 
-become_protectorate = {
+become_tributary = {
 	requires_approval = yes
 	should_notify_third_parties = yes
 
 	potential = {
-		is_subject = no
-		NOT = { is_subject_type = subject_type_tributary } # 추가
+		is_country_type = unrecognized	
+		scope:target_country = { is_country_type = unrecognized }
+		is_subject = no		
 	}
-	
+
 	possible = {
 		is_at_war = no
-		scope:target_country = { 
-			is_at_war = no 
-			NOT = { is_diplomatic_play_enemy_of = ROOT }
-			NOT = { is_subject_type = subject_type_tributary } # 추가
-		}
-		scope:target_country = {
-			NOT = {
-				has_diplomatic_pact = {
-					who = root
-					type = rivalry
-				}					
-			}					
-		}
-		root = {
-			NOT = {
-				has_diplomatic_pact = {
-					who = scope:target_country
-					type = rivalry
-				}					
-			}					
-		}
+		scope:target_country = { is_at_war = no }
 		has_diplomatic_relevance = scope:target_country
 		is_revolutionary = no
 		scope:target_country = {
@@ -583,7 +565,7 @@ become_protectorate = {
 		}
 	}
 	
-	reverse_pact = protectorate
+	reverse_pact = tributary
 	
 	ai = {
 		check_acceptance_for_will_propose = yes
