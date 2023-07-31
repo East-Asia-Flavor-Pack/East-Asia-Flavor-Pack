@@ -1,23 +1,77 @@
-﻿#lia_rlg_test = {
-#	is_shown = {
-#		is_player = yes
-#	}
-#
-#	possible = {
-#        is_player = yes
-#	}
-#
-#	when_taken = {
-#        add_treasury = 10000
-#        add_modifier = {
-#            name = lia_rlg_modi_deci_nametest
-#        }
-#	}
-#	
-#	ai_chance = {
-#		base = 0
-#    }	
-#}
+﻿lia_rlg_test = {
+	is_shown = {
+		#is_player = yes
+		always = no
+	}
+
+	possible = {
+		#is_player = yes
+		always = no
+	}
+
+	when_taken = {
+		add_treasury = 100000
+		#add_treasury = var:hui_temp
+		#s:STATE_SEOUL = {
+		#	region_state:KOR = {
+		#		#remove_building = building_university
+		#		remove_building = building_gyeongbokgung_poor
+		#	}
+		#}
+		#random_state = {
+		#	limit = {
+		#		OR = {
+		#			this = s:STATE_GANSU.region_state:CHI
+		#			this = s:STATE_QINGHAI.region_state:CHI
+		#		}
+		#	}
+		#	save_scope_as = revolt_state
+		#}
+		#scope:revolt_state = {
+		#	add_modifier = {
+		#		name = hui_revolt_1
+		#		months = 48
+		#	}
+		#}
+		#add_modifier = {
+		#	name = lia_rlg_modi_deci_nametest
+		#}
+		#change_variable = {
+		#	name = china_warlord_explosion
+		#	add = 1
+		#}
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_gbg_aid = {
+	is_shown = {
+		exists = c:KOR
+		THIS = c:KOR
+		owns_entire_state_region = STATE_LIA_SEOUL
+		has_building = building_gyeongbokgung_poor
+		NOT = { has_journal_entry = je_rlg_seoul_gyeongbokgung_poor }
+		NOT = { has_journal_entry = je_rlg_seoul_gyeongbokgung_rebuild }
+		year >= 1850
+	}
+
+	possible = {
+		NOT = { has_building = building_gyeongbokgung }
+	}
+
+	when_taken = {
+		trigger_event = {
+			id = lia_event_rlg.1510
+		}
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
 
 lia_rlg_qudvnd = {
 	is_shown = {
@@ -54,10 +108,10 @@ lia_rlg_deci_support = {   #인구과밀 모디파이어 달릴시 경작지 조
 	}
 
 	when_taken = {
-		set_variable = {    #쿨타임 3달.
+		set_variable = {    #쿨타임 2달.
 			name = lia_var_rlg_support
 			value = 1
-			months = 3
+			months = 2
 		}
         trigger_event = {
             id = lia_event_rlg.5
@@ -1099,7 +1153,7 @@ lia_rlg_deci_rail_2 = {   #일단은 이렇게 해 두고, 나중에 효과 좀 
                     NOT = { has_building = building_railway }
                 }
             }
-            s:STATE_EAFP_OUTER_MANCHURIA = { # 추가
+            s:STATE_EAFP_OUTER_MANCHURIA = {	#외만주 주 쪼개기로 인한 추가부분!
                 any_scope_state = {
                     NOT = { has_building = building_railway }
                 }
