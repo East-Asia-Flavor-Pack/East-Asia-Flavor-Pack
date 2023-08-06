@@ -141,7 +141,7 @@ ai_strategy_default = {
 				}
 			}
 			add = 0.25
-	}
+		}
 
 		# USA should Manifest a lot of Destiny
 		if = {
@@ -664,8 +664,26 @@ ai_strategy_default = {
 					THIS = c:CHI
 					has_modifier = opium_wars_lost
 				}
+				OR = { # 미국이 아니거나, 명백한 운명 저널 2개 모두 완료하거나
+					NOT = { c:USA ?= THIS }
+					AND = {
+						owns_entire_state_region = STATE_CALIFORNIA
+						owns_entire_state_region = STATE_NEVADA
+						owns_entire_state_region = STATE_UTAH
+						owns_entire_state_region = STATE_ARIZONA
+						owns_entire_state_region = STATE_NEW_MEXICO
+						owns_entire_state_region = STATE_TEXAS
+						owns_entire_state_region = STATE_MONTANA
+						owns_entire_state_region = STATE_WYOMING
+						owns_entire_state_region = STATE_COLORADO
+						owns_entire_state_region = STATE_NORTH_DAKOTA
+						owns_entire_state_region = STATE_SOUTH_DAKOTA
+						owns_entire_state_region = STATE_NEBRASKA
+						owns_entire_state_region = STATE_KANSAS
+					}
+				}
 			}
-			add = 25
+			add = 15
 		}
 		if = {
 			limit = {
@@ -687,7 +705,7 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 25
+			add = 15
 		}
 		if = {
 			limit = {
@@ -699,7 +717,7 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}				
 			}
-			add = -25	
+			add = -15	
 		}
 		if = {
 			limit = {
@@ -710,7 +728,7 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}				
 			}
-			add = -10
+			add = -5
 		}
 		if = {
 			limit = {
@@ -727,7 +745,7 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}
 			}
-			add = -10
+			add = -5
 		}
 		####중국상대용 가중치
 
@@ -2078,9 +2096,9 @@ ai_strategy_default = {
 			if = {	#러시아용
 				limit = {
 					country_rank >= rank_value:great_power
-					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
+					OR = {
+						c:MCH ?= scope:target_country
+						c:CHI ?= scope:target_country
 					}
 					NOT = {
 						any_scope_state = {
@@ -2623,27 +2641,20 @@ ai_strategy_default = {
 		}		
 		antagonize = {
 			value = 0
-			
-			####중국대상 가중치 추가
-			if = {
+
+			#### 중국대상 가중치 추가
+			if = { 
 				limit = {
 					country_rank >= rank_value:great_power
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
-					NOT = {
-						any_scope_state = {
-							OR = {
-								region = sr:region_south_china
-								region = sr:region_north_china
-							}
-							is_treaty_port = yes
+						NOT = {
+							has_variable = chinese_westernization_complete
 						}
 					}
 				}
-				add = -50
+				add = 50
 			}
 			####
 			
@@ -3293,30 +3304,7 @@ ai_strategy_default = {
 			}
 		}		
 		dominate = {
-			value = 0		
-			
-			####중국대상 가중치 추가
-			if = {
-				limit = {
-					country_rank >= rank_value:great_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
-					NOT = {
-						any_scope_state = {
-							OR = {
-								region = sr:region_south_china
-								region = sr:region_north_china
-							}
-							is_treaty_port = yes
-						}
-					}
-				}
-				add = 25
-			}
-			####
+			value = 0
 			
 			if = {
 				limit = {
