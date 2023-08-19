@@ -649,21 +649,12 @@ ai_strategy_default = {
 		#### 중국상대용 가중치
 		if = {
 			limit = {
-				has_journal_entry = je_opium_wars
-				scope:target_country = {
-					has_variable = opium_wars_target
-				}
-			}
-			add = 3
-		}		
-		if = {
-			limit = {
 				country_rank >= rank_value:major_power
 				exists = c:CHI
-				scope:target_country = {
-					THIS = c:CHI
-					has_modifier = opium_wars_lost
-				}
+				scope:target_country = c:CHI
+				# 태평천국이 끝난 후
+				has_global_variable = heavenly_kingdom_start_var
+				NOT = { exists = c:TPG }
 				OR = { # 미국이 아니거나, 명백한 운명 저널 2개 모두 완료하거나
 					NOT = { c:USA ?= THIS }
 					AND = {
@@ -693,18 +684,22 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 15
+			add = 10
 		}
 		if = {
 			limit = {
 				c:RUS ?= THIS
+				# 동방의 지배자 저널 완료
 				owns_entire_state_region = STATE_EAFP_OUTER_MANCHURIA
 				owns_entire_state_region = STATE_OUTER_MANCHURIA
 				owns_entire_state_region = STATE_JETISY
 				owns_entire_state_region = STATE_TOMSK
 				owns_entire_state_region = STATE_KIRGHIZIA
 				country_rank >= rank_value:major_power
-				c:MCH ?= scope:target_country
+				OR = {
+					c:MCH ?= scope:target_country
+					c:CHI ?= scope:target_country
+				}
 				NOT = {
 					any_scope_state = {
 						region = sr:region_north_china
@@ -713,46 +708,6 @@ ai_strategy_default = {
 				}
 			}
 			add = 10
-		}
-		if = {
-			limit = {
-				country_rank >= rank_value:major_power
-				exists = c:CHI
-				exists = c:TPG				
-				scope:target_country = {
-					THIS = c:CHI
-					has_modifier = opium_wars_lost
-				}				
-			}
-			add = -15	
-		}
-		if = {
-			limit = {
-				has_treaty_port_in_country = scope:target_country
-				exists = c:CHI
-				scope:target_country = {
-					THIS = c:CHI
-					has_modifier = opium_wars_lost
-				}				
-			}
-			add = -5
-		}
-		if = {
-			limit = {
-				exists = c:MCH
-				exists = c:CHI
-				has_treaty_port_in_country = c:MCH
-				scope:target_country = {
-					OR = {
-						THIS = c:MCH
-						THIS = c:CHI
-					}
-				}
-				c:CHI = {
-					has_modifier = opium_wars_lost
-				}
-			}
-			add = -5
 		}
 		####중국상대용 가중치
 
@@ -1852,9 +1807,10 @@ ai_strategy_default = {
 				limit = {
 					country_rank >= rank_value:great_power
 					exists = c:CHI
-					any_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
+					c:CHI = {
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
 					}
 					NOT = {
 						any_scope_state = {
@@ -1943,14 +1899,6 @@ ai_strategy_default = {
 					}
 				}
 				add = 100
-			}
-		}
-		region_east_siberia = {	#동시베리아 전략지역 가중치 새로 추가
-			if = {
-				limit = {
-					always = yes
-				}
-				add = -50
 			}
 		}
 		region_pacific_coast = {
@@ -2096,7 +2044,9 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
 					}
 					NOT = {
 						any_scope_state = {
@@ -2112,6 +2062,7 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					OR = {
 						c:MCH ?= scope:target_country
@@ -2128,6 +2079,7 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
 					scope:target_country = {
@@ -2283,7 +2235,9 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
 					}
 					NOT = {
 						any_scope_state = {
@@ -2299,6 +2253,7 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
 					scope:target_country = {
@@ -2315,6 +2270,7 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
 					scope:target_country = {
@@ -2459,7 +2415,9 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
 					}
 					NOT = {
 						any_scope_state = {
@@ -2475,11 +2433,10 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
+					scope:target_country = c:MCH
 					NOT = {
 						any_scope_state = {
 							region = sr:region_north_china
@@ -2491,11 +2448,10 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
+					scope:target_country = c:MCH
 					NOT = {
 						any_scope_state = {
 							region = sr:region_manchuria
@@ -2875,7 +2831,9 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
 					}
 					NOT = {
 						any_scope_state = {
@@ -2891,11 +2849,10 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
+					scope:target_country = c:MCH
 					NOT = {
 						any_scope_state = {
 							region = sr:region_north_china
@@ -2907,11 +2864,10 @@ ai_strategy_default = {
 			}
 			if = {	#러시아용
 				limit = {
+					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
+					scope:target_country = c:MCH
 					NOT = {
 						any_scope_state = {
 							region = sr:region_manchuria
@@ -4004,11 +3960,12 @@ ai_strategy_default = {
 				limit = {
 					country_rank >= rank_value:major_power
 					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						#has_modifier = opium_wars_lost
+					scope:target_country = c:CHI
+					NAND = {
+						# 태평천국이 끝난 후
+						has_global_variable = heavenly_kingdom_start_var
+						NOT = { exists = c:TPG }
 					}
-					year < 1870
 				}
 				add = -50
 			}
@@ -4131,20 +4088,7 @@ ai_strategy_default = {
 		
 		take_treaty_port = {
 			value = 0
-
-			####중국상대용 가중치
-			if = {
-				limit = {
-					country_rank >= rank_value:major_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}				
-				}
-				add = 200
-			}
-			####중국상대용 가중치			
+	
 			if = {
 				limit = {	
 					scope:target_state = { 
@@ -4257,7 +4201,7 @@ ai_strategy_default = {
 						state_region = s:STATE_SHAOZHOU
 					}					
 				}
-				add = 2500	# 수정, 1000에서
+				add = 1000
 			}
 			if = { # 추가, 영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
 				limit = {
@@ -4280,32 +4224,12 @@ ai_strategy_default = {
 					country_has_primary_culture = cu:north_german
 					country_rank >= rank_value:great_power
 					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
+					scope:target_country = c:CHI
 					scope:target_state = {
 						state_region = s:STATE_SHANDONG
 					}					
 				}
-				add = 2000
-			}
-			if = { # 추가, 조약항을 우선해서 먹으려 하도록
-				limit = {
-					country_has_primary_culture = cu:north_german
-					country_rank >= rank_value:great_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
-					NOT = {
-						scope:target_state = {
-							state_region = s:STATE_SHANDONG
-						}
-					}
-				}
-				add = -175
+				add = 1000
 			}
 			if = { # 추가, 러시아계 열강은 성경에
 				limit = {
@@ -4315,10 +4239,7 @@ ai_strategy_default = {
 					country_rank >= rank_value:great_power
 					exists = c:CHI
 					OR = {
-						scope:target_country = {
-							THIS = c:CHI
-							has_modifier = opium_wars_lost
-						}
+						scope:target_country = c:CHI
 						AND = {
 							exists = c:MCH
 							scope:target_country = {
@@ -4330,27 +4251,9 @@ ai_strategy_default = {
 						state_region = s:STATE_SHENGJING
 					}					
 				}
-				add = 2000
+				add = 1000
 			}
-			if = { # 추가, 조약항을 우선해서 먹으려 하도록
-				limit = {
-					any_primary_culture = {
-						has_discrimination_trait = east_slavic
-					}
-					country_rank >= rank_value:great_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
-					NOT = {
-						scope:target_state = {
-							state_region = s:STATE_SHENGJING
-						}
-					}
-				}
-				add = -175
-			}
+			
 			if = {
 				limit = {
 					# has_journal_entry = je_opium_wars
@@ -4362,8 +4265,9 @@ ai_strategy_default = {
 						is_capital = no # 추가
 					}					
 				}
-				add = -200 # -100에서 수정
+				add = -100
 			}
+
 			if = { #Carving up China
 				limit = {
 					country_rank >= rank_value:great_power
@@ -4415,6 +4319,37 @@ ai_strategy_default = {
 					}
 				}
 				add = 75
+			}
+
+			if = { # 추가, 조약항을 우선해서 먹으려 하도록
+				limit = {
+					country_has_primary_culture = cu:north_german
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = c:CHI
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHANDONG
+						}
+					}
+				}
+				multiply = 0
+			}
+			if = { # 추가, 조약항을 우선해서 먹으려 하도록
+				limit = {
+					any_primary_culture = {
+						has_discrimination_trait = east_slavic
+					}
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = c:CHI
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHENGJING
+						}
+					}
+				}
+				multiply = 0
 			}
 
 			if = {
@@ -4488,9 +4423,8 @@ ai_strategy_default = {
 				}			
 			}
 			####중국상대용 가중치
-			if = { #추가. 장군부 통째로 들고 날르지 말도록.
+			if = { #추가. 장군부 통째로 들고 나르지 말도록.
 				limit = {
-					country_rank >= rank_value:great_power
 					exists = c:CHI
 					OR = {
 						scope:target_country = {
@@ -4940,8 +4874,10 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}				
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
 				}
 				add = 200
 			}
@@ -5324,8 +5260,10 @@ ai_strategy_default = {
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}				
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
 				}
 				add = -100
 			}
