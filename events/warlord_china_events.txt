@@ -291,6 +291,16 @@ warlord_china_events.11 = { # (도시 이름) 봉기
 			base = 100
 		}
 	}
+
+	option = {
+		name = warlord_china_events.11.b
+
+		play_as = c:KMT
+
+		ai_chance = {
+			base = 0
+		}
+	}
 }
 
 warlord_china_events.12 = { # 혁명 전파
@@ -315,21 +325,24 @@ warlord_china_events.12 = { # 혁명 전파
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		while = {
-			count = 4
-			c:KMT = {		
-				ordered_neighbouring_state = {
-					limit = {
-						owner = c:CHI
-						OR = {
-							region = sr:region_north_china
-							region = sr:region_south_china
+		if = {
+			limit = { THIS = c:KMT }
+			while = {
+				count = 4
+				c:KMT = {		
+					ordered_neighbouring_state = {
+						limit = {
+							owner = c:CHI
+							OR = {
+								region = sr:region_north_china
+								region = sr:region_south_china
+							}
+							NOT = { THIS = c:CHI.capital }
 						}
-						NOT = { THIS = c:CHI.capital }
+						order_by = radical_fraction
+						set_state_owner = c:KMT
+						set_state_type = incorporated
 					}
-					order_by = radical_fraction
-					set_state_owner = c:KMT
-					set_state_type = incorporated
 				}
 			}
 		}
@@ -338,6 +351,23 @@ warlord_china_events.12 = { # 혁명 전파
 	option = {
 		name = warlord_china_events.12.a
 		default_option = yes
+
+		trigger = {
+			THIS = c:CHI
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = warlord_china_events.12.b
+		default_option = yes
+
+		trigger = {
+			THIS = c:KMT
+		}
 
 		ai_chance = {
 			base = 100
@@ -390,6 +420,23 @@ warlord_china_events.13 = { # 더 혁명 전파
 	option = {
 		name = warlord_china_events.13.a
 		default_option = yes
+
+		trigger = {
+			THIS = c:CHI
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = warlord_china_events.13.b
+		default_option = yes
+
+		trigger = {
+			THIS = c:KMT
+		}
 
 		ai_chance = {
 			base = 100
@@ -456,13 +503,47 @@ warlord_china_events.14 = { # 몽골 위구르 종속국 탈주
 	}
 }
 
-warlord_china_events.15 = { # 군부의 최후통첩 (북양군)
+warlord_china_events.15 = { # 남북의화
 	type = country_event
 	placement = root
 
 	title = warlord_china_events.15.t
 	desc = warlord_china_events.15.d
 	flavor = warlord_china_events.15.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+	}
+
+	option = {
+		name = warlord_china_events.15.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.16.t
+	desc = warlord_china_events.16.d
+	flavor = warlord_china_events.16.f
 
 	duration = 1
 
@@ -476,12 +557,12 @@ warlord_china_events.15 = { # 군부의 최후통첩 (북양군)
 
 
 	option = { # 항복
-		name = warlord_china_events.15.a
+		name = warlord_china_events.16.a
 		
 		default_option = yes
 
 		custom_tooltip = {
-			text = warlord_china_events.15.tta
+			text = warlord_china_events.16.tta
 			activate_law = law_type:law_presidential_republic
 			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
 			random_character = {
@@ -501,7 +582,7 @@ warlord_china_events.15 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 만주로 몽진
-		name = warlord_china_events.15.b
+		name = warlord_china_events.16.b
 
 		trigger = {
 			exists = c:MCH
@@ -517,7 +598,7 @@ warlord_china_events.15 = { # 군부의 최후통첩 (북양군)
 		}
 		
 		custom_tooltip = {
-			text = warlord_china_events.15.ttb
+			text = warlord_china_events.16.ttb
 			set_variable = imperial_family_exiled
 		}
 
@@ -527,7 +608,7 @@ warlord_china_events.15 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 결사 항전
-		name = warlord_china_events.15.c
+		name = warlord_china_events.16.c
 		
 		default_option = yes
 
