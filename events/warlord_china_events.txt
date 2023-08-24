@@ -1,93 +1,12 @@
 ﻿namespace = warlord_china_events
 
-warlord_china_events.1 = { # 더미 - 필분
-	type = country_event
-	placement = root
-
-	title = warlord_china_events.1.t
-	desc = warlord_china_events.1.d
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	option = {
-		name = warlord_china_events.1.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-warlord_china_events.2 = { # 더미 - 혁명
-	type = country_event
-	placement = root
-
-	title = warlord_china_events.2.t
-	desc = warlord_china_events.2.d
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	option = {
-		name = warlord_china_events.2.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-warlord_china_events.3 = { # 더미 - 봉기
-	type = country_event
-	placement = root
-
-	title = warlord_china_events.3.t
-	desc = warlord_china_events.3.d
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	option = {
-		name = warlord_china_events.3.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-warlord_china_events.11 = { # (도시 이름) 봉기
+warlord_china_events.1 = { # (도시 이름) 봉기
 	type = country_event
 	placement = scope:revolt_state
 
-	title = warlord_china_events.11.t
-	desc = warlord_china_events.11.d
-	flavor = warlord_china_events.11.f
+	title = warlord_china_events.1.t
+	desc = warlord_china_events.1.d
+	flavor = warlord_china_events.1.f
 
 	duration = 3
 
@@ -123,6 +42,7 @@ warlord_china_events.11 = { # (도시 이름) 봉기
 			}
 		}
 		c:KMT = {
+			# 법들
 			activate_law = law_type:law_professional_army
 			if = {
 				limit = { has_law = law_type:law_hereditary_bureaucrats }
@@ -141,7 +61,6 @@ warlord_china_events.11 = { # (도시 이름) 봉기
 			activate_law = law_type:law_interventionism
 			activate_law = law_type:law_right_of_assembly
 			activate_law = law_type:law_presidential_republic
-			activate_law = law_type:law_secret_police
 			if = {
 				limit = { has_law = law_type:law_serfdom }
 				activate_law = law_type:law_tenant_farmers
@@ -165,58 +84,80 @@ warlord_china_events.11 = { # (도시 이름) 봉기
 				activate_law = law_type:law_per_capita_based_taxation
 			}
 
-			# 쑨원을 지도자로
+			# 지도자 결정
 			if = {
 				limit = {
-					NOR = {
+					game_date > 1888.1.1
+					game_date < 1925.1.1
+				}
+				# 쑨원을 지도자로
+				if = {
+					limit = {
+						NOR = {
+							any_character = {
+								has_template = chi_sun_character_template
+							}
+							any_character_in_exile_pool = {
+								has_template = chi_sun_character_template
+							}
+						}
+					}
+					create_character = {
+						template = chi_sun_character_template
+						on_created = {
+							set_character_as_ruler = yes
+							add_character_role = politician
+							set_variable = sun_yat_sen_var
+							set_global_variable = sun_yat_sen_spawn
+						}
+					}
+				}
+				else_if = {
+					limit = {
 						any_character = {
+							owner = c:CHI
 							has_template = chi_sun_character_template
 						}
+					}
+					random_character = {
+						limit = {
+							owner = c:CHI
+							has_template = chi_sun_character_template
+						}
+						transfer_character = c:KMT
+						set_character_as_ruler = yes
+						add_character_role = politician
+					}
+				}	
+				else_if = {
+					limit = {
 						any_character_in_exile_pool = {
 							has_template = chi_sun_character_template
 						}
 					}
-				}
-				create_character = {
-					template = chi_sun_character_template
-					on_created = {
+					random_character_in_exile_pool = {
+						limit = {
+							has_template = chi_sun_character_template
+						}
+						transfer_character = c:KMT
 						set_character_as_ruler = yes
 						add_character_role = politician
-						set_variable = sun_yat_sen_var
-						set_global_variable = sun_yat_sen_spawn
 					}
 				}
 			}
-			else_if = {
-				limit = {
-					any_character = {
-						owner = c:CHI
-						has_template = chi_sun_character_template
+			else = {
+				# 쑨원 Mk.2
+				create_character = {
+					age = { 30 50 }
+					religion = rel:protestant
+					ideology = ideology_republican_leader
+					interest_group = ig_intelligentsia
+					ruler = yes
+					traits = {
+						ambitious
+						persistent
+						inspirational_orator
 					}
-				}
-				random_character = {
-					limit = {
-						owner = c:CHI
-						has_template = chi_sun_character_template
-					}
-					transfer_character = c:KMT
-					set_character_as_ruler = yes
-					add_character_role = politician
-				}
-			}	
-			else_if = {
-				limit = {
-					any_character_in_exile_pool = {
-						has_template = chi_sun_character_template
-					}
-				}
-				random_character_in_exile_pool = {
-					limit = {
-						has_template = chi_sun_character_template
-					}
-					transfer_character = c:KMT
-					set_character_as_ruler = yes
-					add_character_role = politician
 				}
 			}
 
@@ -281,93 +222,18 @@ warlord_china_events.11 = { # (도시 이름) 봉기
 			months = 13
 			is_decaying = yes
 		}
-	}
-
-	option = {
-		name = warlord_china_events.11.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	option = {
-		name = warlord_china_events.11.b
-
-		play_as = c:KMT
-
-		ai_chance = {
-			base = 0
-		}
-	}
-}
-
-warlord_china_events.12 = { # 혁명 전파
-	type = country_event
-	placement = root
-
-	title = warlord_china_events.12.t
-	desc = warlord_china_events.12.d
-	flavor = warlord_china_events.12.f
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	trigger = {
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-		if = {
-			limit = { THIS = c:KMT }
-			while = {
-				count = 4
-				c:KMT = {		
-					ordered_neighbouring_state = {
-						limit = {
-							owner = c:CHI
-							OR = {
-								region = sr:region_north_china
-								region = sr:region_south_china
-							}
-							NOT = { THIS = c:CHI.capital }
-						}
-						order_by = radical_fraction
-						set_state_owner = c:KMT
-						set_state_type = incorporated
-					}
-				}
+		# 군부 지도자를 권위주의로
+		ig:ig_armed_forces = {
+			leader = {
+				set_ideology = ideology:ideology_authoritarian
+				save_scope_as = army_leader_scope
 			}
 		}
 	}
 
 	option = {
-		name = warlord_china_events.12.a
+		name = warlord_china_events.1.a
 		default_option = yes
-
-		trigger = {
-			THIS = c:CHI
-		}
-
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	option = {
-		name = warlord_china_events.12.b
-		default_option = yes
-
-		trigger = {
-			THIS = c:KMT
-		}
 
 		ai_chance = {
 			base = 100
@@ -375,13 +241,13 @@ warlord_china_events.12 = { # 혁명 전파
 	}
 }
 
-warlord_china_events.13 = { # 더 혁명 전파
+warlord_china_events.2 = { # 혁명 전파
 	type = country_event
 	placement = root
 
-	title = warlord_china_events.13.t
-	desc = warlord_china_events.13.d
-	flavor = warlord_china_events.13.f
+	title = warlord_china_events.2.t
+	desc = warlord_china_events.2.d
+	flavor = warlord_china_events.2.f
 
 	duration = 3
 
@@ -418,25 +284,8 @@ warlord_china_events.13 = { # 더 혁명 전파
 	}
 
 	option = {
-		name = warlord_china_events.13.a
+		name = warlord_china_events.2.a
 		default_option = yes
-
-		trigger = {
-			THIS = c:CHI
-		}
-
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	option = {
-		name = warlord_china_events.13.b
-		default_option = yes
-
-		trigger = {
-			THIS = c:KMT
-		}
 
 		ai_chance = {
 			base = 100
@@ -444,13 +293,65 @@ warlord_china_events.13 = { # 더 혁명 전파
 	}
 }
 
-warlord_china_events.14 = { # 몽골 위구르 종속국 탈주
+warlord_china_events.3 = { # 더 혁명 전파
 	type = country_event
 	placement = root
 
-	title = warlord_china_events.14.t
-	desc = warlord_china_events.14.d
-	flavor = warlord_china_events.14.f
+	title = warlord_china_events.3.t
+	desc = warlord_china_events.3.d
+	flavor = warlord_china_events.3.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 4
+			c:KMT = {		
+				ordered_neighbouring_state = {
+					limit = {
+						owner = c:CHI
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+						}
+						NOT = { THIS = c:CHI.capital }
+					}
+					order_by = radical_fraction
+					set_state_owner = c:KMT
+					set_state_type = incorporated
+				}
+			}
+		}
+	}
+
+	option = {
+		name = warlord_china_events.3.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.4 = { # 몽골 위구르 종속국 탈주
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.4.t
+	desc = warlord_china_events.4.d
+	flavor = warlord_china_events.4.f
 
 	duration = 3
 
@@ -494,7 +395,7 @@ warlord_china_events.14 = { # 몽골 위구르 종속국 탈주
 	}
 
 	option = {
-		name = warlord_china_events.14.a
+		name = warlord_china_events.4.a
 		default_option = yes
 
 		ai_chance = {
@@ -503,47 +404,13 @@ warlord_china_events.14 = { # 몽골 위구르 종속국 탈주
 	}
 }
 
-warlord_china_events.15 = { # 남북의화
+warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 	type = country_event
 	placement = root
 
-	title = warlord_china_events.15.t
-	desc = warlord_china_events.15.d
-	flavor = warlord_china_events.15.f
-
-	duration = 3
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
-	}
-
-	trigger = {
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-	}
-
-	option = {
-		name = warlord_china_events.15.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
-	type = country_event
-	placement = root
-
-	title = warlord_china_events.16.t
-	desc = warlord_china_events.16.d
-	flavor = warlord_china_events.16.f
+	title = warlord_china_events.5.t
+	desc = warlord_china_events.5.d
+	flavor = warlord_china_events.5.f
 
 	duration = 1
 
@@ -557,22 +424,29 @@ warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
 
 
 	option = { # 항복
-		name = warlord_china_events.16.a
-		
+		name = warlord_china_events.5.a
+
 		default_option = yes
 
 		custom_tooltip = {
-			text = warlord_china_events.16.tta
-			activate_law = law_type:law_presidential_republic
-			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
-			random_character = {
-				limit = {
-					is_character_alive = yes
-					has_variable = sun_yat_sen_var
+			text = warlord_china_events.5.tta
+
+			# 법 국민당처럼
+			c:KMT = {
+				every_law = {
+					c:CHI = {
+						activate_law = PREV.type
+					}
 				}
+			}
+
+			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
+
+			# kmt 지도자 데려오기
+			c:KMT.ruler = {
+				set_home_country = c:CHI
 				transfer_character = c:CHI
 				set_character_as_ruler = yes
-				add_character_role = politician
 			}
 		}
 
@@ -582,7 +456,7 @@ warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 만주로 몽진
-		name = warlord_china_events.16.b
+		name = warlord_china_events.5.b
 
 		trigger = {
 			exists = c:MCH
@@ -598,7 +472,15 @@ warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
 		}
 		
 		custom_tooltip = {
-			text = warlord_china_events.16.ttb
+			text = warlord_china_events.5.ttb
+			
+			# CHI 법 MCH에 복붙
+			every_law = {
+				c:MCH = {
+					activate_law = PREV.type
+				}
+			}
+			
 			set_variable = imperial_family_exiled
 		}
 
@@ -608,7 +490,7 @@ warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
 	}
 
 	option = { # 결사 항전
-		name = warlord_china_events.16.c
+		name = warlord_china_events.5.c
 		
 		default_option = yes
 
@@ -618,22 +500,6 @@ warlord_china_events.16 = { # 군부의 최후통첩 (북양군)
 	}
 
 	after = {
-		if = {
-			limit = {
-				c:MCH = {
-					is_subject_of = c:CHI
-					is_subject_type = subject_type_military_headquarters_china
-				}
-			}
-			annex = c:MCH
-		}
-		if = {
-			limit = { has_variable = imperial_family_exiled }
-			every_scope_state = {
-				limit = { NOT = { state_region = { is_homeland = cu:manchu } } }
-				set_state_owner = c:KMT
-			}
-		}
 	}
 }
 
