@@ -428,10 +428,12 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 		default_option = yes
 
+		remove_modifier = tianming
+
 		custom_tooltip = {
 			text = warlord_china_events.5.tta
 
-			# 법 국민당처럼
+			# CHI 법 KMT에 복붙
 			c:KMT = {
 				every_law = {
 					c:CHI = {
@@ -440,15 +442,26 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				}
 			}
 
-			# kmt 지도자 데려오기
+			# KMT 지도자 CHI로
 			c:KMT.ruler = {
 				set_home_country = c:CHI
 				transfer_character = c:CHI
 				set_character_as_ruler = yes
 			}
 
+			# 대숙청
+			every_character = {
+				limit = { is_ruler = no }
+				random_list = {
+					80 = {
+						kill_character = { hidden = yes }
+					}
+					20 = {}
+				}
+			}
+
+			annex = c:KMT
 			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
-			remove_modifier = tianming
 			set_variable = chinese_central_government
 		}
 
@@ -471,8 +484,11 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 					has_modifier = manchurian_containment
 				}
 			}
+
 		}
 		
+		remove_modifier = tianming
+
 		custom_tooltip = {
 			text = warlord_china_events.5.ttb
 			
@@ -482,8 +498,38 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 					activate_law = PREV.type
 				}
 			}
+
+			# CHI 지도자 MCH로
+			ruler = {
+				set_home_country = c:MCH
+				transfer_character = c:MCH
+				set_character_as_ruler = yes
+			}
+
+			# CHI 법 KMT에 복붙
+			c:KMT = {
+				every_law = {
+					c:CHI = {
+						activate_law = PREV.type
+					}
+				}
+			}
+
+			# KMT 지도자 CHI로
+			c:KMT.ruler = {
+				set_home_country = c:CHI
+				transfer_character = c:CHI
+				set_character_as_ruler = yes
+			}
+
+			annex = c:KMT
+			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
+			set_variable = chinese_central_government
 			
-			set_variable = imperial_family_exiled
+			c:MCH = {
+				set_variable = imperial_family_exiled
+			}
+			play_as = c:MCH
 		}
 
 		ai_chance = {
@@ -495,6 +541,8 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		name = warlord_china_events.5.c
 		
 		default_option = yes
+
+		remove_modifier = tianming
 
 		ai_chance = {
 			base = 0

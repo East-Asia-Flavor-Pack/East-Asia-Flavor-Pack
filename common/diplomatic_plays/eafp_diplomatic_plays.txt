@@ -1,21 +1,4 @@
-﻿dp_japan_invasion = {
-	war_goal = humiliation
-	
-	texture = "gfx/interface/icons/war_goals/humiliation.dds"
-	
-	possible = {	
-		aggressive_diplomatic_plays_permitted = yes	
-		has_variable = korean_empire_1
-	}
-	
-	on_weekly_pulse = {}
-	
-	on_war_begins = { }
-
-	on_war_end = { } 
-}
-
-dp_taiping_rebellion = { # 수정
+﻿dp_taiping_rebellion = { # 수정
 	war_goal = annex_country
 	mirror_war_goal = yes
 	add_infamy_for_starting_initiator_wargoals = no
@@ -59,6 +42,111 @@ dp_taiping_rebellion = { # 수정
 	on_war_end = {}
 }
 
+dp_unify_china = { # 수정
+	war_goal = annex_country
+	
+	texture = "gfx/interface/icons/war_goals/annex_country.dds"
+	
+	selectable_in_lens = {
+		OR = {
+			# has_government_type = gov_warlord_state
+			# has_variable = chinese_central_government
+			AND = { # 추가
+				exists = c:CHI
+				ROOT = c:CHI
+			}
+			country_has_primary_culture = cu:han # 추가
+		}
+	}
+	
+	possible = {
+		# NOT = { exists = c:CHI }
+		has_global_variable = china_shatters # 추가
+		NOT = { is_country_type = decentralized }
+		is_subject = no
+		OR = {
+			# has_government_type = gov_warlord_state
+			# has_variable = chinese_central_government
+			AND = { # 추가
+				exists = c:CHI
+				ROOT = c:CHI
+			}
+			country_has_primary_culture = cu:han # 추가
+		}
+		
+		scope:target_country = {
+			NOT = { is_country_type = decentralized }
+			aggressive_diplomatic_plays_permitted = yes
+			OR = {
+				# has_government_type = gov_warlord_state
+				# has_variable = chinese_central_government
+				AND = { # 추가
+					exists = c:CHI
+					ROOT = c:CHI
+				}
+				country_has_primary_culture = cu:han # 추가
+			}
+		}
+	}
+	
+	on_weekly_pulse = {}
+	
+	on_war_begins = {}
+
+	on_war_end = {}
+}
+
+dp_boxer_rebellion = { # 수정
+	war_goal = humiliation
+	
+	texture = "gfx/interface/icons/war_goals/war_reparations.dds"
+
+	allow_negotiated_peace = no
+	initiator_can_add_war_goals = no
+	target_can_add_war_goals = no
+	
+	selectable_in_lens = {
+		always = no
+	}
+	
+	possible = {
+		scope:target = {
+			this = c:CHI
+		}
+	}
+	
+	additional_involvement_trigger = {
+		NOT = { is_country_type = decentralized }
+		country_rank >= rank_value:great_power
+		aggressive_diplomatic_plays_permitted = no
+	}
+	
+	on_weekly_pulse = {}
+	
+	on_war_begins = {}
+
+	on_war_end = {
+		# is_in_war_together scope:target scope:initiator
+	}
+}
+
+dp_japan_invasion = {
+	war_goal = humiliation
+	
+	texture = "gfx/interface/icons/war_goals/humiliation.dds"
+	
+	possible = {	
+		aggressive_diplomatic_plays_permitted = yes	
+		has_variable = korean_empire_1
+	}
+	
+	on_weekly_pulse = {}
+	
+	on_war_begins = { }
+
+	on_war_end = { } 
+}
+
 dp_second_opium_war = {
 	war_goal = humiliation
 	
@@ -94,42 +182,6 @@ dp_second_opium_war = {
 	}
 }
 
-
-dp_boxer_rebellion = {
-	war_goal = humiliation
-	
-	texture = "gfx/interface/icons/war_goals/war_reparations.dds"
-
-	allow_negotiated_peace = no
-	initiator_can_add_war_goals = no
-	target_can_add_war_goals = no
-	
-	selectable_in_lens = {
-		always = no
-	}
-	
-	possible = {
-		scope:target = {
-			this = c:CHI
-		}
-	}
-	
-	additional_involvement_trigger = {
-		NOT = { is_country_type = decentralized }
-		country_rank >= rank_value:great_power
-		aggressive_diplomatic_plays_permitted = no
-	}
-	
-	on_weekly_pulse = {}
-	
-	on_war_begins = {}
-
-	on_war_end = {
-		# is_in_war_together scope:target scope:initiator
-	}
-}
-
-
 dp_tpg_return = {
 	requires_interest_marker = no
 
@@ -152,6 +204,7 @@ dp_tpg_return = {
 
 	on_war_end = {}
 }
+
 dp_chi_return = {
 	requires_interest_marker = no
 
