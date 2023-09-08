@@ -1,0 +1,153 @@
+﻿
+
+je_korea_tutorial = { #튜토리얼
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    is_shown_when_inactive = {
+        NOT = { has_variable = kor_tutorial_skip }
+    }
+
+    possible = {
+        always = yes
+    }
+
+    immediate = { set_variable = { name = kor_tutorial_var value = 0 } }
+
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+    }
+
+    on_complete = { set_variable = kor_tutorial_skip }
+
+    scripted_button = kor_tutorial_button
+
+    on_weekly_pulse = {
+        effect = {
+            change_variable = {
+                name = kor_tutorial_var
+                add = 5
+            }
+        }
+    }
+
+    current_value = {
+		value = root.var:kor_tutorial_var
+	}	
+
+	goal_add_value = {
+		value = 30
+	}
+
+    progressbar = yes
+    weight = 10000
+
+    should_be_pinned_by_default = yes
+}
+
+je_korea_history = { #세도정치의 심화
+    icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+ 
+    immediate = {
+        set_variable = korea_ui_on #전용 UI 활성화
+        set_variable = sedo_power_ui_on #세도가 영향력 UI 활성화
+        add_modifier = sedo_problem
+        add_modifier = hwangok_problem
+        add_modifier = gunjeong_problem
+        add_modifier = jeonjeong_problem
+        trigger_event = {
+            id = korea_main.1000
+            days = 97
+        }
+    }
+
+    complete = {
+        custom_tooltip = {
+            text = je_korea_history_custom_tt
+            joseon_royal_authority >= 50
+            sedo_kim_value <= 30
+            sedo_jo_value <= 30
+            sedo_park_value <= 30
+            sedo_power_value <= 70
+        }
+        NOT = { has_variable = bibyunsa_enable } #비변사 활성화 변수
+    }
+    
+    on_complete = { # 이벤트 설정해야함
+        trigger_event = korea_main.100
+    }
+
+    on_monthly_pulse = {
+		random_events = {
+            140 = 0
+            1 = korea_main.1001 #상소
+            1 = korea_main.1002 #
+            1 = korea_main.1003
+            1 = korea_main.1004
+            1 = korea_main.1005
+            1 = korea_main.1006
+            1 = korea_main.1007
+            1 = korea_main.1008
+            1 = korea_main.1009
+            1 = korea_main.1010
+
+        }
+    }
+
+    weight = 10000
+
+    should_be_pinned_by_default = yes
+}
+
+je_korea_reformation_start = { #개혁 시작
+    icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+    immediate = {
+        set_variable = silhak_vs_sedo_on
+    }
+
+    complete = {
+        custom_tooltip = {
+            text = je_korea_reformation_start_complete_tt
+            has_variable = samjeong_complete_var
+        }
+    }
+
+    on_complete = { # 이벤트 설정해야함
+        trigger_event = korea_main.100
+    }
+
+    fail = {
+        custom_tooltip = {
+            text = je_korea_reformation_start_fail_tt_1
+            has_variable = establish_samjeong_ijeong_cheong
+        }
+        custom_tooltip = {
+            text = je_korea_reformation_start_fail_tt_2
+            joseon_royal_authority <= 0
+        }
+        custom_tooltip = {
+            text = je_korea_reformation_start_fail_tt_3
+            sedo_power_value >= 150
+        }  
+    }
+
+    on_fail = { #철종 데려옴
+        trigger_event = korea_main.100
+    }
+
+    invalid = {
+        game_date < 1866.12.31
+    }
+
+    on_invalid = { #흐지부지된 개혁
+        trigger_event = korea_main.100
+    }
+
+ weight = 9500
+
+ should_be_pinned_by_default = yes
+
+}
+

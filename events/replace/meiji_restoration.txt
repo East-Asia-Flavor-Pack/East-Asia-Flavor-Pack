@@ -1,0 +1,3982 @@
+﻿namespace = meiji
+
+# 1000번대 이벤트 - 메이지유신
+# 1500번대 이벤트 - 메이지유신 (막부)
+# 2000번대 이벤트 - 군부
+# 3000번대 이벤트 - 가차
+# 4000번대 이벤트 - 정치
+# 5000번대 이벤트 - 개혁
+# 6000번대 이벤트 - 외교
+# 7000번대 이벤트 - 경제
+# 8000번대 이벤트 - 군대/정복
+
+
+meiji.1000 = { #메이지 유신 완전 클리어
+	type = country_event
+	placement = root
+	title = meiji.1000.t
+	desc = meiji.1000.d
+	flavor = meiji.1000.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {# 
+	    default_option = yes
+		name = meiji.1000.a
+	}
+}
+
+
+meiji.1001 = {
+	type = country_event
+	placement = root
+	title = meiji.1001.t
+	desc = meiji.1001.d
+	flavor = meiji.1001.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:meiji_ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	trigger = {
+	}
+
+	immediate = {
+		set_variable = {
+			name = meiji_var
+			value = 0
+		}
+
+		set_variable = {
+			name = enable_restoration_meiji
+			value = 0
+		}
+		ig:ig_landowners = {
+			save_scope_as = shogunate_ig
+		}
+		if = {
+			limit = {
+				year < 1846 # 수정
+			}
+			create_character = {
+				# Emperor Ninko
+				first_name = "Ninko"
+				last_name = "Yamato"
+				historical = yes
+				ruler = yes
+				birth_date = 1800.1.1
+				dna = dna_ninko
+				interest_group = ig_landowners # beholden to the Shogun
+				ideology = ideology_traditionalist
+				traits = {
+					reserved # not very active in affairs of state
+				}
+			}
+			create_character = {
+				first_name = "Komei"
+				last_name = "Yamato" # 수정
+				historical = yes
+				heir = yes
+				birth_date = 1831.1.1
+				dna = dna_emperor_komei
+				interest_group = ig_armed_forces
+				traits = {
+					reserved # ditto
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1846 # 수정
+				year < 1867 # 수정
+			}
+			create_character = {
+				first_name = "Komei"
+				last_name = "Yamato"
+				historical = yes
+				ruler = yes
+				birth_date = 1831.1.1
+				dna = dna_emperor_komei
+				interest_group = ig_armed_forces
+				traits = {
+					reserved # ditto
+				}
+			}
+			create_character = {
+				first_name = "Meiji"
+				last_name = "Yamato"
+				historical = yes
+				heir = yes
+				birth_date = 1852.1.1
+				dna = dna_emperor_meiji
+				interest_group = ig_industrialists
+				traits = {
+					innovative
+					charismatic
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1867 # 수정
+				year < 1912
+			}
+			create_character = {
+				first_name = "Meiji"
+				last_name = "Yamato"
+				historical = yes
+				ruler = yes
+				birth_date = 1852.1.1
+				dna = dna_emperor_meiji
+				interest_group = ig_industrialists
+				traits = {
+					innovative
+					charismatic
+				}
+			}
+			create_character = {
+				first_name = "Taisho"
+				last_name = "Yamato"
+				historical = yes
+				heir = yes
+				birth_date = 1879.1.1
+				interest_group = ig_industrialists
+				traits = {
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1912
+				year < 1928
+			}
+			create_character = {
+				first_name = "Taisho"
+				last_name = "Yamato"
+				historical = yes
+				ruler = yes
+				birth_date = 1879.1.1
+				interest_group = ig_industrialists
+				traits = {
+				}
+			}
+			create_character = {
+				first_name = "Showa" # Hirohito
+				last_name = "Yamato"
+				historical = yes
+				heir = yes
+				birth_date = 1901.1.1
+				interest_group = ig_armed_forces
+				traits = {
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1928
+				year < 1989
+			}
+			create_character = {
+				first_name = "Showa" # Hirohito
+				last_name = "Yamato"
+				historical = yes
+				heir = yes
+				birth_date = 1901.1.1
+				interest_group = ig_armed_forces
+				traits = {
+				}
+			}
+		}
+		ruler = {
+			save_scope_as = meiji_ruler
+		}
+		
+	}
+
+	option = { # 메이지유신
+		name = meiji.1001.a
+		default_option = yes
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = meiji_favored_ig
+				months = normal_modifier_time
+			}
+		}
+		set_capital = STATE_KANTO
+		custom_tooltip = shogunate_rename.tt
+		hidden_effect = {
+			scope:shogunate_ig = {
+				set_interest_group_name = ig_landowners
+			}
+		}
+		add_journal_entry = {
+			type = je_meiji_main_renew
+		}
+	}
+}
+
+meiji.1002 = { #다이묘에 대한 처분을 논의한다
+	type = country_event
+	placement = root
+	title = meiji.1002.t
+	desc = meiji.1002.d
+	flavor = meiji.1002.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {# 판적봉환을 실시한다
+	    default_option = yes
+		name = meiji.1002.a
+		hidden_effect = {
+			trigger_event = {
+				id = meiji.1005
+				months = 6
+			}
+		}
+	}
+
+	option = { #다이묘를 놔둔다
+		name = meiji.1002.b
+		hidden_effect = {
+			trigger_event = {
+				id = meiji.1003
+				months = 4
+			}
+		}
+	}
+}
+
+meiji.1003 = { #진짜? 한번 더 묻기
+	type = country_event
+	placement = root
+	title = meiji.1003.t
+	desc = meiji.1003.d
+	flavor = meiji.1003.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {# 판적봉환 할래
+	    default_option = yes
+		name = meiji.1003.a
+		hidden_effect = {
+			trigger_event = {
+				id = meiji.1005
+				months = 6
+			}
+		}
+	}
+
+	option = { #다이묘를 놔둔다
+		name = meiji.1003.b
+		hidden_effect = {
+			trigger_event = {
+				id = meiji.1004
+				months = 4
+			}
+		}
+	}
+}
+
+meiji.1004 = { #다이묘들은 남겨질것이다
+	type = country_event
+	placement = root
+	title = meiji.1004.t
+	desc = meiji.1004.d
+	flavor = meiji.1004.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+	    default_option = yes
+		name = meiji.1004.a
+		
+	}
+}
+
+meiji.1005 = { #판적봉환
+	type = country_event
+	placement = root
+	title = meiji.1005.t
+	desc = meiji.1005.d
+	flavor = meiji.1005.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #천천히
+		name = meiji.1005.a
+		set_variable = hanseki_houkan
+		trigger_event = {
+			id = meiji.1006
+			years = 4
+		}
+	}
+	
+	option = {#중간(역사적)
+	    default_option = yes
+		name = meiji.1005.b
+		set_variable = hanseki_houkan
+		trigger_event = {
+			id = meiji.1006
+			years = 2
+		}
+	}
+
+	option = {#빠르게
+		name = meiji.1005.c
+		set_variable = hanseki_houkan
+		trigger_event = {
+			id = meiji.1006
+			years = 1
+		}
+	}
+}
+
+meiji.1006 = { #폐번치현
+	type = country_event
+	placement = root
+	title = meiji.1006.t
+	desc = meiji.1006.d
+	flavor = meiji.1006.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = haihan_chiken }
+	}
+
+	immediate = {
+		set_variable = haihan_chiken
+		ROOT = {
+			save_scope_as = jap_scope
+		}
+	}
+
+	option = {
+		name = meiji.1006.a
+		default_option = yes
+		if = { limit = {exists = c:YON} c:YON = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:TOS} c:TOS = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:SAT} c:SAT = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:CHO} c:CHO = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:AID} c:AID = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:KAG} c:KAG = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:SEN} c:SEN = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:GIS} c:GIS = { trigger_event = { id = meiji.1007 } }}
+ 		if = { limit = {exists = c:ODA} c:ODA = { trigger_event = { id = meiji.1007 } }}
+		trigger_event = {
+			id = meiji.1008
+			days = 21
+		}
+	}
+}
+
+meiji.1007 = { #폐번치현
+	type = country_event
+	placement = root
+	title = meiji.1007.t
+	desc = meiji.1007.d
+	flavor = meiji.1007.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { #수락
+		name = meiji.1007.a
+		default_option = yes
+		play_as = c:JAP
+		c:JAP = {
+			annex = ROOT
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {#거절
+		name = meiji.1007.b
+		ai_chance = {
+			base = 0
+		}
+	}
+
+}
+
+meiji.1008 = { # 폐번치현 완료
+	type = country_event
+	placement = root
+	title = meiji.1008.t
+	desc = meiji.1008.d
+	flavor = meiji.1008.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.1008.a
+		default_option = yes
+		
+		hidden_effect ={
+			trigger_event = {
+				id = meiji.1012
+				years = 3
+			}
+		}
+		every_scope_state = {
+			limit = {
+				OR = {
+					THIS = s:STATE_KYUSHU.region_state:JAP
+					THIS = s:STATE_SHIKOKU.region_state:JAP
+					THIS = s:STATE_CHUGOKU.region_state:JAP
+					THIS = s:STATE_KANSAI.region_state:JAP
+					THIS = s:STATE_CHUBU.region_state:JAP
+					THIS = s:STATE_TOHOKU.region_state:JAP
+				}
+			}
+			set_state_type = incorporated
+		}
+	}
+}
+
+meiji.1009 = { # 오키나와 처분
+	type = country_event
+	placement = root
+	title = meiji.1009.t
+	desc = meiji.1009.d
+	flavor = meiji.1009.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.1009.a
+		default_option = yes
+		if = { limit = {exists = c:RYU} c:RYU = { trigger_event = { id = meiji.1010 } }}
+	}
+
+	option = { #류큐국 유지
+		name = meiji.1009.b
+	}
+}
+
+
+meiji.1010 = { #류큐 의견
+	type = country_event
+	placement = root
+	title = meiji.1010.t
+	desc = meiji.1010.d
+	flavor = meiji.1010.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { #수락
+		name = meiji.1010.a
+		default_option = yes
+		play_as = c:JAP
+		c:JAP = {
+			annex = ROOT
+		}
+		if = { limit = {exists = c:JAP} c:JAP = { trigger_event = { id = meiji.1011 } }}
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {#거절
+		name = meiji.1010.b
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+meiji.1011 = { # 오키나와 처분 완료
+	type = country_event
+	placement = root
+	title = meiji.1011.t
+	desc = meiji.1011.d
+	flavor = meiji.1011.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.1011.a
+		default_option = yes
+		
+		every_scope_state = {
+			limit = {
+				OR = {
+					THIS = s:STATE_RYUKYU_ISLANDS.region_state:JAP
+				}
+			}
+			set_state_type = incorporated
+		}
+	}
+}
+
+meiji.1012 = { # 녹봉처분
+	type = country_event
+	placement = root
+	title = meiji.1012.t
+	desc = meiji.1012.d
+	flavor = meiji.1012.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.1012.a
+		default_option = yes
+		set_variable = chitsuroku
+	}
+
+	option = {
+		name = meiji.1012.b
+	}
+}
+
+meiji.1013 = { # 전용 시스템 알림
+	type = country_event
+	placement = root
+	title = meiji.1013.t
+	desc = meiji.1013.d
+	flavor = meiji.1013.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.1013.a
+		default_option = yes
+		set_variable = daimyo_panel_on
+	}
+}
+
+meiji.1020 = { # 사무라이 처분 논의
+	type = country_event
+	placement = root
+	title = meiji.1020.t
+	desc = meiji.1020.d
+	flavor = meiji.1020.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { #논의 시작
+		name = meiji.1020.a
+		default_option = yes
+		trigger = {
+			id = meiji.1025
+			days = 300
+		}
+	}
+}
+
+meiji.1021 = { # 사무라이가 민간인을 공격
+	type = country_event
+	placement = root
+	title = meiji.1021.t
+	desc = meiji.1021.d
+	flavor = meiji.1021.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1021_set }
+	}
+
+	immediate = {
+		set_variable = 1021_set
+	}
+
+	option = { #사무라이를 구속한다
+		name = meiji.1021.a
+		default_option = yes
+	}
+	option = { #평민이 잘못했지
+		name = meiji.1021.b
+	}
+
+}
+
+meiji.1022 = { # 사무라이의 반발
+	type = country_event
+	placement = root
+	title = meiji.1022.t
+	desc = meiji.1022.d
+	flavor = meiji.1022.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1022_set }
+	}
+
+	immediate = {
+		set_variable = 1022_set
+	}
+
+	option = { #진압한다
+		name = meiji.1022.a
+		default_option = yes
+	}
+	option = { #진정시킨다
+		name = meiji.1022.b
+	}
+	
+}
+
+meiji.1023 = { # 현 지사가 독단적으로 폐도령
+	type = country_event
+	placement = root
+	title = meiji.1023.t
+	desc = meiji.1023.d
+	flavor = meiji.1023.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1023_set }
+	}
+
+	immediate = {
+		set_variable = 1023_set
+	}
+
+	option = { #장려한다
+		name = meiji.1023.a
+		default_option = yes
+	}
+	option = { #독자 결정은 안된다
+		name = meiji.1023.b
+	}
+	
+}
+
+meiji.1024 = { # 바람의 검심 오마쥬
+	type = country_event
+	placement = root
+	title = meiji.1024.t
+	desc = meiji.1024.d
+	flavor = meiji.1024.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1024_set }
+		has_variable = haito_rei
+	}
+
+	immediate = {
+		set_variable = 1024_set
+	}
+
+	option = { #켄신을 구속한다
+		name = meiji.1024.a
+		default_option = yes
+	}
+	option = { #활인검인데 괜찮겠지
+		name = meiji.1024.b
+	}
+	
+}
+
+
+meiji.1025 = { # 폐도령 결정
+	type = country_event
+	placement = root
+	title = meiji.1025.t
+	desc = meiji.1025.d
+	flavor = meiji.1025.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { #폐도령을 내린다
+		name = meiji.1025.a
+		default_option = yes
+		set_variable = haito_rei
+		custom_tooltip = {
+			text = saga_ran_coming
+			trigger_event = {
+				id = meiji.1031
+				years = 3
+			}
+		}
+	}
+	option = { #폐도령을 내리지 않는다
+		name = meiji.1025.b
+		set_variable = no_haito_rei
+	}
+	
+}
+
+meiji.1026 = { # 폐도령 실패 알림
+	type = country_event
+	placement = root
+	title = meiji.1026.t
+	desc = meiji.1026.d
+	flavor = meiji.1026.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { #어쩔 수 없지
+		name = meiji.1026.a
+		default_option = yes
+		set_variable = samurai_handling_complete
+	}
+	
+}
+meiji.1027 = { # 사족반란
+	type = country_event
+	placement = root
+	title = meiji.1027.t
+	desc = meiji.1027.d
+	flavor = meiji.1027.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1027_set }
+		has_variable = haito_rei
+	}
+
+	immediate = {
+		set_variable = 1027_set
+	}
+
+	option = { #진압한다
+		name = meiji.1027.a
+		default_option = yes
+	}
+	option = { #잘 구슬린다.
+		name = meiji.1027.b
+	}
+	
+}
+
+meiji.1028 = { # 사족반란
+	type = country_event
+	placement = root
+	title = meiji.1028.t
+	desc = meiji.1028.d
+	flavor = meiji.1028.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1028_set }
+		has_variable = haito_rei
+	}
+
+	immediate = {
+		set_variable = 1028_set
+	}
+
+	option = { #진압한다
+		name = meiji.1028.a
+		default_option = yes
+	}
+	option = { #잘 구슬린다.
+		name = meiji.1028.b
+	}
+	
+}
+
+meiji.1029 = { # 사족반란
+	type = country_event
+	placement = root
+	title = meiji.1029.t
+	desc = meiji.1029.d
+	flavor = meiji.1029.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1029_set }
+		has_variable = haito_rei
+	}
+
+	immediate = {
+		set_variable = 1029_set
+	}
+
+	option = { #진압한다
+		name = meiji.1029.a
+		default_option = yes
+	}
+	option = { #잘 구슬린다.
+		name = meiji.1029.b
+	}
+	
+}
+meiji.1030 = { # 사족반란
+	type = country_event
+	placement = root
+	title = meiji.1030.t
+	desc = meiji.1030.d
+	flavor = meiji.1030.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1030_set }
+		has_variable = haito_rei
+	}
+
+	immediate = {
+		set_variable = 1030_set
+	}
+
+	option = { #진압한다
+		name = meiji.1030.a
+		default_option = yes
+	}
+	option = { #잘 구슬린다.
+		name = meiji.1030.b
+	}
+	
+}
+
+
+meiji.1031 = { # 사가반란
+	type = country_event
+	placement = root
+	title = meiji.1031.t
+	desc = meiji.1031.d
+	flavor = meiji.1031.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		has_variable = haito_rei
+	}
+
+	immediate = {
+	}
+
+	option = { #더 큰 반란의 시작
+		name = meiji.1031.a
+		default_option = yes
+		set_variable = samurai_complete
+		add_journal_entry = {
+			type = je_seinan_war1
+		}
+	}
+
+}
+
+meiji.1032 = { # 사무라이 제어 끝 알림
+	type = country_event
+	placement = root
+	title = meiji.1032.t
+	desc = meiji.1032.d
+	flavor = meiji.1032.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		has_variable = haito_rei
+	}
+
+	immediate = {
+	}
+
+	option = { #알림
+		name = meiji.1032.a
+		default_option = yes
+	}
+
+}
+
+
+meiji.1033 = { # 신푸렌의 난
+	type = country_event
+	placement = root
+	title = meiji.1033.t
+	desc = meiji.1033.d
+	flavor = meiji.1033.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1033_set }
+	}
+
+	immediate = {
+		set_variable = 1033_set
+	}
+
+	option = { 
+		name = meiji.1033.a
+		default_option = yes
+	}
+
+}
+
+meiji.1034 = { # 아키즈키의 난
+	type = country_event
+	placement = root
+	title = meiji.1034.t
+	desc = meiji.1034.d
+	flavor = meiji.1034.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1034_set }
+	}
+
+	immediate = {
+		set_variable = 1034_set
+	}
+
+	option = { 
+		name = meiji.1034.a
+		default_option = yes
+	}
+
+}
+
+meiji.1035 = { # 히젠의 난
+	type = country_event
+	placement = root
+	title = meiji.1035.t
+	desc = meiji.1035.d
+	flavor = meiji.1035.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		NOT = { has_variable = 1035_set }
+	}
+
+	immediate = {
+		set_variable = 1035_set
+	}
+
+	option = { 
+		name = meiji.1035.a
+		default_option = yes
+	}
+
+}
+
+meiji.1036 = { # 서남전쟁 발생 며칠전
+	type = country_event
+	placement = root
+	title = meiji.1036.t
+	desc = meiji.1036.d
+	flavor = meiji.1036.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { 
+		name = meiji.1036.a
+		default_option = yes
+		custom_tooltip = {
+			text = seinan_war_coming
+			trigger_event ={
+				id = meiji.1037 
+				days = 20
+			}
+		}
+	}
+}
+
+meiji.1037 = { # 서남전쟁 발생
+	type = country_event
+	placement = root
+	title = meiji.1037.t
+	desc = meiji.1037.d
+	flavor = meiji.1037.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		create_country = {
+			tag = SAT
+			origin = this
+			state = s:STATE_KYUSHU.region_state:JAP
+		}
+		c:SAT = {
+			save_scope_as = seinan_scope
+		}
+		set_global_variable = {
+			name = seinan_war
+		}
+		create_diplomatic_play = {
+			target_country = scope:seinan_scope
+			war = yes
+			type = dp_annex_war
+			add_war_goal = {
+				holder = c:SAT
+				type = annex_country
+				target_country = c:JAP
+			}
+		}
+	}
+
+	option = { 
+		name = meiji.1037.a
+		default_option = yes
+		scope:seinan_scope = {
+			create_character = {
+				template = eafp_saigo_takamori
+				ruler = yes
+			}
+		}
+	}
+
+}
+
+# meiji.1038 ~ 1045 초슈에서 발생을 위해 비워둠... 나중에 추가
+
+
+meiji.1046 = { #서남전쟁 통제 성공
+	type = country_event
+	placement = root
+	title = meiji.1046.t
+	desc = meiji.1046.d
+	flavor = meiji.1046.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = { 
+		name = meiji.1046.a
+		default_option = yes
+		
+	}
+}
+
+
+meiji.2000 = { #군부 제어 시작
+	type = country_event
+	placement = root
+	title = meiji.2000.t
+	desc = meiji.2000.d
+	flavor = meiji.2000.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gunbu_control_var
+			add = 50
+		}
+	}
+
+	option = {
+		name = meiji.2000.a
+		set_variable = gunbu_control_start
+	}
+}
+
+
+meiji.2001 = { #문민통제 성공
+	type = country_event
+	placement = root
+	title = meiji.2001.t
+	desc = meiji.2001.d
+	flavor = meiji.2001.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = meiji.2001.a
+	}
+}
+
+meiji.2002 = { #군부 통제 실패
+	type = country_event
+	placement = root
+	title = meiji.2002.t
+	desc = meiji.2002.d
+	flavor = meiji.2002.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = meiji.2002.a
+	}
+
+	option = {
+		name = meiji.2002.b
+	}
+}
+
+
+meiji.2999 = { #가챠 시작
+	type = country_event
+	placement = root
+	title = meiji.2999.t
+	desc = meiji.2999.d
+	flavor = meiji.2999.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.2999.a1
+		default_option = yes
+		add_treasury = -10000
+		custom_tooltip = {
+			text = gacha1_tt
+		}
+		hidden_effect = {
+			random_list = {
+				20 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_one
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						15 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_one }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3001
+					}
+				}
+				30 = {
+					
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								age > 16
+								has_trait = level_two
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						10 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_two }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3002
+					}
+				}
+
+				30 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_three
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						4 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_three }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3003
+					}
+				}
+				15 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_four
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						3 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_four }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3004
+					}
+				}
+				5 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+					trigger_event = {
+						id = meiji.3005
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = meiji.2999.a2
+		add_treasury = -50000
+		trigger_event = {
+			id = meiji.3006
+		}
+		custom_tooltip = {
+			text = gacha2_tt
+		}
+		hidden_effect = {
+			random_list = {
+				9 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_four
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+				}
+				1 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+				}
+		
+			}
+			while = {
+				count = 4
+				random_list = {
+				20 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_one
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						15 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_one }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				30 = {
+					
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								age > 16
+								has_trait = level_two
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						10 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_two }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+
+				30 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_three
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						8 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_three }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				15 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_four
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						4 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_four }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				5 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+				}
+			}
+			}
+	}
+		
+	}
+	
+
+	option = {
+		name = meiji.2999.a3
+		trigger = {
+			has_variable = gacha_point
+			var:gacha_point >= 50
+		}
+		trigger_event = {
+			id = meiji.3007
+		}
+	}
+	option = {
+		name = meiji.3000.a4
+	}
+}
+
+
+meiji.3000 = { #가챠 시작
+	type = country_event
+	placement = root
+	title = meiji.3000.t
+	desc = meiji.3000.d
+	flavor = meiji.3000.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = meiji.3000.a1
+		default_option = yes
+		add_treasury = -10000
+		custom_tooltip = {
+			text = gacha1_tt
+		}
+		hidden_effect = {
+			random_list = {
+				20 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_one
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						15 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_one }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3001
+					}
+				}
+				30 = {
+					
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								age > 16
+								has_trait = level_two
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						10 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_two }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3002
+					}
+				}
+
+				30 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_three
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						4 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_three }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3003
+					}
+				}
+				15 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_four
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						3 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_four }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+					trigger_event = {
+						id = meiji.3004
+					}
+				}
+				5 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+					trigger_event = {
+						id = meiji.3005
+					}
+				}
+			}	
+		}
+	}
+	option = {
+		name = meiji.3000.a2
+		add_treasury = -50000
+		trigger_event = {
+			id = meiji.3006
+		}
+		custom_tooltip = {
+			text = gacha2_tt
+		}
+		hidden_effect = {
+			while = {
+				count = 5
+				random_list = {
+				20 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_one
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						15 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_one }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				30 = {
+					
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								age > 16
+								has_trait = level_two
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						10 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_two }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+
+				30 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_three
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						8 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_three }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				15 = {
+					random_list = {
+						1 = {
+							random_character_in_void = {
+								limit = {
+								has_trait = level_four
+								age > 16
+								}
+								free_character_from_void = yes
+								set_variable = role_executive
+								add_modifier = executive_modifier
+								set_variable = gacha_temp
+							}
+						}
+						4 = {
+							create_character = {
+								historical = no
+								culture = cu:japanese
+								religion = rel:shinto
+								female = no
+								age = { 20 60 }
+								is_general = yes
+								traits = { level_four }
+								on_created = {
+									set_variable = role_executive
+									add_modifier = executive_modifier
+									set_variable = gacha_temp
+								}
+							}
+						}
+					}
+				}
+				1 = {
+					random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						set_variable = role_executive
+						add_modifier = executive_modifier
+						set_variable = gacha_temp
+					}
+				}
+			}
+			}
+	}
+		
+	}
+	
+
+	option = {
+		name = meiji.3000.a3
+		trigger = {
+			has_variable = gacha_point
+			var:gacha_point >= 50
+		}
+		trigger_event = {
+			id = meiji.3007
+		}
+	}
+	option = {
+		name = meiji.3000.a4
+	}
+}
+
+meiji.3001 = { #노말
+	type = country_event
+	placement = root
+	title = meiji.3001.t
+	desc = meiji.3001.d
+	flavor = meiji.3001.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 1
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+		
+	}
+
+	option = {
+		name = meiji.3001.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3001.b
+		default_option = yes
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+}
+
+meiji.3002 = { #레어
+	type = country_event
+	placement = root
+	title = meiji.3002.t
+	desc = meiji.3002.d
+	flavor = meiji.3002.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 1
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+	}
+
+	option = {
+		name = meiji.3002.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3002.b
+		default_option = yes
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+}
+
+meiji.3003 = { #sr
+	type = country_event
+	placement = root
+	title = meiji.3003.t
+	desc = meiji.3003.d
+	flavor = meiji.3003.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 1
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+		
+	}
+
+	option = {
+		name = meiji.3003.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3003.b
+		default_option = yes
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+
+}
+
+meiji.3004 = { #ssr
+	type = country_event
+	placement = root
+	title = meiji.3004.t
+	desc = meiji.3004.d
+	flavor = meiji.3004.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 1
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+		
+	}
+
+	option = {
+		name = meiji.3004.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3004.b
+		default_option = yes
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+}
+
+meiji.3005 = { #ur
+	type = country_event
+	placement = root
+	title = meiji.3005.t
+	desc = meiji.3005.d
+	flavor = meiji.3005.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 1
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+		
+	}
+
+	option = {
+		name = meiji.3005.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3005.b
+		default_option = yes
+		
+	scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+}
+
+meiji.3006 = { #5연차
+	type = country_event
+	placement = root
+	title = meiji.3006.t
+	desc = meiji.3006.d
+	flavor = meiji.3006.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:gacha_char
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		change_variable = {
+			name = gacha_point 
+			add = 5
+		}
+		random_scope_character = {
+			limit = {
+			has_variable = gacha_temp
+			}
+		save_scope_as = gacha_char
+		}
+	}
+
+	option = {
+		name = meiji.3006.a
+			trigger_event = {
+				id = meiji.3000
+		}
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+	
+	option = {
+		name = meiji.3006.b
+		default_option = yes
+		scope:gacha_char = {
+			remove_variable = gacha_temp
+		}
+	}
+
+
+}
+
+meiji.3007 = { #천장
+	type = country_event
+	placement = root
+	title = meiji.3007.t
+	desc = meiji.3007.d
+	flavor = meiji.3007.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	
+	left_icon = scope:gacha_char
+	gui_window = event_window_1char_tabloid
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		random_character_in_void = {
+								limit = {
+								has_trait = level_five
+								age > 16
+								}
+						free_character_from_void = yes
+						add_modifier = executive_modifier
+						save_scope_as = gacha_char
+						set_variable = role_executive
+					}
+	}
+
+	option = {
+		name = meiji.3007.a
+		change_variable = {
+			name = gacha_point 
+			subtract = 50
+		}
+	}
+}
+
+
+meiji.6000 = { #외교 공관을 신정부가 담당
+	type = country_event
+	placement = root
+	title = meiji.6000.t
+	desc = meiji.6000.d
+	flavor = meiji.6000.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = meiji.6000.a
+		default_option = yes
+			trigger_event = {
+				id = meiji.6001 
+				days = 10
+		}
+	}
+
+}
+
+meiji.6001 = { #조선으로의 외교 담당 정하기
+	type = country_event
+	placement = root
+	title = meiji.6001.t
+	desc = meiji.6001.d
+	flavor = meiji.6001.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #전례대로 대마도가 맡는다
+		name = meiji.6001.a
+		default_option = yes
+			trigger_event = {
+				id = meiji.6002
+				days = 10
+		}
+	}
+
+	option = { #신정부가 맡는다
+		name = meiji.6001.b
+			trigger_event = {
+				id = meiji.6003 
+				days = 10
+		}
+	}
+}
+
+meiji.6002 = { #사절단을 꾸린다
+	type = country_event
+	placement = root
+	title = meiji.6002.t
+	desc = meiji.6002.d
+	flavor = meiji.6002.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #사절단의 도착
+		name = meiji.6002.a
+		default_option = yes
+			trigger_event = {
+				id = meiji.6004
+				days = 50
+		}
+	}
+
+}
+
+
+meiji.6003 = { #사절단을 꾸린다
+	type = country_event
+	placement = root
+	title = meiji.6003.t
+	desc = meiji.6003.d
+	flavor = meiji.6003.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #사절단의 도착
+		name = meiji.6003.a
+		default_option = yes
+			trigger_event = {
+				id = meiji.6004
+				days = 50
+		}
+	}
+
+}
+
+
+
+
+meiji.6004 = { #국서전달
+	type = country_event
+	placement = root
+	title = meiji.6004.t
+	desc = meiji.6004.d
+	flavor = meiji.6004.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = meiji.6004.a
+		default_option = yes
+		c:KOR = {
+			trigger_event = {
+				id = meiji.6005
+				days = 20
+			}
+		}
+	}
+
+}
+
+
+meiji.6005 = { #일본에서 국서가 도착 : 대마도가 하면 성공확률 좀 올림(아직 안함)
+	type = country_event
+	placement = root
+	title = meiji.6005.t
+	desc = meiji.6005.d
+	flavor = meiji.6005.f
+
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #국서거부
+		name = meiji.6005.a
+		default_option = yes
+		c:JAP = {
+			trigger_event = {
+				id = meiji.6006 
+				days = 40
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = { #국서 받아들임
+		name = meiji.6005.b
+		c:JAP = {
+			trigger_event = {
+				id = meiji.6007 
+				days = 40
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+
+}
+
+
+meiji.6006 = { #국서 거부 사건
+	type = country_event
+	placement = root
+	title = meiji.6006.t
+	desc = meiji.6006.d
+	flavor = meiji.6006.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #왜관 점령
+		name = meiji.6006.a
+		default_option = yes
+		trigger_event = {
+			id = meiji.6008
+			days = 20
+		}
+	}
+
+}
+
+
+#6007 추가 예정
+
+
+meiji.6008 = { #왜관 점령
+	type = country_event
+	placement = root
+	title = meiji.6008.t
+	desc = meiji.6008.d
+	flavor = meiji.6008.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #국교단절
+		name = meiji.6008.a
+		default_option = yes
+		trigger_event = {
+			id = meiji.6009
+			days = 50
+		}
+	}
+
+}
+
+
+
+meiji.6009 = { #국교단절 - 정한론 논의
+	type = country_event
+	placement = root
+	title = meiji.6009.t
+	desc = meiji.6009.d
+	flavor = meiji.6009.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #정한론은 아닌듯?
+		default_option = yes
+		name = meiji.6009.a
+		trigger_event = {
+			id = meiji.6010
+			days = 20
+		}
+	}
+
+	option = { #정한론 가즈아~
+		name = meiji.6009.b
+	}
+
+}
+
+
+meiji.6010 = { #정한론 논의
+	type = country_event
+	placement = root
+	title = meiji.6010.t
+	desc = meiji.6010.d
+	flavor = meiji.6010.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = { #메이지 6년 정변
+		default_option = yes
+		name = meiji.6010.a
+		custom_tooltip = {
+			text = meiji_rokunen_coming_tt
+		trigger_event = {
+			id = meiji.6011
+			years = 3
+		}
+		}
+	}
+
+}
+
+meiji.6011 = { #서남전쟁 활성화
+	type = country_event
+	placement = root
+	title = meiji.6011.t
+	desc = meiji.6011.d
+	flavor = meiji.6011.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6011.a
+		set_variable = meiji_rokunen
+	}
+}
+
+
+meiji.6100 = { #이와쿠라 사절단 
+	type = country_event
+	placement = root
+	title = meiji.6100.t
+	desc = meiji.6100.d
+	flavor = meiji.6100.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6100.a
+		trigger_event = {
+			id = meiji.6101
+			days = 30
+		}
+	}
+
+	option = {
+		name = meiji.6100.b
+		trigger_event = {
+			id = meiji.6101
+			days = 30
+		}
+	}
+}
+
+
+meiji.6101 = { #이와쿠라 사절단 출발
+	type = country_event
+	placement = root
+	title = meiji.6101.t
+	desc = meiji.6101.d
+	flavor = meiji.6101.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6101.a
+	}
+}
+
+meiji.6200 = { #조약 개정 시작
+	type = country_event
+	placement = root
+	title = meiji.6200.t
+	desc = meiji.6200.d
+	flavor = meiji.6200.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6200.a
+	}
+}
+
+
+meiji.6201 = { #실패(열강과 전쟁 승리)
+	type = country_event
+	placement = root
+	title = meiji.6201.t
+	desc = meiji.6201.d
+	flavor = meiji.6201.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6201.a
+	}
+}
+
+
+meiji.6202 = { #성공
+	type = country_event
+	placement = root
+	title = meiji.6202.t
+	desc = meiji.6202.d
+	flavor = meiji.6202.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.6202.a
+	}
+}
+
+
+meiji.6203 = { #영국과 협상 개시
+	type = country_event
+	placement = root
+	title = meiji.6203.t
+	desc = meiji.6203.d
+	flavor = meiji.6203.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6203.a1
+		trigger_event = {
+			id = meiji.6204
+		}
+		set_variable = 6203_1 #이동권 보장
+	}
+	option = {
+		name = meiji.6203.a2
+		trigger_event = {
+			id = meiji.6205
+		}
+		set_variable = 6203_2 #항구 조차
+	}
+	option = {
+		name = meiji.6203.a3
+		trigger_event = {
+			id = meiji.6206
+		}
+		set_variable = 6203_3 #관세 감면
+	}
+	option = {
+		name = meiji.6203.a4
+		trigger_event = {
+			id = meiji.6207 
+		}
+		set_variable = 6203_4 #특약 제공
+	}
+	option = {
+		name = meiji.6203.a5
+		trigger_event = {
+			id = meiji.6208
+		}
+		set_variable = 6203_1 #기업 유치
+	}
+	option = {
+		name = meiji.6203.a6
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+meiji.6204 = { #1번 선택지
+	type = country_event
+	placement = root
+	title = meiji.6204.t
+	desc = meiji.6204.d
+	flavor = meiji.6204.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6204.a
+		trigger_event = {
+			id = meiji.6203
+		}
+	  remove_variable = 6203_1
+	}
+	option = {
+		name = meiji.6204.b
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+meiji.6205 = { #2번 선택지
+	type = country_event
+	placement = root
+	title = meiji.6205.t
+	desc = meiji.6205.d
+	flavor = meiji.6205.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6205.a
+		trigger_event = {
+			id = meiji.6203
+		}
+	  remove_variable = 6203_2
+	}
+	option = {
+		name = meiji.6205.b
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+meiji.6206 = { #3번 선택지
+	type = country_event
+	placement = root
+	title = meiji.6206.t
+	desc = meiji.6206.d
+	flavor = meiji.6206.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6206.a
+		trigger_event = {
+			id = meiji.6203
+		}
+	  remove_variable = 6203_3
+	}
+	option = {
+		name = meiji.6206.b
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+meiji.6207 = { #4번 선택지
+	type = country_event
+	placement = root
+	title = meiji.6207.t
+	desc = meiji.6207.d
+	flavor = meiji.6207.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6207.a
+		trigger_event = {
+			id = meiji.6203
+		}
+	  remove_variable = 6203_4
+	}
+	option = {
+		name = meiji.6207.b
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+meiji.6208 = { #5번 선택지
+	type = country_event
+	placement = root
+	title = meiji.6208.t
+	desc = meiji.6208.d
+	flavor = meiji.6208.f
+
+	duration = 1
+	is_popup = yes
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6208.a
+		trigger_event = {
+			id = meiji.6203
+		}
+	  remove_variable = 6203_5
+	}
+	option = {
+		name = meiji.6208.b
+		trigger_event = {
+			id = meiji.6209
+			days = 30
+		}
+	}
+}
+
+
+meiji.6209 = { #협상 진행
+	type = country_event
+	placement = root
+	title = meiji.6209.t
+	desc = meiji.6209.d
+	flavor = meiji.6209.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+			
+		}
+ 	}
+
+	option = {
+		custom_tooltip = {
+			text = nego_gbr_generic
+		}
+		name = meiji.6209.a
+	}
+
+	option = {
+		custom_tooltip = {
+			text = 6209_1_tt
+		}
+		name = meiji.6209.b
+		trigger = {
+			has_variable = 6203_1
+		}
+	}
+}
+
+meiji.6210 = { #성공
+	type = country_event
+	placement = root
+	title = meiji.6210.t
+	desc = meiji.6210.d
+	flavor = meiji.6210.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		c:GBR = {
+			save_scope_as = gbr_scope
+			ruler = {
+			save_scope_as = gbr_ruler_scope
+			}
+		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
+ 	}
+
+	option = {
+		name = meiji.6210.a
+	}
+}
+
+meiji.8000 = { #군대 개혁 시작 
+	type = country_event
+	placement = root
+	title = meiji.8000.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = meiji.8000.d1
+				trigger = {
+					has_variable = no_haito_rei
+				}
+			}
+			triggered_desc = {
+				desc = meiji.8000.d2
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = meiji.8000.f1
+				trigger = {
+					has_variable = no_haito_rei
+				}
+			}
+			triggered_desc = {
+				desc = meiji.8000.f2
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8000.a
+		trigger_event = {
+			id = meiji.8001
+			days = 30
+		}
+		trigger = {
+			NOT = { has_variable = no_haito_rei }
+		}
+	}
+
+	option = { #국가 민병대 
+		name = meiji.8000.b
+		trigger = {
+			has_variable = no_haito_rei
+		}
+		trigger_event = {
+			id = meiji.8002
+			days = 300
+		}
+	}
+}
+
+
+
+meiji.8001 = { #국민 개병제 도입
+	type = country_event
+	placement = root
+	title = meiji.8001.t
+	desc = meiji.8001.d
+	flavor = meiji.8001.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8001.a
+		set_variable = gundai_establish_1
+	}
+}
+
+meiji.8002 = { #국가 민병대
+	type = country_event
+	placement = root
+	title = meiji.8002.t
+	desc = meiji.8002.d
+	flavor = meiji.8002.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8002.a
+		set_variable = gundai_establish_2
+	}
+}
+
+meiji.8003 = { #사무라이 국가민병대 종료
+	type = country_event
+	placement = root
+	title = meiji.8003.t
+	desc = meiji.8003.d
+	flavor = meiji.8003.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8003.a
+		set_variable = gundai_establish_complete
+	}
+}
+
+meiji.8004 = { #전문직업군 종료
+	type = country_event
+	placement = root
+	title = meiji.8004.t
+	desc = meiji.8004.d
+	flavor = meiji.8004.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8004.a
+		trigger_event = {
+			id = meiji.8006
+			days = 40
+		}
+		add_journal_entry = {
+			type = je_gunbu_control
+		}
+	}
+}
+
+meiji.8005 = { #대규모징병 종료
+	type = country_event
+	placement = root
+	title = meiji.8005.t
+	desc = meiji.8005.d
+	flavor = meiji.8005.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8005.a
+		trigger_event = {
+			id = meiji.8006
+			days = 40
+		}
+		add_journal_entry = {
+			type = je_gunbu_control
+		}
+	}
+}
+
+meiji.8006 = { #경찰설립안 
+	type = country_event
+	placement = root
+	title = meiji.8006.t
+	desc = meiji.8006.d
+	flavor = meiji.8006.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {#지역경찰
+		name = meiji.8006.a	
+		set_variable = keisatsu_establish_1
+	}
+
+	option = {#전문경찰
+		default_option = yes
+		name = meiji.8006.b
+		set_variable = keisatsu_establish_2
+	}
+
+	option = {#경찰군사화
+		name = meiji.8006.c
+		set_variable = keisatsu_establish_3
+	}
+}
+
+meiji.8007 = { #경찰 설립 종료
+	type = country_event
+	placement = root
+	title = meiji.8007.t
+	desc = meiji.8007.d
+	flavor = meiji.8007.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8007.a
+		set_variable = gundai_establish_complete
+	}
+}
+
+meiji.8008 = { #저널 완료 알림
+	type = country_event
+	placement = root
+	title = meiji.8008.t
+	desc = meiji.8008.d
+	flavor = meiji.8008.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.8008.a
+	}
+}
+
+meiji.10000 = { #테스트 이벤트
+	type = country_event
+	placement = root
+	title = meiji.10000.t
+	desc = meiji.10000.d
+	flavor = meiji.10000.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = meiji.10000.a
+	}
+
+	option = {
+		every_strategic_object = {
+			remove_strategic_object
+		}
+		name = meiji.10000.b
+	}
+
+	option = {
+		highlighted_option = yes
+		trigger = {
+			c:JAP.gdp > 30000000
+		}
+		show_as_unavailable = { always = yes }
+		name = meiji.10000.c
+	}
+
+}
+

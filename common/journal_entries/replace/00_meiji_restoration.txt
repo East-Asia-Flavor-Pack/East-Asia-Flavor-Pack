@@ -1,0 +1,612 @@
+﻿# 1000번대 이벤트 - 메이지유신
+# 1500번대 이벤트 - 메이지유신 (막부)
+# 2000번대 이벤트 - 군부
+# 3000번대 이벤트 - 번벌
+# 4000번대 이벤트 - 정치
+# 5000번대 이벤트 - 개혁
+# 6000번대 이벤트 - 외교
+# 7000번대 이벤트 - 경제
+
+je_meiji_main_renew = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	complete = {
+		OR = {
+			country_rank >= rank_value:great_power
+			AND = {
+			custom_tooltip = {
+				text = unequal_treaty_complete_tt
+				has_variable = no_unequal_treaty
+			}
+			custom_tooltip = {
+				text = meiji_restoration_complete_tt
+				has_variable = meiji_constitution
+			}
+			army_size >= 200
+			navy_size >= 50
+			}
+			
+		 }
+		}
+
+	on_complete = {
+		set_variable = meiji_restoration_renew_complete_var
+		trigger_event = {
+			id = meiji.1000
+		}
+		set_country_type = recognized
+	}
+
+
+	weight = 10000
+	should_be_pinned_by_default = yes
+}
+
+je_gunbu_control = { #군부 제어
+ icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+ immediate = {
+		set_variable = {
+			name = gunbu_control_var
+			value = 0
+		}
+		trigger_event = { #군부 제어 시작
+			id = meiji.2000 
+			days = 10
+		}
+ 	}
+
+	complete = {
+		has_variable = gunbu_control_start
+		custom_tooltip = {
+			text = civilian_control_japan_tt
+			var:gunbu_control_var = 0
+		}
+		custom_tooltip = {
+			text = gunbu_control_explanation
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #문민통제 성공
+			id = meiji.2001 
+		}
+	}
+
+	fail = { 
+		custom_tooltip = {
+			text = gunbu_control_fail_tt
+			var:gunbu_control_var = 100
+		}
+	}
+
+    on_fail = {
+		trigger_event = { #군부 쿠데타
+			id = meiji.2002 
+		}
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	current_value = {
+		value = root.var:gunbu_control_var
+	}
+
+	progressbar = yes
+
+	weight = 10000
+	should_be_pinned_by_default = yes
+	
+}
+
+je_daimyo_handling = {
+
+ icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+
+	scripted_button = scripted_daimyo_handling
+
+	immediate = {
+		set_variable = daimyo_handling_start
+ 	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_daimyo_handling_tt
+			has_variable = haihan_chiken
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #행정구역 재편 가능 알림
+			id = meiji.5000
+		}
+		hidden_effect = {
+			trigger_event = { #오카나와 처분
+				id = meiji.1009
+				years = 5
+			}
+		}
+	}
+
+	fail = { 
+		custom_tooltip = {
+			text = je_daimyo_handling_fail_tt
+			has_variable = daimyo_handling_fail
+		}
+	}
+
+    on_fail = {
+		trigger_event = { #다이묘 전용 시스템 오픈 알림
+			id = meiji.1013
+		}
+	}
+
+	weight = 10000
+
+}
+
+je_samurai_handling = {
+ icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	scripted_button = scripted_samurai_handling
+
+	immediate = {
+		set_variable = samurai_handling_start
+ 	}
+
+	complete = { #권력몰수 성공
+		custom_tooltip = {
+			text = je_samurai_handling_tt
+			has_variable = samurai_complete
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #성공 알림
+			id = meiji.1032
+		}
+	}
+
+	fail = { 
+		custom_tooltip = {
+			text = je_samurai_handling_fail_tt
+			has_variable = no_haito_rei
+		}
+	}
+
+    on_fail = {
+		trigger_event = { #실패 알림
+			id = meiji.1026
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = meiji.1021
+			10 = meiji.1022
+			10 = meiji.1023
+			5 = meiji.1024  #이 아래로 폐도령 이후 활성화
+			5 = meiji.1027
+			5 = meiji.1028
+			5 = meiji.1029
+			5 = meiji.1030
+		}
+	}
+
+	weight = 10000
+
+}
+
+
+je_seinan_war1 = {
+
+ icon = "gfx/interface/icons/event_icons/event_scales.dds"
+ 
+	complete = { #안정 성공
+		custom_tooltip = {
+			text = je_seinan_war_complete_tt
+			has_variable = seinan_war_complete
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #성공 알림
+			id = meiji.1046
+		}
+	}
+
+	fail = { 
+		custom_tooltip = {
+			text = je_seinan_rokunen_tt
+			has_variable = meiji_rokunen
+		}
+	}
+
+    on_fail = {
+		trigger_event = { #서남전쟁 발생
+			id = meiji.1036
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = meiji.1033 #신푸렌의 난
+			10 = meiji.1034 #아키즈키의 난
+			10 = meiji.1035 #하기의 난
+		}
+	}
+
+	weight = 8000
+	
+	should_be_pinned_by_default = yes
+
+}
+
+
+
+
+je_gundai_establish = {
+
+	scripted_button = scripted_gundai_establish
+	scripted_button = scripted_gundai_establish_1
+	scripted_button = scripted_gundai_establish_2
+	scripted_button = scripted_gundai_establish_3
+	scripted_button = scripted_keisatsu_establish_1
+	scripted_button = scripted_keisatsu_establish_2
+	scripted_button = scripted_keisatsu_establish_3
+
+	immediate = {
+		set_variable = gundai_establish_start
+ 	}
+  
+ 	complete = { #끝남
+		custom_tooltip = {
+			text = je_gundai_establish_complete_tt
+			has_variable = gundai_establish_complete
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #성공 알림
+			id = meiji.8008
+			days = 20
+		}
+	}
+
+	
+
+	weight = 9000
+
+}
+
+
+
+je_diplomacy = {
+
+	immediate = {
+		trigger_event = { #조선에 국서를 보낸다.
+			id = meiji.6000
+			days = 10
+		}
+ 	}
+  
+ 	complete = { #끝남
+		custom_tooltip = {
+			text = je_approach_korea_complete_tt
+			has_variable = approach_korea_complete
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #성공 알림
+			id = meiji.60
+		}
+	}
+
+	weight = 8500
+	should_be_pinned_by_default = yes
+
+}
+
+je_iwakura_mission = {
+ 
+	immediate = {
+		trigger_event = { #이와쿠라 사절단 검토
+			id = meiji.6100
+			days = 20
+		}
+		set_variable = atp_gbr
+ 	}
+  
+ 	complete = { #끝남
+	scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		trigger_event = { #성공 알림
+			id = meiji.61
+		}
+	}
+
+	current_value = {
+		value = root.var:atp_gbr
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+}
+
+
+
+
+je_approach_the_power = {
+
+	scripted_button = scripted_approach_the_power_gbr
+	scripted_button = scripted_approach_the_power_fra
+	scripted_button = scripted_approach_the_power_usa
+	scripted_button = scripted_approach_the_power_rus
+	
+	immediate = {
+		set_variable = scripted_approach_the_power_gbr
+		set_variable = scripted_approach_the_power_fra
+		set_variable = scripted_approach_the_power_usa
+		set_variable = scripted_approach_the_power_rus
+		trigger_event = {
+			id = meiji.6200
+		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+		set_global_variable = unequal_treaty_gbr
+
+		c:USA = {
+			save_scope_as = usa_scope
+		}
+		set_global_variable = unequal_treaty_usa
+		c:RUS = {
+			save_scope_as = rus_scope
+		}
+		set_global_variable = unequal_treaty_rus
+		c:FRA = {
+			save_scope_as = fra_scope
+		}
+		set_global_variable = unequal_treaty_fra
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_approach_the_power_tt
+		NOT = {
+			has_global_variable = unequal_treaty_gbr
+			has_global_variable = unequal_treaty_usa
+			has_global_variable = unequal_treaty_fra
+			has_global_variable = unequal_treaty_rus
+		}
+		}
+		custom_tooltip = {
+			text = approach_the_power_explanation
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = meiji.6202
+		}
+	}
+
+	fail = {
+		is_country_type = recognized
+	}
+
+	on_fail = {
+		trigger_event = {
+			id = meiji.6201
+		}
+	}
+	status_desc = {
+		first_valid = {
+				desc = je_meiji_main_desc
+			}
+	}
+
+
+	weight = 9500
+	should_be_pinned_by_default = yes
+}
+
+
+je_approach_the_power_gbr = {
+
+	scripted_button = scripted_approach_the_power_gbr_1
+
+	immediate = {
+		set_variable = scripted_approach_the_power_gbr_1
+		set_variable = atp_gbr
+		c:GBR = {
+			save_scope_as = gbr_scope
+		}
+ 	}
+  
+ 	complete = { #끝남
+	scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		remove_global_variable = unequal_treaty_gbr
+	}
+
+	fail = {
+		is_country_type = recognized
+	}
+
+	current_value = {
+		value = root.var:atp_gbr
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+}
+
+je_approach_the_power_fra = {
+
+	scripted_button = scripted_approach_the_power_fra_1
+
+	immediate = {
+		set_variable = atp_fra
+		c:FRA = {
+			save_scope_as = fra_scope
+		}
+ 	}
+  
+ 	complete = { #끝남
+	scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		remove_global_variable = unequal_treaty_fra
+	}
+
+	fail = {
+		is_country_type = recognized
+	}
+
+	current_value = {
+		value = root.var:atp_fra
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+}
+
+je_approach_the_power_usa = {
+
+	scripted_button = scripted_approach_the_power_usa_1
+
+	immediate = {
+		set_variable = atp_usa
+		c:USA = {
+			save_scope_as = usa_scope
+		}
+ 	}
+  
+ 	complete = { #끝남
+	scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		remove_global_variable = unequal_treaty_usa
+	}
+
+	fail = {
+		is_country_type = recognized
+	}
+
+	current_value = {
+		value = root.var:atp_usa
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+}
+
+je_approach_the_power_rus = {
+
+	scripted_button = scripted_approach_the_power_rus_1
+
+	immediate = {
+		set_variable = atp_rus
+		c:RUS = {
+			save_scope_as = rus_scope
+		}
+ 	}
+  
+ 	complete = { #끝남
+	scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		remove_global_variable = unequal_treaty_rus
+	}
+
+	fail = {
+		is_country_type = recognized
+	}
+
+	current_value = {
+		value = root.var:atp_rus
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+}
+
+
+je_argument_power = {
+
+}
+
+je_daisho_democracy = {
+
+}
+
+je_economy_japan = {
+
+}
+je_district_japan = {
+
+}
+je_system_reform = {
+
+}
+
+je_religion_discuss = {
+
+}
+
+
+je_teikoku_daigaku = {
+
+}
+
+
+je_establish_constitution_japan = {
+
+}
