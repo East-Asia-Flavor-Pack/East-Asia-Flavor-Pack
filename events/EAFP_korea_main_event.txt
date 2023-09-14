@@ -1,6 +1,6 @@
 ﻿namespace = korea_main
 
-#0000번대 = 튜토리얼 및 gui 이벤트
+#0000번대 = 튜토리얼 및 gui, 기능 이벤트
 #1000번대
 #2000번대
 #3000번대 
@@ -201,6 +201,106 @@ korea_main.5 = { #튜토리얼 5 - 마지막 페이지
     }
 }
 
+korea_main.10 = { #주다례
+    type = country_event
+    placement = root
+
+    title = korea_main.10.t
+    desc = korea_main.10.d
+    flavor = korea_main.10.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" #이미지 바꿔야함
+	}
+
+    duration = 1
+    is_popup = yes
+    
+    immediate = {
+    }
+
+    trigger = {
+    }
+    
+    option = { #
+        name = korea_main.10.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_five
+            change_variable = {
+                name = royal_authority
+                add = 5
+            }
+        }
+    }
+}
+
+korea_main.11 = { #권강
+    type = country_event
+    placement = root
+
+    title = korea_main.11.t
+    desc = korea_main.11.d
+    flavor = korea_main.11.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" #이미지 바꿔야함
+	}
+
+    duration = 1
+    is_popup = yes
+    
+    immediate = {
+    }
+
+    trigger = {
+    }
+    
+    option = { #
+        name = korea_main.11.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_three
+            change_variable = {
+                name = royal_authority
+                add = 3
+            }
+        }
+        custom_tooltip = {
+            text = health_hidden_effect_tt
+        }
+        hidden_effect = {
+            if = {
+                limit = { 
+                    has_variable = heonjong_health
+                }
+                change_variable = {
+                name = heonjong_health
+                subtract = 1
+                }
+            } 
+        }
+    }
+    option = { #
+        name = korea_main.11.b
+        custom_tooltip = {
+            text = royal_authority_subtract_one
+            change_variable = {
+                name = royal_authority
+                subtract = 1
+            }
+        }
+    }
+}
+
 #1000번대
 
 korea_main.1000 = { #실학 이벤트 체인 시작
@@ -226,8 +326,8 @@ korea_main.1000 = { #실학 이벤트 체인 시작
 
     immediate = {
         create_character = {
-			first_name = "Yakyong"
-			last_name = "Jeong"
+			first_name = yakyong
+			last_name = jeong
 			historical = yes
 			birth_date = 1762.8.5
 			interest_group = ig_industrialists
@@ -245,13 +345,16 @@ korea_main.1000 = { #실학 이벤트 체인 시작
         add_journal_entry = {
 			type = je_korea_reformation_start
 		}
+        scope:jeongyakyong_scope = {
+            kill_character = yes
+        }
         if = {
             limit = {
-                ig:ig_industrialists = {
+                ig:ig_intelligentsia = {
                     is_being_bolstered = no
                 }
             }
-            ig:ig_industrialists = { #지식인 후원 ON
+            ig:ig_intelligentsia = { #지식인 후원 ON
                 set_ig_bolstering = yes
             }
         }
@@ -262,29 +365,49 @@ korea_main.1000 = { #실학 이벤트 체인 시작
                 add = 5
             }
         }
+        custom_tooltip = { # 왕권 감소
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
     }
 
     option = {
-        name = korea_main.1000.a
+        name = korea_main.1000.b
         default_option = yes
         add_journal_entry = {
 			type = je_korea_reformation_start
 		}
+        scope:jeongyakyong_scope = {
+            kill_character = yes
+        }
+        custom_tooltip = { # 왕권 증가
+            text = royal_authority_add_five
+            change_variable = {
+                name = royal_authority
+                add = 5
+            }
+        }
     }
 
     option = {
-        name = korea_main.1000.a
+        name = korea_main.1000.c
         default_option = yes
         add_journal_entry = {
 			type = je_korea_reformation_start
 		}
+        scope:jeongyakyong_scope = {
+            kill_character = yes
+        }
         if = {
             limit = {
-                ig:ig_industrialists = {
+                ig:ig_intelligentsia = {
                     is_being_suppressed = no
                 }
             }
-            ig:ig_industrialists = { # 지식인 탄압 ON
+            ig:ig_intelligentsia = { # 지식인 탄압 ON
                 set_ig_suppression = yes
             }
         }
@@ -295,8 +418,1473 @@ korea_main.1000 = { #실학 이벤트 체인 시작
                 subtract = 10
             }
         }
+        custom_tooltip = { # 왕권 증가
+            text = royal_authority_add_ten
+            change_variable = {
+                name = royal_authority
+                add = 10
+            }
+        }
     }
 }
 
+korea_main.1001 = { #안동 김씨 영향력 이벤트
+    type = country_event
+    placement = root
 
+    title = korea_main.1001.t
+    desc = korea_main.1001.d
+    flavor = korea_main.1001.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1001_pulse 
+    }
+
+    trigger = {
+        year > 1838
+        NOT = { has_variable = korea_main_1001_pulse }
+    }
+    
+    option = { #김씨 영향력 다운
+        name = korea_main.1001.a
+        default_option = yes
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_five
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_three
+            change_variable = {
+                name = sedo_jo_power
+                add = 3
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1001.b
+        custom_tooltip = {
+            text = sedo_kim_power_add_three
+            change_variable = {
+                name = sedo_kim_power
+                add = 3
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_add_two
+            change_variable = {
+                name = royal_authority
+                add = 2
+            }
+        }
+        add_modifier = {
+            name = nongmin_banbal
+            months = 36
+        }
+    }
+}
  
+korea_main.1002 = { #우의정이 간언함
+    type = country_event
+    placement = root
+
+    title = korea_main.1002.t
+    desc = korea_main.1002.d
+    flavor = korea_main.1002.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/seeking.dds" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1002_pulse 
+    }
+
+    trigger = {
+        year < 1843
+        NOT = { has_variable = korea_main_1002_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1002.a
+        default_option = yes
+        custom_tooltip = {
+            text = health_hidden_effect_tt
+        }
+        custom_tooltip = {
+            text = royal_authority_add_two
+            change_variable = {
+                name = royal_authority
+                add = 2
+            }
+        }
+        hidden_effect = {
+            change_variable = {
+                name = heonjong_health
+                subtract = 2
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1002.b
+        custom_tooltip = {
+            text = royal_authority_subtract_two
+            change_variable = {
+                name = royal_authority
+                subtract = 2
+            }
+        }
+        trigger = {
+			var:royal_authority >= 2
+		}
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1003 = { #조vs김
+    type = country_event
+    placement = root
+
+    title = korea_main.1003.t
+    desc = korea_main.1003.d
+    flavor = korea_main.1003.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1003_pulse 
+    }
+
+    trigger = {
+        year > 1838
+        year < 1845
+        NOT = { has_variable = korea_main_1003_pulse }
+    }
+    
+    option = { #김
+        name = korea_main.1003.a
+        default_option = yes
+        custom_tooltip = {
+            text = sedo_kim_power_add_five
+            change_variable = {
+                name = sedo_kim_power
+                add = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_five
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 5
+            }
+        }
+    }
+
+    option = { #조
+        name = korea_main.1003.b
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_five
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_five
+            change_variable = {
+                name = sedo_jo_power
+                add = 5
+            }
+        }
+    }
+
+    option = { #둘다 아냐!
+        name = korea_main.1003.c
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_three
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 3
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_three
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 3
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+			var:royal_authority >= 5
+		}
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1004 = { #그냥 이유없이 박씨 영향력 올려주는 이벤트
+    type = country_event
+    placement = root
+
+    title = korea_main.1004.t
+    desc = korea_main.1004.d
+    flavor = korea_main.1004.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1004_pulse 
+    }
+
+    trigger = {
+        year > 1838
+        year < 1846
+        NOT = { has_variable = korea_main_1004_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1004.a
+        default_option = yes
+        custom_tooltip = {
+            text = sedo_park_power_add_five
+            change_variable = {
+                name = sedo_park_power
+                add = 5
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1004.b
+        custom_tooltip = {
+            text = royal_authority_add_two
+            change_variable = {
+                name = royal_authority
+                add = 2
+            }
+        }
+    }
+}
+
+korea_main.1005 = { #왕권 이벤트
+    type = country_event
+    placement = root
+
+    title = korea_main.1005.t
+    desc = korea_main.1005.d
+    flavor = korea_main.1005.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1005_pulse 
+    }
+
+    trigger = {
+        year > 1840
+        year < 1850
+        NOT = { has_variable = korea_main_1005_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1005.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1005.b
+        custom_tooltip = {
+            text = health_hidden_effect_tt
+        }
+        custom_tooltip = {
+            text = royal_authority_add_five
+            change_variable = {
+                name = royal_authority
+                add = 5
+            }
+        }
+        hidden_effect = {
+            change_variable = {
+                name = heonjong_health
+                subtract = 3
+            }
+        }
+    }
+}
+
+korea_main.1006 = { #조 vs 김
+    type = country_event
+    placement = root
+
+    title = korea_main.1006.t
+    desc = korea_main.1006.d
+    flavor = korea_main.1006.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1006_pulse 
+    }
+
+    trigger = {
+        year > 1841
+        NOT = { has_variable = korea_main_1006_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1006.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_five
+            change_variable = {
+                name = royal_authority
+                add = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_add_five
+            change_variable = {
+                name = sedo_kim_power
+                add = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_ten
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 10
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1006.b
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_five
+            change_variable = {
+                name = sedo_jo_power
+                add = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_five
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 5
+            }
+        }
+        trigger = {
+			var:royal_authority >= 5
+		}
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1007 = { #조 vs 김
+    type = country_event
+    placement = root
+
+    title = korea_main.1007.t
+    desc = korea_main.1007.d
+    flavor = korea_main.1007.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1007_pulse 
+    }
+
+    trigger = {
+        year > 1843
+        year < 1853
+        NOT = { has_variable = korea_main_1007_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1007.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_subtract_ten
+            change_variable = {
+                name = royal_authority
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_ten
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_ten
+            change_variable = {
+                name = sedo_jo_power
+                add = 10
+            }
+        }
+        trigger = {
+            var:royal_authority <= 10
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1007.b
+        custom_tooltip = {
+            text = sedo_kim_power_add_ten
+            change_variable = {
+                name = sedo_kim_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_ten
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 10
+            }
+        }
+    }
+}
+
+korea_main.1008 = { #세력 균형 - 김
+    type = country_event
+    placement = root
+
+    title = korea_main.1008.t
+    desc = korea_main.1008.d
+    flavor = korea_main.1008.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1008_pulse 
+    }
+
+    trigger = {
+        var:sedo_kim_power >= 90
+        year > 1838
+        NOT = { has_variable = korea_main_1008_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1008.a
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_twenty
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_twenty
+            change_variable = {
+                name = sedo_jo_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.b
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_twenty
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_add_twenty
+            change_variable = {
+                name = sedo_park_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.c
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_twenty
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_ten
+            change_variable = {
+                name = sedo_jo_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_add_ten
+            change_variable = {
+                name = sedo_park_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_ten
+            change_variable = {
+                name = royal_authority
+                subtract = 10
+            }
+        }
+        trigger = {
+            var:royal_authority <= 10
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.e
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_ten
+            change_variable = {
+                name = royal_authority
+                add = 10
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1008.g
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_ten
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_ten
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_ten
+            change_variable = {
+                name = sedo_park_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_twenty
+            change_variable = {
+                name = royal_authority
+                subtract = 20
+            }
+        }
+        trigger = {
+            var:royal_authority <= 20
+        }
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1009 = { #세력 균형 - 조
+    type = country_event
+    placement = root
+
+    title = korea_main.1009.t
+    desc = korea_main.1009.d
+    flavor = korea_main.1009.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1009_pulse 
+    }
+
+    trigger = {
+        var:sedo_jo_power >= 90
+        year > 1838
+        NOT = { has_variable = korea_main_1009_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1008.a
+        custom_tooltip = {
+            text = sedo_kim_power_add_twenty
+            change_variable = {
+                name = sedo_kim_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_twenty
+            change_variable = {
+                name = sedo_ho_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.b
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_twenty
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_add_twenty
+            change_variable = {
+                name = sedo_park_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.c
+        custom_tooltip = {
+            text = sedo_kim_power_add_ten
+            change_variable = {
+                name = sedo_kim_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_twenty
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_add_ten
+            change_variable = {
+                name = sedo_park_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_ten
+            change_variable = {
+                name = royal_authority
+                subtract = 10
+            }
+        }
+        trigger = {
+            var:royal_authority <= 10
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.e
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_ten
+            change_variable = {
+                name = royal_authority
+                add = 10
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1008.g
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_ten
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_ten
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_ten
+            change_variable = {
+                name = sedo_park_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_twenty
+            change_variable = {
+                name = royal_authority
+                subtract = 20
+            }
+        }
+        trigger = {
+            var:royal_authority <= 20
+        }
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1010 = { #세력 균형 - 박
+    type = country_event
+    placement = root
+
+    title = korea_main.1010.t
+    desc = korea_main.1010.d
+    flavor = korea_main.1010.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = korea_main_1010_pulse 
+    }
+
+    trigger = {
+        var:sedo_park_power >= 90
+        year > 1838
+        NOT = { has_variable = korea_main_1010_pulse }
+    }
+    
+    option = { #
+        name = korea_main.1008.a
+        custom_tooltip = {
+            text = sedo_kim_power_add_twenty
+            change_variable = {
+                name = sedo_jo_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_twenty
+            change_variable = {
+                name = sedo_park_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.b
+        custom_tooltip = {
+            text = sedo_jo_power_add_twenty
+            change_variable = {
+                name = sedo_jo_power
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_twenty
+            change_variable = {
+                name = sedo_park_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+        trigger = {
+            var:royal_authority <= 5
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.c
+        custom_tooltip = {
+            text = sedo_kim_power_add_ten
+            change_variable = {
+                name = sedo_jo_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_ten
+            change_variable = {
+                name = sedo_jo_power
+                add = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_twenty
+            change_variable = {
+                name = sedo_park_power
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_ten
+            change_variable = {
+                name = royal_authority
+                subtract = 10
+            }
+        }
+        trigger = {
+            var:royal_authority <= 10
+        }
+		show_as_unavailable = { always = yes }
+    }
+
+    option = { #
+        name = korea_main.1008.e
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_ten
+            change_variable = {
+                name = royal_authority
+                add = 10
+            }
+        }
+    }
+
+    option = { #
+        name = korea_main.1008.g
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_ten
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_subtract_ten
+            change_variable = {
+                name = sedo_jo_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_subtract_ten
+            change_variable = {
+                name = sedo_park_power
+                subtract = 10
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_twenty
+            change_variable = {
+                name = royal_authority
+                subtract = 20
+            }
+        }
+        trigger = {
+            var:royal_authority <= 20
+        }
+		show_as_unavailable = { always = yes }
+    }
+}
+
+korea_main.1011 = { #왕비 간택
+    type = country_event
+    placement = root
+
+    title = korea_main.1011.t
+    desc = korea_main.1011.d
+    flavor = korea_main.1011.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+    }
+
+    trigger = {
+    }
+    
+    option = { #안동 김씨로 간택한다
+        name = korea_main.1011.a
+        default_option = yes
+        trigger_event = {
+            id = korea_main.1012
+            days = 10
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_add_ten
+            change_variable = {
+                name = sedo_kim_power 
+                add = 10
+            }
+        }
+    }
+
+    option = { #풍양 조씨로 간택한다
+        name = korea_main.1011.b
+        trigger_event = {
+            id = korea_main.1013
+            days = 10
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_fifteen
+            change_variable = {
+                name = sedo_kim_power 
+                subtract = 15
+            }
+        }
+        custom_tooltip = {
+            text = sedo_jo_power_add_twenty
+            change_variable = {
+                name = sedo_jo_power 
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_five
+            change_variable = {
+                name = royal_authority
+                subtract = 5
+            }
+        }
+    }
+
+    option = { #반남 박씨로 간택한다
+        name = korea_main.1011.c
+        trigger_event = {
+            id = korea_main.1014
+            days = 10
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_twenty
+            change_variable = {
+                name = sedo_kim_power 
+                subtract = 20
+            }
+        }
+        custom_tooltip = {
+            text = sedo_park_power_add_twenty
+            change_variable = {
+                name = sedo_park_power 
+                add = 20
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_ten
+            change_variable = {
+                name = royal_authority
+                subtract = 10
+            }
+        }
+    }
+
+    option = { #셋다 아니다!
+        name = korea_main.1011.e
+        trigger_event = {
+            id = korea_main.1015
+            days = 10
+        }
+        custom_tooltip = {
+            text = sedo_all_power_subtract_five
+            change_variable = {
+                name = sedo_kim_power 
+                subtract = 5
+            }
+            change_variable = {
+                name = sedo_jo_power 
+                subtract = 5
+            }
+            change_variable = {
+                name = sedo_park_power 
+                subtract = 5
+            }
+        }
+        custom_tooltip = {
+            text = royal_authority_subtract_twenty
+            change_variable = {
+                name = royal_authority
+                subtract = 20
+            }
+        }
+    }
+}
+
+korea_main.1012 = { #안동 김씨 간택
+    type = country_event
+    placement = root
+
+    title = korea_main.1012.t
+    desc = korea_main.1012.d
+    flavor = korea_main.1012.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1012.a
+        default_option = yes
+        trigger_event = {
+            id = korea_main.1016
+            days = 10
+        }
+    }
+}
+
+korea_main.1013 = { #풍양 조씨 간택
+    type = country_event
+    placement = root
+
+    title = korea_main.1013.t
+    desc = korea_main.1013.d
+    flavor = korea_main.1013.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1013.a
+        default_option = yes
+        trigger_event = {
+            id = korea_main.1016
+            days = 10
+        }
+    }
+}
+
+korea_main.1014 = { #반남 박씨 간택
+    type = country_event
+    placement = root
+
+    title = korea_main.1014.t
+    desc = korea_main.1014.d
+    flavor = korea_main.1014.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1014.a
+        default_option = yes
+        trigger_event = {
+            id = korea_main.1016
+            days = 10
+        }
+    }
+}
+
+korea_main.1015 = { #다른 가문
+    type = country_event
+    placement = root
+
+    title = korea_main.1015.t
+    desc = korea_main.1015.d
+    flavor = korea_main.1015.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1015.a
+        default_option = yes
+        trigger_event = {
+            id = korea_main.1016
+            days = 10
+        }
+    }
+}
+
+korea_main.1016 = { #결혼함
+    type = country_event
+    placement = root
+
+    title = korea_main.1016.t
+    desc = korea_main.1016.d
+    flavor = korea_main.1016.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1016.a
+        default_option = yes
+        add_modifier = {
+            name = honin_mdf
+            months = 12
+        }
+    }
+}
+
+korea_main.1017 = { # 윤상도 사건
+    type = country_event
+    placement = root
+
+    title = korea_main.1017.t
+    desc = korea_main.1017.d
+    flavor = korea_main.1017.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1017.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_five
+            change_variable = {
+                name = royal_authority
+                add = 5
+            }
+        }
+        custom_tooltip = {
+            text = sedo_kim_power_subtract_two
+            change_variable = {
+                name = sedo_kim_power
+                subtract = 2
+            }
+        }
+        add_modifier = {
+            name = silhak_banbal
+            months = 36
+        }
+    }
+
+    option = { 
+        name = korea_main.1017.b
+        custom_tooltip = {
+            text = sedo_kim_power_add_three
+            change_variable = {
+                name = sedo_kim_power
+                add = 3
+            }
+        }
+        add_modifier = {
+            name = silhak_conflict
+            months = 36
+        }
+    }
+}
+
+korea_main.1018 = { # 친정 개시
+    type = country_event
+    placement = root
+
+    title = korea_main.1018.t
+    desc = korea_main.1018.d
+    flavor = korea_main.1018.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+        set_variable = heonjong_chinjung
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1018.a
+        default_option = yes
+        custom_tooltip = {
+            text = royal_authority_add_twentyfive
+            change_variable = {
+                name = royal_authority
+                add = 25
+            }
+        }
+        add_modifier = {
+            name = chinjung_geasi
+            years = 5
+        }
+        trigger_event = {
+            id = korea_main.1019
+            days = { 3 10 }
+        }
+    }
+}
+
+korea_main.1019 = { # 건강 염려
+    type = country_event
+    placement = root
+
+    title = korea_main.1018.t
+    desc = korea_main.1018.d
+    flavor = korea_main.1018.f
+
+    icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+    event_image = { 
+		texture = "gfx/event_pictures/court.png" 
+	}
+
+    duration = 3
+    
+    immediate = {
+    }
+
+    trigger = {
+    }
+    
+    option = { 
+        name = korea_main.1018.a
+        default_option = yes
+        add_journal_entry = {
+            type = je_heonjong_health
+        }
+    }
+}

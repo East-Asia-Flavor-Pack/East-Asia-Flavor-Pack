@@ -1,6 +1,4 @@
-﻿
-
-je_korea_tutorial = { #튜토리얼
+﻿je_korea_tutorial = { #튜토리얼
     icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
     is_shown_when_inactive = {
@@ -52,13 +50,22 @@ je_korea_history = { #세도정치의 심화
     immediate = {
         set_variable = korea_ui_on #전용 UI 활성화
         set_variable = sedo_power_ui_on #세도가 영향력 UI 활성화
+        set_variable = {
+            name = heonjong_health
+            value = 103
+        }
         add_modifier = sedo_problem
-        add_modifier = hwangok_problem
-        add_modifier = gunjeong_problem
-        add_modifier = jeonjeong_problem
         trigger_event = {
             id = korea_main.1000
             days = 97
+        }
+        trigger_event = {
+            id = korea_main.1011
+            months = 16
+        }
+        trigger_event = {
+            id = korea_main.1018
+            years = 5
         }
     }
 
@@ -78,20 +85,19 @@ je_korea_history = { #세도정치의 심화
         trigger_event = korea_main.100
     }
 
-    on_monthly_pulse = {
+    on_yearly_pulse = {
 		random_events = {
-            140 = 0
-            1 = korea_main.1001 #상소
-            1 = korea_main.1002 #
-            1 = korea_main.1003
-            1 = korea_main.1004
-            1 = korea_main.1005
-            1 = korea_main.1006
-            1 = korea_main.1007
-            1 = korea_main.1008
-            1 = korea_main.1009
-            1 = korea_main.1010
-
+            15 = 0
+            1 = korea_main.1001 # 조 vs 김
+            1 = korea_main.1002 # 왕권
+            1 = korea_main.1003 # 조 vs 김
+            1 = korea_main.1004 # 박
+            1 = korea_main.1005 # 왕권
+            1 = korea_main.1006 # 조 vs 김
+            1 = korea_main.1007 # 조 vs 김
+            10 = korea_main.1008 #세력 균형 - 김
+            10 = korea_main.1009 #세력 균형 - 조
+            10 = korea_main.1010 #세력 균형 - 박
         }
     }
 
@@ -100,11 +106,105 @@ je_korea_history = { #세도정치의 심화
     should_be_pinned_by_default = yes
 }
 
+
+je_heonjong_health = { #세도정치의 심화
+    icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+ 
+    status_desc = {
+		first_valid = {
+            triggered_desc = {
+				desc = heonjong_die
+				trigger = {
+					var:heonjong_health = 0
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_unhealthiest
+				trigger = {
+					var:heonjong_health < 5
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_very_unhealthier
+				trigger = {
+					var:heonjong_health < 25
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_unhealthier
+				trigger = {
+					var:heonjong_health < 50
+				}
+			}
+            triggered_desc = {
+				desc = heonjong_unhealthy
+				trigger = {
+					var:heonjong_health < 75
+				}
+			}
+            triggered_desc = {
+				desc = heonjong_normal
+				trigger = {
+					var:heonjong_health < 100
+				}
+			}
+            triggered_desc = {
+				desc = heonjong_healthy
+				trigger = {
+					var:heonjong_health < 125
+				}
+			}
+            triggered_desc = {
+				desc = heonjong_very_healthy
+				trigger = {
+					var:heonjong_health < 200
+				}
+			}
+		}
+	}
+
+    immediate = {
+        set_variable = heonjong_cure_decision_var
+    }
+
+    complete = {
+        custom_tooltip = {
+            text = heonjong_health_tt
+            has_variable = next_king_var
+        }
+    }
+    
+    on_complete = { # 이벤트 설정해야함
+        trigger_event = korea_main.10
+    }
+
+    on_monthly_pulse = {
+		effect = {
+            change_variable = {
+                name = heonjong_health
+                subtract = 1
+            }
+        }
+    }
+
+    weight = 9200
+
+    should_be_pinned_by_default = yes
+}
+
+
+
+
+
 je_korea_reformation_start = { #개혁 시작
     icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 
     immediate = {
         set_variable = silhak_vs_sedo_on
+        trigger_event = {
+            id = korea_main.1017
+            years = 4
+        }
     }
 
     complete = {
@@ -121,7 +221,7 @@ je_korea_reformation_start = { #개혁 시작
     fail = {
         custom_tooltip = {
             text = je_korea_reformation_start_fail_tt_1
-            has_variable = establish_samjeong_ijeong_cheong
+            has_variable = not_establish_samjeong_ijeong_cheong
         }
         custom_tooltip = {
             text = je_korea_reformation_start_fail_tt_2
@@ -138,7 +238,7 @@ je_korea_reformation_start = { #개혁 시작
     }
 
     invalid = {
-        game_date < 1866.12.31
+        game_date > 1866.12.31
     }
 
     on_invalid = { #흐지부지된 개혁
