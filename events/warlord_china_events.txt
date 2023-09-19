@@ -672,41 +672,71 @@ warlord_china_events.23 = { # 타협의 여파
 		
 		set_variable = chinese_central_government
 
-		#if = {
-		#	limit = { exists = s:STATE_HUNAN.region_state:CHI }
-		#	create_country = {
-		#		tag = HNA
-		#		origin = this
-		#		state = s:STATE_HUNAN.region_state:CHI
-		#		on_created = {
-		#			warlord_setup_effect = yes
-		#			set_variable = warlord_state
-		#		}
-		#	}
-		#	c:HNA = { save_scope_as = scope_HNA }
-		#}
+		# 호남 군벌
+		if = {
+			limit = { exists = s:STATE_HUNAN.region_state:CHI }
+			create_country = {
+				tag = HNA
+				origin = this
+				state = s:STATE_HUNAN.region_state:CHI
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:HNA = { save_scope_as = scope_HNA }
+		}
+		# 광서 군벌
 		if = {
 			limit = { exists = s:STATE_GUANGXI.region_state:CHI }
-			create_country = { #Guangxi
+			create_country = {
 				tag = GNG
 				origin = this
 				state = s:STATE_GUANGXI.region_state:CHI
 				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = c:HNA }
+						s:STATE_GUANGXI = {
+							set_owner_of_provinces = {
+								country = c:HNA
+								provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+							}
+						}
+					}
+					else = {
+						s:STATE_GUANGXI = {
+							set_owner_of_provinces = {
+								country = ROOT
+								provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+							}
+						}
+					}
 					warlord_setup_effect = yes
 					set_variable = warlord_state
 				}
 			}
 			c:GNG = { save_scope_as = scope_GNG }
 		}
-
+		# 안휘 군벌
 		if = {
 			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:CHI }
-			create_country = { #Anhui Clique
+			create_country = {
 				tag = AHU
 				origin = this
 				state = s:STATE_SOUTHERN_ANHUI.region_state:CHI
 
 				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:CHI }
+						s:STATE_NORTHERN_ANHUI = {
+							set_owner_of_provinces = {
+								country = c:AHU
+								provinces = { x23849F x942097 xC44EE7 xF5E291 x87DFF6 x9DE44A xFD70D3 x055124 x515101 xD05101 x467DAC x6895C0 }
+							}
+						}
+					}
 					warlord_setup_effect = yes
 					set_variable = warlord_state
 				}
@@ -727,24 +757,52 @@ warlord_china_events.23 = { # 타협의 여파
 		#	}
 		#	c:ZHI = { save_scope_as = scope_ZHI }
 		#}
-
+		# 봉천 군벌
 		if = {
-			limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
-			create_country = { #Fengtian Clique
+			limit = { exists = s:STATE_SHENGJING.region_state:CHI }
+			create_country = {
 				tag = MCH
 				origin = this
-				state = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI
+				state = s:STATE_SHENGJING.region_state:CHI
 				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
+						s:STATE_SOUTHERN_MANCHURIA = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { x08DC34 x292695 x301D5F x385E45 x3F61E8 x5496F2 x54B71E x5D6142 x74C59F x76800C x78B1C2 x8BA6E3 x8CAF49 x912C9D xA05162 xA05180 xA05646 xA107B9 xA495CD xC3FFC1 xC4B939 xCD5324 xD5000E xDF828B xE43B63 xEB92A2 xF471D5 xF956C5 }
+							}
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_EAFP_BEIJING.region_state:CHI }
+						s:STATE_EAFP_BEIJING = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { xDBA5F1 x666827 xC2EAB6 xCB1B7A x879FAD x367825 x45139C xCAE219 xF5B726 x5DEC3D x205BDC x35B5D1 x601436 xAD1C65 x24EFE1 xFD0842 x771A9C x6EA4B4 x2F0832 x123862 xCE9058 x4F7D66 x8B4B0F x6018AE x3650A5 x6BFF9D xF5F399 x4E8F6B x55F9B4 xCE4FAC xFF1F93 }
+							}
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:CHI }
+						s:STATE_NORTHERN_MANCHURIA = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { x9EE58F xD9928F x70A32C xDD9465 x6E3E01 xEB4991 x8872E0 x6BEA77 x87B373 x67F6E8 x256526 x09B0AA x84E33B x0356D6 x02055B x34694E x5AC7BE x815EBF xA1CF50 x6FA3BE xABB756 }
+							}
+						}
+					}
 					warlord_setup_effect = yes
 					set_variable = warlord_state
 				}
 			}
 			c:MCH = { save_scope_as = scope_MCH }
 		}
-
+		# 산서 군벌
 		if = {
 			limit = { exists = s:STATE_SHANXI.region_state:CHI }
-			create_country = {  #Shanxi
+			create_country = {
 				tag = SHN
 				origin = this
 				state = s:STATE_SHANXI.region_state:CHI
@@ -756,30 +814,54 @@ warlord_china_events.23 = { # 타협의 여파
 			}
 			c:SHN = { save_scope_as = scope_SHN }
 		}
-
+		# 신강 군벌
 		if = {
 			limit = { exists = s:STATE_TIANSHAN.region_state:CHI }
-			create_country = {  #Xinjiang Clique
+			create_country = {
 				tag = XIN
 				origin = this
 				state = s:STATE_TIANSHAN.region_state:CHI
 
 				on_created = {
+					if = {
+						limit = { exists = s:STATE_DZUNGARIA.region_state:CHI }
+						s:STATE_DZUNGARIA.region_state:CHI = {
+							set_state_owner = c:XIN
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_JETISY.region_state:CHI }
+						s:STATE_JETISY.region_state:CHI = {
+							set_state_owner = c:XIN
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_KIRGHIZIA.region_state:CHI }
+						s:STATE_KIRGHIZIA.region_state:CHI = {
+							set_state_owner = c:XIN
+						}
+					}
 					warlord_setup_effect = yes
 					set_variable = warlord_state
 				}
 			}
 			c:XIN = { save_scope_as = scope_XIN }
 		}
-
+		# 운남 군벌
 		if = {
 			limit = { exists = s:STATE_YUNNAN.region_state:CHI }
-			create_country = {  #Yunnan
+			create_country = {
 				tag = YUN
 				origin = this
 				state = s:STATE_YUNNAN.region_state:CHI
 
 				on_created = {
+					if = {
+						limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
+						s:STATE_GUIZHOU.region_state:CHI = {
+							set_state_owner = c:YUN
+						}
+					}
 					warlord_setup_effect = yes
 					set_variable = warlord_state
 				}
@@ -787,20 +869,20 @@ warlord_china_events.23 = { # 타협의 여파
 			c:YUN = { save_scope_as = scope_YUN }
 		}
 
-		if = {
-			limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
-			create_country = { #Guizhou
-				tag = GUI
-				origin = this
-				state = s:STATE_GUIZHOU.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:GUI = { save_scope_as = scope_GUI }
-		}
+		#if = {
+		#	limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
+		#	create_country = { #Guizhou
+		#		tag = GUI
+		#		origin = this
+		#		state = s:STATE_GUIZHOU.region_state:CHI
+		#
+		#		on_created = {
+		#			warlord_setup_effect = yes
+		#			set_variable = warlord_state
+		#		}
+		#	}
+		#	c:GUI = { save_scope_as = scope_GUI }
+		#}
 
 		if = {
 			limit = { exists = s:STATE_GUANGDONG.region_state:CHI }
