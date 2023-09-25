@@ -22,6 +22,16 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
+		create_character = {
+			culture = cu:han
+			interest_group = ig_landowners
+			save_scope_as = governor
+			age = { 40 60 } 
+			on_created = {
+				place_character_in_void = 10000
+				set_character_busy = yes
+			}
+		}
 		add_journal_entry = { type = je_xinhai_revolution }
 		ordered_scope_state = {
 			limit = {
@@ -188,7 +198,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 				is_decaying = yes
 			}
 			add_modifier = {
-				name = xinhai_revolution_land_socialization_modifier
+				name = xinhai_revolution_abolish_old_regime_modifier
 				months = long_modifier_time
 				is_decaying = yes
 			}
@@ -197,7 +207,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			create_diplomatic_play = {
 				name = xinhai_revolution
 				target_country = c:CHI
-				type = dp_revolution
+				type = dp_xinhai_revolution
 			}
 			hidden_effect = {
 				change_infamy = -500
@@ -209,7 +219,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 				initiator = c:KMT
 				target = c:CHI
 			}
-			add_escalation = 80
+			add_escalation = 40
 			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
 			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
 		}
@@ -231,6 +241,11 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 				set_character_busy = yes
 			}
 		}
+		trigger_event = {
+			id = warlord_china_events.2
+			days = 15
+			popup = yes
+		}
 	}
 
 	option = {
@@ -239,6 +254,12 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 
 		ai_chance = {
 			base = 100
+		}
+	}
+
+	after = {
+		scope:governor = {
+			kill_character = { hidden = yes }
 		}
 	}
 }
@@ -282,6 +303,11 @@ warlord_china_events.2 = { # 혁명 전파
 					set_state_type = incorporated
 				}
 			}
+		}
+		trigger_event = {
+			id = warlord_china_events.3
+			days = 15
+			popup = yes
 		}
 	}
 
@@ -335,6 +361,11 @@ warlord_china_events.3 = { # 더 혁명 전파
 				}
 			}
 		}
+		trigger_event = {
+			id = warlord_china_events.4
+			days = 15
+			popup = yes
+		}
 	}
 
 	option = {
@@ -372,9 +403,10 @@ warlord_china_events.4 = { # 몽골 위구르 종속국 탈주 (있으면)
 		every_subject_or_below = {
 			if = {
 				limit = { is_subject_type = subject_type_military_headquarters_china }
+				make_independent = yes
 				warlord_setup_effect = yes
 			}
-			make_independent = yes
+			else = { make_independent = yes }
 		}
 		if = {
 			limit = { exists = c:MGL }
@@ -393,6 +425,11 @@ warlord_china_events.4 = { # 몽골 위구르 종속국 탈주 (있으면)
 				}
 			}
 			c:TUV = { save_scope_as = scope_TUV }
+		}
+		trigger_event = {
+			id = warlord_china_events.5
+			months = 2
+			popup = yes
 		}
 	}
 
@@ -435,13 +472,21 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		custom_tooltip = {
 			text = warlord_china_events.5.tta
 
+			if = {
+				limit = { NOT = { country_has_primary_culture = cu:han } }
+				add_primary_culture = cu:han
+			}
+			every_primary_culture = {
+				limit = { NOT = { country_has_primary_culture = cu:han } }
+				ROOT = { remove_primary_culture = PREV }
+			}
+
 			# KMT 법 CHI에 복붙
-			c:KMT = {
-				every_law = {
-					c:CHI = {
-						activate_law = PREV.type
-					}
+			every_law = {
+				limit = {
+					c:KMT = { has_law = PREV.type }
 				}
+				c:CHI = { activate_law = PREV.type }
 			}
 
 			# KMT 지도자 CHI로
@@ -469,7 +514,7 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 			}
 
 			annex = c:KMT
-			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
+			trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
 			set_variable = chinese_central_government
 		}
 
@@ -500,11 +545,21 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		custom_tooltip = {
 			text = warlord_china_events.5.ttb
 			
+			if = {
+				limit = { NOT = { country_has_primary_culture = cu:han } }
+				add_primary_culture = cu:han
+			}
+			every_primary_culture = {
+				limit = { NOT = { country_has_primary_culture = cu:han } }
+				ROOT = { remove_primary_culture = PREV }
+			}
+
 			# CHI 법 MCH에 복붙
 			every_law = {
-				c:MCH = {
-					activate_law = PREV.type
+				limit = {
+					has_law = PREV.type
 				}
+				c:MCH = { activate_law = PREV.type }
 			}
 
 			# CHI 지도자 MCH로
@@ -514,13 +569,12 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				set_character_as_ruler = yes
 			}
 
-			# CHI 법 KMT에 복붙
-			c:KMT = {
-				every_law = {
-					c:CHI = {
-						activate_law = PREV.type
-					}
+			# KMT 법 CHI에 복붙
+			every_law = {
+				limit = {
+					c:KMT = { has_law = PREV.type }
 				}
+				c:CHI = { activate_law = PREV.type }
 			}
 
 			# KMT 지도자 CHI로
@@ -607,6 +661,13 @@ warlord_china_events.21 = { # 공화국의 탄생
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+	immediate = {
+		trigger_event = {
+			id = warlord_china_events.22
+			days = 15
+			popup = yes
+		}
+	}
 
 	option = {
 		name = warlord_china_events.21.a
@@ -661,6 +722,11 @@ warlord_china_events.22 = { # 타협의 결과
 					save_scope_as = new_ruler
 				}
 			}
+		}
+		trigger_event = {
+			id = warlord_china_events.23
+			days = 15
+			popup = yes
 		}
 	}
 
