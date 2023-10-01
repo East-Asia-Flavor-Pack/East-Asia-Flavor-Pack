@@ -109,16 +109,14 @@ je_chinese_westernization_army = {
 			cash_reserves_ratio >= 0.25
 			occupancy >= 0.75
 		}
-		NOT = {
-			any_scope_building = {
-				is_building_type = building_barracks
-				OR = {
-					has_active_production_method = pm_irregular_infantry
-					has_active_production_method = pm_line_infantry
-					has_active_production_method = pm_no_artillery
-					has_active_production_method = pm_cannon_artillery
-					has_active_production_method = pm_mobile_artillery
-				}
+		any_scope_building = {
+			filter = { is_building_type = building_barracks }
+			NOR = {
+				has_active_production_method = pm_irregular_infantry
+				has_active_production_method = pm_line_infantry
+				has_active_production_method = pm_no_artillery
+				has_active_production_method = pm_cannon_artillery
+				has_active_production_method = pm_mobile_artillery
 			}
 		}
 		has_technology_researched = electric_telegraph
@@ -213,13 +211,11 @@ je_chinese_westernization_navy = {
 			cash_reserves_ratio >= 0.25
 			occupancy >= 0.75
 		}
-		NOT = {
-			any_scope_building = {
-				is_building_type = building_naval_base
-				OR = {
-					has_active_production_method = pm_man_o_wars
-					has_active_production_method = pm_no_naval_theory
-				}
+		any_scope_building = {
+			filter = { is_building_type = building_naval_base }
+			NOR = {
+				has_active_production_method = pm_man_o_wars
+				has_active_production_method = pm_no_naval_theory
 			}
 		}
 		has_technology_researched = hydraulic_cranes
@@ -270,7 +266,7 @@ je_chinese_westernization_industry = {
 
 	complete = {
 		any_scope_state = {
-			filter = { state_is_in_china = yes }
+			filter = { state_is_in_china_proper = yes }
 			percent >= 0.5
 			any_scope_building = { is_building_type = building_railway }
 		}
@@ -280,7 +276,7 @@ je_chinese_westernization_industry = {
 		}
 
 		any_scope_state = {
-			filter = { state_is_in_china = yes }
+			filter = { state_is_in_china_proper = yes }
 			percent >= 0.5
 			any_scope_building = {
 				is_building_type = building_urban_center
@@ -288,7 +284,7 @@ je_chinese_westernization_industry = {
 			}
 		}
 		any_scope_state = {
-			filter = { state_is_in_china = yes }
+			filter = { state_is_in_china_proper = yes }
 			percent >= 0.1
 			any_scope_building = {
 				is_building_type = building_urban_center
@@ -504,56 +500,71 @@ je_chinese_westernization_international_prestige = {
 		is_country_type = recognized
 		aggressive_diplomatic_plays_permitted = yes
 		is_subject = no
-		NOT = {
-			has_diplomatic_pact = {
-				who = ROOT
-				type = war_reparations
-				is_initiator = yes
-			}
-		}
-		NOT = {
-			any_country = {
-				NOT = { this = root }
-				has_diplomatic_pact = {
-					who = ROOT
-					type = customs_union
-					is_initiator = yes
+		custom_tooltip = {
+			text = je_chinese_westernization_international_prestige.tt1
+			NOT = {
+				any_country = {
+					has_diplomatic_pact = {
+						who = ROOT
+						type = war_reparations
+						is_initiator = yes
+					}
 				}
 			}
 		}
-		sr:region_north_china = {
-			any_scope_state = {
-				count = all
-				owner = c:CHI
-				controller = c:CHI
-			}
-		}
-		sr:region_south_china = {
-			any_scope_state = {
-				count = all
-				owner = c:CHI
-				controller = c:CHI
+		is_junior_in_customs_union = no
+		custom_tooltip = {
+			text = je_chinese_westernization_international_prestige.tt2
+			NOT = {
+				any_state = {
+					state_is_in_china_proper = yes
+					NAND = {
+						owner = ROOT
+						controller = ROOT
+					}
+				}
 			}
 		}
 		NOT = { any_neighbouring_state = { is_treaty_port = yes } }
-
-		NOT = {
-			has_diplomatic_pact = {
-				who = ROOT
-				type = tributary
+		custom_tooltip = {
+			text = je_chinese_westernization_international_prestige.tt3
+			NOT = {
+				any_subject_or_below = {
+					OR = {
+						has_diplomatic_pact = {
+							who = ROOT
+							type = tributary
+						}
+						has_diplomatic_pact = {
+							who = ROOT
+							type = military_headquarters_china
+						}
+					}
+				}
 			}
 		}
-		NOT = {
-			has_diplomatic_pact = {
-				who = ROOT
-				type = military_headquarters_china
-			}
-		}
-		c:TIB = { exists = no }
-		c:KOR = {
-			OR = {
-				exists = no
-				is_subject = yes
+		custom_tooltip = {
+			text = je_chinese_westernization_international_prestige.tt4
+			AND = {
+				c:TIB = { NOT = { exists = THIS } }
+				c:KOR = {
+					OR = {
+						NOT = { exists = THIS }
+						AND = {
+							is_subject_of = ROOT
+							NOT = { is_subject_type = subject_type_tributary }
+						}
+					}
+				}
+				c:DAI = {
+					OR = {
+						NOT = { exists = THIS }
+						AND = {
+							is_subject_of = ROOT
+							NOT = { is_subject_type = subject_type_tributary }
+						}
+					}
+				}
 			}
 		}
 	}

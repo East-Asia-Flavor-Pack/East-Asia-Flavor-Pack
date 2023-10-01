@@ -49,170 +49,91 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			origin = this
 			state = scope:revolt_state
 			on_created = {
-				
-			}
-		}
-		c:KMT = {
-			# 법들
-			activate_law = law_type:law_professional_army
-			if = {
-				limit = { has_law = law_type:law_hereditary_bureaucrats }
-				activate_law = law_type:law_appointed_bureaucrats
-			}
-			if = {
-				limit = { has_law = law_type:law_child_labor_allowed }
-				activate_law = law_type:law_restricted_child_labor
-			}
-			if = {
-				limit = { has_law = law_type:law_state_religion }
-				activate_law = law_type:law_freedom_of_conscience
-			}
-			activate_law = law_type:law_cultural_exclusion
-			activate_law = law_type:law_single_party_state
-			activate_law = law_type:law_interventionism
-			activate_law = law_type:law_right_of_assembly
-			activate_law = law_type:law_presidential_republic
-			if = {
-				limit = { has_law = law_type:law_serfdom }
-				activate_law = law_type:law_tenant_farmers
-			}
-			if = {
-				limit = { has_law = law_type:law_local_police }
-				activate_law = law_type:law_dedicated_police
-			}
-			if = {
-				limit = {
-					OR = {
-						has_law = law_type:law_no_womens_rights
-						has_law = law_type:law_women_own_property
-					}
+				set_variable = revolutionary_prov_gov_var
+				# 법들
+				activate_law = law_type:law_professional_army
+				if = {
+					limit = { has_law = law_type:law_hereditary_bureaucrats }
+					activate_law = law_type:law_appointed_bureaucrats
 				}
-				activate_law = law_type:law_women_in_the_workplace
-			}
-			activate_law = law_type:law_slavery_banned
-			if = {
-				limit = { has_law = law_type:law_land_based_taxation }
-				activate_law = law_type:law_per_capita_based_taxation
-			}
-
-			# 지도자 결정
-			if = {
-				limit = {
-					game_date > 1888.1.1
-					game_date < 1925.1.1
+				if = {
+					limit = { has_law = law_type:law_child_labor_allowed }
+					activate_law = law_type:law_restricted_child_labor
 				}
-				# 쑨원을 지도자로
+				if = {
+					limit = { has_law = law_type:law_state_religion }
+					activate_law = law_type:law_freedom_of_conscience
+				}
+				activate_law = law_type:law_cultural_exclusion
+				activate_law = law_type:law_wealth_voting
+				activate_law = law_type:law_interventionism
+				activate_law = law_type:law_right_of_assembly
+				activate_law = law_type:law_presidential_republic
+				if = {
+					limit = { has_law = law_type:law_serfdom }
+					activate_law = law_type:law_tenant_farmers
+				}
+				if = {
+					limit = { has_law = law_type:law_local_police }
+					activate_law = law_type:law_dedicated_police
+				}
 				if = {
 					limit = {
-						NOR = {
-							any_character = {
-								has_template = chi_sun_character_template
-							}
-							any_character_in_exile_pool = {
-								has_template = chi_sun_character_template
-							}
+						OR = {
+							has_law = law_type:law_no_womens_rights
+							has_law = law_type:law_women_own_property
 						}
 					}
-					create_character = {
-						template = chi_sun_character_template
-						on_created = {
-							set_character_as_ruler = yes
-							add_character_role = politician
-							set_variable = sun_yat_sen_var
-							set_global_variable = sun_yat_sen_spawn
-						}
-					}
+					activate_law = law_type:law_women_in_the_workplace
 				}
-				else_if = {
-					limit = {
-						any_character = {
-							owner = c:CHI
-							has_template = chi_sun_character_template
-						}
-					}
-					random_character = {
-						limit = {
-							owner = c:CHI
-							has_template = chi_sun_character_template
-						}
-						transfer_character = c:KMT
-						set_character_as_ruler = yes
-						add_character_role = politician
-					}
-				}	
-				else_if = {
-					limit = {
-						any_character_in_exile_pool = {
-							has_template = chi_sun_character_template
-						}
-					}
-					random_character_in_exile_pool = {
-						limit = {
-							has_template = chi_sun_character_template
-						}
-						transfer_character = c:KMT
-						set_character_as_ruler = yes
-						add_character_role = politician
-					}
+				activate_law = law_type:law_slavery_banned
+				if = {
+					limit = { has_law = law_type:law_land_based_taxation }
+					activate_law = law_type:law_per_capita_based_taxation
 				}
-			}
-			else = {
-				# 쑨원 Mk.2
-				create_character = {
-					age = { 30 50 }
-					religion = rel:protestant
-					ideology = ideology_republican_leader
-					interest_group = ig_intelligentsia
-					ruler = yes
-					traits = {
-						ambitious
-						persistent
-						inspirational_orator
-					}
-				}
-			}
 
-			# 각종 변동치
-			every_interest_group = {
-				limit = {
-					OR = {
-						is_interest_group_type = ig_intelligentsia
-						is_interest_group_type = ig_armed_forces
-						is_interest_group_type = ig_rural_folk
-						is_interest_group_type = ig_devout
+				# 각종 변동치
+				every_interest_group = {
+					limit = {
+						OR = {
+							is_interest_group_type = ig_intelligentsia
+							is_interest_group_type = ig_armed_forces
+							is_interest_group_type = ig_rural_folk
+						}
+					}
+					add_modifier = {
+						name = xinhai_revolution_ig_modifier
+						months = long_modifier_time
 					}
 				}
 				add_modifier = {
-					name = xinhai_revolution_ig_modifier
-					months = long_modifier_time
+					name = xinhai_revolution_army_modifier
+					months = normal_modifier_time
+					is_decaying = yes
 				}
-			}
-			add_modifier = {
-				name = xinhai_revolution_army_modifier
-				months = normal_modifier_time
-				is_decaying = yes
-			}
-			add_modifier = {
-				name = xinhai_revolution_army_modifier_short
-				months = 13
-				is_decaying = yes
-			}
-			add_modifier = {
-				name = xinhai_revolution_abolish_old_regime_modifier
-				months = long_modifier_time
-				is_decaying = yes
-			}
+				add_modifier = {
+					name = xinhai_revolution_army_modifier_short
+					months = 13
+					is_decaying = yes
+				}
+				add_modifier = {
+					name = xinhai_revolution_abolish_old_regime_modifier
+					months = long_modifier_time
+					is_decaying = yes
+				}
 
-			# 신해 혁명 외교 행동
-			create_diplomatic_play = {
-				name = xinhai_revolution
-				target_country = c:CHI
-				type = dp_xinhai_revolution
+				# 신해 혁명 외교 행동
+				create_diplomatic_play = {
+					name = xinhai_revolution
+					target_country = c:CHI
+					type = dp_xinhai_revolution
+				}
+				hidden_effect = {
+					change_infamy = -500
+				}
+				add_journal_entry = { type = je_xinhai_revolution_kmt }
+				trigger_event = { id = warlord_china_events.10001 days = 2 }
 			}
-			hidden_effect = {
-				change_infamy = -500
-			}
-			add_journal_entry = { type = je_xinhai_revolution_kmt }
 		}
 		random_diplomatic_play = {
 			limit = {
@@ -260,6 +181,98 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	after = {
 		scope:governor = {
 			kill_character = { hidden = yes }
+		}
+	}
+}
+
+warlord_china_events.10001 = { # 쑨원 영입용 이벤트
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		# 지도자 결정
+		if = {
+			limit = {
+				game_date > 1888.1.1
+				game_date < 1925.1.1
+			}
+			# 쑨원을 지도자로
+			if = {
+				limit = {
+					NOR = {
+						any_character = {
+							has_template = chi_sun_character_template
+						}
+						any_character_in_exile_pool = {
+							has_template = chi_sun_character_template
+						}
+					}
+				}
+				create_character = {
+					template = chi_sun_character_template
+					on_created = {
+						set_character_as_ruler = yes
+						add_character_role = politician
+						set_variable = sun_yat_sen_var
+						set_global_variable = sun_yat_sen_spawn
+						set_character_busy = yes
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_character = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character = {
+					limit = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+					set_character_busy = yes
+				}
+			}	
+			else_if = {
+				limit = {
+					any_character_in_exile_pool = {
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character_in_exile_pool = {
+					limit = {
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+					set_character_busy = yes
+				}
+			}
+		}
+		else = {
+			# 쑨원 Mk.2
+			create_character = {
+				age = { 30 50 }
+				religion = rel:protestant
+				ideology = ideology_republican_leader
+				interest_group = ig_intelligentsia
+				ruler = yes
+				ig_leader = yes
+				traits = {
+					ambitious
+					persistent
+					inspirational_orator
+				}
+				on_created = {
+					add_character_role = politician
+					set_character_busy = yes
+				}
+			}
 		}
 	}
 }
@@ -461,6 +474,12 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+	immediate = {
+		random_character = {
+			limit = { has_variable = YSK_var }
+			save_scope_as = YSK_scope
+		}
+	}
 
 	option = { # 항복
 		name = warlord_china_events.5.a
@@ -472,14 +491,13 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		custom_tooltip = {
 			text = warlord_china_events.5.tta
 
+			set_variable = revolutionary_prov_gov_var
+
 			if = {
 				limit = { NOT = { country_has_primary_culture = cu:han } }
 				add_primary_culture = cu:han
 			}
-			every_primary_culture = {
-				limit = { NOT = { country_has_primary_culture = cu:han } }
-				ROOT = { remove_primary_culture = PREV }
-			}
+			remove_primary_culture = cu:manchu
 
 			# KMT 법 CHI에 복붙
 			every_law = {
@@ -544,20 +562,19 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 		custom_tooltip = {
 			text = warlord_china_events.5.ttb
+
+			set_variable = revolutionary_prov_gov_var
 			
 			if = {
 				limit = { NOT = { country_has_primary_culture = cu:han } }
 				add_primary_culture = cu:han
 			}
-			every_primary_culture = {
-				limit = { NOT = { country_has_primary_culture = cu:han } }
-				ROOT = { remove_primary_culture = PREV }
-			}
+			remove_primary_culture = cu:manchu
 
 			# CHI 법 MCH에 복붙
 			every_law = {
 				limit = {
-					has_law = PREV.type
+					c:CHI = { has_law = PREV.type }
 				}
 				c:MCH = { activate_law = PREV.type }
 			}
@@ -582,6 +599,7 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				set_home_country = c:CHI
 				transfer_character = c:CHI
 				set_character_as_ruler = yes
+				set_as_interest_group_leader = yes
 			}
 
 			# 대숙청
@@ -662,6 +680,11 @@ warlord_china_events.21 = { # 공화국의 탄생
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
+		set_variable = {
+			name = abolishing_monarchy_var
+			value = 0
+		}
+		add_journal_entry = { type = je_abolish_monarchy }
 		trigger_event = {
 			id = warlord_china_events.22
 			days = 15
@@ -706,6 +729,7 @@ warlord_china_events.22 = { # 타협의 결과
 				limit = { has_variable = YSK_var }
 				save_scope_as = new_ruler
 				set_character_busy = no
+				set_character_as_ruler = yes
 			}
 		}
 		else = {
@@ -720,6 +744,7 @@ warlord_china_events.22 = { # 타협의 결과
 				}
 				on_created = {
 					save_scope_as = new_ruler
+					set_character_as_ruler = yes
 				}
 			}
 		}
@@ -763,6 +788,8 @@ warlord_china_events.23 = { # 타협의 여파
 		set_global_variable = china_shatters
 		
 		set_variable = chinese_central_government
+
+		remove_variable = revolutionary_prov_gov_var
 
 		# 호남 군벌
 		if = {
