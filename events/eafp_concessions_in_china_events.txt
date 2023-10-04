@@ -9,20 +9,27 @@ concessions_in_china.1 = {
 	trigger = {
 		any_scope_state = {
 			has_variable_list = concession_owner_varlist
-			state_is_in_china_proper = yes
 		}
 	}
 
 	immediate = {
+		set_variable = {
+			name = concession_payment_var
+			value = 0
+		}
 		every_scope_state = {
 			limit = {
 				has_variable_list = concession_owner_varlist
-				state_is_in_china_proper = yes
+			}
+			every_in_list = {
+				variable = concession_owner_varlist
+				limit = { NOT = { has_variable = concession_paid_var } }
+				set_variable = { name = concession_paid_var value = 0 }
 			}
 			every_scope_building = {
-				# 도심지 건물
+				# 도심지
 				if = {
-					limit = { is_building_group = bg_service }
+					limit = { is_building_type = building_urban_center }
 					remove_modifier = concession_building_modifier
 					set_local_variable = {
 						name = shares_sum
@@ -51,25 +58,214 @@ concessions_in_china.1 = {
 						multiplier = {
 							value = local_var:shares_sum
 							divide = {
-								value = 10 # = (1/10%), 10%만큼 뜯김
-								divide = variable_list_size:concession_owner_varlist
+								value = 6.67 # = (1/15%), 나라당 15%만큼 뜯김
+								divide = {
+									value = state.variable_list_size:concession_owner_varlist
+									max = 4 # 최대 60%
+								}
 								subtract = 1
 							}
 						}
+						days = 30
 					}
-					
+					state = {
+						add_modifier = {
+							name = concession_state_modifier
+							multiplier = {
+								value = state.variable_list_size:concession_owner_varlist
+								max = 4 # 최대 40%
+							}
+							days = 30
+						}
+					}
+					set_local_variable = {
+						name = concession_payment_locvar
+						value = {
+							value = weekly_profit
+							multiply = 4.28
+						}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
+						}
+					}
+					state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							change_variable = {
+								name = concession_paid_var
+								add = {
+									value = local_var:concession_payment_locvar
+									divide = PREV.variable_list_size:concession_owner_varlist
+								}
+							}
+						}
+					}
+					remove_local_variable = shares_sum
+					remove_local_variable = concession_payment_locvar
+				}
+				# 무역소
+				if = {
+					limit = { is_building_type = building_trade_center }
+					remove_modifier = concession_building_modifier
+					set_local_variable = {
+						name = shares_sum
+						value = {
+							value = modifier:building_workforce_shares_add
+							add = modifier:building_government_shares_add
+							add = modifier:building_aristocrats_shares_add
+							add = modifier:building_bureaucrats_shares_add
+							add = modifier:building_capitalists_shares_add
+							add = modifier:building_clergymen_shares_add
+							add = modifier:building_clerks_shares_add
+							add = modifier:building_engineers_shares_add
+							add = modifier:building_farmers_shares_add
+							add = modifier:building_peasants_shares_add
+							add = modifier:building_laborers_shares_add
+							add = modifier:building_officers_shares_add
+							add = modifier:building_academics_shares_add
+							add = modifier:building_shopkeepers_shares_add
+							add = modifier:building_slaves_shares_add
+							add = modifier:building_soldiers_shares_add
+							add = modifier:building_machinists_shares_add
+						}
+					}
+					add_modifier = {
+						name = concession_building_modifier
+						multiplier = {
+							value = local_var:shares_sum
+							divide = {
+								value = 5 # = (1/20%), 나라당 20%만큼 뜯김
+								divide = {
+									value = state.variable_list_size:concession_owner_varlist
+									max = 4 # 최대 80%
+								}
+								subtract = 1
+							}
+						}
+						days = 30
+					}
+					set_local_variable = {
+						name = concession_payment_locvar
+						value = {
+							value = weekly_profit
+							multiply = 4.28
+						}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
+						}
+					}
+					state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							change_variable = {
+								name = concession_paid_var
+								add = {
+									value = local_var:concession_payment_locvar
+									divide = PREV.variable_list_size:concession_owner_varlist
+								}
+							}
+						}
+					}
+					remove_local_variable = shares_sum
+					remove_local_variable = concession_payment_locvar
+				}
+				# 인프라와 공장
+				if = {
+					limit = {
+						OR = {
+							is_building_type = bg_infrastructure
+							is_building_type = bg_manufacturing
+						}
+					}
+					remove_modifier = concession_building_modifier
+					set_local_variable = {
+						name = shares_sum
+						value = {
+							value = modifier:building_workforce_shares_add
+							add = modifier:building_government_shares_add
+							add = modifier:building_aristocrats_shares_add
+							add = modifier:building_bureaucrats_shares_add
+							add = modifier:building_capitalists_shares_add
+							add = modifier:building_clergymen_shares_add
+							add = modifier:building_clerks_shares_add
+							add = modifier:building_engineers_shares_add
+							add = modifier:building_farmers_shares_add
+							add = modifier:building_peasants_shares_add
+							add = modifier:building_laborers_shares_add
+							add = modifier:building_officers_shares_add
+							add = modifier:building_academics_shares_add
+							add = modifier:building_shopkeepers_shares_add
+							add = modifier:building_slaves_shares_add
+							add = modifier:building_soldiers_shares_add
+							add = modifier:building_machinists_shares_add
+						}
+					}
+					add_modifier = {
+						name = concession_building_modifier
+						multiplier = {
+							value = local_var:shares_sum
+							divide = {
+								value = 10 # = (1/10%), 나라당 10%만큼 뜯김
+								divide = {
+									value = state.variable_list_size:concession_owner_varlist
+									max = 4 # 최대 40%
+								}
+								subtract = 1
+							}
+						}
+						days = 30
+					}
+					set_local_variable = {
+						name = concession_payment_locvar
+						value = {
+							value = weekly_profit
+							multiply = 4.28
+						}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
+						}
+					}
+					state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							change_variable = {
+								name = concession_paid_var
+								add = {
+									value = local_var:concession_payment_locvar
+									divide = PREV.variable_list_size:concession_owner_varlist
+								}
+							}
+						}
+					}
+					remove_local_variable = shares_sum
+					remove_local_variable = concession_payment_locvar
 				}
 			}
-			# add_to_variable_list = { name = chi_war_dynamism_varlist target = ROOT }
 		}
-	}
-
-	option = {
-		name = concessions_in_china.1001.a
-		default_option = yes
-		ai_chance = {
-			base = 1
+		every_country = {
+			limit = { has_variable = concession_paid_var }
+			add_modifier = {
+				name = concession_paid
+				days = 30
+				multiplier = var:concession_paid_var
+			}
+			remove_variable = concession_paid_var
 		}
+		add_modifier = {
+			name = concession_payment
+			days = 30
+			multiplier = var:concession_payment_var
+		}
+		remove_variable = concession_payment_var
 	}
 }
 
