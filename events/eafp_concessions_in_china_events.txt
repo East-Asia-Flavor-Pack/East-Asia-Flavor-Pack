@@ -1,6 +1,6 @@
 ﻿namespace = concessions_in_china
 
-#################### 조계지 계산 관련 히든 이벤트 ####################
+#################### 조계지 계산 ####################
 # 중국 측 이벤트
 concessions_in_china.1 = {
 	type = country_event
@@ -13,6 +13,43 @@ concessions_in_china.1 = {
 	}
 
 	immediate = {
+		# 혁명 주 처리
+		every_scope_state = {
+			limit = {
+				has_variable_list = concession_owner_varlist
+				is_split_state = yes
+				owner = { has_revolution = yes }
+				state_region = { 
+					any_scope_state = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+				}
+			}
+			save_scope_as = temp_state
+			state_region = { 
+				every_scope_state = {
+					limit = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+					save_scope_as = temp_state2
+					scope:temp_state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							scope:temp_state2 = {
+								add_to_variable_list = { name = concession_owner_varlist target = PREV }
+							}
+						}
+					}
+					clear_saved_scope = temp_state2
+				}
+			}
+			clear_saved_scope = temp_state
+		}
+		# 조계지 배당금 계산
 		set_variable = {
 			name = concession_payment_var
 			value = 0
@@ -21,91 +58,31 @@ concessions_in_china.1 = {
 			limit = {
 				has_variable_list = concession_owner_varlist
 			}
+			set_local_variable = {
+				name = concession_owner_varlist_size
+				value = 0
+			}
 			every_in_list = {
 				variable = concession_owner_varlist
-				limit = { NOT = { has_variable = concession_paid_var } }
-				set_variable = { name = concession_paid_var value = 0 }
+				change_local_variable = {
+					name = concession_owner_varlist_size
+					add = 1
+				}
+			}
+			set_local_variable = {
+				name = concession_payment_locvar
+				value = 0
+			}
+			if = { limit = { has_modifier = concession_state_modifier } remove_modifier = concession_state_modifier }
+			add_modifier = {
+				name = concession_state_modifier
+				multiplier = {
+					value = local_var:concession_owner_varlist_size
+					max = 4 # 최대 40%
+				}
+				days = 30
 			}
 			every_scope_building = {
-				# 도심지
-				if = {
-					limit = { is_building_type = building_urban_center }
-					remove_modifier = concession_building_modifier
-					set_local_variable = {
-						name = shares_sum
-						value = {
-							value = modifier:building_workforce_shares_add
-							add = modifier:building_government_shares_add
-							add = modifier:building_aristocrats_shares_add
-							add = modifier:building_bureaucrats_shares_add
-							add = modifier:building_capitalists_shares_add
-							add = modifier:building_clergymen_shares_add
-							add = modifier:building_clerks_shares_add
-							add = modifier:building_engineers_shares_add
-							add = modifier:building_farmers_shares_add
-							add = modifier:building_peasants_shares_add
-							add = modifier:building_laborers_shares_add
-							add = modifier:building_officers_shares_add
-							add = modifier:building_academics_shares_add
-							add = modifier:building_shopkeepers_shares_add
-							add = modifier:building_slaves_shares_add
-							add = modifier:building_soldiers_shares_add
-							add = modifier:building_machinists_shares_add
-						}
-					}
-					add_modifier = {
-						name = concession_building_modifier
-						multiplier = {
-							value = local_var:shares_sum
-							divide = {
-								value = 6.67 # = (1/15%), 나라당 15%만큼 뜯김
-								divide = {
-									value = state.variable_list_size:concession_owner_varlist
-									max = 4 # 최대 60%
-								}
-								subtract = 1
-							}
-						}
-						days = 30
-					}
-					state = {
-						add_modifier = {
-							name = concession_state_modifier
-							multiplier = {
-								value = variable_list_size:concession_owner_varlist
-								max = 4 # 최대 40%
-							}
-							days = 30
-						}
-					}
-					state = {
-						set_local_variable = {
-							name = concession_payment_locvar
-							value = {
-								value = PREV.weekly_profit
-								multiply = 4.28
-							}
-						}
-						ROOT = {
-							change_variable = {
-								name = concession_payment_var
-								add = PREV.local_var:concession_payment_locvar
-							}
-						}
-						every_in_list = {
-							variable = concession_owner_varlist
-							change_variable = {
-								name = concession_paid_var
-								add = {
-									value = PREV.local_var:concession_payment_locvar
-									divide = PREV.variable_list_size:concession_owner_varlist
-								}
-							}
-						}
-						remove_local_variable = concession_payment_locvar
-					}
-					remove_local_variable = shares_sum
-				}
 				# 무역소
 				if = {
 					limit = { is_building_type = building_trade_center }
@@ -139,7 +116,7 @@ concessions_in_china.1 = {
 							divide = {
 								value = 5 # = (1/20%), 나라당 20%만큼 뜯김
 								divide = {
-									value = state.variable_list_size:concession_owner_varlist
+									value = local_var:concession_owner_varlist_size
 									max = 4 # 최대 80%
 								}
 								subtract = 1
@@ -147,40 +124,93 @@ concessions_in_china.1 = {
 						}
 						days = 30
 					}
-					state = {
-						set_local_variable = {
-							name = concession_payment_locvar
-							value = {
-								value = PREV.weekly_profit
-								multiply = 4.28
+					change_local_variable = {
+						name = concession_payment_locvar
+						add = {
+							value = weekly_profit
+							multiply = 0.20 # 20%
+							multiply = {
+								value = local_var:concession_owner_varlist_size
+								max = 4
 							}
+							multiply = 4.286 # 주 -> 달
 						}
-						ROOT = {
-							change_variable = {
-								name = concession_payment_var
-								add = PREV.local_var:concession_payment_locvar
-							}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
 						}
-						every_in_list = {
-							variable = concession_owner_varlist
-							change_variable = {
-								name = concession_paid_var
-								add = {
-									value = PREV.local_var:concession_payment_locvar
-									divide = PREV.variable_list_size:concession_owner_varlist
-								}
-							}
-						}
-						remove_local_variable = concession_payment_locvar
 					}
 					remove_local_variable = shares_sum
 				}
-				# 인프라와 공장
+				# 도심지
+				if = {
+					limit = { is_building_type = building_urban_center }
+					remove_modifier = concession_building_modifier
+					set_local_variable = {
+						name = shares_sum
+						value = {
+							value = modifier:building_workforce_shares_add
+							add = modifier:building_government_shares_add
+							add = modifier:building_aristocrats_shares_add
+							add = modifier:building_bureaucrats_shares_add
+							add = modifier:building_capitalists_shares_add
+							add = modifier:building_clergymen_shares_add
+							add = modifier:building_clerks_shares_add
+							add = modifier:building_engineers_shares_add
+							add = modifier:building_farmers_shares_add
+							add = modifier:building_peasants_shares_add
+							add = modifier:building_laborers_shares_add
+							add = modifier:building_officers_shares_add
+							add = modifier:building_academics_shares_add
+							add = modifier:building_shopkeepers_shares_add
+							add = modifier:building_slaves_shares_add
+							add = modifier:building_soldiers_shares_add
+							add = modifier:building_machinists_shares_add
+						}
+					}
+					add_modifier = {
+						name = concession_building_modifier
+						multiplier = {
+							value = local_var:shares_sum
+							divide = {
+								value = 6.67 # = (1/15%), 나라당 15%만큼 뜯김
+								divide = {
+									value = local_var:concession_owner_varlist_size
+									max = 4 # 최대 60%
+								}
+								subtract = 1
+							}
+						}
+						days = 30
+					}
+					change_local_variable = {
+						name = concession_payment_locvar
+						add = {
+							value = weekly_profit
+							multiply = 0.15 # 15%
+							multiply = {
+								value = local_var:concession_owner_varlist_size
+								max = 4
+							}
+							multiply = 4.286 # 주 -> 달
+						}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
+						}
+					}
+					remove_local_variable = shares_sum
+				}
+				# 공장 & 인프라
 				if = {
 					limit = {
 						OR = {
-							is_building_type = bg_infrastructure
-							is_building_type = bg_manufacturing
+							is_building_group = bg_infrastructure
+							is_building_group = bg_manufacturing
 						}
 					}
 					remove_modifier = concession_building_modifier
@@ -213,7 +243,7 @@ concessions_in_china.1 = {
 							divide = {
 								value = 10 # = (1/10%), 나라당 10%만큼 뜯김
 								divide = {
-									value = state.variable_list_size:concession_owner_varlist
+									value = local_var:concession_owner_varlist_size
 									max = 4 # 최대 40%
 								}
 								subtract = 1
@@ -221,59 +251,81 @@ concessions_in_china.1 = {
 						}
 						days = 30
 					}
-					state = {
-						set_local_variable = {
-							name = concession_payment_locvar
-							value = {
-								value = PREV.weekly_profit
-								multiply = 4.28
+					change_local_variable = {
+						name = concession_payment_locvar
+						add = {
+							value = weekly_profit
+							multiply = 0.10 # 10%
+							multiply = {
+								value = local_var:concession_owner_varlist_size
+								max = 4
 							}
+							multiply = 4.286 # 주 -> 달
 						}
-						ROOT = {
-							change_variable = {
-								name = concession_payment_var
-								add = PREV.local_var:concession_payment_locvar
-							}
+					}
+					ROOT = {
+						change_variable = {
+							name = concession_payment_var
+							add = local_var:concession_payment_locvar
 						}
-						every_in_list = {
-							variable = concession_owner_varlist
-							change_variable = {
-								name = concession_paid_var
-								add = {
-									value = PREV.local_var:concession_payment_locvar
-									divide = PREV.variable_list_size:concession_owner_varlist
-								}
-							}
-						}
-						remove_local_variable = concession_payment_locvar
 					}
 					remove_local_variable = shares_sum
 				}
 			}
+			remove_local_variable = concession_payment_locvar
+			remove_local_variable = concession_owner_varlist_size
 		}
-		every_country = {
-			limit = { has_variable = concession_paid_var }
-			add_modifier = {
-				name = concession_paid
-				days = 30
-				multiplier = var:concession_paid_var
+		every_in_list = {
+			variable = concession_owner_varlist
+			if = {
+				limit = { NOT = { has_variable = concession_paid_var } }
+				set_variable = {
+					name = concession_paid_var
+					value = 0
+				}
 			}
-			remove_variable = concession_paid_var
+			change_variable = {
+				name = concession_paid_var
+				add = {
+					value = local_var:concession_payment_locvar
+					divide = local_var:concession_owner_varlist_size
+				}
+			}
 		}
+		every_country = { trigger_event = concessions_in_china.2 }
+		if = { limit = { has_modifier = concession_payment } remove_modifier = concession_payment }
 		add_modifier = {
 			name = concession_payment
-			days = 30
 			multiplier = var:concession_payment_var
 		}
 		remove_variable = concession_payment_var
 	}
 }
 
+# 상대 측 이벤트
+concessions_in_china.2 = { # 대체 왜 안됨?
+	type = country_event
+	hidden = yes
 
-#################### 조계지 설정 ####################
+	trigger = {
+		has_variable = concession_paid_var
+	}
+
+	immediate = {
+		add_modifier = {
+			name = concession_paid
+			days = 30
+			multiplier = var:concession_paid_var
+		}
+		remove_variable = concession_paid_var
+	}
+}
+
+#################### 조계지 이벤트 ####################
+# 조계지 설치 (상대)
 concessions_in_china.1001 = {
 	type = country_event
-	placement = root
+	placement = ROOT
 
 	title = concessions_in_china.1001.t
 	desc = concessions_in_china.1001.d
@@ -291,19 +343,329 @@ concessions_in_china.1001 = {
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
-		# on_action 에서
 	}
 
 	immediate = {
+		scope:concession_target_country = {
+			random_scope_state = {
+				limit = {
+					state_is_in_china_proper = yes
+					is_treaty_port = no
+					NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = ROOT } }
+				}
+				weight = {
+					base = total_urbanization
+					modifier = {
+						factor = {
+							value = 100
+							divide = arable_land
+						}
+					}
+					# 서구화 시작하면 북경 우선
+					modifier = {
+						scope:concession_target_country = {
+							OR = {
+								has_journal_entry = je_chinese_westernization
+								has_variable = chinese_westernization_complete
+							}
+						}
+						state_region = s:STATE_BEIJING
+						factor = 100
+					}
+					# 아니면 숙주 우선
+					modifier = {
+						scope:concession_target_country = {
+							NOR = {
+								has_journal_entry = je_chinese_westernization
+								has_variable = chinese_westernization_complete
+							}
+						}
+						state_region = s:STATE_SUZHOU
+						factor = 100
+					}
+					# 북경, 숙주
+					modifier = {
+						OF = {
+							state_region = s:STATE_BEIJING
+							state_region = s:STATE_SUZHOU
+						}
+						factor = 10000
+					}
+					# 홍콩 소유국이 소주
+					modifier = {
+						ROOT = {
+							any_scope_state = {
+								state_region = s:STATE_SHAOZHOU
+								is_treaty_port = yes
+							}
+						}
+						state_region = s:STATE_SHAOZHOU
+						factor = 100
+					}
+					# 한커우 (동 호북)
+					modifier = {
+						state_region = s:STATE_EASTERN_HUBEI
+						factor = 2.5
+					}
+					# 광저우 (광동)
+					modifier = {
+						state_region = s:STATE_GUANGDONG
+						factor = 2
+					}
+					# 남 안휘
+					modifier = {
+						state_region = s:STATE_SOUTHERN_ANHUI
+						factor = 1.3
+					}
+					# 절강
+					modifier = {
+						state_region = s:STATE_ZHEJIANG
+						factor = 1.6
+					}
+					# 서 호북
+					modifier = {
+						state_region = s:STATE_WESTERN_HUBEI
+						factor = 1.3
+					}
+					# 중경
+					modifier = {
+						state_region = s:STATE_CHONGQING
+						factor = 1.3
+					}
+					# 그 외
+					# 해안가
+					modifier = {
+						is_coastal = yes
+						factor = 2
+					}
+					# 장강과 주강
+					modifier = {
+						OR = {
+							has_state_trait = state_trait_yangtze_river
+							has_state_trait = state_trait_pearl_river
+						}
+						factor = 3
+					}
+				}
+				save_scope_as = concession_target_state
+				add_to_variable_list = { name = concession_owner_varlist target = ROOT }
+			}
+		}
+
 		if = {
-			limit = { NOT = { has_journal_entry = je_concessions_in_china } }
-			add_journal_entry = { type = je_concessions_in_china }
+			limit = { NOT = { has_journal_entry = je_concessions_in_china2 } }
+			add_journal_entry = { type = je_concessions_in_china2 }
 		}
 	}
 
 	option = {
 		name = concessions_in_china.1001.a
 		default_option = yes
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 조계지 설치 (중국)
+concessions_in_china.1002 = {
+	type = country_event
+	placement = ROOT
+
+	title = concessions_in_china.1002.t
+	desc = concessions_in_china.1002.d
+	flavor = concessions_in_china.1002.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = concessions_in_china.1002.a
+		default_option = yes
+		
+		trigger = {
+			scope:concession_gain_cause = 1
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = concessions_in_china.1002.b
+		default_option = yes
+		
+		trigger = {
+			scope:concession_gain_cause = 2
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 조계지 반환 (상대)
+concessions_in_china.1003 = {
+	type = country_event
+	placement = ROOT
+
+	title = concessions_in_china.1003.t
+	desc = concessions_in_china.1003.d
+	flavor = concessions_in_china.1003.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		scope:concession_target_country = {
+			change_variable = {
+				name = concession_loss_country_num
+				add = 1
+			}
+			if = {
+				limit = {
+					any_scope_state = {
+						is_target_in_variable_list = { name = concession_owner_varlist target = ROOT }
+					}
+				}
+				random_scope_state = {
+					limit = {
+						is_target_in_variable_list = { name = concession_owner_varlist target = ROOT }
+					}
+					# 조계지 생성 가중치의 역수
+					weight = {
+						base = arable_land
+						modifier = {
+							factor = {
+								value = 10000
+								divide = total_urbanization
+							}
+						}
+						# 서구화 시작하면 북경 우선
+						modifier = {
+							scope:concession_target_country = {
+								OR = {
+									has_journal_entry = je_chinese_westernization
+									has_variable = chinese_westernization_complete
+								}
+							}
+							state_region = s:STATE_BEIJING
+							factor = 0.01
+						}
+						# 아니면 숙주 우선
+						modifier = {
+							scope:concession_target_country = {
+								NOR = {
+									has_journal_entry = je_chinese_westernization
+									has_variable = chinese_westernization_complete
+								}
+							}
+							state_region = s:STATE_SUZHOU
+							factor = 0.01
+						}
+						# 북경, 숙주
+						modifier = {
+							OF = {
+								state_region = s:STATE_BEIJING
+								state_region = s:STATE_SUZHOU
+							}
+							factor = 0.0001
+						}
+						# 홍콩 소유국이 소주
+						modifier = {
+							ROOT = {
+								any_scope_state = {
+									state_region = s:STATE_SHAOZHOU
+									is_treaty_port = yes
+								}
+							}
+							state_region = s:STATE_SHAOZHOU
+							factor = 0.01
+						}
+						# 한커우 (동 호북)
+						modifier = {
+							state_region = s:STATE_EASTERN_HUBEI
+							factor = 0.4
+						}
+						# 광저우 (광동)
+						modifier = {
+							state_region = s:STATE_GUANGDONG
+							factor = 0.5
+						}
+						# 남 안휘
+						modifier = {
+							state_region = s:STATE_SOUTHERN_ANHUI
+							factor = 0.769
+						}
+						# 절강
+						modifier = {
+							state_region = s:STATE_ZHEJIANG
+							factor = 0.625
+						}
+						# 서 호북
+						modifier = {
+							state_region = s:STATE_WESTERN_HUBEI
+							factor = 0.769
+						}
+						# 중경
+						modifier = {
+							state_region = s:STATE_CHONGQING
+							factor = 0.769
+						}
+						# 그 외
+						# 해안가
+						modifier = {
+							is_coastal = yes
+							factor = 0.5
+						}
+						# 장강과 주강
+						modifier = {
+							OR = {
+								has_state_trait = state_trait_yangtze_river
+								has_state_trait = state_trait_pearl_river
+							}
+							factor = 0.333
+						}
+					}
+					save_scope_as = concession_target_state
+					remove_list_variable = { name = concession_owner_varlist target = ROOT }
+				}
+			}
+		}
+	}
+
+	option = {
+		name = concessions_in_china.1003.a
+		default_option = yes
+		
 		ai_chance = {
 			base = 1
 		}
