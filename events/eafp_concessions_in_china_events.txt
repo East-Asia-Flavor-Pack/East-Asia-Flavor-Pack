@@ -322,6 +322,13 @@ concessions_in_china.2 = { # 대체 왜 안됨?
 }
 
 #################### 조계지 이벤트 ####################
+# 조계지 설치 시에는 상대측 이벤트 다 띄우고 중국 측 이벤트 띄움
+# 조계지 제거 시에는 중국측 이벤트 다 띄우고 상대 측 이벤트 띄움
+# scope:concession_target_country : 중국 (여러 중국에서 제거 시 없음)
+# scope:concession_owner_country : 상대 (여러 상대가 설치 시 없음)
+# scope:concession_gain_country_num : 조계지 설치되는 중국 국가 수 (설치 시)
+# scope:concession_loss_country_num : 조계지 빼앗기는 상대 국가 수 (제거 시)
+# 가능한 경우 : 여러 상대가 동시에 한 중국에게서 조계 획득, 여러 중국이 동시에 한 상대에게서 조계 탈환
 # 조계지 설치 (상대)
 concessions_in_china.1001 = {
 	type = country_event
@@ -474,9 +481,31 @@ concessions_in_china.1002 = {
 	placement = ROOT
 
 	title = concessions_in_china.1002.t
-	desc = concessions_in_china.1002.d
-	flavor = concessions_in_china.1002.f
-	
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = concessions_in_china.1002.d1
+				trigger = { scope:concession_gain_country_num = 1 }
+			}
+			triggered_desc = {
+				desc = concessions_in_china.1002.d2
+				trigger = { scope:concession_gain_country_num >= 2 }
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = concessions_in_china.1002.f1
+				trigger = { scope:concession_gain_country_num = 1 }
+			}
+			triggered_desc = {
+				desc = concessions_in_china.1002.f2
+				trigger = { scope:concession_gain_country_num >= 2 }
+			}
+		}
+	}
+
 	duration = 1
 
 	event_image = {
@@ -521,7 +550,7 @@ concessions_in_china.1002 = {
 	}
 }
 
-# 조계지 반환 (상대)
+# 조계지 설치 (상대)
 concessions_in_china.1003 = {
 	type = country_event
 	placement = ROOT
@@ -545,125 +574,172 @@ concessions_in_china.1003 = {
 	}
 
 	immediate = {
-		scope:concession_target_country = {
-			change_variable = {
-				name = concession_loss_country_num
-				add = 1
+	}
+
+	option = {
+		name = concessions_in_china.1003.a
+		default_option = yes
+		
+		trigger = {
+			scope:concession_loss_cause = 1
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = concessions_in_china.1003.b
+		default_option = yes
+		
+		trigger = {
+			scope:concession_loss_cause = 2
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 조계지 반환 (중국)
+concessions_in_china.1004 = {
+	type = country_event
+	placement = ROOT
+
+	title = concessions_in_china.1004.t
+	desc = concessions_in_china.1004.d
+	flavor = concessions_in_china.1004.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				any_scope_state = {
+					is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_owner_country }
+				}
 			}
-			if = {
+			random_scope_state = {
 				limit = {
-					any_scope_state = {
-						is_target_in_variable_list = { name = concession_owner_varlist target = ROOT }
-					}
+					is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_owner_country }
 				}
-				random_scope_state = {
-					limit = {
-						is_target_in_variable_list = { name = concession_owner_varlist target = ROOT }
+				# 조계지 생성 가중치의 역수
+				weight = {
+					base = arable_land
+					modifier = {
+						factor = {
+							value = 10000
+							divide = total_urbanization
+						}
 					}
-					# 조계지 생성 가중치의 역수
-					weight = {
-						base = arable_land
-						modifier = {
-							factor = {
-								value = 10000
-								divide = total_urbanization
-							}
-						}
-						# 서구화 시작하면 북경 우선
-						modifier = {
-							scope:concession_target_country = {
-								OR = {
-									has_journal_entry = je_chinese_westernization
-									has_variable = chinese_westernization_complete
-								}
-							}
-							state_region = s:STATE_BEIJING
-							factor = 0.01
-						}
-						# 아니면 숙주 우선
-						modifier = {
-							scope:concession_target_country = {
-								NOR = {
-									has_journal_entry = je_chinese_westernization
-									has_variable = chinese_westernization_complete
-								}
-							}
-							state_region = s:STATE_SUZHOU
-							factor = 0.01
-						}
-						# 북경, 숙주
-						modifier = {
-							OF = {
-								state_region = s:STATE_BEIJING
-								state_region = s:STATE_SUZHOU
-							}
-							factor = 0.0001
-						}
-						# 홍콩 소유국이 소주
-						modifier = {
-							ROOT = {
-								any_scope_state = {
-									state_region = s:STATE_SHAOZHOU
-									is_treaty_port = yes
-								}
-							}
-							state_region = s:STATE_SHAOZHOU
-							factor = 0.01
-						}
-						# 한커우 (동 호북)
-						modifier = {
-							state_region = s:STATE_EASTERN_HUBEI
-							factor = 0.4
-						}
-						# 광저우 (광동)
-						modifier = {
-							state_region = s:STATE_GUANGDONG
-							factor = 0.5
-						}
-						# 남 안휘
-						modifier = {
-							state_region = s:STATE_SOUTHERN_ANHUI
-							factor = 0.769
-						}
-						# 절강
-						modifier = {
-							state_region = s:STATE_ZHEJIANG
-							factor = 0.625
-						}
-						# 서 호북
-						modifier = {
-							state_region = s:STATE_WESTERN_HUBEI
-							factor = 0.769
-						}
-						# 중경
-						modifier = {
-							state_region = s:STATE_CHONGQING
-							factor = 0.769
-						}
-						# 그 외
-						# 해안가
-						modifier = {
-							is_coastal = yes
-							factor = 0.5
-						}
-						# 장강과 주강
-						modifier = {
+					# 서구화 시작하면 북경 우선
+					modifier = {
+						scope:concession_target_country = {
 							OR = {
-								has_state_trait = state_trait_yangtze_river
-								has_state_trait = state_trait_pearl_river
+								has_journal_entry = je_chinese_westernization
+								has_variable = chinese_westernization_complete
 							}
-							factor = 0.333
 						}
+						state_region = s:STATE_BEIJING
+						factor = 0.01
 					}
-					save_scope_as = concession_target_state
-					remove_list_variable = { name = concession_owner_varlist target = ROOT }
+					# 아니면 숙주 우선
+					modifier = {
+						scope:concession_target_country = {
+							NOR = {
+								has_journal_entry = je_chinese_westernization
+								has_variable = chinese_westernization_complete
+							}
+						}
+						state_region = s:STATE_SUZHOU
+						factor = 0.01
+					}
+					# 북경, 숙주
+					modifier = {
+						OF = {
+							state_region = s:STATE_BEIJING
+							state_region = s:STATE_SUZHOU
+						}
+						factor = 0.0001
+					}
+					# 홍콩 소유국이 소주
+					modifier = {
+						ROOT = {
+							any_scope_state = {
+								state_region = s:STATE_SHAOZHOU
+								is_treaty_port = yes
+							}
+						}
+						state_region = s:STATE_SHAOZHOU
+						factor = 0.01
+					}
+					# 한커우 (동 호북)
+					modifier = {
+						state_region = s:STATE_EASTERN_HUBEI
+						factor = 0.4
+					}
+					# 광저우 (광동)
+					modifier = {
+						state_region = s:STATE_GUANGDONG
+						factor = 0.5
+					}
+					# 남 안휘
+					modifier = {
+						state_region = s:STATE_SOUTHERN_ANHUI
+						factor = 0.769
+					}
+					# 절강
+					modifier = {
+						state_region = s:STATE_ZHEJIANG
+						factor = 0.625
+					}
+					# 서 호북
+					modifier = {
+						state_region = s:STATE_WESTERN_HUBEI
+						factor = 0.769
+					}
+					# 중경
+					modifier = {
+						state_region = s:STATE_CHONGQING
+						factor = 0.769
+					}
+					# 그 외
+					# 해안가
+					modifier = {
+						is_coastal = yes
+						factor = 0.5
+					}
+					# 장강과 주강
+					modifier = {
+						OR = {
+							has_state_trait = state_trait_yangtze_river
+							has_state_trait = state_trait_pearl_river
+						}
+						factor = 0.333
+					}
 				}
+				save_scope_as = concession_target_state
+				remove_list_variable = { name = concession_owner_varlist target = scope:concession_owner_country }
 			}
 		}
 	}
 
 	option = {
-		name = concessions_in_china.1003.a
+		name = concessions_in_china.1004.a
 		default_option = yes
 		
 		ai_chance = {
@@ -671,3 +747,6 @@ concessions_in_china.1003 = {
 		}
 	}
 }
+
+
+

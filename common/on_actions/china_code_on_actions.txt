@@ -220,7 +220,7 @@ china_on_diplo_play_back_down = {
 china_on_self_capitulated_notification = {
 	effect = {
 		if = {
-			limit = {
+			limit = { # 중국이 항복
 				any_scope_state = {
 					state_is_in_china_proper = yes
 					is_treaty_port = no
@@ -232,9 +232,9 @@ china_on_self_capitulated_notification = {
 			}
 			save_scope_as = concession_target_country
 			save_scope_value_as = { name = concession_gain_cause value = 1 } # 무력으로
-			every_country = {
+			every_country = { # 상대 숫자 계산
 				limit = {
-					has_variable = concession_candidate_country
+					has_variable = enemy_country
 					save_temporary_scope_as = concession_candidate_country_temp
 					scope:concession_target_country = {
 						any_scope_state = {
@@ -250,26 +250,134 @@ china_on_self_capitulated_notification = {
 						add = 1
 					}
 				}
-				trigger_event = concessions_in_china.1001
 			}
-			every_country = {
-				limit = { has_variable = concession_candidate_country }
-				remove_variable = concession_candidate_country
-			}
-			if = {
-				limit = { var:concession_gain_country_num > 0 }
+			if = { # 두 국가 이상이면
+				limit = { var:concession_gain_country_num >= 2 }
 				save_scope_value_as = {
 					name = concession_gain_country_num
 					value = var:concession_gain_country_num
 				}
+				remove_variable = concession_gain_country_num
+				every_country = {
+					limit = {
+						has_variable = enemy_country
+						save_temporary_scope_as = concession_candidate_country_temp
+						scope:concession_target_country = {
+							any_scope_state = {
+								state_is_in_china_proper = yes
+								is_treaty_port = no
+								NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_candidate_country_temp } }
+							}
+						}
+					}
+					trigger_event = concessions_in_china.1001
+				}
 				trigger_event = concessions_in_china.1002
 			}
-			remove_variable = concession_gain_country_num
+			else_if = { # 한 국가면
+				limit = { var:concession_gain_country_num = 1 }
+				save_scope_value_as = {
+					name = concession_gain_country_num
+					value = 1
+				}
+				remove_variable = concession_gain_country_num
+				random_country = {
+					limit = {
+						has_variable = enemy_country
+						save_temporary_scope_as = concession_candidate_country_temp
+						scope:concession_target_country = {
+							any_scope_state = {
+								state_is_in_china_proper = yes
+								is_treaty_port = no
+								NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_candidate_country_temp } }
+							}
+						}
+					}
+					save_scope_as = concession_owner_country
+					trigger_event = concessions_in_china.1001
+				}
+				trigger_event = concessions_in_china.1002
+			}
+			else = { # 없으면 (중국 측 모든 주에 조계지 있을 경우에 해당)
+				remove_variable = concession_gain_country_num
+			}
+			every_country = {
+				limit = { has_variable = enemy_country }
+				remove_variable = enemy_country
+			}
+		}
+		else_if = { # 상대가 항복
+			limit = {
+				any_country = {
+					has_variable = enemy_country
+					any_scope_state = {
+						is_target_in_variable_list = { name = concession_owner_varlist target = ROOT }
+					}
+				}
+			}
+			set_variable = {
+				name = concession_loss_country_num
+				value = 0
+			}
+			save_scope_as = concession_owner_country
+			save_scope_value_as = { name = concession_loss_cause value = 1 } # 무력으로
+			every_country = { # 중국 숫자 계산
+				limit = {
+					has_variable = enemy_country
+					any_scope_state = {
+						is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_owner_country }
+					}
+				}
+				scope:concession_target_country = {
+					change_variable = {
+						name = concession_loss_country_num
+						add = 1
+					}
+				}
+			}
+			if = { # 두 국가 이상이면
+				limit = { var:concession_loss_country_num >= 2 }
+				save_scope_value_as = {
+					name = concession_loss_country_num
+					value = var:concession_loss_country_num
+				}
+				remove_variable = concession_loss_country_num
+				every_country = {
+					limit = {
+						has_variable = enemy_country
+						any_scope_state = {
+							is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_owner_country }
+						}
+					}
+					remove_variable = enemy_country
+					trigger_event = concessions_in_china.1004
+				}
+				trigger_event = concessions_in_china.1003
+			}
+			else = { # 한 국가면
+				save_scope_value_as = {
+					name = concession_loss_country_num
+					value = 1
+				}
+				remove_variable = concession_loss_country_num
+				random_country = {
+					limit = {
+						has_variable = enemy_country
+						any_scope_state = {
+							is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_owner_country }
+						}
+					}
+					remove_variable = enemy_country
+					save_scope_as = concession_target_country
+					trigger_event = concessions_in_china.1004
+				}
+				trigger_event = concessions_in_china.1003
+			}
 		}
 		else = {
 			every_country = {
-				limit = { has_variable = concession_candidate_country }
-				remove_variable = concession_candidate_country
+				limit = { has_variable = enemy_country }
+				remove_variable = enemy_country
 			}
 		}
 	}
@@ -278,6 +386,6 @@ china_on_self_capitulated_notification = {
 # 이게 위보다 먼저 실행됨 아마
 china_on_enemy_capitulated_notification = {
 	effect = {
-		set_variable = concession_candidate_country
+		set_variable = enemy_country
 	}
 }
