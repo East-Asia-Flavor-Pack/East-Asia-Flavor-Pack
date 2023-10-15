@@ -49,7 +49,7 @@ china_on_monthly_pulse_character = {
 				has_variable = chi_child
 				NOT = { has_trait = trait_child }
 			}
-			owner = { trigger_event = chi_flavor.5 }
+			owner = { trigger_event = { id = chi_flavor.5 } }
 		}
 	}
 }
@@ -83,7 +83,7 @@ china_on_character_death = {
 						culture = cu:manchu
 					}
 				}
-				trigger_event = chi_flavor.1
+				trigger_event = { id = chi_flavor.1 }
 			}
 		}
 
@@ -186,9 +186,9 @@ china_on_diplo_play_back_down = {
 				target = { save_scope_as = concession_candidate_country }
 				scope:actor = {
 					save_scope_as = concession_target_country
-					trigger_event = concessions_in_china.1002
+					trigger_event = { id = concessions_in_china.1002 }
 				}
-				target = { trigger_event = concessions_in_china.1001 }
+				target = { trigger_event = { id = concessions_in_china.1001 } }
 			}
 			else_if = {
 				limit = {
@@ -209,9 +209,9 @@ china_on_diplo_play_back_down = {
 				initiator = { save_scope_as = concession_candidate_country }
 				scope:actor = {
 					save_scope_as = concession_target_country
-					trigger_event = concessions_in_china.1002
+					trigger_event = { id = concessions_in_china.1002 }
 				}
-				initiator = { trigger_event = concessions_in_china.1001 }
+				initiator = { trigger_event = { id = concessions_in_china.1001 } }
 			}
 		}
 	}
@@ -270,9 +270,9 @@ china_on_self_capitulated_notification = {
 							}
 						}
 					}
-					trigger_event = concessions_in_china.1001
+					trigger_event = { id = concessions_in_china.1001 }
 				}
-				trigger_event = concessions_in_china.1002
+				trigger_event = { id = concessions_in_china.1002 }
 			}
 			else_if = { # 한 국가면
 				limit = { var:concession_gain_country_num = 1 }
@@ -294,9 +294,9 @@ china_on_self_capitulated_notification = {
 						}
 					}
 					save_scope_as = concession_owner_country
-					trigger_event = concessions_in_china.1001
+					trigger_event = { id = concessions_in_china.1001 }
 				}
-				trigger_event = concessions_in_china.1002
+				trigger_event = { id = concessions_in_china.1002 }
 			}
 			else = { # 없으면 (중국 측 모든 주에 조계지 있을 경우에 해당)
 				remove_variable = concession_gain_country_num
@@ -386,6 +386,42 @@ china_on_self_capitulated_notification = {
 # 이게 위보다 먼저 실행됨 아마
 china_on_enemy_capitulated_notification = {
 	effect = {
-		set_variable = enemy_country
+		if = {
+			limit = { country_rank >= rank_value:great_power }
+			set_variable = enemy_country
+		}
+	}
+}
+
+china_on_revolution_start = {
+	effect = {
+		scope:target = {
+			if = {
+				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
+				set_variable = china_revolution_gov_var
+			}
+		}
+	}
+}
+
+# Root = Country
+# scope:target = Uprising country
+china_on_secession_start = {
+	effect = {
+		scope:target = {
+			if = {
+				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
+				set_variable = china_revolution_gov_var
+			}
+		}
+	}
+}
+
+on_civil_war_won = {
+	effect = {
+		if = {
+			limit = { has_variable = china_revolution_gov_var }
+			trigger_event = {TODO}
+		}
 	}
 }
