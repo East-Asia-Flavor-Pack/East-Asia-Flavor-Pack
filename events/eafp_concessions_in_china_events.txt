@@ -329,6 +329,7 @@ concessions_in_china.2 = { # 대체 왜 안됨?
 # scope:concession_gain_country_num : 조계지 설치되는 중국 국가 수 (설치 시)
 # scope:concession_loss_country_num : 조계지 빼앗기는 상대 국가 수 (제거 시)
 # 가능한 경우 : 여러 상대가 동시에 한 중국에게서 조계 획득, 여러 중국이 동시에 한 상대에게서 조계 탈환
+# on action
 # 조계지 설치 (상대)
 concessions_in_china.1001 = {
 	type = country_event
@@ -978,7 +979,7 @@ concessions_in_china.1004 = {
 	}
 }
 
-# 조계지 강제 점거! (상대)
+# 조계지가 있는 주를 점거했을 경우
 concessions_in_china.1005 = { # TODO
 	type = country_event
 	placement = ROOT
@@ -999,18 +1000,41 @@ concessions_in_china.1005 = { # TODO
 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 
 	trigger = {
+		NOT = { has_variable = conchi1005 }
+		any_scope_state = {
+			state_is_in_china_proper = yes
+			is_treaty_port = no
+			has_variable_list = concession_owner_varlist
+			NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
+		}
 	}
 
 	immediate = {
-
+		set_variable = conchi1005
+		save_scope_as = new_owner_country
+		set_local_variable = {
+			name = occupied_state_num
+		}
 	}
 
-	option = {
+	option = { # 전부 폐지
 		name = concessions_in_china.1001.a
 		default_option = yes
 		
 		ai_chance = {
 			base = 1
 		}
+	}
+
+	option = { # 걍 놔둠
+		name = concessions_in_china.1001.b
+		
+		ai_chance = {
+			base = 0
+		}
+	}
+
+	after = {
+		remove_variable = conchi1005
 	}
 }
