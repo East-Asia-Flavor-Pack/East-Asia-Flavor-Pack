@@ -398,6 +398,42 @@ china_on_enemy_capitulated_notification = {
 
 china_on_revolution_start = {
 	effect = {
+		# 혁명 주 처리
+		every_scope_state = {
+			limit = {
+				has_variable_list = concession_owner_varlist
+				is_split_state = yes
+				owner = { has_revolution = yes }
+				state_region = { 
+					any_scope_state = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+				}
+			}
+			save_scope_as = temp_state
+			state_region = { 
+				every_scope_state = {
+					limit = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+					save_scope_as = temp_state2
+					scope:temp_state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							scope:temp_state2 = {
+								add_to_variable_list = { name = concession_owner_varlist target = PREV }
+							}
+						}
+					}
+					clear_saved_scope = temp_state2
+				}
+			}
+			clear_saved_scope = temp_state
+		}
 		scope:target = {
 			if = {
 				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
@@ -414,6 +450,42 @@ china_on_revolution_start = {
 # scope:target = Uprising country
 china_on_secession_start = {
 	effect = {
+		# 혁명 주 처리
+		every_scope_state = {
+			limit = {
+				has_variable_list = concession_owner_varlist
+				is_split_state = yes
+				owner = { has_revolution = yes }
+				state_region = { 
+					any_scope_state = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+				}
+			}
+			save_scope_as = temp_state
+			state_region = { 
+				every_scope_state = {
+					limit = {
+						is_treaty_port = no
+						owner = { is_revolutionary = yes }
+						NOT = { has_variable_list = concession_owner_varlist }
+					}
+					save_scope_as = temp_state2
+					scope:temp_state = {
+						every_in_list = {
+							variable = concession_owner_varlist
+							scope:temp_state2 = {
+								add_to_variable_list = { name = concession_owner_varlist target = PREV }
+							}
+						}
+					}
+					clear_saved_scope = temp_state2
+				}
+			}
+			clear_saved_scope = temp_state
+		}
 		scope:target = {
 			if = {
 				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
@@ -422,15 +494,6 @@ china_on_secession_start = {
 		}
 		every_country = {
 			trigger_event = concessions_in_china.1005
-		}
-	}
-}
-
-on_civil_war_won = {
-	effect = {
-		if = {
-			limit = { has_variable = china_revolution_gov_var }
-			trigger_event = {TODO}
 		}
 	}
 }
