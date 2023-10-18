@@ -13,7 +13,6 @@ concessions_in_china.1 = {
 	}
 
 	immediate = {
-		trigger_event = concessions_in_china.1005
 		# 혁명 주 처리
 		every_scope_state = {
 			limit = {
@@ -974,7 +973,7 @@ concessions_in_china.1004 = {
 	}
 }
 
-# 조계지가 있는 주를 차지했을 경우
+# 조계지가 있는 주를 차지했을 경우 조계지의 운명
 concessions_in_china.1005 = {
 	type = country_event
 	placement = ROOT
@@ -984,7 +983,7 @@ concessions_in_china.1005 = {
 		first_valid = {
 			triggered_desc = {
 				desc = concessions_in_china.1005.d1
-				trigger = { exists = scope:former_state_owner }
+				trigger = { exists = scope:concession_state }
 			}
 			desc = concessions_in_china.1005.d2
 		}
@@ -993,7 +992,18 @@ concessions_in_china.1005 = {
 		first_valid = {
 			triggered_desc = {
 				desc = concessions_in_china.1005.f1
-				trigger = { exists = scope:former_state_owner }
+				trigger = {
+					OR = {
+						country_has_primary_culture = cu:han
+						country_has_primary_culture = cu:manchu
+						country_has_primary_culture = cu:min
+						country_has_primary_culture = cu:miao
+						country_has_primary_culture = cu:hakka
+						country_has_primary_culture = cu:zhuang
+						country_has_primary_culture = cu:yi
+						country_has_primary_culture = cu:yue
+					}
+				}
 			}
 			desc = concessions_in_china.1005.f2
 		}
@@ -1013,8 +1023,6 @@ concessions_in_china.1005 = {
 	trigger = {
 		NOT = { has_variable = conchi1005 }
 		any_scope_state = {
-			state_is_in_china_proper = yes
-			is_treaty_port = no
 			has_variable_list = concession_owner_varlist
 			NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
 		}
@@ -1023,14 +1031,32 @@ concessions_in_china.1005 = {
 	immediate = {
 		set_variable = conchi1005
 		save_scope_as = new_owner_country
+
+		every_scope_state = { # 자기 조계지는 없앰
+			limit = {
+				has_variable_list = concession_owner_varlist
+				NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
+				is_target_in_variable_list = {
+					name = concession_owner_varlist
+					target = ROOT
+				}
+			}
+			remove_list_variable = {
+				name = concession_owner_varlist
+				target = ROOT
+			}
+		}
+
 		set_local_variable = {
 			name = occupied_state_num
 			value = 0
 		}
+		set_local_variable = {
+			name = occupied_concession_num
+			value = 0
+		}
 		every_scope_state = {
 			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
 				has_variable_list = concession_owner_varlist
 				NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
 			}
@@ -1038,92 +1064,35 @@ concessions_in_china.1005 = {
 				name = occupied_state_num
 				add = 1
 			}
+			every_in_list = {
+				variable = concession_owner_varlist
+				change_local_variable = {
+					name = occupied_concession_num
+					add = 1
+				}
+			}
 		}
 		if = {
 			limit = { local_var:occupied_state_num = 1 }
 			random_scope_state = {
 				limit = {
-					state_is_in_china_proper = yes
-					is_treaty_port = no
 					has_variable_list = concession_owner_varlist
 					NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
 				}
-				random_in_list = {
-					variable = concession_state_owner_varlist
-					save_scope_as = former_state_owner
-				}
+				save_scope_as = concession_state
 			}
 		}
 		else = { save_scope_value_as = { name = occupied_state_num value = local_var:occupied_state_num } }
-	}
+		save_scope_value_as = {
+			name = occupied_concession_infamy
+			value = {
+				value = local_var:occupied_concession_num
+				multiply = 10
+			}
+		}
 
-	option = { # 전부 폐지 (나라 하나)
-		name = concessions_in_china.1005.a
-
-		trigger = { exists = scope:former_state_owner }
-		
-		every_scope_state = {
+		every_scope_state = { # 주 소유권 달라졌으니 concession_state_owner_varlist 다시 설정
 			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
-				has_variable_list = concession_owner_varlist
-			}
-			every_in_list = {
-				variable = concession_owner_varlist
-				ROOT = { change_relations = { country = PREV value = -30 } }
-				set_secret_goal = {
-					country = ROOT
-					secret_goal = antagonize
-				}
-			}
-		}
-
-		ai_chance = {
-			base = 0
-		}
-	}
-
-	option = { # 전부 폐지
-		name = concessions_in_china.1005.b
-
-		trigger = { NOT = { exists = scope:former_state_owner } }
-		
-		every_scope_state = {
-			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
-				has_variable_list = concession_owner_varlist
-			}
-			every_in_list = {
-				variable = concession_owner_varlist
-				ROOT = { change_relations = { country = PREV value = -30 } }
-				set_secret_goal = {
-					country = ROOT
-					secret_goal = antagonize
-				}
-			}
-		}
-
-		ai_chance = {
-			base = 0
-		}
-	}
-
-	option = { # 걍 놔둠
-		name = concessions_in_china.1005.c
-
-		default_option = yes
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-
-	after = {
-		every_scope_state = {
-			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
 				has_variable_list = concession_owner_varlist
 				NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
 			}
@@ -1136,92 +1105,28 @@ concessions_in_china.1005 = {
 			}
 			add_to_variable_list = { name = concession_state_owner_varlist target = ROOT }
 		}
-		remove_variable = conchi1005
-	}
-}
-
-# 이런 저런 이유로 concession_state_owner_varlist 없는 주를 차지함 (아마 새 주?) TODO
-concessions_in_china.1006 = {
-	type = country_event
-	placement = ROOT
-
-	title = concessions_in_china.1006.t
-	desc = concessions_in_china.1006.d
-	flavor = concessions_in_china.1006.f
-	
-	duration = 1
-
-	event_image = {
-		texture = "gfx/event_pictures/china/coronation.png"
 	}
 
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-
-	trigger = {
-		NOT = { has_variable = conchi1006 }
-		any_scope_state = {
-			state_is_in_china_proper = yes
-			is_treaty_port = no
-			NOT = { has_variable_list = concession_owner_varlist }
-		}
-	}
-
-	immediate = {
-		set_variable = conchi1006
-		set_local_variable = {
-			name = state_num
-		}
-		add_to_local_variable_list = {
-			name = country_num
-		}
-		every_scope_state = {
-			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
-				NOT = { has_variable_list = concession_owner_varlist }
-			}
-			change_local_variable = {
-				name = state_num
-				add = 1
-			}
-		}
-		if = {
-			limit = { local_var:state_num = 1 }
-			random_scope_state = {
+	option = { # 전부 폐지
+		name = concessions_in_china.1005.a
+		custom_tooltip = {
+			text = concessions_in_china.1005.tta1
+			every_scope_state = {
 				limit = {
-					state_is_in_china_proper = yes
-					is_treaty_port = no
-					NOT = { has_variable_list = concession_owner_varlist }
+					has_variable_list = concession_owner_varlist
 				}
-				save_scope_as = state_temp
-			}
-		}
-		else = { save_scope_value_as = { name = occupied_state_num value = local_var:occupied_state_num } }
-	}
-
-	option = { # 전부 폐지 (나라 하나)
-		name = concessions_in_china.1006.a
-
-		trigger = { exists = scope:former_state_owner }
-		
-		every_scope_state = {
-			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
-				has_variable_list = concession_owner_varlist
-			}
-			every_in_list = {
-				variable = concession_owner_varlist
-				ROOT = { change_relations = { country = PREV value = -30 } }
-				set_secret_goal = {
-					country = ROOT
-					secret_goal = antagonize
+				every_in_list = {
+					variable = concession_owner_varlist
+					ROOT = { change_relations = { country = PREV value = -50 } }
+					set_secret_goal = {
+						country = ROOT
+						secret_goal = antagonize
+					}
 				}
 			}
 		}
+		custom_tooltip = concessions_in_china.1005.tta2
+		change_infamy = scope:occupied_concession_infamy
 
 		ai_chance = {
 			base = 0
@@ -1229,7 +1134,7 @@ concessions_in_china.1006 = {
 	}
 
 	option = { # 걍 놔둠
-		name = concessions_in_china.1006.c
+		name = concessions_in_china.1005.b
 
 		default_option = yes
 		
@@ -1239,14 +1144,6 @@ concessions_in_china.1006 = {
 	}
 
 	after = {
-		every_scope_state = {
-			limit = {
-				state_is_in_china_proper = yes
-				is_treaty_port = no
-				NOT = { has_variable_list = concession_owner_varlist }
-			}
-			add_to_variable_list = { name = concession_state_owner_varlist target = ROOT }
-		}
-		remove_variable = conchi1006
+		remove_variable = conchi1005
 	}
 }

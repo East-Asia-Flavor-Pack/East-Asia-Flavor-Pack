@@ -214,6 +214,9 @@ china_on_diplo_play_back_down = {
 				initiator = { trigger_event = { id = concessions_in_china.1001 } }
 			}
 		}
+		every_country = {
+			trigger_event = concessions_in_china.1005
+		}
 	}
 }
 
@@ -386,7 +389,7 @@ china_on_self_capitulated_notification = {
 	}
 }
 
-# 이게 위보다 먼저 실행됨 아마
+# 이게 위보다 먼저 실행됨
 china_on_enemy_capitulated_notification = {
 	effect = {
 		if = {
@@ -434,13 +437,23 @@ china_on_revolution_start = {
 			}
 			clear_saved_scope = temp_state
 		}
-		scope:target = {
-			if = {
-				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
-				set_variable = china_revolution_gov_var
-			}
-		}
+		# 혁명으로 생긴 새 주 계산
 		every_country = {
+			limit = {
+				any_scope_state = {
+					state_is_in_china_proper = yes
+					is_treaty_port = no
+					NOT = { has_variable_list = concession_state_owner_varlist }
+				}
+			}
+			every_scope_state = {
+				limit = {
+					state_is_in_china_proper = yes
+					is_treaty_port = no
+					NOT = { has_variable_list = concession_state_owner_varlist }
+				}
+				add_to_variable_list = { name = concession_state_owner_varlist target = ROOT }
+			}
 			trigger_event = concessions_in_china.1005
 		}
 	}
@@ -486,13 +499,23 @@ china_on_secession_start = {
 			}
 			clear_saved_scope = temp_state
 		}
-		scope:target = {
-			if = {
-				limit = { any_scope_state = { state_region = { any_scope_state = { has_variable_list = concession_owner_varlist } } } }
-				set_variable = china_revolution_gov_var
-			}
-		}
+		# 혁명으로 생긴 새 주 계산
 		every_country = {
+			limit = {
+				any_scope_state = {
+					state_is_in_china_proper = yes
+					is_treaty_port = no
+					NOT = { has_variable_list = concession_state_owner_varlist }
+				}
+			}
+			every_scope_state = {
+				limit = {
+					state_is_in_china_proper = yes
+					is_treaty_port = no
+					NOT = { has_variable_list = concession_state_owner_varlist }
+				}
+				add_to_variable_list = { name = concession_state_owner_varlist target = ROOT }
+			}
 			trigger_event = concessions_in_china.1005
 		}
 	}
