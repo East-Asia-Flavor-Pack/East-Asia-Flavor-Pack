@@ -22,6 +22,17 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
+		create_character = {
+			culture = cu:han
+			interest_group = ig_landowners
+			save_scope_as = governor
+			age = { 40 60 } 
+			on_created = {
+				place_character_in_void = 10000
+				set_character_busy_and_immortal = yes
+			}
+		}
+		add_journal_entry = { type = je_xinhai_revolution }
 		ordered_scope_state = {
 			limit = {
 				OR = {
@@ -41,8 +52,39 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 				
 			}
 		}
-		c:KMT = {
-			activate_law = law_type:law_presidential_republic
+		random_diplomatic_play = {
+			limit = {
+				initiator = c:KMT
+				target = c:CHI
+			}
+			add_escalation = 40
+			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
+			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
+		}
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = long_modifier_time
+			is_decaying = yes
+		}
+		add_modifier = {
+			name = xinhai_revolution_shock_of_the_revolution
+			months = 13
+			is_decaying = yes
+		}
+		# 군부 지도자를 권위주의로
+		ig:ig_armed_forces = {
+			leader = {
+				set_ideology = ideology:ideology_authoritarian
+				set_variable = YSK_var
+				set_character_busy_and_immortal = yes
+			}
+		}
+		trigger_event = {
+			id = warlord_china_events.2
+			days = 15
+			popup = yes
+		}
+	}
 
 			# 쑨원을 지도자로
 			if = {
@@ -63,6 +105,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 						add_character_role = politician
 						set_variable = sun_yat_sen_var
 						set_global_variable = sun_yat_sen_spawn
+						set_character_busy_and_immortal = yes
 					}
 				}
 			}
@@ -81,6 +124,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 					transfer_character = c:KMT
 					set_character_as_ruler = yes
 					add_character_role = politician
+					set_character_busy_and_immortal = yes
 				}
 			}	
 			else_if = {
@@ -96,6 +140,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 					transfer_character = c:KMT
 					set_character_as_ruler = yes
 					add_character_role = politician
+					set_character_busy_and_immortal = yes
 				}
 			}
 
@@ -141,10 +186,24 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			}
 			add_journal_entry = { type = je_xinhai_revolution_kmt }
 		}
-		random_diplomatic_play = {
-			limit = {
-				initiator = c:KMT
-				target = c:CHI
+		else = {
+			# 쑨원 Mk.2
+			create_character = {
+				age = { 30 50 }
+				religion = rel:protestant
+				ideology = ideology_republican_leader
+				interest_group = ig_intelligentsia
+				ruler = yes
+				ig_leader = yes
+				traits = {
+					ambitious
+					persistent
+					inspirational_orator
+				}
+				on_created = {
+					add_character_role = politician
+					set_character_busy_and_immortal = yes
+				}
 			}
 			add_escalation = 80
 			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
@@ -417,10 +476,27 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 	after = {
 		if = {
-			limit = {
-				c:MCH = {
-					is_subject_of = c:CHI
-					is_subject_type = subject_type_military_headquarters_china
+			limit = { any_character = { has_variable = YSK_var } }
+			random_character = {
+				limit = { has_variable = YSK_var }
+				save_scope_as = new_ruler
+				set_character_busy_and_immortal = no
+				set_character_as_ruler = yes
+			}
+		}
+		else = {
+			create_character = {
+				culture = cu:han
+				ig_leader = yes
+				interest_group = ig_armed_forces
+				ideology = ideology_authoritarian
+				traits = {
+					ambitious
+					persistent
+				}
+				on_created = {
+					save_scope_as = new_ruler
+					set_character_as_ruler = yes
 				}
 			}
 			annex = c:MCH
