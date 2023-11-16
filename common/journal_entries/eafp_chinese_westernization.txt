@@ -89,6 +89,7 @@ je_chinese_westernization_army = {
 			NOT = { has_modifier = decadent_bannermen_3 }
 			NOT = { has_modifier = decadent_bannermen_2 }
 			NOT = { has_modifier = decadent_bannermen_1 }
+			NOT = { has_modifier = decadent_bannermen_decay }
 		}
 		custom_tooltip = {
 			text = chi_military_academy_established_tt
@@ -226,12 +227,19 @@ je_chinese_westernization_navy = {
 			cash_reserves_ratio >= 0.25
 			occupancy >= 0.75
 		}
-		any_scope_building = {
-			filter = { is_building_type = building_naval_base }
-			NOR = {
-				# 1.5.3 업데이트 대비 임시로 막음 TODO
-				# has_active_production_method = pm_man_o_wars
-				has_active_production_method = pm_no_naval_theory
+		NOT = {
+			any_scope_building = {
+				is_building_type = building_naval_base
+				OR = {
+					has_active_production_method = pm_power_of_the_purse
+					has_active_production_method = pm_no_naval_theory
+				}
+			}
+		}
+		any_military_formation = {
+			is_fleet = yes
+			any_combat_unit = {
+				has_unit_type = unit_type:combat_unit_type_ironclad
 			}
 		}
 		has_technology_researched = hydraulic_cranes
