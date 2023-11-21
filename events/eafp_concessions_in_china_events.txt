@@ -14,40 +14,44 @@ concessions_in_china.1 = {
 
 	immediate = {
 		# 혁명 주 처리
-		every_scope_state = {
+		if = {
 			limit = {
-				has_variable_list = concession_owner_varlist
-				is_split_state = yes
-				owner = { has_revolution = yes }
-				state_region = { 
-					any_scope_state = {
-						is_treaty_port = no
-						owner = { is_revolutionary = yes }
-						NOT = { has_variable_list = concession_owner_varlist }
-					}
-				}
+				has_revolution = yes
 			}
-			save_scope_as = temp_state
-			state_region = { 
-				every_scope_state = {
-					limit = {
-						is_treaty_port = no
-						owner = { is_revolutionary = yes }
-						NOT = { has_variable_list = concession_owner_varlist }
-					}
-					save_scope_as = temp_state2
-					scope:temp_state = {
-						every_in_list = {
-							variable = concession_owner_varlist
-							scope:temp_state2 = {
-								add_to_variable_list = { name = concession_owner_varlist target = PREV }
-							}
+			every_scope_state = {
+				limit = {
+					has_variable_list = concession_owner_varlist
+					is_split_state = yes
+					state_region = { 
+						any_scope_state = {
+							is_treaty_port = no
+							owner = { is_revolutionary = yes }
+							NOT = { has_variable_list = concession_owner_varlist }
 						}
 					}
-					clear_saved_scope = temp_state2
 				}
+				save_scope_as = temp_state
+				state_region = { 
+					every_scope_state = {
+						limit = {
+							is_treaty_port = no
+							owner = { is_revolutionary = yes }
+							NOT = { has_variable_list = concession_owner_varlist }
+						}
+						save_scope_as = temp_state2
+						scope:temp_state = {
+							every_in_list = {
+								variable = concession_owner_varlist
+								scope:temp_state2 = {
+									add_to_variable_list = { name = concession_owner_varlist target = PREV }
+								}
+							}
+						}
+						clear_saved_scope = temp_state2
+					}
+				}
+				clear_saved_scope = temp_state
 			}
-			clear_saved_scope = temp_state
 		}
 		# 조계지 배당금 계산
 		set_variable = {
@@ -136,12 +140,6 @@ concessions_in_china.1 = {
 							multiply = 4.286 # 주 -> 달
 						}
 					}
-					ROOT = {
-						change_variable = {
-							name = concession_payment_var
-							add = local_var:concession_payment_locvar
-						}
-					}
 					remove_local_variable = shares_sum
 				}
 				# 도심지
@@ -195,12 +193,6 @@ concessions_in_china.1 = {
 								max = 4
 							}
 							multiply = 4.286 # 주 -> 달
-						}
-					}
-					ROOT = {
-						change_variable = {
-							name = concession_payment_var
-							add = local_var:concession_payment_locvar
 						}
 					}
 					remove_local_variable = shares_sum
@@ -263,13 +255,13 @@ concessions_in_china.1 = {
 							multiply = 4.286 # 주 -> 달
 						}
 					}
-					ROOT = {
-						change_variable = {
-							name = concession_payment_var
-							add = local_var:concession_payment_locvar
-						}
-					}
 					remove_local_variable = shares_sum
+				}
+			}
+			ROOT = {
+				change_variable = {
+					name = concession_payment_var
+					add = local_var:concession_payment_locvar
 				}
 			}
 			every_in_list = {
@@ -1115,7 +1107,14 @@ concessions_in_china.1005 = {
 				name = occupied_concession_infamy
 				value = {
 					value = local_var:occupied_concession_num
-					multiply = 10
+					multiply = 5 # 조계지 하나당 악명 5
+				}
+			}
+			save_scope_value_as = { # ai 계산용
+				name = occupied_concession_infamy_plus_infamy
+				value = {
+					value = infamy
+					add = scope:occupied_concession_infamy
 				}
 			}
 		}
@@ -1168,11 +1167,7 @@ concessions_in_china.1005 = {
 				}
 				every_in_list = {
 					variable = concession_owner_varlist
-					ROOT = { change_relations = { country = PREV value = -50 } }
-					set_secret_goal = {
-						country = ROOT
-						secret_goal = antagonize
-					}
+					ROOT = { change_relations = { country = PREV value = -25 } }
 				}
 			}
 		}
@@ -1180,7 +1175,43 @@ concessions_in_china.1005 = {
 		change_infamy = scope:occupied_concession_infamy
 
 		ai_chance = {
-			base = 0
+			base = 100
+			modifier = {
+				trigger = {
+					country_rank = rank_value:major_power
+				}
+				factor = 0.5
+			}
+			modifier = {
+				trigger = {
+					country_rank = rank_value:minor_power
+				}
+				factor = 0.25
+			}
+			modifier = {
+				trigger = {
+					country_rank < rank_value:minor_power
+				}
+				factor = 0.1
+			}
+			modifier = {
+				trigger = {
+					is_country_type = unrecognized
+				}
+				factor = 0.2
+			}
+			modifier = {
+				trigger = {
+					has_journal_entry = je_chinese_westernization
+				}
+				factor = 0.2
+			}
+			modifier = {
+				trigger = {
+					scope:occupied_concession_infamy_plus_infamy >= infamy_threshold:pariah
+				}
+				factor = 0.5
+			}
 		}
 	}
 
@@ -1192,7 +1223,7 @@ concessions_in_china.1005 = {
 		default_option = yes
 		
 		ai_chance = {
-			base = 1
+			base = 10
 		}
 	}
 
