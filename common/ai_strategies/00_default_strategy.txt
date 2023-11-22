@@ -880,6 +880,21 @@ ai_strategy_default = {
 				multiply = 0
 			}
 				
+			if = {
+				limit = {
+					has_journal_entry = je_the_eastern_border
+					scope:target_state = {
+						OR = {
+							state_region = s:STATE_OUTER_MANCHURIA
+							state_region = s:STATE_JETISY
+							state_region = s:STATE_TOMSK
+							state_region = s:STATE_KIRGHIZIA
+						}
+					}
+				}
+				add = 50
+			}
+
 			# 수정
 			if = { #Do Not Take Chinese States In Full, unless another power has already done so
 				limit = {
@@ -891,14 +906,7 @@ ai_strategy_default = {
 							region = sr:region_south_china
 							# region = sr:region_manchuria 
 						}
-						NOR = { # 추가
-							state_region = s:STATE_ULIASTAI
-							state_region = s:STATE_URGA
-							state_region = s:STATE_EAFP_BEIJING
-							state_region = s:STATE_SHENGJING
-							state_region = s:STATE_HINGGAN
-							state_region = s:STATE_ALXA
-							state_region = s:STATE_QINGHAI
+						NOT = { # 추가
 							state_region = s:STATE_FORMOSA
 						}
 					}				
@@ -921,7 +929,7 @@ ai_strategy_default = {
 								OR = {
 									region = sr:region_north_china
 									region = sr:region_south_china
-									region = sr:region_manchuria
+									# region = sr:region_manchuria
 								}
 								NOR = { # 추가
 									state_region = s:STATE_ULIASTAI
@@ -1666,56 +1674,29 @@ ai_strategy_default = {
 				# 태평천국이 끝난 후
 				has_global_variable = heavenly_kingdom_start_var
 				NOT = { exists = c:TPG }
-				OR = { # 미국이 아니거나, 명백한 운명 저널 2개 모두 완료하거나
-					NOT = { c:USA ?= THIS }
-					AND = {
-						owns_entire_state_region = STATE_CALIFORNIA
-						owns_entire_state_region = STATE_NEVADA
-						owns_entire_state_region = STATE_UTAH
-						owns_entire_state_region = STATE_ARIZONA
-						owns_entire_state_region = STATE_NEW_MEXICO
-						owns_entire_state_region = STATE_TEXAS
-						owns_entire_state_region = STATE_MONTANA
-						owns_entire_state_region = STATE_WYOMING
-						owns_entire_state_region = STATE_COLORADO
-						owns_entire_state_region = STATE_NORTH_DAKOTA
-						owns_entire_state_region = STATE_SOUTH_DAKOTA
-						owns_entire_state_region = STATE_NEBRASKA
-						owns_entire_state_region = STATE_KANSAS
-					}
+				trigger_if = { # 미국이면, 명백한 운명 일지 2 다 완료하거나
+					limit = { c:USA ?= THIS }
+					owns_entire_state_region = STATE_CALIFORNIA
+					owns_entire_state_region = STATE_NEVADA
+					owns_entire_state_region = STATE_UTAH
+					owns_entire_state_region = STATE_ARIZONA
+					owns_entire_state_region = STATE_NEW_MEXICO
+					owns_entire_state_region = STATE_TEXAS
+					owns_entire_state_region = STATE_MONTANA
+					owns_entire_state_region = STATE_WYOMING
+					owns_entire_state_region = STATE_COLORADO
+					owns_entire_state_region = STATE_NORTH_DAKOTA
+					owns_entire_state_region = STATE_SOUTH_DAKOTA
+					owns_entire_state_region = STATE_NEBRASKA
+					owns_entire_state_region = STATE_KANSAS
 				}
-				OR = { # 러시아가 아니거나, 동방의 지배자가 됐거나
-					NOT = { c:RUS ?= THIS }
-					AND = {
-						owns_entire_state_region = STATE_EAFP_OUTER_MANCHURIA
-						owns_entire_state_region = STATE_OUTER_MANCHURIA
-						owns_entire_state_region = STATE_JETISY
-						owns_entire_state_region = STATE_TOMSK
-						owns_entire_state_region = STATE_KIRGHIZIA
-					}
-				}
-			}
-			add = 10
-		}
-		if = {
-			limit = {
-				c:RUS ?= THIS
-				# 동방의 지배자 저널 완료
-				owns_entire_state_region = STATE_EAFP_OUTER_MANCHURIA
-				owns_entire_state_region = STATE_OUTER_MANCHURIA
-				owns_entire_state_region = STATE_JETISY
-				owns_entire_state_region = STATE_TOMSK
-				owns_entire_state_region = STATE_KIRGHIZIA
-				country_rank >= rank_value:major_power
-				OR = {
-					c:MCH ?= scope:target_country
-					c:CHI ?= scope:target_country
-				}
-				NOT = {
-					any_scope_state = {
-						region = sr:region_north_china
-						is_treaty_port = yes
-					}
+				trigger_if = { # 러시아면, 동방의 지배자가 됐거나
+					limit = { c:RUS ?= THIS }
+					owns_entire_state_region = STATE_EAFP_OUTER_MANCHURIA
+					owns_entire_state_region = STATE_OUTER_MANCHURIA
+					owns_entire_state_region = STATE_JETISY
+					owns_entire_state_region = STATE_TOMSK
+					owns_entire_state_region = STATE_KIRGHIZIA
 				}
 			}
 			add = 10
@@ -3253,15 +3234,22 @@ ai_strategy_default = {
 					country_rank = scope:target_country.country_rank
 				}
 				multiply = 0.5
-			}		
+			}	
 		}	
 		befriend = {
 			value = 200
 			
+			if = {
+				limit = {	
+					country_rank <= scope:target_country.country_rank
+				}
+				add = 100
+			}
+
 			####중국대상 가중치 추가
 			if = {
 				limit = {
-					country_rank >= rank_value:great_power
+					country_rank >= rank_value:major_power
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
@@ -3279,24 +3267,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = -50
-			}
-			if = {	#러시아용
-				limit = {
-					c:RUS ?= THIS
-					country_rank >= rank_value:great_power
-					OR = {
-						c:MCH ?= scope:target_country
-						c:CHI ?= scope:target_country
-					}
-					NOT = {
-						any_scope_state = {
-							region = sr:region_north_china
-							is_treaty_port = yes
-						}
-					}
-				}
-				add = -75
+				multiply = 0
 			}
 			if = {	#러시아용
 				limit = {
@@ -3308,20 +3279,19 @@ ai_strategy_default = {
 					}
 					NOT = {
 						any_scope_state = {
-							region = sr:region_manchuria
+							OR = {
+								AND = {
+									region = sr:region_north_china
+									is_treaty_port = yes
+								}
+								region = sr:region_manchuria
+							}
 						}
 					}
 				}
-				add = -75
+				multiply = 0.25
 			}
 			####
-			
-			if = {
-				limit = {	
-					country_rank <= scope:target_country.country_rank
-				}
-				add = 100
-			}
 			
 			multiply = {
 				value = "ai_ideological_opinion(scope:target_country)"
@@ -3456,64 +3426,6 @@ ai_strategy_default = {
 		}
 		reconcile = {
 			value = 0
-
-			####중국대상 가중치 추가
-			if = {
-				limit = {
-					country_rank >= rank_value:great_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						NOT = {
-							has_variable = chinese_westernization_complete
-						}
-					}
-					NOT = {
-						any_scope_state = {
-							OR = {
-								region = sr:region_south_china
-								region = sr:region_north_china
-							}
-							is_treaty_port = yes
-						}
-					}
-				}
-				add = -125
-			}
-			if = {	#러시아용
-				limit = {
-					c:RUS ?= THIS
-					country_rank >= rank_value:great_power
-					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
-					NOT = {
-						any_scope_state = {
-							region = sr:region_north_china
-							is_treaty_port = yes
-						}
-					}
-				}
-				add = -75
-			}
-			if = {	#러시아용
-				limit = {
-					c:RUS ?= THIS
-					country_rank >= rank_value:great_power
-					exists = c:MCH
-					scope:target_country = {
-						THIS = c:MCH
-					}
-					NOT = {
-						any_scope_state = {
-							region = sr:region_manchuria
-						}
-					}
-				}
-				add = -75
-			}
-			####
 			
 			if = {
 				limit = {
@@ -3547,6 +3459,53 @@ ai_strategy_default = {
 				}
 				add = -50
 			}
+
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:major_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				multiply = 0
+			}
+			if = {	#러시아용
+				limit = {
+					c:RUS ?= THIS
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								AND = {
+									region = sr:region_north_china
+									is_treaty_port = yes
+								}
+								region = sr:region_manchuria
+							}
+						}
+					}
+				}
+				multiply = 0.25
+			}
+			####
 			
 			multiply = {
 				value = "ai_ideological_opinion(scope:target_country)"
@@ -3655,10 +3614,20 @@ ai_strategy_default = {
 		protect = {
 			value = 0
 			
+			if = {
+				limit = {
+					OR = {
+						country_rank > scope:target_country.country_rank	
+						scope:target_country = { is_subject_of = root }	
+					}
+				}
+				add = 200
+			}
+
 			####중국대상 가중치 추가
 			if = {
 				limit = {
-					country_rank >= rank_value:great_power
+					country_rank >= rank_value:major_power
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
@@ -3676,48 +3645,31 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = -50
+				multiply = 0
 			}
 			if = {	#러시아용
 				limit = {
 					c:RUS ?= THIS
 					country_rank >= rank_value:great_power
 					exists = c:MCH
-					scope:target_country = c:MCH
+					scope:target_country = {
+						THIS = c:MCH
+					}
 					NOT = {
 						any_scope_state = {
-							region = sr:region_north_china
-							is_treaty_port = yes
+							OR = {
+								AND = {
+									region = sr:region_north_china
+									is_treaty_port = yes
+								}
+								region = sr:region_manchuria
+							}
 						}
 					}
 				}
-				add = -50
-			}
-			if = {	#러시아용
-				limit = {
-					c:RUS ?= THIS
-					country_rank >= rank_value:great_power
-					exists = c:MCH
-					scope:target_country = c:MCH
-					NOT = {
-						any_scope_state = {
-							region = sr:region_manchuria
-						}
-					}
-				}
-				add = -50
+				multiply = 0.1
 			}
 			####
-			
-			if = {
-				limit = {
-					OR = {
-						country_rank > scope:target_country.country_rank	
-						scope:target_country = { is_subject_of = root }	
-					}
-				}
-				add = 200
-			}
 			
 			multiply = {
 				value = "ai_ideological_opinion(scope:target_country)"
@@ -3876,7 +3828,7 @@ ai_strategy_default = {
 			#### 중국대상 가중치 추가
 			if = { 
 				limit = {
-					country_rank >= rank_value:great_power
+					country_rank >= rank_value:major_power
 					exists = c:CHI
 					scope:target_country = {
 						THIS = c:CHI
@@ -3885,7 +3837,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = 25
+				add = 50
 			}
 			####
 			
@@ -4108,7 +4060,7 @@ ai_strategy_default = {
 				####중국대상 가중치 추가
 				if = {
 					limit = {
-						country_rank >= rank_value:great_power
+						country_rank >= rank_value:major_power
 						exists = c:CHI
 						scope:target_country = {
 							THIS = c:CHI
@@ -4121,37 +4073,9 @@ ai_strategy_default = {
 								OR = {
 									region = sr:region_south_china
 									region = sr:region_north_china
+									region = sr:region_manchuria
 								}
 								is_treaty_port = yes
-							}
-						}
-					}
-					add = 50
-				}
-				if = {	#러시아용
-					limit = {
-						c:RUS ?= THIS
-						country_rank >= rank_value:great_power
-						exists = c:MCH
-						scope:target_country = c:MCH
-						NOT = {
-							any_scope_state = {
-								region = sr:region_north_china
-								is_treaty_port = yes
-							}
-						}
-					}
-					add = 50
-				}
-				if = {	#러시아용
-					limit = {
-						c:RUS ?= THIS
-						country_rank >= rank_value:great_power
-						exists = c:MCH
-						scope:target_country = c:MCH
-						NOT = {
-							any_scope_state = {
-								region = sr:region_manchuria
 							}
 						}
 					}
@@ -4827,7 +4751,60 @@ ai_strategy_default = {
 				}
 				
 				add = scope:target_state.ai_state_value:root
-			}			
+			}
+			
+			# 추가
+			if = { #Do Not Take Chinese States In Full, unless another power has already done so
+				limit = {
+					country_rank >= rank_value:major_power
+					scope:target_state = {
+						owner = { has_journal_entry = je_warlord_china }
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+							# region = sr:region_manchuria 
+						}
+						NOT = { # 추가
+							state_region = s:STATE_FORMOSA
+						}
+					}				
+					OR = {
+						country_is_in_north_america = yes
+						country_is_in_europe = yes
+						country_is_in_south_america = yes
+					}					
+					NOT = {
+						any_country = {
+							NOT = { THIS = ROOT }
+							country_rank >= rank_value:major_power
+							OR = {
+								country_is_in_north_america = yes
+								country_is_in_europe = yes
+								country_is_in_south_america = yes
+							}
+							any_scope_state = {
+								NOT = { is_treaty_port = yes }
+								OR = {
+									region = sr:region_north_china
+									region = sr:region_south_china
+									# region = sr:region_manchuria
+								}
+								NOR = { # 추가
+									state_region = s:STATE_ULIASTAI
+									state_region = s:STATE_URGA
+									state_region = s:STATE_EAFP_BEIJING
+									state_region = s:STATE_SHENGJING
+									state_region = s:STATE_HINGGAN
+									state_region = s:STATE_ALXA
+									state_region = s:STATE_QINGHAI
+									state_region = s:STATE_FORMOSA
+								}
+							}
+						}					
+					}
+				}
+				multiply = 0
+			}
 
 			min = 0
 			max = 100				
