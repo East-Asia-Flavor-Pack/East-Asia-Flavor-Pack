@@ -294,6 +294,24 @@ ai_strategy_default = {
 			}
 			add = -50
 		}		
+		#열강들이 태평천국이 살아있을때 청나라의 특약을
+		if = {
+			limit = {
+				country_rank = rank_value:great_power
+				exists = c:TPG
+				scope:target_country = c:CHI			
+			}
+			add = 50
+		}
+		#열강들이 태평천국이 살아있을때 태평천국의 특약을
+		if = {
+			limit = {
+				country_rank = rank_value:great_power
+				exists = c:TPG
+				scope:target_country = c:TPG
+			}
+			add = -15
+		}
 		
 		# Compare ranks - higher rank than us has increased value, lower rank decreased value
 		if = {
@@ -456,6 +474,7 @@ ai_strategy_default = {
 		min = 0
 		max = 30
 	}
+	
 	
 	# How much does the AI desire a state owned by another country
 	# Using this value in other strategies will function additively
@@ -879,8 +898,7 @@ ai_strategy_default = {
 				}
 				multiply = 0
 			}
-				
-			# 수정
+			
 			if = { #Do Not Take Chinese States In Full, unless another power has already done so
 				limit = {
 					country_rank >= rank_value:major_power
@@ -889,17 +907,7 @@ ai_strategy_default = {
 						OR = {
 							region = sr:region_north_china
 							region = sr:region_south_china
-							# region = sr:region_manchuria 
-						}
-						NOR = { # 추가
-							state_region = s:STATE_ULIASTAI
-							state_region = s:STATE_URGA
-							state_region = s:STATE_EAFP_BEIJING
-							state_region = s:STATE_SHENGJING
-							state_region = s:STATE_HINGGAN
-							state_region = s:STATE_ALXA
-							state_region = s:STATE_QINGHAI
-							state_region = s:STATE_FORMOSA
+							region = sr:region_manchuria
 						}
 					}				
 					OR = {
@@ -922,16 +930,6 @@ ai_strategy_default = {
 									region = sr:region_north_china
 									region = sr:region_south_china
 									region = sr:region_manchuria
-								}
-								NOR = { # 추가
-									state_region = s:STATE_ULIASTAI
-									state_region = s:STATE_URGA
-									state_region = s:STATE_EAFP_BEIJING
-									state_region = s:STATE_SHENGJING
-									state_region = s:STATE_HINGGAN
-									state_region = s:STATE_ALXA
-									state_region = s:STATE_QINGHAI
-									state_region = s:STATE_FORMOSA
 								}
 							}
 						}					
@@ -3885,7 +3883,7 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = 25
+				add = 50
 			}
 			####
 			
@@ -4101,64 +4099,64 @@ ai_strategy_default = {
 		conquer = {
 			value = 0
 			
+			####중국대상 가중치 추가
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
+					NOT = {
+						any_scope_state = {
+							OR = {
+								region = sr:region_south_china
+								region = sr:region_north_china
+							}
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 350
+			}
+			if = {	#러시아용
+				limit = {
+					c:RUS ?= THIS
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = c:MCH
+					NOT = {
+						any_scope_state = {
+							region = sr:region_north_china
+							is_treaty_port = yes
+						}
+					}
+				}
+				add = 150
+			}
+			if = {	#러시아용
+				limit = {
+					c:RUS ?= THIS
+					country_rank >= rank_value:great_power
+					exists = c:MCH
+					scope:target_country = c:MCH
+					NOT = {
+						any_scope_state = {
+							region = sr:region_manchuria
+						}
+					}
+				}
+				add = 150
+			}
+			####
+			
 			# PUT ALL ADDITIVE CONQUER SCORES INSIDE THE BELOW IF STATEMENT TO PREVENT AI FROM ATTACKING UNREACHABLE COUNTRIES
 			if = {
 				limit = { can_reach_target_country = yes }
-				
-				####중국대상 가중치 추가
-				if = {
-					limit = {
-						country_rank >= rank_value:great_power
-						exists = c:CHI
-						scope:target_country = {
-							THIS = c:CHI
-							NOT = {
-								has_variable = chinese_westernization_complete
-							}
-						}
-						NOT = {
-							any_scope_state = {
-								OR = {
-									region = sr:region_south_china
-									region = sr:region_north_china
-								}
-								is_treaty_port = yes
-							}
-						}
-					}
-					add = 50
-				}
-				if = {	#러시아용
-					limit = {
-						c:RUS ?= THIS
-						country_rank >= rank_value:great_power
-						exists = c:MCH
-						scope:target_country = c:MCH
-						NOT = {
-							any_scope_state = {
-								region = sr:region_north_china
-								is_treaty_port = yes
-							}
-						}
-					}
-					add = 50
-				}
-				if = {	#러시아용
-					limit = {
-						c:RUS ?= THIS
-						country_rank >= rank_value:great_power
-						exists = c:MCH
-						scope:target_country = c:MCH
-						NOT = {
-							any_scope_state = {
-								region = sr:region_manchuria
-							}
-						}
-					}
-					add = 50
-				}
-				####
-
+		
 				if = {
 					limit = {
 						NOT = { is_country_type = unrecognized }
@@ -4989,6 +4987,57 @@ ai_strategy_default = {
 				add = -100
 			}
 
+			if = { # 추가, 영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
+				limit = {
+					exists = c:GBR
+					this = c:GBR
+					has_journal_entry = je_opium_wars
+					scope:target_country = {
+						has_variable = opium_wars_target
+					}
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHAOZHOU
+						}
+					}
+				}
+				add = -150
+			}
+			if = { # 추가, 북독일계 열강은 산둥반도에
+				limit = {
+					country_has_primary_culture = cu:north_german
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					scope:target_country = c:CHI
+					scope:target_state = {
+						state_region = s:STATE_SHANDONG
+					}					
+				}
+				add = 1000
+			}
+			if = { # 추가, 러시아계 열강은 성경에
+				limit = {
+					any_primary_culture = {
+						has_discrimination_trait = east_slavic
+					}
+					country_rank >= rank_value:great_power
+					exists = c:CHI
+					OR = {
+						scope:target_country = c:CHI
+						AND = {
+							exists = c:MCH
+							scope:target_country = {
+								THIS = c:MCH
+							}
+						}
+					}
+					scope:target_state = {
+						state_region = s:STATE_SHENGJING
+					}					
+				}
+				add = 1000
+			}
+
 			if = { #Carving up China
 				limit = {
 					country_rank >= rank_value:great_power
@@ -5069,49 +5118,35 @@ ai_strategy_default = {
 				add = 75
 			}
 
-			if = { # 추가, 북독일계 열강은 산둥반도에
+			if = { # 추가, 조약항을 우선해서 먹으려 하도록
 				limit = {
 					country_has_primary_culture = cu:north_german
 					country_rank >= rank_value:great_power
 					exists = c:CHI
-					scope:target_country = c:CHI				
-				}
-				if = {
-					limit = {
-						scope:target_state = { state_region = s:STATE_SHANDONG }
+					scope:target_country = c:CHI
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHANDONG
+						}
 					}
-					add = 1000
 				}
-				else = {
-					multiply = 0
-				}
+				multiply = 0
 			}
-			if = { # 추가, 러시아계 열강은 성경에
+			if = { # 추가, 조약항을 우선해서 먹으려 하도록
 				limit = {
 					any_primary_culture = {
 						has_discrimination_trait = east_slavic
 					}
 					country_rank >= rank_value:great_power
 					exists = c:CHI
-					OR = {
-						scope:target_country = c:CHI
-						AND = {
-							exists = c:MCH
-							scope:target_country = {
-								THIS = c:MCH
-							}
+					scope:target_country = c:CHI
+					NOT = {
+						scope:target_state = {
+							state_region = s:STATE_SHENGJING
 						}
 					}
 				}
-				if = {
-					limit = {
-						scope:target_state = { state_region = s:STATE_SHENGJING }
-					}
-					add = 1000
-				}
-				else = {
-					multiply = 0
-				}
+				multiply = 0
 			}
 
 			# Not worth doing against very small markets
@@ -5159,26 +5194,7 @@ ai_strategy_default = {
 			}			
 
 			min = 0
-			max = 100
-			
-			if = { # 추가, 영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
-				limit = {
-					exists = c:GBR
-					this = c:GBR
-					has_journal_entry = je_opium_wars
-					scope:target_country = {
-						THIS = c:CHI
-						has_variable = opium_wars_target
-					}
-				}
-				if = {
-					limit = { scope:target_state = { state_region = s:STATE_SHAOZHOU } }
-					add = 1000
-				}
-				else = {
-					multiply = 0
-				}
-			}
+			max = 100			
 		}
 
 		transfer_subject = {
