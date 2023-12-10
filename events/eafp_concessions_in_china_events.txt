@@ -73,6 +73,7 @@ concessions_in_china.1 = {
 					add = 1
 				}
 			}
+			# debug_log = "[THIS.GetNameNoFormatting] [THIS.ScriptValue('aroai_max_wanted_constructions_points_from_pop')]"
 			set_local_variable = {
 				name = concession_payment_locvar
 				value = 0
@@ -1038,16 +1039,14 @@ concessions_in_china.1005 = {
 
 	immediate = {
 		set_variable = conchi1005
-		if = { # 자기 조계지 외 조계지가 있음
+		if = { # 자기 조계지가 아닌 조계지가 있음
 			limit = {
 				any_scope_state = {
 					has_variable_list = concession_owner_varlist
-					NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } }
-					is_target_in_variable_list = {
-						name = concession_owner_varlist
-						target = ROOT
+					any_in_list = {
+						variable = concession_owner_varlist
+						NOT = { THIS = ROOT }
 					}
-					variable_list_size = { name = concession_owner_varlist value > 1 }
 				}
 			}
 			# 자기 조계지 없앰
@@ -1241,5 +1240,14 @@ concessions_in_china.1005 = {
 	after = {
 		remove_variable = conchi1005
 		concession_state_region_status_calc = yes
+		if = {
+			limit = {
+				any_scope_state = {
+					has_variable_list = concession_owner_varlist
+				}
+				NOT = { has_journal_entry = je_concessions_in_china }
+			}
+			add_journal_entry = { type = je_concessions_in_china }
+		}
 	}
 }
