@@ -73,7 +73,8 @@ concessions_in_china.1 = {
 					add = 1
 				}
 			}
-			# debug_log = "[THIS.GetNameNoFormatting] [THIS.ScriptValue('aroai_max_wanted_constructions_points_from_pop')]"
+			save_scope_value_as = { name = concession_owner_varlist_size value = local_var:concession_owner_varlist_size }
+			debug_log = "[THIS.GetState.GetNameNoFormatting] concession_owner_varlist_size [SCOPE.GetValue('concession_owner_varlist_size')]"
 			set_local_variable = {
 				name = concession_payment_locvar
 				value = 0
@@ -90,41 +91,24 @@ concessions_in_china.1 = {
 			every_scope_building = {
 				# 무역소
 				if = {
-					limit = { is_building_type = building_trade_center }
-					remove_modifier = concession_building_modifier
-					set_local_variable = {
-						name = shares_sum
-						value = {
-							value = modifier:building_workforce_shares_add
-							add = modifier:building_government_shares_add
-							add = modifier:building_aristocrats_shares_add
-							add = modifier:building_bureaucrats_shares_add
-							add = modifier:building_capitalists_shares_add
-							add = modifier:building_clergymen_shares_add
-							add = modifier:building_clerks_shares_add
-							add = modifier:building_engineers_shares_add
-							add = modifier:building_farmers_shares_add
-							add = modifier:building_peasants_shares_add
-							add = modifier:building_laborers_shares_add
-							add = modifier:building_officers_shares_add
-							add = modifier:building_academics_shares_add
-							add = modifier:building_shopkeepers_shares_add
-							add = modifier:building_slaves_shares_add
-							add = modifier:building_soldiers_shares_add
-							add = modifier:building_machinists_shares_add
-						}
+					limit = {
+						is_building_type = building_trade_center
+						cash_reserves_ratio > 0.99
 					}
+					remove_modifier = concession_building_modifier
 					add_modifier = {
 						name = concession_building_modifier
 						multiplier = {
-							value = local_var:shares_sum
+							value = local_var:concession_owner_varlist_size
+							max = 4 # 최대 80%
+							multiply = 0.2 # = 나라당 20%만큼 뜯김
 							divide = {
-								value = 5 # = (1/20%), 나라당 20%만큼 뜯김
-								divide = {
+								value = 1.001
+								subtract = {
 									value = local_var:concession_owner_varlist_size
 									max = 4 # 최대 80%
+									multiply = 0.2 # = 나라당 20%만큼 뜯김
 								}
-								subtract = 1
 							}
 						}
 						days = 30
@@ -138,48 +122,30 @@ concessions_in_china.1 = {
 								value = local_var:concession_owner_varlist_size
 								max = 4
 							}
-							multiply = 4.286 # 주 -> 달
+							multiply = 1.43 # 주 -> 달??? TODO
 						}
 					}
-					remove_local_variable = shares_sum
 				}
 				# 도심지
 				if = {
-					limit = { is_building_type = building_urban_center }
-					remove_modifier = concession_building_modifier
-					set_local_variable = {
-						name = shares_sum
-						value = {
-							value = modifier:building_workforce_shares_add
-							add = modifier:building_government_shares_add
-							add = modifier:building_aristocrats_shares_add
-							add = modifier:building_bureaucrats_shares_add
-							add = modifier:building_capitalists_shares_add
-							add = modifier:building_clergymen_shares_add
-							add = modifier:building_clerks_shares_add
-							add = modifier:building_engineers_shares_add
-							add = modifier:building_farmers_shares_add
-							add = modifier:building_peasants_shares_add
-							add = modifier:building_laborers_shares_add
-							add = modifier:building_officers_shares_add
-							add = modifier:building_academics_shares_add
-							add = modifier:building_shopkeepers_shares_add
-							add = modifier:building_slaves_shares_add
-							add = modifier:building_soldiers_shares_add
-							add = modifier:building_machinists_shares_add
-						}
+					limit = {
+						is_building_type = building_urban_center
+						cash_reserves_ratio > 0.99
 					}
+					remove_modifier = concession_building_modifier
 					add_modifier = {
 						name = concession_building_modifier
 						multiplier = {
-							value = local_var:shares_sum
+							value = local_var:concession_owner_varlist_size
+							max = 4 # 최대 60%
+							multiply = 0.15 # = 나라당 15%만큼 뜯김
 							divide = {
-								value = 6.67 # = (1/15%), 나라당 15%만큼 뜯김
-								divide = {
+								value = 1.001
+								subtract = {
 									value = local_var:concession_owner_varlist_size
 									max = 4 # 최대 60%
+									multiply = 0.15 # = 나라당 15%만큼 뜯김
 								}
-								subtract = 1
 							}
 						}
 						days = 30
@@ -193,10 +159,9 @@ concessions_in_china.1 = {
 								value = local_var:concession_owner_varlist_size
 								max = 4
 							}
-							multiply = 4.286 # 주 -> 달
+							multiply = 1.43 # 주 -> 달??? TODO
 						}
 					}
-					remove_local_variable = shares_sum
 				}
 				# 공장 & 인프라
 				if = {
@@ -205,41 +170,22 @@ concessions_in_china.1 = {
 							is_building_group = bg_infrastructure
 							is_building_group = bg_manufacturing
 						}
+						cash_reserves_ratio > 0.99
 					}
 					remove_modifier = concession_building_modifier
-					set_local_variable = {
-						name = shares_sum
-						value = {
-							value = modifier:building_workforce_shares_add
-							add = modifier:building_government_shares_add
-							add = modifier:building_aristocrats_shares_add
-							add = modifier:building_bureaucrats_shares_add
-							add = modifier:building_capitalists_shares_add
-							add = modifier:building_clergymen_shares_add
-							add = modifier:building_clerks_shares_add
-							add = modifier:building_engineers_shares_add
-							add = modifier:building_farmers_shares_add
-							add = modifier:building_peasants_shares_add
-							add = modifier:building_laborers_shares_add
-							add = modifier:building_officers_shares_add
-							add = modifier:building_academics_shares_add
-							add = modifier:building_shopkeepers_shares_add
-							add = modifier:building_slaves_shares_add
-							add = modifier:building_soldiers_shares_add
-							add = modifier:building_machinists_shares_add
-						}
-					}
 					add_modifier = {
 						name = concession_building_modifier
 						multiplier = {
-							value = local_var:shares_sum
+							value = local_var:concession_owner_varlist_size
+							max = 4 # 최대 40%
+							multiply = 0.1 # = 나라당 10%만큼 뜯김
 							divide = {
-								value = 10 # = (1/10%), 나라당 10%만큼 뜯김
-								divide = {
+								value = 1.001
+								subtract = {
 									value = local_var:concession_owner_varlist_size
 									max = 4 # 최대 40%
+									multiply = 0.1 # = 나라당 10%만큼 뜯김
 								}
-								subtract = 1
 							}
 						}
 						days = 30
@@ -253,16 +199,41 @@ concessions_in_china.1 = {
 								value = local_var:concession_owner_varlist_size
 								max = 4
 							}
-							multiply = 4.286 # 주 -> 달
+							multiply = 1.43 # 주 -> 달??? TODO
 						}
 					}
-					remove_local_variable = shares_sum
 				}
 			}
+			
+			if = {
+				limit = {
+					gdp > define:NEconomy|GOVERNMENT_DIVIDENDS_FALLOFF_START
+				}
+				change_local_variable = {
+					name = concession_payment_locvar
+					multiply = {
+						value = 1
+						subtract = {
+							value = gdp
+							subtract = define:NEconomy|GOVERNMENT_DIVIDENDS_FALLOFF_START
+							divide = define:NEconomy|GOVERNMENT_DIVIDENDS_FALLOFF_END
+							max = 1
+							multiply = {
+								value = 1
+								subtract = define:NEconomy|GOVERNMENT_DIVIDENDS_EFFICIENCY_MIN
+							}
+						}
+					}
+				}
+			}
+			save_scope_value_as = { name = concession_payment_locvar value = local_var:concession_payment_locvar }
+			debug_log = "[THIS.GetState.GetNameNoFormatting] [ROOT.GetCountry.GetNameNoFormatting] concession_payment_locvar [SCOPE.GetValue('concession_payment_locvar')]"
 			ROOT = {
 				change_variable = {
 					name = concession_payment_var
-					add = local_var:concession_payment_locvar
+					add = {
+						value = local_var:concession_payment_locvar
+					}
 				}
 			}
 			every_in_list = {
@@ -281,6 +252,14 @@ concessions_in_china.1 = {
 						divide = local_var:concession_owner_varlist_size
 					}
 				}
+				save_scope_value_as = {
+					name = concession_paid_var
+					value = {
+						value = local_var:concession_payment_locvar
+						divide = local_var:concession_owner_varlist_size
+					}
+				}
+				debug_log = "[PREV.GetState.GetNameNoFormatting] [THIS.GetCountry.GetNameNoFormatting] concession_payment_locvar/concession_owner_varlist_size [SCOPE.GetValue('concession_paid_var')]"
 			}
 			remove_local_variable = concession_payment_locvar
 			remove_local_variable = concession_owner_varlist_size
