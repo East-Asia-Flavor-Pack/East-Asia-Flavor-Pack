@@ -43,24 +43,23 @@
 		}
 	}
 
-	complete = {
-		scope:journal_entry = {
-			is_goal_complete = yes
-		}
-		custom_tooltip = {
-			text = warlord_china_criteria
-		}
-	}
-
-	fail = { # 수정
+	complete = { # 수정
 		custom_tooltip = {
 			text = finished_chinese_westernization_tt
 			has_variable = chinese_westernization_complete
 		}
 	}
 
-	on_complete = {
-		hidden_effect = { # 추가
+	fail = {
+		custom_tooltip = {
+			text = je_china_failure_tt
+			var:china_warlord_explosion_sum >= 1 # 수정
+		}
+	}
+
+	on_fail = { # 추가
+		# trigger_event = { id = warlord_china_events.100 }
+		hidden_effect = {
 			remove_variable = china_warlord_explosion
 			remove_variable = china_warlord_explosion_monthly
 			remove_variable = china_warlord_explosion_radical_monthly
@@ -69,10 +68,12 @@
 			remove_variable = china_warlord_explosion_lost_state_monthly
 			remove_variable = china_warlord_explosion_sum
 		}
-		trigger_event = { id = warlord_china_events.100 }
+		custom_tooltip = je_warlord_china_on_fail
 	}
 
-	on_fail = { # 추가
+	on_complete = {
+		trigger_event = { id = warlord_china_events.200 }
+		# 추가
 		hidden_effect = {
 			remove_variable = china_warlord_explosion
 			remove_variable = china_warlord_explosion_monthly
@@ -85,11 +86,11 @@
 	}
 
 	current_value = {
-		value = var:china_warlord_explosion_sum
+		value = var:china_warlord_explosion_sum # 수정
 	}
 
 	goal_add_value = {
-		add = 1
+		add = 1 # 수정
 	}
 	
 	progressbar = yes
@@ -133,6 +134,7 @@
 					NOT = { has_variable = china_warlord_explosion_subject }
 					is_subject = yes
 				}
+				# chi_add_1_fragile_unity = yes
 				post_notification = warlord_china_explosion_point_add
 				change_variable = {
 					name = china_warlord_explosion
@@ -142,17 +144,21 @@
 			}
 			# if = { 제거
 			# 	limit = {
-			# 		NOT = { has_variable = china_warlord_explosion_recognized }
+			#		NOT = { has_variable = china_warlord_explosion_loans }
+			#		taking_loans = yes
+			#	}
+			#	chi_remove_1_fragile_unity = yes
+			#	set_variable = china_warlord_explosion_loans
+			#}
+			# if = {
+			#	limit = {
+			#		NOT = { has_variable = china_warlord_explosion_recognized }
 			# 		country_rank != rank_value:unrecognized_power
 			# 		country_rank != rank_value:unrecognized_major_power
 			# 		country_rank != rank_value:unrecognized_regional_power
 			# 	}
 			# 	set_variable = china_warlord_explosion_recognized
-			# 	post_notification = warlord_china_explosion_point_remove
-			# 	change_variable = {
-			# 		name = china_warlord_explosion
-			# 		subtract = 1
-			# 	}
+			# 	chi_add_1_fragile_unity = yes
 			# }
 			if = {
 				limit = {
@@ -160,6 +166,7 @@
 					NOT = { has_law = law_type:law_monarchy }
 				}
 				set_variable = china_abolished_monarchy
+				# chi_remove_1_fragile_unity = yes
 				post_notification = warlord_china_explosion_point_add
 				change_variable = {
 					name = china_warlord_explosion
