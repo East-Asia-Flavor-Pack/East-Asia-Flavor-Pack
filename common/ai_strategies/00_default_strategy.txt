@@ -2937,9 +2937,9 @@ ai_strategy_default = {
 	# Which buildings should the AI subsidize
 	# Using a different value in a strategy will override this value
 	subsidies = {
-		building_power_plant = should_have
-		building_railway = should_have
-		building_trade_center = should_have		
+		building_power_plant = must_have
+		building_railway = must_have
+		building_trade_center = must_have		
 	}
 	
 	# Specifying values here will override subsidy priorities while at war
@@ -5189,55 +5189,6 @@ ai_strategy_default = {
 				}
 				add = 1000
 			}
-			
-
-			# Not worth doing against very small markets
-			if = {
-				limit = {
-					scope:target_country = {
-						gdp < 2000000 
-					}
-				}
-				multiply = 0
-			}					
-
-			if = {
-				limit = {
-					has_treaty_port_in_country = scope:target_country
-				}
-				multiply = 0
-			}
-			
-			# Don't want treaty ports on countries in our market
-			if = {
-				limit = {
-					market_capital.market = scope:target_country.market_capital.market
-				}
-				multiply = 0
-			}			
-			
-			if = {
-				limit = {
-					scope:target_country = {
-						has_diplomatic_pact = {
-							who = root
-							type = trade_agreement
-						}	
-					}
-				}
-				multiply = 0
-			}
-			
-			if = {
-				limit = {
-					can_reach_target_state = no
-				}
-				multiply = 0
-			}			
-
-			min = 0
-			max = 100
-			
 			if = { # 추가, 영국이 가급적 홍콩 말고 다른곳을 먹지 않도록
 				limit = {
 					exists = c:GBR
@@ -5756,43 +5707,43 @@ ai_strategy_default = {
 					}
 					add = 25
 				}
+			}
 
-				if = {
-					limit = {
-						scope:target_country = {
-							has_journal_entry = je_peru_bolivia
-						}
-						OR = {
-							country_has_primary_culture = cu:south_andean
-							country_has_primary_culture = cu:north_andean
-							country_has_primary_culture = cu:platinean
-							country_has_primary_culture = cu:argentine
-							country_has_primary_culture = cu:chilean
-							country_has_primary_culture = cu:colombian
-							country_has_primary_culture = cu:ecuadorian
-						}						
+			if = {
+				limit = {
+					scope:target_country = {
+						has_journal_entry = je_peru_bolivia
 					}
-					add = 75
+					OR = {
+						country_has_primary_culture = cu:south_andean
+						country_has_primary_culture = cu:north_andean
+						country_has_primary_culture = cu:platinean
+						country_has_primary_culture = cu:argentine
+						country_has_primary_culture = cu:chilean
+						country_has_primary_culture = cu:colombian
+						country_has_primary_culture = cu:ecuadorian
+					}						
 				}
+				add = 75
+			}
 
-				# Relations with subject
-				multiply = {
-					value = "scope:target_country.relations:root"
-					multiply = 0.01
-					add = 1
-					min = 0.25
-					max = 2.0				
-				}
-				
-				# Ideological opinion of subject
-				multiply = {
-					value = "ai_ideological_opinion(scope:target_country)"
-					multiply = 0.05
-					add = 1
-					min = 0.25
-					max = 2.0
-				}				
-			}	
+			# Relations with subject
+			multiply = {
+				value = "scope:target_country.relations:root"
+				multiply = 0.01
+				add = 1
+				min = 0.25
+				max = 2.0				
+			}
+			
+			# Ideological opinion of subject
+			multiply = {
+				value = "ai_ideological_opinion(scope:target_country)"
+				multiply = 0.05
+				add = 1
+				min = 0.25
+				max = 2.0
+			}					
 
 			min = 0
 			max = 100			
@@ -5838,24 +5789,6 @@ ai_strategy_default = {
 						scope:target_country.infamy >= infamy_threshold:pariah
 					}
 					add = 25
-				}
-
-				# Relations with target
-				multiply = {
-					value = "scope:target_country.relations:root"
-					multiply = -0.01
-					add = 1
-					min = 0.5
-					max = 2.0				
-				}
-				
-				# Ideological opinion of target
-				multiply = {
-					value = "ai_ideological_opinion(scope:target_country)"
-					multiply = -0.05
-					add = 1
-					min = 0.5
-					max = 2.0
 				}				
 			}
 			
@@ -5867,6 +5800,24 @@ ai_strategy_default = {
 				}
 				add = 100
 			}
+			
+			# Relations with target
+			multiply = {
+				value = "scope:target_country.relations:root"
+				multiply = -0.01
+				add = 1
+				min = 0.5
+				max = 2.0				
+			}
+			
+			# Ideological opinion of target
+			multiply = {
+				value = "ai_ideological_opinion(scope:target_country)"
+				multiply = -0.05
+				add = 1
+				min = 0.5
+				max = 2.0
+			}			
 
 			min = 0
 			max = 100				
