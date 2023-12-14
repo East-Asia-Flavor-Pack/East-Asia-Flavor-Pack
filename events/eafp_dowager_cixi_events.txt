@@ -24,20 +24,7 @@ dowager_cixi_events.1 = { # 서태후의 권력 장악 (기상정변)
 
 	immediate = {
 		create_character = {
-			first_name = Xingzhen
-			last_name = Yehe_Nara
-			culture = cu:manchu
-			ig_leader = yes
-			female = yes
-			religion = confucianism
-			ideology = ideology_traditionalist
-			interest_group = ig_landowners
-			# dna = ecchi_dna_cixi # 없으면 말고... TODO
-			birth_date = 1835.11.29
-			traits = { ambitious hedonist senile chi_regent shengmu_huangtaihou }
-			on_created = {
-				set_variable = { name = is_Xingzhen_Yehe_Nara }
-			}
+			template = eafp_chi_xingzhen_yehe_nara_template
 		}
 	}
 
@@ -81,7 +68,7 @@ dowager_cixi_events.2 = { # 동태후의 사망
 	}
 
 	trigger = {
-		any_scope_character = { has_variable = is_Xingzhen_Yehe_Nara }
+		any_scope_character = { has_template = eafp_chi_xingzhen_yehe_nara_template }
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -90,7 +77,7 @@ dowager_cixi_events.2 = { # 동태후의 사망
 
 	immediate = {
 		random_scope_character = {
-			limit = { has_variable = is_Xingzhen_Yehe_Nara }
+			limit = { has_template = eafp_chi_xingzhen_yehe_nara_template }
 			save_scope_as = Xingzhen_Yehe_Nara_scope
 			remove_trait = shengmu_huangtaihou
 			add_trait = chi_the_elder_of_the_imperial_family
@@ -171,18 +158,21 @@ dowager_cixi_events.4 = { # 서태후 축출
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		scope:Xingzhen_Yehe_Nara_scope = { remove_variable = is_Xingzhen_Yehe_Nara }
+		scope:Xingzhen_Yehe_Nara_scope = { kill_character = { hidden = yes } }
+		remove_modifier = cixis_extravagance_modifier
+		hidden_effect = {
+			remove_variable = cixi_coup
+			remove_variable = cixi_coup_d
+		}
 	}
 
 	option = {
 		name = dowager_cixi_events.4.a
 		default_option = yes
 
-		scope:Xingzhen_Yehe_Nara_scope = { kill_character = { hidden = yes } }
-		remove_modifier = cixis_extravagance_modifier
-		hidden_effect = {
-			remove_variable = cixi_coup
-			remove_variable = cixi_coup_d
+		show_as_tooltip = {
+			scope:Xingzhen_Yehe_Nara_scope = { kill_character = { hidden = yes } }
+			remove_modifier = cixis_extravagance_modifier
 		}
 
 		ai_chance = {
