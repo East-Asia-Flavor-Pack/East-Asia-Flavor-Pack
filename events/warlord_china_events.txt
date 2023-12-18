@@ -45,7 +45,7 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			save_scope_as = revolt_state
 		}
 		create_country = {
-			tag = KMT
+			tag = ROC
 			origin = this
 			state = scope:revolt_state
 			on_created = {
@@ -137,11 +137,11 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 		}
 		random_diplomatic_play = {
 			limit = {
-				initiator = c:KMT
+				initiator = c:ROC
 				target = c:CHI
 			}
 			add_escalation = 40
-			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
+			add_diplomatic_play_war_support = { target = c:ROC value = 100 }
 			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
 		}
 		add_modifier = {
@@ -155,12 +155,55 @@ warlord_china_events.1 = { # (도시 이름) 봉기
 			is_decaying = yes
 		}
 		# 군부 지도자를 권위주의로
-		ig:ig_armed_forces = {
-			leader = {
+		if = {
+			limit = { any_scope_character = { has_template = chi_general_yuan_shikai } }
+			random_scope_character = {
+				limit = { has_template = chi_general_yuan_shikai }
 				set_ideology = ideology:ideology_authoritarian
+				set_as_interest_group_leader = yes
 				set_variable = YSK_var
 				set_character_busy_and_immortal = yes
 			}
+		}
+		else_if = {
+			limit = {
+				game_date >= 1885
+				game_date <= 1920
+			}
+			create_character = {
+				template = chi_general_yuan_shikai
+				ideology = ideology:ideology_authoritarian
+				ig_leader = yes
+				
+			}
+			random_scope_character = {
+				limit = { has_template = chi_general_yuan_shikai }
+				set_variable = YSK_var
+				set_character_busy_and_immortal = yes
+			}
+		}
+		else = {
+			create_character = {
+				culture = cu:han
+				female = no
+				ideology = ideology_authoritarian
+				commander_rank = default
+				interest_group = ig_armed_forces
+				age = { 40 60 }
+				traits = {
+					ambitious
+					persistent
+				}
+				on_created = {
+					set_variable = YSK_var
+					set_character_busy_and_immortal = yes
+				}
+			}
+
+		}
+		if = {
+			limit = { any_scope_character = { has_template = chi_general_yuan_shikai } }
+			set_ideology = ideology:ideology_authoritarian
 		}
 		trigger_event = {
 			id = warlord_china_events.2
@@ -231,7 +274,7 @@ warlord_china_events.1001 = { # 쑨원 영입용 이벤트
 						owner = c:CHI
 						has_template = chi_sun_character_template
 					}
-					transfer_character = c:KMT
+					transfer_character = c:ROC
 					set_character_as_ruler = yes
 					add_character_role = politician
 					set_character_busy_and_immortal = yes
@@ -247,7 +290,7 @@ warlord_china_events.1001 = { # 쑨원 영입용 이벤트
 					limit = {
 						has_template = chi_sun_character_template
 					}
-					transfer_character = c:KMT
+					transfer_character = c:ROC
 					set_character_as_ruler = yes
 					add_character_role = politician
 					set_character_busy_and_immortal = yes
@@ -273,74 +316,6 @@ warlord_china_events.1001 = { # 쑨원 영입용 이벤트
 					set_character_busy_and_immortal = yes
 				}
 			}
-			add_modifier = {
-				name = xinhai_revolution_army_modifier
-				months = normal_modifier_time
-				is_decaying = yes
-			}
-			add_modifier = {
-				name = xinhai_revolution_army_modifier_short
-				months = 13
-				is_decaying = yes
-			}
-			add_modifier = {
-				name = xinhai_revolution_land_socialization_modifier
-				months = long_modifier_time
-				is_decaying = yes
-			}
-
-			# 신해 혁명 외교 행동
-			create_diplomatic_play = {
-				name = xinhai_revolution
-				target_country = c:CHI
-				type = dp_revolution
-			}
-			hidden_effect = {
-				change_infamy = -500
-			}
-			add_journal_entry = { type = je_xinhai_revolution_kmt }
-		}
-		else = {
-			# 쑨원 Mk.2
-			create_character = {
-				age = { 30 50 }
-				religion = rel:protestant
-				ideology = ideology_republican_leader
-				interest_group = ig_intelligentsia
-				ruler = yes
-				ig_leader = yes
-				traits = {
-					ambitious
-					persistent
-					inspirational_orator
-				}
-				on_created = {
-					add_character_role = politician
-					set_character_busy_and_immortal = yes
-				}
-			}
-			add_escalation = 80
-			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
-			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
-		}
-		add_modifier = {
-			name = xinhai_revolution_republican_propaganda
-			months = long_modifier_time
-			is_decaying = yes
-		}
-		add_modifier = {
-			name = xinhai_revolution_shock_of_the_revolution
-			months = 13
-			is_decaying = yes
-		}
-	}
-
-	option = {
-		name = warlord_china_events.1.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
 		}
 	}
 }
@@ -369,7 +344,7 @@ warlord_china_events.2 = { # 혁명 전파
 	immediate = {
 		while = {
 			count = 4
-			c:KMT = {		
+			c:ROC = {		
 				ordered_neighbouring_state = {
 					limit = {
 						owner = c:CHI
@@ -380,7 +355,7 @@ warlord_china_events.2 = { # 혁명 전파
 						NOT = { THIS = c:CHI.capital }
 					}
 					order_by = radical_fraction
-					set_state_owner = c:KMT
+					set_state_owner = c:ROC
 					set_state_type = incorporated
 				}
 			}
@@ -426,7 +401,7 @@ warlord_china_events.3 = { # 더 혁명 전파
 	immediate = {
 		while = {
 			count = 4
-			c:KMT = {		
+			c:ROC = {		
 				ordered_neighbouring_state = {
 					limit = {
 						owner = c:CHI
@@ -437,7 +412,7 @@ warlord_china_events.3 = { # 더 혁명 전파
 						NOT = { THIS = c:CHI.capital }
 					}
 					order_by = radical_fraction
-					set_state_owner = c:KMT
+					set_state_owner = c:ROC
 					set_state_type = incorporated
 				}
 			}
@@ -483,7 +458,14 @@ warlord_china_events.4 = { # 몽골 위구르 종속국 탈주 (있으면)
 	immediate = {
 		every_subject_or_below = {
 			if = {
-				limit = { is_subject_type = subject_type_military_headquarters_china }
+				limit = {
+					is_subject_type = subject_type_military_headquarters_china
+					NOT = {
+						any_scope_state = {
+							has_modifier = manchurian_containment
+						}
+					}
+				}
 				make_independent = yes
 				warlord_setup_effect = yes
 			}
@@ -559,49 +541,20 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 		custom_tooltip = {
 			text = warlord_china_events.5.tta
 
-			set_variable = revolutionary_prov_gov_var
-
-			if = {
-				limit = { NOT = { country_has_primary_culture = cu:han } }
-				add_primary_culture = cu:han
-			}
-			remove_primary_culture = cu:manchu
-
-			# KMT 법 CHI에 복붙
-			every_law = {
-				limit = {
-					c:KMT = { has_law = PREV.type }
-				}
-				c:CHI = { activate_law = PREV.type }
+			# 위안스카이 ROC로
+			scope:YSK_scope = {
+				set_home_country = c:ROC
+				transfer_character = c:ROC
+				set_as_interest_group_leader = yes
 			}
 
-			# KMT 지도자 CHI로
-			c:KMT.ruler = {
-				set_home_country = c:CHI
-				transfer_character = c:CHI
-				set_character_as_ruler = yes
+			play_as = c:ROC
+
+			c:ROC = {
+				trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
+				set_variable = chinese_central_government
+				annex = c:CHI
 			}
-
-			# 대숙청
-			every_scope_character = {
-				limit = {
-					NOR = {
-						is_ruler = yes
-						has_variable = YSK_var
-					}
-
-				}
-				random_list = {
-					80 = {
-						kill_character = { hidden = yes }
-					}
-					20 = {}
-				}
-			}
-
-			annex = c:KMT
-			trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
-			set_variable = chinese_central_government
 		}
 
 		ai_chance = {
@@ -630,15 +583,7 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 		custom_tooltip = {
 			text = warlord_china_events.5.ttb
-
-			set_variable = revolutionary_prov_gov_var
 			
-			if = {
-				limit = { NOT = { country_has_primary_culture = cu:han } }
-				add_primary_culture = cu:han
-			}
-			remove_primary_culture = cu:manchu
-
 			# CHI 법 MCH에 복붙
 			every_law = {
 				limit = {
@@ -654,43 +599,18 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				set_character_as_ruler = yes
 			}
 
-			# KMT 법 CHI에 복붙
-			every_law = {
-				limit = {
-					c:KMT = { has_law = PREV.type }
-				}
-				c:CHI = { activate_law = PREV.type }
-			}
-
-			# KMT 지도자 CHI로
-			c:KMT.ruler = {
-				set_home_country = c:CHI
-				transfer_character = c:CHI
-				set_character_as_ruler = yes
+			# 위안스카이 ROC로
+			scope:YSK_scope = {
+				set_home_country = c:ROC
+				transfer_character = c:ROC
 				set_as_interest_group_leader = yes
 			}
 
-			# 대숙청
-			every_scope_character = {
-				limit = {
-					NOR = {
-						is_ruler = yes
-						has_variable = YSK_var
-					}
-
-				}
-				random_list = {
-					80 = {
-						kill_character = { hidden = yes }
-					}
-					20 = {}
-				}
-			}
 			c:MCH = {
 				set_variable = imperial_family_exiled
 				every_scope_character = {
 					limit = {
-						is_ruler = yes
+						is_ruler = no
 					}
 					random_list = {
 						80 = {
@@ -701,11 +621,13 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				}
 			}
 
-			annex = c:KMT
-			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
-			set_variable = chinese_central_government
-			
 			play_as = c:MCH
+
+			c:ROC = {
+				trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
+				set_variable = chinese_central_government
+				annex = c:CHI
+			}
 		}
 
 		ai_chance = {
@@ -758,6 +680,10 @@ warlord_china_events.21 = { # 공화국의 탄생
 			days = 15
 			popup = yes
 		}
+		every_scope_state = {
+			set_state_type = incorporated
+		}
+		set_capital = STATE_BEIJING
 	}
 
 	option = {
@@ -826,6 +752,12 @@ warlord_china_events.22 = { # 타협의 결과
 	option = {
 		name = warlord_china_events.22.a
 		
+		add_modifier = {
+			name = warchi22
+			months = very_long_modifier_time
+			is_decaying = yes
+		}
+
 		default_option = yes
 
 		ai_chance = {
@@ -861,11 +793,11 @@ warlord_china_events.23 = { # 타협의 여파
 
 		# 호남 군벌
 		if = {
-			limit = { exists = s:STATE_HUNAN.region_state:CHI }
+			limit = { exists = s:STATE_HUNAN.region_state:ROC }
 			create_country = {
 				tag = HNA
 				origin = this
-				state = s:STATE_HUNAN.region_state:CHI
+				state = s:STATE_HUNAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
 					set_variable = warlord_state
@@ -875,11 +807,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 광서 군벌
 		if = {
-			limit = { exists = s:STATE_GUANGXI.region_state:CHI }
+			limit = { exists = s:STATE_GUANGXI.region_state:ROC }
 			create_country = {
 				tag = GNG
 				origin = this
-				state = s:STATE_GUANGXI.region_state:CHI
+				state = s:STATE_GUANGXI.region_state:ROC
 				on_created = {
 					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
 					if = {
@@ -907,16 +839,16 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 안휘 군벌
 		if = {
-			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:CHI }
+			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:ROC }
 			create_country = {
 				tag = AHU
 				origin = this
-				state = s:STATE_SOUTHERN_ANHUI.region_state:CHI
+				state = s:STATE_SOUTHERN_ANHUI.region_state:ROC
 
 				on_created = {
 					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
 					if = {
-						limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:CHI }
+						limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:ROC }
 						s:STATE_NORTHERN_ANHUI = {
 							set_owner_of_provinces = {
 								country = c:AHU
@@ -932,11 +864,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 
 		#if = {
-		#	limit = { exists = s:STATE_ZHILI.region_state:CHI }
+		#	limit = { exists = s:STATE_ZHILI.region_state:ROC }
 		#	create_country = { #Zhili Clique
 		#		tag = ZHI
 		#		origin = this
-		#		state = s:STATE_ZHILI.region_state:CHI
+		#		state = s:STATE_ZHILI.region_state:ROC
 		#		on_created = {
 		#			warlord_setup_effect = yes
 		#			set_variable = warlord_state
@@ -946,15 +878,15 @@ warlord_china_events.23 = { # 타협의 여파
 		#}
 		# 봉천 군벌
 		if = {
-			limit = { exists = s:STATE_SHENGJING.region_state:CHI }
+			limit = { exists = s:STATE_SHENGJING.region_state:ROC }
 			create_country = {
 				tag = MCH
 				origin = this
-				state = s:STATE_SHENGJING.region_state:CHI
+				state = s:STATE_SHENGJING.region_state:ROC
 				on_created = {
 					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
 					if = {
-						limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
+						limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:ROC }
 						s:STATE_SOUTHERN_MANCHURIA = {
 							set_owner_of_provinces = {
 								country = c:MCH
@@ -963,7 +895,7 @@ warlord_china_events.23 = { # 타협의 여파
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_EAFP_BEIJING.region_state:CHI }
+						limit = { exists = s:STATE_EAFP_BEIJING.region_state:ROC }
 						s:STATE_EAFP_BEIJING = {
 							set_owner_of_provinces = {
 								country = c:MCH
@@ -972,7 +904,7 @@ warlord_china_events.23 = { # 타협의 여파
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:CHI }
+						limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:ROC }
 						s:STATE_NORTHERN_MANCHURIA = {
 							set_owner_of_provinces = {
 								country = c:MCH
@@ -988,11 +920,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 산서 군벌
 		if = {
-			limit = { exists = s:STATE_SHANXI.region_state:CHI }
+			limit = { exists = s:STATE_SHANXI.region_state:ROC }
 			create_country = {
 				tag = SHN
 				origin = this
-				state = s:STATE_SHANXI.region_state:CHI
+				state = s:STATE_SHANXI.region_state:ROC
 
 				on_created = {
 					warlord_setup_effect = yes
@@ -1003,28 +935,28 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 신강 군벌
 		if = {
-			limit = { exists = s:STATE_TIANSHAN.region_state:CHI }
+			limit = { exists = s:STATE_TIANSHAN.region_state:ROC }
 			create_country = {
 				tag = XIN
 				origin = this
-				state = s:STATE_TIANSHAN.region_state:CHI
+				state = s:STATE_TIANSHAN.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_DZUNGARIA.region_state:CHI }
-						s:STATE_DZUNGARIA.region_state:CHI = {
+						limit = { exists = s:STATE_DZUNGARIA.region_state:ROC }
+						s:STATE_DZUNGARIA.region_state:ROC = {
 							set_state_owner = c:XIN
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_JETISY.region_state:CHI }
-						s:STATE_JETISY.region_state:CHI = {
+						limit = { exists = s:STATE_JETISY.region_state:ROC }
+						s:STATE_JETISY.region_state:ROC = {
 							set_state_owner = c:XIN
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_KIRGHIZIA.region_state:CHI }
-						s:STATE_KIRGHIZIA.region_state:CHI = {
+						limit = { exists = s:STATE_KIRGHIZIA.region_state:ROC }
+						s:STATE_KIRGHIZIA.region_state:ROC = {
 							set_state_owner = c:XIN
 						}
 					}
@@ -1037,16 +969,16 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 운남 군벌
 		if = {
-			limit = { exists = s:STATE_YUNNAN.region_state:CHI }
+			limit = { exists = s:STATE_YUNNAN.region_state:ROC }
 			create_country = {
 				tag = YUN
 				origin = this
-				state = s:STATE_YUNNAN.region_state:CHI
+				state = s:STATE_YUNNAN.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
-						s:STATE_GUIZHOU.region_state:CHI = {
+						limit = { exists = s:STATE_GUIZHOU.region_state:ROC }
+						s:STATE_GUIZHOU.region_state:ROC = {
 							set_state_owner = c:YUN
 						}
 					}
@@ -1058,11 +990,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 귀주 군벌
 		if = {
-			limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
+			limit = { exists = s:STATE_GUIZHOU.region_state:ROC }
 			create_country = {
 				tag = GUI
 				origin = this
-				state = s:STATE_GUIZHOU.region_state:CHI
+				state = s:STATE_GUIZHOU.region_state:ROC
 		
 				on_created = {
 					warlord_setup_effect = yes
@@ -1073,16 +1005,16 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 광동 군벌
 		if = {
-			limit = { exists = s:STATE_GUANGDONG.region_state:CHI }
+			limit = { exists = s:STATE_GUANGDONG.region_state:ROC }
 			create_country = {
 				tag = YUE
 				origin = this
-				state = s:STATE_GUANGDONG.region_state:CHI
+				state = s:STATE_GUANGDONG.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_SHAOZHOU.region_state:CHI }
-						s:STATE_SHAOZHOU.region_state:CHI = {
+						limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
+						s:STATE_SHAOZHOU.region_state:ROC = {
 							set_state_owner = c:YUE
 						}
 					}
@@ -1093,11 +1025,11 @@ warlord_china_events.23 = { # 타협의 여파
 			c:YUE = { save_scope_as = scope_YUE }
 		}
 		else_if = {
-			limit = { exists = s:STATE_SHAOZHOU.region_state:CHI }
+			limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
 			create_country = {
 				tag = YUE
 				origin = this
-				state = s:STATE_SHAOZHOU.region_state:CHI
+				state = s:STATE_SHAOZHOU.region_state:ROC
 
 				on_created = {
 					warlord_setup_effect = yes
@@ -1108,11 +1040,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 
 		#if = {
-		#	limit = { exists = s:STATE_SICHUAN.region_state:CHI }
+		#	limit = { exists = s:STATE_SICHUAN.region_state:ROC }
 		#	create_country = {
 		#		tag = SIH
 		#		origin = this
-		#		state = s:STATE_SICHUAN.region_state:CHI
+		#		state = s:STATE_SICHUAN.region_state:ROC
 		#
 		#		on_created = {
 		#			warlord_setup_effect = yes
@@ -1123,11 +1055,11 @@ warlord_china_events.23 = { # 타협의 여파
 		#}
 
 		#if = {
-		#	limit = { exists = s:STATE_SHANDONG.region_state:CHI }
+		#	limit = { exists = s:STATE_SHANDONG.region_state:ROC }
 		#	create_country = {
 		#		tag = SHA
 		#		origin = this
-		#		state = s:STATE_SHANDONG.region_state:CHI
+		#		state = s:STATE_SHANDONG.region_state:ROC
 		#
 		#		on_created = {
 		#			warlord_setup_effect = yes
@@ -1138,22 +1070,22 @@ warlord_china_events.23 = { # 타협의 여파
 		#}
 		# 서북 군벌
 		if = {
-			limit = { exists = s:STATE_NINGXIA.region_state:CHI }
+			limit = { exists = s:STATE_NINGXIA.region_state:ROC }
 			create_country = {
 				tag = XIB
 				origin = this
-				state = s:STATE_NINGXIA.region_state:CHI
+				state = s:STATE_NINGXIA.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_GANSU.region_state:CHI }
-						s:STATE_GANSU.region_state:CHI = {
+						limit = { exists = s:STATE_GANSU.region_state:ROC }
+						s:STATE_GANSU.region_state:ROC = {
 							set_state_owner = c:XIB
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_ALXA.region_state:CHI }
-						s:STATE_ALXA.region_state:CHI = {
+						limit = { exists = s:STATE_ALXA.region_state:ROC }
+						s:STATE_ALXA.region_state:ROC = {
 							set_state_owner = c:XIB
 						}
 					}
@@ -1164,16 +1096,16 @@ warlord_china_events.23 = { # 타협의 여파
 			c:XIB = { save_scope_as = scope_XIB }
 		}
 		else_if = {
-			limit = { exists = s:STATE_GANSU.region_state:CHI }
+			limit = { exists = s:STATE_GANSU.region_state:ROC }
 			create_country = {
 				tag = YUE
 				origin = this
-				state = s:STATE_GANSU.region_state:CHI
+				state = s:STATE_GANSU.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_ALXA.region_state:CHI }
-						s:STATE_ALXA.region_state:CHI = {
+						limit = { exists = s:STATE_ALXA.region_state:ROC }
+						s:STATE_ALXA.region_state:ROC = {
 							set_state_owner = c:XIB
 						}
 					}
@@ -1186,11 +1118,11 @@ warlord_china_events.23 = { # 타협의 여파
 		# 새로 추가한 것들
 		# 복건 군벌
 		if = {
-			limit = { exists = s:STATE_FUJIAN.region_state:CHI }
+			limit = { exists = s:STATE_FUJIAN.region_state:ROC }
 			create_country = {
 				tag = FJN
 				origin = this
-				state = s:STATE_FUJIAN.region_state:CHI
+				state = s:STATE_FUJIAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
 					set_variable = warlord_state
@@ -1200,11 +1132,11 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 강서 군벌
 		if = {
-			limit = { exists = s:STATE_JIANGXI.region_state:CHI }
+			limit = { exists = s:STATE_JIANGXI.region_state:ROC }
 			create_country = {
 				tag = JGX
 				origin = this
-				state = s:STATE_JIANGXI.region_state:CHI
+				state = s:STATE_JIANGXI.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
 					set_variable = warlord_state
@@ -1214,21 +1146,21 @@ warlord_china_events.23 = { # 타협의 여파
 		}
 		# 강소 군벌
 		if = {
-			limit = { exists = s:STATE_NANJING.region_state:CHI }
+			limit = { exists = s:STATE_NANJING.region_state:ROC }
 			create_country = {
 				tag = JGS
 				origin = this
-				state = s:STATE_NANJING.region_state:CHI
+				state = s:STATE_NANJING.region_state:ROC
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_JIANGSU.region_state:CHI }
-						s:STATE_JIANGSU.region_state:CHI = {
+						limit = { exists = s:STATE_JIANGSU.region_state:ROC }
+						s:STATE_JIANGSU.region_state:ROC = {
 							set_state_owner = c:JGS
 						}
 					}
 					if = {
-						limit = { exists = s:STATE_SUZHOU.region_state:CHI }
-						s:STATE_SUZHOU.region_state:CHI = {
+						limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+						s:STATE_SUZHOU.region_state:ROC = {
 							set_state_owner = c:JGS
 						}
 					}
@@ -1239,16 +1171,16 @@ warlord_china_events.23 = { # 타협의 여파
 			c:JGS = { save_scope_as = scope_JGS }
 		}
 		else_if = {
-			limit = { exists = s:STATE_JIANGSU.region_state:CHI }
+			limit = { exists = s:STATE_JIANGSU.region_state:ROC }
 			create_country = {
 				tag = JGS
 				origin = this
-				state = s:STATE_JIANGSU.region_state:CHI
+				state = s:STATE_JIANGSU.region_state:ROC
 
 				on_created = {
 					if = {
-						limit = { exists = s:STATE_SUZHOU.region_state:CHI }
-						s:STATE_SUZHOU.region_state:CHI = {
+						limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+						s:STATE_SUZHOU.region_state:ROC = {
 							set_state_owner = c:JGS
 						}
 					}
@@ -1259,11 +1191,11 @@ warlord_china_events.23 = { # 타협의 여파
 			c:JGS = { save_scope_as = scope_JGS }
 		}
 		else_if = {
-			limit = { exists = s:STATE_SUZHOU.region_state:CHI }
+			limit = { exists = s:STATE_SUZHOU.region_state:ROC }
 			create_country = {
 				tag = JGS
 				origin = this
-				state = s:STATE_SUZHOU.region_state:CHI
+				state = s:STATE_SUZHOU.region_state:ROC
 
 				on_created = {
 					warlord_setup_effect = yes

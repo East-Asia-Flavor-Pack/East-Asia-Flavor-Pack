@@ -39,11 +39,19 @@
 				}
 			}
 		}
+		set_variable = { # 추가
+			name = tpg_army_size_mul
+			value = 0
+		}
 		while = {
-			count = 5 # 수정
+			limit = {
+				var:tpg_army_size_mul <= c:CHI.army_size
+			}
 			random_scope_state = { # 전체적으로 수정
 				limit = {
 					is_capital = no
+					region = sr:region_south_china # 추가
+					
 					NOT = { 
 						has_variable = cult_center 
 						state_region = { 
@@ -60,7 +68,7 @@
 					NOT = { state_region = s:STATE_CHONGQING } # 추가
 				}
 				weight = { # 추가
-					base = 0.1
+					base = 1
 					modifier = {
 						turmoil > 0.1
 						add = 1
@@ -98,36 +106,12 @@
 						add = 1
 					}
 					modifier = {
-						any_neighbouring_state = {
-							is_capital = yes
-						}
-						factor = 0.1
-					}
-					modifier = {
-						region = sr:region_north_china
-						factor = 0.5
-					}
-					modifier = {
-						region = sr:region_north_china
-						any_neighbouring_state = {
-							region = sr:region_south_china
-						}
-						factor = 2
-					}
-					modifier = {
 						region = sr:region_south_china
-						factor = 4
-					}
-					modifier = {
-						region = sr:region_south_china
-						any_neighbouring_state = {
-							region = sr:region_north_china
-						}
-						factor = 0.5
+						factor = 20
 					}
 					modifier = {
 						is_coastal = yes
-						factor = 1.5
+						factor = 2
 					}
 				}
 				if = {
@@ -146,23 +130,24 @@
 						text = taiping_state_defection
 						set_state_owner = c:TPG
 						set_state_type = incorporated
+						set_variable = cult_center # 추가
 						add_culture_standard_of_living_modifier = {
 							culture = cu:manchu
 							months = long_modifier_time
 							multiplier = -5
 						}
-						c:TPG = {
-							create_military_formation = {
-								type = army
-								hq_region = scope:tpg_defector_state.region
+						#c:TPG = {
+						#	create_military_formation = {
+						#		type = army
+						#		hq_region = scope:tpg_defector_state.region
 					
-								combat_unit = {
-									type = unit_type:combat_unit_type_irregular_infantry
-									state_region = scope:tpg_defector_state.state_region
-									count = 10
-								}
-							}
-						}
+						#		combat_unit = {
+						#			type = unit_type:combat_unit_type_irregular_infantry
+						#			state_region = scope:tpg_defector_state.state_region
+						#			count = 10
+						#		}
+						#	}
+						#}
 					}
 							
 				}
@@ -174,6 +159,13 @@
 					this.state_region = {
 						add_claim = c:TPG
 					}
+				}
+			}
+			set_variable = { # 추가
+				name = tpg_army_size_mul
+				value = {
+					value = c:TPG.army_size
+					multiply = 4
 				}
 			}
 		}
@@ -195,7 +187,7 @@
 			}
 			add_modifier = {
 				name = modifier_taiping_hiring_bonus
-				months = 6
+				months = 24 # 수정
 			}
 		}
 	}
