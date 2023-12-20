@@ -1,0 +1,56 @@
+﻿china_warlord_explosion_radical_monthly = {
+	value = radical_fraction
+	divide = 250
+}
+
+china_warlord_explosion_loyalist_monthly = {
+	value = loyalist_fraction
+	divide = -250
+}
+
+china_warlord_explosion_treaty_port_monthly = {
+	value = 0
+	every_state_region = {
+		limit = { any_scope_state = { state_is_in_china_proper = yes } }
+		if = {
+			limit = {
+				any_scope_state = {
+					NOT = { owner = ROOT }
+					is_treaty_port = yes
+					any_neighbouring_state = { owner = ROOT }
+				}
+			}
+			add = 1
+		}
+	}
+	multiply = 0.0001 # 수치조정 TODO
+}
+
+china_warlord_explosion_lost_state_monthly = {
+	value = 0
+	every_state_region = {
+		limit = { any_scope_state = { state_is_in_china_proper = yes } }
+		if = {
+			limit = {
+				any_scope_state = {
+					NOT = { owner = ROOT }
+					is_treaty_port = no
+				}
+			}
+			add = 1
+		}
+	}
+	multiply = 0.0001 # 수치조정 TODO
+}
+
+china_warlord_explosion_modifier_monthly = {
+	value = modifier:country_china_warlord_explosion_monthly_add
+}
+
+china_warlord_explosion_monthly = {
+	value = china_warlord_explosion_radical_monthly
+	add = china_warlord_explosion_loyalist_monthly
+	add = china_warlord_explosion_treaty_port_monthly
+	add = china_warlord_explosion_lost_state_monthly
+	add = china_warlord_explosion_modifier_monthly
+}

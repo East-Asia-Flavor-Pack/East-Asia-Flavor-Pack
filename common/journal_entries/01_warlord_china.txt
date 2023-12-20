@@ -9,27 +9,6 @@
 			value = 0
 		}
 		set_variable = {
-			name = china_warlord_explosion_monthly # 0-1
-			value = 0
-		}
-		set_variable = {
-			name = china_warlord_explosion_radical_monthly
-			value = radical_fraction
-		}
-		set_variable = {
-			name = china_warlord_explosion_loyalist_monthly
-			value = loyalist_fraction
-		}
-		set_variable = {
-			name = china_warlord_explosion_treaty_port_monthly
-			value = 0
-		}
-		set_variable = {
-			name = china_warlord_explosion_lost_state_monthly
-			value = 0
-		}
-
-		set_variable = {
 			name = china_warlord_explosion_sum # 0-1
 			value = 0
 		}
@@ -61,11 +40,6 @@
 		# trigger_event = { id = warlord_china_events.100 }
 		hidden_effect = {
 			remove_variable = china_warlord_explosion
-			remove_variable = china_warlord_explosion_monthly
-			remove_variable = china_warlord_explosion_radical_monthly
-			remove_variable = china_warlord_explosion_loyalist_monthly
-			remove_variable = china_warlord_explosion_treaty_port_monthly
-			remove_variable = china_warlord_explosion_lost_state_monthly
 			remove_variable = china_warlord_explosion_sum
 			trigger_event = { id = warlord_china_events.1 popup = yes }
 		}
@@ -77,11 +51,6 @@
 		# 추가
 		hidden_effect = {
 			remove_variable = china_warlord_explosion
-			remove_variable = china_warlord_explosion_monthly
-			remove_variable = china_warlord_explosion_radical_monthly
-			remove_variable = china_warlord_explosion_loyalist_monthly
-			remove_variable = china_warlord_explosion_treaty_port_monthly
-			remove_variable = china_warlord_explosion_lost_state_monthly
 			remove_variable = china_warlord_explosion_sum
 		}
 	}
@@ -199,84 +168,10 @@
 
 	on_monthly_pulse = { # 추가
 		effect = {
-			set_variable = {
-				name = china_warlord_explosion_radical_monthly
-				value = {
-					value = radical_fraction
-					divide = 250 # 수치조정 TODO
-				}
-			}
-			set_variable = {
-				name = china_warlord_explosion_loyalist_monthly
-				value = {
-					value = loyalist_fraction
-					divide = 250 # 수치조정 TODO
-				}
-			}
-			set_variable = {
-				name = china_warlord_explosion_treaty_port_monthly
-				value = 0
-			}
-			set_variable = {
-				name = china_warlord_explosion_lost_state_monthly
-				value = 0
-			}
-			every_state_region = {
-				limit = {
-					any_scope_state = { state_is_in_china_proper = yes }
-				}
-				if = {
-					limit = {
-						any_scope_state = {
-							NOT = { owner = ROOT }
-							is_treaty_port = yes
-							any_neighbouring_state = { owner = ROOT }
-						}
-					}
-					ROOT = {
-						change_variable = {
-							name = china_warlord_explosion_treaty_port_monthly
-							add = 1
-						}
-					}
-				}
-				if = {
-					limit = {
-						any_scope_state = {
-							NOT = { owner = ROOT }
-							is_treaty_port = no
-						}
-					}
-					ROOT = {
-						change_variable = {
-							name = china_warlord_explosion_lost_state_monthly
-							add = 1
-						}
-					}
-				}
-			}
-			change_variable = {
-				name = china_warlord_explosion_treaty_port_monthly
-				multiply = 0.0001 # 수치조정 TODO
-			}
-			change_variable = {
-				name = china_warlord_explosion_lost_state_monthly
-				multiply = 0.0002 # 수치조정 TODO
-			}
-	
-			set_variable = {
-				name = china_warlord_explosion_monthly
-				value = {
-					value = var:china_warlord_explosion_radical_monthly
-					subtract = var:china_warlord_explosion_loyalist_monthly
-					add = var:china_warlord_explosion_treaty_port_monthly
-					add = var:china_warlord_explosion_lost_state_monthly
-				}
-			}
 			change_variable = {
 				name = china_warlord_explosion
 				add = {
-					value = var:china_warlord_explosion_monthly
+					value = china_warlord_explosion_monthly
 					multiply = 5
 				}
 			}
