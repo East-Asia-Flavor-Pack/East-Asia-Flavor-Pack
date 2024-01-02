@@ -10,7 +10,7 @@
         }
         set_variable = {
             name = cixi_coup
-            value = 0 # 0~1
+            value = 0.5 # 1이 되면 반란
         }
         set_variable = {
             name = cixi_coup_d
@@ -42,7 +42,27 @@
             remove_variable = cixi_coup_d
         }
     }
+    invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+	on_invalid = {
+		hidden_effect = {
+            remove_variable = cixi_coup
+            remove_variable = cixi_coup_d
+        }
+	}
     status_desc = {
+        first_valid = {
+			triggered_desc = {
+				desc = je_dowager_cixi_status
+				trigger = {
+					always = yes
+				}
+			}
+		}
 	}
     on_monthly_pulse = {
         effect = {
@@ -51,11 +71,11 @@
                 value = {
                     value = {
                         value = scope:Xingzhen_Yehe_Nara_scope.popularity # 서태후의 인기
-                        divide = 6000
+                        divide = 900
                     }
                     add = {
                         value = ruler.popularity # 군주의 인기
-                        divide = -6000
+                        divide = -900
                     }
                     add = {
                         value = ig:ig_landowners.ig_approval # 지주 지지도
@@ -63,8 +83,8 @@
                             value = 1
                             add = ig:ig_landowners.ig_government_power_share # 정부에 있으면 영향 추가
                         }
-                        multiply = ig:ig_landowners.ig_clout  # 지주 정치력
-                        divide = -600
+                        multiply = ig:ig_landowners.ig_clout # 지주 정치력
+                        divide = -900
                     }
                     add = {
                         value = ig:ig_devout.ig_approval # 종교인 지지도
@@ -72,25 +92,69 @@
                             value = 1
                             add = ig:ig_devout.ig_government_power_share # 정부에 있으면 영향 추가
                         }
-                        multiply = ig:ig_devout.ig_clout  # 종교인 정치력
-                        divide = -600
+                        multiply = ig:ig_devout.ig_clout # 종교인 정치력
+                        divide = -900
                     }
-                }
-            }
-            if = {
-                limit = { ig:ig_armed_forces = { has_ideology = ideology:ideology_stratocratic } } # 군대 현대화 안 했다면
-                change_variable = {
-                    name = cixi_coup_d
                     add = {
                         value = ig:ig_armed_forces.ig_approval # 군부 지지도
                         multiply = {
                             value = 1
                             add = ig:ig_armed_forces.ig_government_power_share # 정부에 있으면 영향 추가
                         }
-                        multiply = ig:ig_armed_forces.ig_clout  # 군부 정치력
-                        divide = -600
+                        multiply = ig:ig_armed_forces.ig_clout # 군부 정치력
+                        divide = -900
                     }
+                    add = {
+                        value = ig:ig_industrialists.ig_approval
+                        multiply = {
+                            value = 1
+                            add = ig:ig_industrialists.ig_government_power_share # 정부에 있으면 영향 추가
+                        }
+                        multiply = ig:ig_industrialists.ig_clout
+                        divide = -900
+                    }
+                    add = {
+                        value = ig:ig_rural_folk.ig_approval
+                        multiply = {
+                            value = 1
+                            add = ig:ig_rural_folk.ig_government_power_share # 정부에 있으면 영향 추가
+                        }
+                        multiply = ig:ig_rural_folk.ig_clout
+                        divide = -900
+                    }
+                    add = {
+                        value = ig:ig_petty_bourgeoisie.ig_approval
+                        multiply = {
+                            value = 1
+                            add = ig:ig_petty_bourgeoisie.ig_government_power_share # 정부에 있으면 영향 추가
+                        }
+                        multiply = ig:ig_petty_bourgeoisie.ig_clout
+                        divide = -900
+                    }
+                    add = {
+                        value = ig:ig_intelligentsia.ig_approval
+                        multiply = {
+                            value = 1
+                            add = ig:ig_intelligentsia.ig_government_power_share # 정부에 있으면 영향 추가
+                        }
+                        multiply = ig:ig_intelligentsia.ig_clout
+                        divide = -900
+                    }
+                    add = {
+                        value = ig:ig_trade_unions.ig_approval
+                        multiply = {
+                            value = 1
+                            add = ig:ig_trade_unions.ig_government_power_share # 정부에 있으면 영향 추가
+                        }
+                        multiply = ig:ig_trade_unions.ig_clout
+                        divide = -900
+                    }
+                    add = -0.01
                 }
+            }
+            change_variable = {
+                name = cixi_coup
+                multiply = 0.944 # 1년에 절반씩
             }
             change_variable = {
                 name = cixi_coup
