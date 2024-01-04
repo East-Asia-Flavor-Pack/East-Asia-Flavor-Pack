@@ -261,3 +261,74 @@ concession_state_region_status_calc_state = {
 		}
 	}
 }
+
+
+
+
+
+concession_state_region_status_calc_on_civil_war_won = {
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_GUIZHOU}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_CHONGQING}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SICHUAN}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SOUTHERN_ANHUI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SHAOZHOU}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_GUANGDONG}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_FUJIAN}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_FORMOSA}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_GUANGXI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_ZHEJIANG}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SUZHOU}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_NANJING}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_HUNAN}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_JIANGXI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_YUNNAN}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_EASTERN_HUBEI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_WESTERN_HUBEI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SHANDONG}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_BEIJING}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_ZHILI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_HENAN}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_NORTHERN_ANHUI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_SHANXI}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_JIANGSU}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_NINGXIA}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_GANSU}
+	concession_state_region_status_calc_state_on_civil_war_won={STATE=STATE_XIAN}
+}
+
+concession_state_region_status_calc_state_on_civil_war_won = {
+	if = {
+		limit = { has_global_variable = $STATE$_has_concession }
+		s:$STATE$ = {
+			ordered_scope_state = {
+				limit = { has_variable_list = concession_owner_varlist }
+				order_by = state_population
+
+				set_local_variable = {
+					name = country_num
+					value = 0
+				}
+				every_in_list = {
+					variable = concession_owner_varlist
+					change_local_variable = {
+						name = country_num
+						add = 1
+					}
+				}
+				if = {
+					limit = { variable_list_size = { name = concession_owner_varlist value > local_var:country_num } }
+					if = {
+						limit = { NOT = { is_target_in_variable_list = { name = concession_state_owner_varlist target = ROOT } } }
+						add_to_variable_list = { name = concession_owner_varlist target = ROOT }
+						change_local_variable = {
+							name = concession_num
+							add = 1
+						}
+					}
+					concession_state_region_status_calc_state={STATE=$STATE$}
+				}
+				remove_local_variable = country_num
+			}
+		}
+	}
+}
