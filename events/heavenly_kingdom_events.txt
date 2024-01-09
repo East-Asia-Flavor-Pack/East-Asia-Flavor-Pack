@@ -606,6 +606,14 @@ heavenly.4 = {
 					}
 					activate_law = law_type:law_no_migration_controls
 				}
+				if = { # 추가, 꼼수 방지용
+					limit = {
+						NOT = {
+							has_law = law_type:law_isolationism
+						}
+					}
+					activate_law = law_type:law_isolationism
+				}
 
 				add_modifier = {
 					name = taiping_army_modifier
@@ -2090,6 +2098,639 @@ CHI_missionaries.5 = {
 				country = ROOT
 				value = -10
 			}
+		}
+	}
+}
+
+# 외국인 선교사 살인
+CHI_missionaries.11 = {
+	type = country_event
+	placement = scope:missionary_strife_state
+
+	title = CHI_missionaries.11.t
+	desc = CHI_missionaries.11.d
+	flavor = CHI_missionaries.11.f
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		has_variable = missionary_works_counter
+		var:missionary_works_counter >= 5
+		any_scope_state = {
+			has_variable = open_to_missionaries_state
+		}
+		any_country = {
+			has_diplomatic_relevance = root
+			OR = {
+				religion = rel:catholic
+				religion = rel:protestant
+			}
+		}
+	}
+	immediate = {
+		random_scope_state = {
+			limit = {
+				has_variable = open_to_missionaries_state
+			}
+			save_scope_as = missionary_strife_state
+		}
+		random_country = {
+			limit = {
+				has_diplomatic_relevance = root
+				OR = {
+					religion = rel:catholic
+					religion = rel:protestant
+				}
+			}
+			save_scope_as = missionary_country
+		}
+		# change_variable = { name = missionary_works_counter add = 1 }
+	}
+	option = { # 시늉
+		name = CHI_missionaries.11.a
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+		}
+		add_modifier = {
+			name = CHImis11a
+			months = 12
+		}
+		change_infamy = 10
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis11
+				value = 1
+			}
+			scope:missionary_country = {
+				set_secret_goal = {
+					country = ROOT
+					secret_goal = antagonize
+				}		
+			}
+		}
+		ai_chance = {
+			base = 4
+		}
+	}
+	option = { # 적당히 내줌
+		name = CHI_missionaries.11.b
+		default_option = yes
+		scope:missionary_strife_state = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+		add_modifier = {
+			name = CHImis11b
+			months = 12
+		}
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis11
+				value = 2
+			}
+		}
+		ai_chance = {
+			base = 6
+		}
+	}
+	option = { # 다 내줌
+		name = CHI_missionaries.11.c
+		scope:missionary_strife_state = {
+			add_radicals_in_state = {
+				value = medium_radicals
+			}
+		}
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+		add_modifier = {
+			name = CHImis11c
+			months = 12
+		}
+		create_diplomatic_pact = {
+			country = scope:missionary_country
+			type = war_reparations
+		}
+		change_infamy = -5
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis11
+				value = 3
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 좆까
+		name = CHI_missionaries.11.d
+		scope:missionary_strife_state = {
+			add_loyalists_in_state = {
+				value = small_radicals
+			}
+		}
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = -40
+			}
+		}
+		add_modifier = {
+			name = CHImis11d
+			months = 12
+		}
+		change_infamy = 20
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis11
+				value = 0
+			}
+			scope:missionary_country = {
+				set_secret_goal = {
+					country = ROOT
+					secret_goal = antagonize
+				}		
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	after = {
+		scope:missionary_country = {
+			trigger_event = {
+				id = CHI_missionaries.12
+				days = { 3 5 }
+			}
+		}
+	}
+}
+
+# 외국인 선교사 살인 - 대상국 반응
+CHI_missionaries.12 = {
+	type = country_event
+	placement = ROOT
+
+	title = CHI_missionaries.12.t
+	desc = {
+		desc = CHI_missionaries.12.d
+		first_valid = {
+			triggered_desc = {
+				desc = CHI_missionaries.12.d1
+				trigger = { scope:CHImis11 = 1 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.12.d2
+				trigger = { scope:CHImis11 = 2 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.12.d3
+				trigger = { scope:CHImis11 = 3 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.12.d4
+				trigger = { scope:CHImis11 = 0 }
+			}
+		}
+	}
+	flavor = CHI_missionaries.12.f
+
+	duration = 1
+
+	event_image = {
+		video = "unspecific_politicians_arguing"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+	}
+
+	option = {
+		name = CHI_missionaries.12.a
+
+		trigger = { scope:CHImis11 = 1 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.12.a
+
+		trigger = { scope:CHImis11 = 2 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.12.a
+
+		trigger = { scope:CHImis11 = 3 }
+
+		show_as_tooltip = {
+			c:CHI = {
+				create_diplomatic_pact = {
+					country = ROOT
+					type = war_reparations
+				}
+			}
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.12.a
+
+		trigger = { scope:CHImis11 = 0 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 교회 방화
+CHI_missionaries.13 = {
+	type = country_event
+	placement = scope:missionary_strife_state
+
+	title = CHI_missionaries.13.t
+	desc = CHI_missionaries.13.d
+	flavor = CHI_missionaries.13.f
+
+	event_image = {
+		video = "unspecific_fire"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		has_variable = missionary_works_counter
+		var:missionary_works_counter >= 5
+		any_scope_state = {
+			has_variable = open_to_missionaries_state
+		}
+		any_country = {
+			has_diplomatic_relevance = root
+			OR = {
+				religion = rel:catholic
+				religion = rel:protestant
+			}
+		}
+	}
+	immediate = {
+		random_scope_state = {
+			limit = {
+				has_variable = open_to_missionaries_state
+			}
+			save_scope_as = missionary_strife_state
+		}
+		random_country = {
+			limit = {
+				has_diplomatic_relevance = root
+				OR = {
+					religion = rel:catholic
+					religion = rel:protestant
+				}
+			}
+			save_scope_as = missionary_country
+		}
+		# change_variable = { name = missionary_works_counter add = 1 }
+	}
+	option = { # 시늉
+		name = CHI_missionaries.13.a
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+		}
+		add_modifier = {
+			name = CHImis11a
+			months = 12
+		}
+		change_infamy = 10
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis13
+				value = 1
+			}
+			scope:missionary_country = {
+				set_secret_goal = {
+					country = ROOT
+					secret_goal = antagonize
+				}		
+			}
+		}
+		ai_chance = {
+			base = 4
+		}
+	}
+	option = { # 적당히 내줌
+		name = CHI_missionaries.13.b
+		default_option = yes
+		scope:missionary_strife_state = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+		add_modifier = {
+			name = CHImis11b
+			months = 12
+		}
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis13
+				value = 2
+			}
+		}
+		ai_chance = {
+			base = 6
+		}
+	}
+	option = { # 다 내줌
+		name = CHI_missionaries.13.c
+		scope:missionary_strife_state = {
+			add_radicals_in_state = {
+				value = medium_radicals
+			}
+		}
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+		add_modifier = {
+			name = CHImis11c
+			months = 12
+		}
+		create_diplomatic_pact = {
+			country = scope:missionary_country
+			type = war_reparations
+		}
+		change_infamy = -5
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis13
+				value = 3
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 좆까
+		name = CHI_missionaries.13.d
+		scope:missionary_strife_state = {
+			add_loyalists_in_state = {
+				value = small_radicals
+			}
+		}
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = -40
+			}
+		}
+		add_modifier = {
+			name = CHImis11d
+			months = 12
+		}
+		change_infamy = 20
+		hidden_effect = {
+			save_scope_value_as = {
+				name = CHImis13
+				value = 0
+			}
+			scope:missionary_country = {
+				set_secret_goal = {
+					country = ROOT
+					secret_goal = antagonize
+				}		
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	after = {
+		scope:missionary_country = {
+			trigger_event = {
+				id = CHI_missionaries.14
+				days = { 3 5 }
+			}
+		}
+	}
+}
+
+# 교회 방화 - 대상국 반응
+CHI_missionaries.14 = {
+	type = country_event
+	placement = ROOT
+
+	title = CHI_missionaries.14.t
+	desc = {
+		desc = CHI_missionaries.14.d
+		first_valid = {
+			triggered_desc = {
+				desc = CHI_missionaries.14.d1
+				trigger = { scope:CHImis13 = 1 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.14.d2
+				trigger = { scope:CHImis13 = 2 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.14.d3
+				trigger = { scope:CHImis13 = 3 }
+			}
+			triggered_desc = {
+				desc = CHI_missionaries.14.d4
+				trigger = { scope:CHImis13 = 0 }
+			}
+		}
+	}
+	flavor = CHI_missionaries.14.f
+
+	duration = 1
+
+	event_image = {
+		video = "unspecific_politicians_arguing"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+	}
+
+	option = {
+		name = CHI_missionaries.14.a
+
+		trigger = { scope:CHImis13 = 1 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.14.a
+
+		trigger = { scope:CHImis13 = 2 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.14.a
+
+		trigger = { scope:CHImis13 = 3 }
+
+		show_as_tooltip = {
+			c:CHI = {
+				create_diplomatic_pact = {
+					country = ROOT
+					type = war_reparations
+				}
+			}
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = CHI_missionaries.14.a
+
+		trigger = { scope:CHImis13 = 0 }
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+# 위장 입국
+CHI_missionaries.15 = {
+	type = country_event
+	placement = scope:missionary_strife_state
+
+	title = CHI_missionaries.15.t
+	desc = CHI_missionaries.15.d
+	flavor = CHI_missionaries.15.f
+
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		has_variable = missionary_works_counter
+		var:missionary_works_counter >= 5
+		any_scope_state = {
+			has_variable = open_to_missionaries_state
+		}
+		any_country = {
+			has_diplomatic_relevance = root
+			OR = {
+				religion = rel:catholic
+				religion = rel:protestant
+			}
+		}
+	}
+	immediate = {
+		random_scope_state = {
+			limit = {
+				has_variable = open_to_missionaries_state
+			}
+			save_scope_as = missionary_strife_state
+		}
+		random_country = {
+			limit = {
+				has_diplomatic_relevance = root
+				OR = {
+					religion = rel:catholic
+					religion = rel:protestant
+				}
+			}
+			save_scope_as = missionary_country
+		}
+		# change_variable = { name = missionary_works_counter add = 1 }
+	}
+	option = { # 처형
+		name = CHI_missionaries.15.a
+		scope:missionary_country = {
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+		}
+		hidden_effect = {
+			scope:missionary_country = {
+				set_secret_goal = {
+					country = ROOT
+					secret_goal = antagonize
+				}		
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 추방
+		name = CHI_missionaries.15.b
+		default_option = yes
+		add_modifier = {
+			name = CHImis15b
+			months = normal_modifier_time
+		}
+		ai_chance = {
+			base = 1
 		}
 	}
 }
