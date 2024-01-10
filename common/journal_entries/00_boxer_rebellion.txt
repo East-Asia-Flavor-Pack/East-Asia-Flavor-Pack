@@ -19,27 +19,20 @@
     immediate = {
         trigger_event = { id = boxer_rebellion_events.1 } # The Yihetuan Movement
     }
-    complete = {
-        custom_tooltip = {
-            text = qing_owns_all_han_states_tt
-            NOT = {
-                any_state = {
-                    state_region = { is_homeland = cu:han }
-                    NOT = { owner = ROOT }
-                }
-            }
-        }
-    }
-    on_complete = {
-        trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
-    }
-    fail = { # 추가
-        exists = c:BXR
-        has_war_with = c:BXR
-    }
-    on_fail = { # 추가
-        add_journal_entry = { type = je_boxer_rebellion3 }
-    }
+    #complete = {
+    #    custom_tooltip = {
+    #        text = qing_owns_all_han_states_tt
+    #        NOT = {
+    #            any_state = {
+    #                state_region = { is_homeland = cu:han }
+    #                NOT = { owner = ROOT }
+    #            }
+    #        }
+    #    }
+    #}
+    #on_complete = {
+    #    trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
+    #}
     #timeout = 1825
     #on_timeout = {
     #    trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
@@ -58,7 +51,7 @@
     should_be_pinned_by_default = yes
 }
 
-je_boxer_rebellion2 = { # 추가, 의화단 청 vs 열강에서 열강용
+je_boxer_rebellion2_chi = { # 추가, 의화단 청 vs 열강에서 청용
     icon = "gfx/interface/icons/event_icons/event_military.dds"
 
     group = je_group_historical_content
@@ -66,20 +59,89 @@ je_boxer_rebellion2 = { # 추가, 의화단 청 vs 열강에서 열강용
     immediate = {
     }
     complete = {
-        exists = c:CHI
-        has_war_with = c:CHI
+        custom_tooltip = {
+            text = qing_owns_all_han_states_tt
+            NOT = {
+                any_state = {
+                    state_region = { is_homeland = cu:han }
+                    NOT = { owner = ROOT }
+                }
+            }
+        }
+        custom_tooltip = {
+            text = qing_owns_all_concessions_tt
+            NOT = {
+                any_scope_state = { has_variable_list = concession_owner_varlist }
+            }
+        }
     }
-    fail = { # 추가
-        exists = c:BXR
-        has_war_with = c:BXR
+    fail = {
+        custom_tooltip = {
+            text = boxer_rebellion_ended_tt
+            has_global_variable = boxer_rebellion_ended
+        }
     }
-    on_fail = { # 추가
-        add_journal_entry = { type = je_boxer_rebellion3 }
+    on_fail = {
     }
-    #timeout = 1825
-    #on_timeout = {
-    #    trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
-    #}
+    timeout = 1825
+    on_timeout = {
+    }
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+
+je_boxer_rebellion2_others = { # 추가, 의화단 청 vs 열강에서 열강용
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+    group = je_group_historical_content
+
+    immediate = {
+        c:CHI = { save_scope_as = chi_scope }
+    }
+    complete = {
+        custom_tooltip = {
+            text = boxer_rebellion_ended_tt
+            has_global_variable = boxer_rebellion_ended
+        }
+    }
+    fail = {
+        custom_tooltip = {
+            text = boxer_rebellion_ended_tt
+            has_global_variable = boxer_rebellion_ended
+        }
+        custom_tooltip = {
+            text = qing_owns_all_han_states_tt_third
+            NOT = {
+                any_state = {
+                    state_region = { is_homeland = cu:han }
+                    NOT = { owner = c:CHI }
+                }
+            }
+        }
+        custom_tooltip = {
+            text = qing_owns_all_concessions_tt_third
+            c:CHI = {
+                NOT = {
+                    any_scope_state = { has_variable_list = concession_owner_varlist }
+                }
+            }
+        }
+    }
+    on_fail = {
+        effect = {
+            add_radicals = {
+				value = small_radicals
+			}
+        }
+    }
+    timeout = 1825
+    on_timeout = {
+        effect = {
+            add_radicals = {
+				value = small_radicals
+			}
+        }
+    }
     weight = 1000
     should_be_pinned_by_default = yes
 }
