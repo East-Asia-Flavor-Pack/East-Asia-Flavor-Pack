@@ -146,23 +146,19 @@ je_boxer_rebellion2_others = { # 추가, 의화단 청 vs 열강에서 열강용
     should_be_pinned_by_default = yes
 }
 
-je_boxer_rebellion3 = { # 추가, 의화단 vs 청 열강
+je_boxer_rebellion3_chi = { # 추가, 의화단 vs 청 열강에서 청용
     icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	fail = {
-		exists = c:BXR
-		has_truce_with = c:BXR
+        exists = c:BXR
+        c:BXR = {
+            is_diplomatic_play_committed_participant = no
+            is_at_war = no
+        }
 	}
 
 	on_fail = {
-		if = {
-			limit = { has_journal_entry = je_warlord_china }
-			post_notification = warlord_china_explosion_point_add
-			change_variable = {
-				name = china_warlord_explosion
-				add = 0.75    #20%에서 15%증가로 수정
-			}
-		}
+		
 	}
 
     complete = {
@@ -170,7 +166,65 @@ je_boxer_rebellion3 = { # 추가, 의화단 vs 청 열강
     }
 	
 	on_complete = {
-		trigger_event = boxer_rebellion_events.106
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	transferable = no
+}
+
+je_boxer_rebellion3_others = { # 추가, 의화단 vs 청 열강에서 열강용
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	fail = {
+        exists = c:BXR
+        c:BXR = {
+            is_diplomatic_play_committed_participant = no
+            is_at_war = no
+        }
+	}
+
+	on_fail = {
+
+	}
+
+    complete = {
+        NOT = { exists = c:BXR }
+    }
+	
+	on_complete = {
+	}
+
+    invalid = {
+        c:BXR = { is_at_war = yes }
+        NOT = {
+            is_diplomatic_play_involved_with = c:BXR
+        }
+    }
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	transferable = no
+}
+
+je_boxer_rebellion3_boxer = { # 추가, 의화단 vs 청 열강에서 의화단용
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	fail = {
+        NOT = { exists = c:BXR }
+	}
+
+	on_fail = {
+	}
+
+    complete = {
+        is_diplomatic_play_committed_participant = no
+        is_at_war = no
+    }
+	
+	on_complete = {
 	}
 
 	weight = 1000
