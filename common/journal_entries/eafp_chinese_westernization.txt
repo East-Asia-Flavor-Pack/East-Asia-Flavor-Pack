@@ -884,6 +884,96 @@ je_chi_naval_academy = {
     should_be_pinned_by_default = yes
 }
 
+je_new_army = {
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		exists = c:CHI
+		THIS = c:CHI
+	}
+
+	possible = {
+		has_journal_entry = je_chinese_westernization
+	}
+	
+	immediate = {
+		ig:ig_armed_forces = {
+			save_scope_as = armed_forces
+		}
+	}
+	
+    complete = {
+		ig:ig_armed_forces = {
+			has_ideology = ideology:ideology_stratocratic
+		}
+		custom_tooltip = {
+			text = chi_military_academy_established_tt
+			has_variable = chi_military_academy_established
+			var:chi_military_academy_established >= 3
+		}
+		NOT = {
+			any_scope_building = {
+				filter = {
+					is_building_type = building_barracks
+				}
+				has_active_production_method = pm_no_organization
+				percent >= 0.1
+			}
+		}
+		NOT = {
+			any_military_formation = {
+				filter = {
+					is_army = yes
+				}
+				any_combat_unit = {
+					has_unit_type = unit_type:combat_unit_type_irregular_infantry
+				}
+				percent >= 0.1
+			}
+		}
+		has_technology_researched = napoleonic_warfare
+		has_technology_researched = general_staff
+		has_technology_researched = shell_gun
+	}
+	
+	on_complete = {
+		trigger_event = { id = chinese_westernization.181 }
+		show_as_tooltip = {
+			ig:ig_armed_forces = {
+				custom_tooltip = {
+					text = chinese_westernization.181.tt
+					set_interest_group_name = ig_beiyang_army
+				}
+				remove_ideology = ideology_stratocratic
+				add_ideology = ideology_jingoist
+				add_modifier = {
+					name = chi_triumphant_armed_forces
+					months = long_modifier_time
+				}
+			}
+	
+			largely_decrease_decadent_bannermen_effect = yes
+			add_modifier = {
+				name = chiwes181a
+				months = very_long_modifier_time
+			}
+		}
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+	
+    weight = 200
+    transferable = no
+    should_be_pinned_by_default = yes
+}
+
 je_chinese_educational_mission = {
     icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 
