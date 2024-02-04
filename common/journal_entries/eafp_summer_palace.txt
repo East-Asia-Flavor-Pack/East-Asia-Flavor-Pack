@@ -19,23 +19,55 @@
 	}
 
 	fail = {
-		OR = {
-			NOT = { exists = s:STATE_BEIJING.region_state:CHI }
-			NOT = { s:STATE_BEIJING.region_state:CHI.controller = c:CHI }
-			NOT = { c:CHI.capital = s:STATE_BEIJING.region_state:CHI }
-			NOT = { has_journal_entry = je_dowager_cixi }
-		}
+		NOT = { has_journal_entry = je_dowager_cixi }
 	}
 
 	on_fail = {
+		show_as_tooltip = {
+			remove_modifier = summer_palace_reconstruction_modifier
+		}
+		hidden_effect = {
+			if = {
+				limit = { has_modifier = summer_palace_reconstruction_modifier }
+				remove_modifier = summer_palace_reconstruction_modifier
+			}
+			if = {
+				limit = { has_modifier = summer_palace_reconstruction_modifier_unactivated }
+				remove_modifier = summer_palace_reconstruction_modifier_unactivated
+			}
+		}
 		trigger_event = dowager_cixi_events.13
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			change_variable = {
-				name = summer_palace_reconstruction_var
-				add = 1
+			if = {
+				limit = {
+					exists = s:STATE_BEIJING.region_state:CHI
+					s:STATE_BEIJING.region_state:CHI.controller = c:CHI
+					c:CHI.capital = s:STATE_BEIJING.region_state:CHI
+				}
+				change_variable = {
+					name = summer_palace_reconstruction_var
+					add = 1
+				}
+				if = {
+					limit = {
+						NOT = { has_modifier = summer_palace_reconstruction_modifier }
+					}
+					add_modifier = summer_palace_reconstruction_modifier
+					remove_modifier = summer_palace_reconstruction_modifier_unactivated
+				}
+
+			}
+			else = {
+				if = {
+					limit = {
+						has_modifier = summer_palace_reconstruction_modifier
+					}
+					remove_modifier = summer_palace_reconstruction_modifier
+					add_modifier = summer_palace_reconstruction_modifier_unactivated
+				}
 			}
 		}
 	}
