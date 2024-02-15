@@ -1,0 +1,916 @@
+﻿je_chinese_westernization = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	immediate = {
+		set_variable = {
+			name = chinese_westernization_var
+			value = 0
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_army } }
+			add_journal_entry = { type = je_chinese_westernization_army }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_navy } }
+			add_journal_entry = { type = je_chinese_westernization_navy }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_industry } }
+			add_journal_entry = { type = je_chinese_westernization_industry }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_government_reform } }
+			add_journal_entry = { type = je_chinese_westernization_government_reform }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_chinese_westernization_international_prestige } }
+			add_journal_entry = { type = je_chinese_westernization_international_prestige }
+		}
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		set_variable = chinese_westernization_complete
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	current_value = {
+		value = var:chinese_westernization_var
+	}
+
+	goal_add_value = {
+		add = 5
+	}
+	
+	progressbar = yes
+
+	on_weekly_pulse = {
+		
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_chinese_westernization_army = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = decadent_bannermen_not_exist_tt
+			NOT = { has_modifier = decadent_bannermen_8 }
+			NOT = { has_modifier = decadent_bannermen_7 }
+			NOT = { has_modifier = decadent_bannermen_6 }
+			NOT = { has_modifier = decadent_bannermen_5 }
+			NOT = { has_modifier = decadent_bannermen_4 }
+			NOT = { has_modifier = decadent_bannermen_3 }
+			NOT = { has_modifier = decadent_bannermen_2 }
+			NOT = { has_modifier = decadent_bannermen_1 }
+		}
+		custom_tooltip = {
+			text = chi_military_academy_established_tt
+			has_variable = chi_military_academy_established
+			var:chi_military_academy_established >= 3
+		}
+		has_law = law_type:law_professional_army
+		any_scope_building = {
+			is_building_type = building_arms_industry
+			count >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_arms_industry }
+			percent >= 0.75
+			level >= 5
+			OR = {
+				has_active_production_method = pm_rifles
+				has_active_production_method = pm_repeaters
+				has_active_production_method = pm_bolt_action_rifles
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+		}
+		NOT = {
+			any_scope_building = {
+				is_building_type = building_barracks
+				OR = {
+					has_active_production_method = pm_irregular_infantry
+					has_active_production_method = pm_line_infantry
+					has_active_production_method = pm_no_artillery
+					has_active_production_method = pm_cannon_artillery
+					has_active_production_method = pm_mobile_artillery
+				}
+			}
+		}
+		has_technology_researched = electric_telegraph
+	}
+
+	on_complete = {
+		trigger_event = chinese_westernization.199
+		custom_tooltip = je_chinese_westernization_advance
+		change_variable = {
+			name = chinese_westernization_var
+			add = 1
+		}
+		hidden_effect = { # 혹시 몰라 추가
+			ig:ig_armed_forces = {
+				set_interest_group_name = ig_beiyang_army
+				if = {
+					limit = { NOT = { has_ideology = ideology:ideology_jingoist } }
+					add_ideology = ideology_jingoist
+				}
+				if = {
+					limit = { has_ideology = ideology:ideology_stratocratic }
+					remove_ideology = ideology_stratocratic
+				}
+			}
+		}
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = finished_chinese_westernization_tt
+			has_variable = chinese_westernization_complete
+		}
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+	
+	on_weekly_pulse = {
+		events = {
+			chinese_westernization.102
+			chinese_westernization.181
+		}
+		effect = {
+			if = {
+				limit = {
+					NOT = { has_variable = chi_bannermen_law_professional_army }
+					has_law = law_type:law_professional_army
+				}
+				largely_decrease_decadent_bannermen_effect = yes
+				set_variable = chi_bannermen_law_professional_army
+			}
+		}
+	}
+
+	weight = 100
+	should_be_pinned_by_default = no
+}
+
+je_chinese_westernization_navy = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = chi_naval_academy_established_tt
+			has_variable = chi_naval_academy_established
+		}
+		NOT = { has_law = law_type:law_peasant_levies }
+		any_scope_building = {
+			is_building_type = building_shipyards
+			count >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_shipyards }
+			percent >= 0.75
+			level >= 5
+			OR = {
+				has_active_production_method = pm_metal_shipbuilding
+				has_active_production_method = pm_arc_welding_shipbuilding
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+		}
+		NOT = {
+			any_scope_building = {
+				is_building_type = building_naval_base
+				OR = {
+					has_active_production_method = pm_man_o_wars
+					has_active_production_method = pm_no_naval_theory
+				}
+			}
+		}
+		has_technology_researched = hydraulic_cranes
+	}
+
+	on_complete = {
+		trigger_event = chinese_westernization.299
+		custom_tooltip = je_chinese_westernization_advance
+		change_variable = {
+			name = chinese_westernization_var
+			add = 1
+		}
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = finished_chinese_westernization_tt
+			has_variable = chinese_westernization_complete
+		}
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+	
+	on_weekly_pulse = {
+		events = {
+			chinese_westernization.201
+		}
+	}
+
+	weight = 100
+	should_be_pinned_by_default = no
+}
+
+je_chinese_westernization_industry = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	immediate = {
+		
+	}
+
+	complete = {
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			percent >= 0.5
+			any_scope_building = { is_building_type = building_railway }
+		}
+		any_scope_building = {
+			is_building_type = building_railway
+			level >= 5
+		}
+
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			percent >= 0.5
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+		}
+		any_scope_state = {
+			filter = { state_is_in_china = yes }
+			percent >= 0.1
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 10
+			}
+		}
+
+		any_scope_building = {
+			is_building_type = building_textile_mills
+			count >= 5
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_textile_mills }
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_sewing_machines
+				has_active_production_method = pm_electric_sewing_machines
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			is_building_type = building_furniture_manufacturies
+			count >= 5
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_furniture_manufacturies }
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_lathe
+				has_active_production_method = pm_mechanized_workshops
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			is_building_type = building_tooling_workshops
+			count >= 5
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_tooling_workshops }
+			percent >= 0.75
+			has_active_production_method = pm_steel
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			OR = {
+				is_building_type = building_coal_mine
+				is_building_type = building_iron_mine
+				is_building_type = building_lead_mine
+				is_building_type = building_sulfur_mine
+			}
+			count >= 5
+			level >= 5
+		}
+		any_scope_building = {
+			filter = {
+				OR = {
+					is_building_type = building_coal_mine
+					is_building_type = building_iron_mine
+					is_building_type = building_lead_mine
+					is_building_type = building_sulfur_mine
+				}
+			}
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_condensing_engine_pump_building_coal_mine
+				has_active_production_method = pm_condensing_engine_pump_building_iron_mine
+				has_active_production_method = pm_condensing_engine_pump_building_lead_mine
+				has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+				has_active_production_method = pm_diesel_pump_building_coal_mine
+				has_active_production_method = pm_diesel_pump_building_iron_mine
+				has_active_production_method = pm_diesel_pump_building_lead_mine
+				has_active_production_method = pm_diesel_pump_building_sulfur_mine
+            }
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		has_technology_researched = central_banking
+	}
+
+	on_complete = {
+		custom_tooltip = je_chinese_westernization_advance
+		change_variable = {
+			name = chinese_westernization_var
+			add = 1
+		}
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = finished_chinese_westernization_tt
+			has_variable = chinese_westernization_complete
+		}
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_weekly_pulse = {
+		events = {
+			chinese_westernization.301
+			chinese_westernization.302
+			chinese_westernization.303
+			chinese_westernization.304
+		}
+	}
+
+	weight = 100
+	should_be_pinned_by_default = no
+}
+
+je_chinese_westernization_government_reform = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	immediate = {
+		
+	}
+
+	complete = {
+		cu:han = { NOT = { culture_is_discriminated_in = ROOT } }
+		NOR = { 
+			has_law = law_type:law_hereditary_bureaucrats
+
+			has_law = law_type:law_serfdom
+			
+			has_law = law_type:law_traditionalism
+
+			has_law = law_type:law_land_based_taxation
+			has_law = law_type:law_consumption_based_taxation
+
+			any_civil_war = {
+				civil_war_progress > 0.1
+				is_civil_war_type = revolution
+			}
+		}
+		bureaucracy > 0
+	}
+
+	on_complete = {
+		custom_tooltip = je_chinese_westernization_advance
+		change_variable = {
+			name = chinese_westernization_var
+			add = 1
+		}
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = finished_chinese_westernization_tt
+			has_variable = chinese_westernization_complete
+		}
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					NOT = { has_variable = chi_bannermen_han_accepted }
+					NOT = { cu:han = { culture_is_discriminated_in = ROOT } }
+				}
+				decrease_decadent_bannermen_effect = yes
+				set_variable = chi_bannermen_han_accepted
+			}
+		}
+	}
+
+	weight = 100
+	should_be_pinned_by_default = no
+}
+
+je_chinese_westernization_international_prestige = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	immediate = {
+		
+	}
+
+	complete = {
+		is_country_type = recognized
+		aggressive_diplomatic_plays_permitted = yes
+		is_subject = no
+		NOT = {
+			has_diplomatic_pact = {
+				who = ROOT
+				type = war_reparations
+				is_initiator = yes
+			}
+		}
+		NOT = {
+			any_country = {
+				NOT = { this = root }
+				has_diplomatic_pact = {
+					who = ROOT
+					type = customs_union
+					is_initiator = yes
+				}
+			}
+		}
+		sr:region_north_china = {
+			any_scope_state = {
+				count = all
+				owner = c:CHI
+				controller = c:CHI
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				count = all
+				owner = c:CHI
+				controller = c:CHI
+			}
+		}
+		NOT = { any_neighbouring_state = { is_treaty_port = yes } }
+
+		NOT = {
+			has_diplomatic_pact = {
+				who = ROOT
+				type = tributary
+			}
+		}
+		NOT = {
+			has_diplomatic_pact = {
+				who = ROOT
+				type = military_headquarters_china
+			}
+		}
+		c:TIB = { exists = no }
+		c:KOR = {
+			OR = {
+				exists = no
+				is_subject = yes
+			}
+		}
+	}
+
+	on_complete = {
+		custom_tooltip = je_chinese_westernization_advance
+		change_variable = {
+			name = chinese_westernization_var
+			add = 1
+		}
+	}
+
+	fail = {
+		
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = finished_chinese_westernization_tt
+			has_variable = chinese_westernization_complete
+		}
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_weekly_pulse = {
+		events = {
+			chinese_westernization.501
+			chinese_westernization.502
+		}
+	}
+
+	weight = 100
+	should_be_pinned_by_default = no
+}
+
+je_chi_military_academy = {
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	on_monthly_pulse = {
+		random_events = {
+			300 = 0
+			
+			20 = chinese_westernization.122
+			20 = chinese_westernization.123
+			20 = chinese_westernization.124
+			20 = chinese_westernization.125
+			20 = chinese_westernization.126
+			20 = chinese_westernization.127
+			20 = chinese_westernization.130
+			20 = chinese_westernization.131
+			20 = chinese_westernization.132
+			20 = chinese_westernization.133
+			20 = chinese_westernization.134
+			20 = chinese_westernization.135
+			20 = chinese_westernization.136
+			20 = chinese_westernization.137
+			20 = chinese_westernization.138
+		}
+	}
+	
+	immediate = {
+		set_variable = {
+			name = chi_military_academy_peril
+			value = 0
+		}
+		set_variable = {
+			name = chi_military_academy_progress
+			value = 0
+		}
+		if = {
+			limit = { NOT = { capital = { has_variable = chi_military_academy_state } } }
+			capital = { save_scope_as = military_academy_state }
+		}
+		else = {
+			ordered_scope_state = {
+				limit = {
+					NOT = { has_variable = chi_military_academy_state }
+					OR = {
+						region = sr:region_north_china
+						region = sr:region_south_china
+					}
+				}
+				order_by = total_urbanization
+				save_scope_as = military_academy_state
+			}
+		}
+		
+		trigger_event = { id = chinese_westernization.121 }
+	}
+	
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = expedition_low_peril_loc
+				trigger = {
+					var:chi_military_academy_peril < 4
+				}
+			}
+			triggered_desc = {
+				desc = expedition_medium_peril_loc
+				trigger = {
+					var:chi_military_academy_peril < 6
+				}
+			}
+			triggered_desc = {
+				desc = expedition_high_peril_loc
+				trigger = {
+					var:chi_military_academy_peril >= 6
+				}
+			}
+		}
+	}
+	
+    complete = {
+		custom_tooltip = {
+			text = je_expedition_success
+			scope:journal_entry = {
+				is_goal_complete = yes
+			}
+		}
+	}
+	
+	on_complete = {
+		remove_variable = chi_military_academy_peril
+		remove_variable = chi_military_academy_progress
+		trigger_event = { id = chinese_westernization.140 }
+	}
+    
+   fail = {
+		custom_tooltip = {
+			text = je_expedition_fail
+			var:chi_military_academy_peril >= 8
+		}
+    }
+	
+	on_fail = {
+		remove_variable = chi_military_academy_peril
+		remove_variable = chi_military_academy_progress
+		trigger_event = { id = chinese_westernization.139 }
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_invalid = {
+		remove_variable = chi_military_academy_peril
+		remove_variable = chi_military_academy_progress
+	}
+	
+	current_value = {
+		value = var:chi_military_academy_progress
+	}
+
+	goal_add_value = {
+		add = 8
+	}
+	
+	progressbar = yes
+	
+    weight = 200
+    transferable = no
+    should_be_pinned_by_default = yes
+}
+
+je_chi_naval_academy = {
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	on_monthly_pulse = {
+		random_events = {
+			400 = 0
+			
+			20 = chinese_westernization.222
+			20 = chinese_westernization.223
+			20 = chinese_westernization.224
+			40 = chinese_westernization.225
+			40 = chinese_westernization.226
+			20 = chinese_westernization.227
+			20 = chinese_westernization.230
+			20 = chinese_westernization.231
+			40 = chinese_westernization.232
+			20 = chinese_westernization.233
+			20 = chinese_westernization.234
+			40 = chinese_westernization.235
+			20 = chinese_westernization.236
+			40 = chinese_westernization.237
+			20 = chinese_westernization.238
+		}
+	}
+	
+	immediate = {
+		set_variable = {
+			name = chi_naval_academy_peril
+			value = 0
+		}
+		set_variable = {
+			name = chi_naval_academy_progress
+			value = 0
+		}
+		capital = { save_scope_as = naval_academy_state }
+		trigger_event = { id = chinese_westernization.221 }
+	}
+	
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = expedition_low_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril < 4
+				}
+			}
+			triggered_desc = {
+				desc = expedition_medium_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril < 6
+				}
+			}
+			triggered_desc = {
+				desc = expedition_high_peril_loc
+				trigger = {
+					var:chi_naval_academy_peril >= 6
+				}
+			}
+		}
+	}
+	
+    complete = {
+		custom_tooltip = {
+			text = je_expedition_success
+			scope:journal_entry = {
+				is_goal_complete = yes
+			}
+		}
+	}
+	
+	on_complete = {
+		remove_variable = chi_naval_academy_peril
+		remove_variable = chi_naval_academy_progress
+		trigger_event = { id = chinese_westernization.240 }
+	}
+    
+   fail = {
+		custom_tooltip = {
+			text = je_expedition_fail
+			var:chi_naval_academy_peril >= 8
+		}
+    }
+	
+	on_fail = {
+		remove_variable = chi_naval_academy_peril
+		remove_variable = chi_naval_academy_progress
+		trigger_event = { id = chinese_westernization.239 }
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_invalid = {
+		remove_variable = chi_naval_academy_peril
+		remove_variable = chi_naval_academy_progress
+	}
+	
+	current_value = {
+		value = var:chi_naval_academy_progress
+	}
+
+	goal_add_value = {
+		add = 8
+	}
+	
+	progressbar = yes
+	
+    weight = 200
+    transferable = no
+    should_be_pinned_by_default = yes
+}
+
+je_chinese_educational_mission = {
+    icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	on_monthly_pulse = {
+		effect = {
+			change_variable = {
+				name = chinese_educational_mission_progress
+				add = 1
+			}
+			switch = {
+				trigger = var:chinese_educational_mission_progress
+				2 = { trigger_event = chinese_westernization.442 }
+				6 = { trigger_event = chinese_westernization.443 }
+				7 = { trigger_event = chinese_westernization.444 }
+				8 = { trigger_event = chinese_westernization.445 }
+				9 = { trigger_event = chinese_westernization.446 }
+				fallback = {
+					if = {
+						limit = { var:chinese_educational_mission_progress >= 16 }
+						random_list = {
+							10 = {}
+							1 = { trigger_event = chinese_westernization.447 }
+							1 = { trigger_event = chinese_westernization.448 }
+							1 = { trigger_event = chinese_westernization.449 }
+							1 = { trigger_event = chinese_westernization.450 }
+							1 = { trigger_event = chinese_westernization.451 }
+							1 = { trigger_event = chinese_westernization.452 }
+						}
+					}
+				}
+			  }
+		}
+	}
+	
+	immediate = {
+		set_variable = {
+			name = chinese_educational_mission_progress
+			value = 0
+		}
+		
+		trigger_event = { id = chinese_westernization.442 }
+	}
+	
+    complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+	
+	on_complete = {
+		remove_variable = chinese_educational_mission_progress
+		trigger_event = { id = chinese_westernization.140 } # TODO
+		remove_modifier = modifier_chinese_educational_mission_cost
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_invalid = {
+		remove_variable = chinese_educational_mission_progress
+		remove_modifier = modifier_chinese_educational_mission_cost
+	}
+	
+	current_value = {
+		value = var:chinese_educational_mission_progress
+	}
+
+	goal_add_value = {
+		add = 60
+	}
+	
+	progressbar = yes
+	
+    weight = 200
+    transferable = no
+    should_be_pinned_by_default = yes
+}

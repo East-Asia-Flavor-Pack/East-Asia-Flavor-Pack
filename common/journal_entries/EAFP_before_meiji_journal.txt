@@ -1,0 +1,399 @@
+﻿je_tenno_tutorial = { #천황 튜토리얼
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    is_shown_when_inactive = {
+        NOT = { has_variable = nip_tutorial_skip }
+		c:NIP = THIS
+    }
+
+    possible = {
+        c:NIP = THIS
+    }
+
+    immediate = { set_variable = { name = nip_tutorial_var value = 0 } }
+
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+    }
+
+    on_complete = { set_variable = nip_tutorial_skip }
+
+    scripted_button = nip_tutorial_button
+
+    on_weekly_pulse = {
+        effect = {
+            change_variable = {
+                name = nip_tutorial_var
+                add = 5
+            }
+        }
+    }
+
+    current_value = {
+		value = root.var:nip_tutorial_var
+	}	
+
+	goal_add_value = {
+		value = 30
+	}
+
+    progressbar = yes
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+je_bakufu_tutorial = { #막부 튜토리얼
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    is_shown_when_inactive = {
+        NOT = { has_variable = jap_tutorial_skip }
+		c:JAP = THIS
+    }
+
+    possible = {
+        c:JAP = THIS
+    }
+
+    immediate = { set_variable = { name = jap_tutorial_var value = 0 } }
+
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+    }
+
+    on_complete = { set_variable = jap_tutorial_skip }
+
+    scripted_button = jap_tutorial_button
+
+    on_weekly_pulse = {
+        effect = {
+            change_variable = {
+                name = jap_tutorial_var
+                add = 5
+            }
+        }
+    }
+
+    current_value = {
+		value = root.var:jap_tutorial_var
+	}	
+
+	goal_add_value = {
+		value = 30
+	}
+
+    progressbar = yes
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+je_bakufu_start = { #시작 시점 저널
+    icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	immediate = {
+		add_modifier = {
+			name = jap_start
+		}
+		trigger_event = {
+			id = before_meiji.900
+		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
+		c:NIP = {
+			save_scope_as = nip_scope
+		}
+		c:CHO = {
+			save_scope_as = cho_scope
+		}
+		c:TOS = {
+			save_scope_as = tos_scope
+		}
+		c:KAG = {
+			save_scope_as = kag_scope
+		}
+		c:SAT = {
+			save_scope_as = sat_scope
+		}
+		c:SEN = {
+			save_scope_as = sen_scope
+		}
+		c:YON = {
+			save_scope_as = yon_scope
+		}
+		c:GIS = {
+			save_scope_as = gis_scope
+		}
+		c:ODA = {
+			save_scope_as = oda_scope
+		}
+		c:AID = {
+			save_scope_as = aid_scope
+		}
+		c:RYU = {
+			save_scope_as = ryu_scope
+		}
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		is_at_war = no
+		custom_tooltip = {
+			text = nichibei_je_tt
+			has_global_variable = nichibei_var
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = before_meiji.5050
+			days = 10
+		}
+	}
+
+	on_yearly_pulse = {
+		effect = {
+			change_global_variable = {
+				name = japan_start_var
+				add = 2
+			}
+		}
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_great_points_start
+				trigger = {
+					global_var:japan_start_var <= 20
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_great_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var <= 20
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_good_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var > 20
+					global_var:japan_start_var < 50
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_medium_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var >= 50
+					global_var:japan_start_var < 90
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_bad_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var >= 90
+				}
+			}
+		}
+	}
+
+	current_value = {
+		value = global_var:japan_start_var
+	}
+
+	goal_add_value = {
+		add = 125
+	}
+
+	progressbar = yes
+    
+	weight = 10000
+	should_be_pinned_by_default = yes
+}
+
+je_tenno_start = { #천황 시작 저널
+
+	immediate = {
+        add_modifier = {
+			name = jap_start
+		}
+		c:JAP = {
+			save_scope_as = jap_scope
+		}
+		c:NIP = {
+			save_scope_as = nip_scope
+		}
+		c:CHO = {
+			save_scope_as = cho_scope
+		}
+		c:TOS = {
+			save_scope_as = tos_scope
+		}
+		c:KAG = {
+			save_scope_as = kag_scope
+		}
+		c:SAT = {
+			save_scope_as = sat_scope
+		}
+		c:SEN = {
+			save_scope_as = sen_scope
+		}
+		c:YON = {
+			save_scope_as = yon_scope
+		}
+		c:GIS = {
+			save_scope_as = gis_scope
+		}
+		c:ODA = {
+			save_scope_as = oda_scope
+		}
+		c:AID = {
+			save_scope_as = aid_scope
+		}
+		c:RYU = {
+			save_scope_as = ryu_scope
+		}
+	}
+
+	complete = {
+	    scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		custom_tooltip = {
+			text = nichibei_je_tt
+			has_global_variable = nichibei_var
+		}
+	}
+
+	on_complete = {
+	}
+
+	on_weekly_pulse = {
+	}
+
+	current_value = {
+		value = global_var:japan_start_var
+	}
+
+	goal_add_value = {
+		value = 100
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_great_points_start
+				trigger = {
+					global_var:japan_start_var <= 20
+					NOT = { has_global_variable = kodokanki_var }
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_great_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var <= 20
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_good_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var > 20
+					global_var:japan_start_var < 50
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_medium_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var >= 50
+					global_var:japan_start_var < 90
+				}
+			}
+			triggered_desc = {
+				desc = je_tenno_vs_bakufu_bad_points
+				trigger = {
+					has_global_variable = kodokanki_var
+					global_var:japan_start_var >= 90
+				}
+			}
+		}
+	}
+
+	progressbar = yes
+
+	weight = 10000
+	should_be_pinned_by_default = yes
+}
+
+je_kaitaku_hokkaido = { #홋카이도 개발
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	immediate = {
+	}
+
+	complete = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			any_scope_building = {
+				is_building_type = building_coal_mine
+				level >= 2
+			}
+			any_scope_building = {
+				is_building_type = building_sulfur_mine
+				level >= 1
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = before_meiji.2000 }
+	}
+
+	timeout = 6400
+
+	weight = 8000
+}
+
+
+je_gakushuin = { #카쿠슈인 설립
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	immediate = {
+	}
+
+	scripted_button = gakushuin_shien
+	scripted_button = gakushuin_zaigen
+
+	complete = {
+		any_scope_building = {
+			is_building_type = building_university
+			level >= 7 
+			occupancy >= 0.75
+		}
+	}
+
+	on_complete = { #효과 넣어야함
+		trigger_event = { id = before_meiji.1006 }
+
+	}
+
+	timeout = 6400
+
+	weight = 8000
+}
+
+

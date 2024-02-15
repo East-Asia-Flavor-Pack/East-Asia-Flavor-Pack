@@ -1,0 +1,50 @@
+﻿attempt_to_establish_a_naval_academy_decision = {
+	is_shown = {
+		exists = c:CHI
+		this = c:CHI
+		has_journal_entry = je_chinese_westernization_navy
+	}
+
+	possible = {
+		NOT = { has_journal_entry = je_chi_naval_academy }
+		NOT = { has_modifier = chiwes240a }
+		NOT = { 
+			custom_tooltip = {
+				text = chi_naval_academy_established_tt
+				has_variable = chi_naval_academy_established
+			}
+		}
+	}
+
+	when_taken = {
+		add_journal_entry = {
+			type = je_chi_naval_academy
+		}
+	}
+
+	ai_chance = {
+		base = 0
+		modifier = {
+			trigger = { 
+				weekly_net_fixed_income > money_amount_multiplier_small
+			}
+			add = 1
+		}
+		modifier = {
+			trigger = { 
+				weekly_net_fixed_income > money_amount_multiplier_medium
+				gold_reserves > 0
+			}
+			add = 1
+		}
+		modifier = {
+			trigger = {
+				OR = {
+					is_diplomatic_play_committed_participant = yes
+					is_at_war = yes
+				}
+			}
+			add = -1000
+		}		
+	}
+}
