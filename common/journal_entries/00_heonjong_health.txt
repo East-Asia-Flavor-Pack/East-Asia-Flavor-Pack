@@ -1,0 +1,106 @@
+﻿je_heonjong_health = { #헌종 건강
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		exists = c:KOR
+		THIS = c:KOR
+		ruler = {
+			has_template = dna_king_heonjong
+		}
+	}
+
+	possible = {
+		hidden_trigger = {
+			always = no # 이벤트로 함
+		}
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = heonjong_die
+				trigger = {
+					var:heonjong_health < 1
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_unhealthiest
+				trigger = {
+					var:heonjong_health < 5
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_very_unhealthier
+				trigger = {
+					var:heonjong_health < 25
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_unhealthier
+				trigger = {
+					var:heonjong_health < 50
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_unhealthy
+				trigger = {
+					var:heonjong_health < 75
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_normal
+				trigger = {
+					var:heonjong_health < 100
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_healthy
+				trigger = {
+					var:heonjong_health < 125
+				}
+			}
+			triggered_desc = {
+				desc = heonjong_very_healthy
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = heonjong_health
+			value = 120
+		}
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = heonjong_health_tt
+			ruler = {
+				NOT = { has_template = dna_king_heonjong }
+			}
+		}
+	}
+	
+	on_complete = { # TODO
+		remove_variable = heonjong_health
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			change_variable = {
+				name = heonjong_health
+				subtract = 1
+			}
+			if = {
+				limit = { var:heonjong_health < 1 }
+				ruler = {
+					kill_character = yes
+				}
+			}
+		}
+	}
+
+	weight = 9000
+
+	should_be_pinned_by_default = yes
+}
