@@ -6,21 +6,65 @@
 	immediate = {
 		set_variable = {
 			name = china_manchu_power_var
-			value = 0.7
+			value = 70
 		}
 		set_variable = {
 			name = china_manchu_support_var
-			value = 0.7
+			value = 70
 		}
 		set_variable = {
 			name = china_han_power_var
-			value = 0.3
+			value = 30
 		}
 		set_variable = {
 			name = china_han_support_var
-			value = 0.5
+			value = 50
 		}
 		je_manchus_and_han_calc = yes
+
+		set_local_variable = { name = man_pol_str value = 0 }
+		set_local_variable = { name = han_pol_str value = 0 }
+		every_scope_pop = {
+			if = {
+				limit = { pop_is_discriminated = yes }
+				change_local_variable = {
+					name = han_pol_str
+					add = pop_pol_str_from_wealth
+				}
+			}
+			else = {
+				change_local_variable = {
+					name = man_pol_str
+					add = pop_pol_str_from_wealth
+				}
+			}
+		}
+		change_local_variable = {
+			name = han_pol_str
+			multiply = {
+				value = 1
+				add = modifier:state_political_strength_from_discrimination_mult
+			}
+		}
+		set_variable = {
+			name = china_manchu_power_var_d
+			value = {
+				value = var:china_manchu_power_var
+				subtract = local_var:man_pol_str
+				subtract = var:china_han_power_var
+				add = local_var:han_pol_str
+				multiply = 0.01
+			}
+		}
+		set_variable = {
+			name = china_han_power_var_d
+			value = {
+				value = var:china_manchu_power_var_d
+				multiply = -1
+			}
+		}
+		remove_local_variable = man_pol_str
+		remove_local_variable = han_pol_str
 	}
 
 	invalid = {
@@ -44,6 +88,64 @@
 		manchus_above_all
 	}
 	
+	on_monthly_pulse = {
+		effect = {
+			set_local_variable = { name = man_pol_str value = 0 }
+			set_local_variable = { name = han_pol_str value = 0 }
+			every_scope_pop = {
+				if = {
+					limit = { pop_is_discriminated = yes }
+					change_local_variable = {
+						name = han_pol_str
+						add = pop_pol_str_from_wealth
+						# multiply = this.population
+					}
+				}
+				else = {
+					change_local_variable = {
+						name = man_pol_str
+						add = pop_pol_str_from_wealth
+						# multiply = this.population
+					}
+				}
+			}
+			change_local_variable = {
+				name = han_pol_str
+				multiply = {
+					value = 1
+					add = modifier:state_political_strength_from_discrimination_mult
+				}
+			}
+			set_variable = {
+				name = china_manchu_power_var_d
+				value = {
+					value = var:china_manchu_power_var
+					subtract = local_var:man_pol_str
+					subtract = var:china_han_power_var
+					add = local_var:han_pol_str
+					multiply = 0.01
+				}
+			}
+			set_variable = {
+				name = china_han_power_var_d
+				value = {
+					value = var:china_manchu_power_var_d
+					multiply = -1
+				}
+			}
+			remove_local_variable = man_pol_str
+			remove_local_variable = han_pol_str
+			change_variable = {
+				name = china_manchu_power_var
+				add = var:china_manchu_power_var_d
+			}
+			change_variable = {
+				name = china_han_power_var
+				subtract = var:china_manchu_power_var_d
+			}
+		}
+	}
+
 	on_yearly_pulse = {
 		effect = {
 			if = {
@@ -119,13 +221,9 @@
 		}
 	}
 
-	status_desc = {
-		first_valid = {
-			triggered_desc = {
-				desc = je_manchus_and_han_status
-			}
-		}
-	}
+	progress_desc = je_manchus_and_han_progress
+
+	status_desc = je_manchus_and_han_status
 
 	weight = 1000
 	should_be_pinned_by_default = no
