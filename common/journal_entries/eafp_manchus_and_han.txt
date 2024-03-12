@@ -5,40 +5,88 @@
 
 	immediate = {
 		set_variable = {
-			name = china_manchu_power_var
-			value = 70
-		}
-		set_variable = {
 			name = china_manchu_support_var
 			value = 70
 		}
 		set_variable = {
-			name = china_han_power_var
+			name = china_han_support_var
 			value = 30
 		}
 		set_variable = {
-			name = china_han_support_var
-			value = 50
+			name = china_manchu_power_var
+			value = 70
 		}
-		je_manchus_and_han_calc = yes
-
+		# 한과 만주 정치력 퍼센티지 근사
 		set_local_variable = { name = man_pol_str value = 0 }
 		set_local_variable = { name = han_pol_str value = 0 }
+		set_local_variable = { name = man_pop_num value = 0 }
+		set_local_variable = { name = han_pop_num value = 0 }
 		every_scope_pop = {
 			if = {
-				limit = { pop_is_discriminated = yes }
+				limit = { culture = cu:han }
 				change_local_variable = {
 					name = han_pol_str
 					add = pop_pol_str_from_wealth
+					# multiply = this.population
+				}
+				change_local_variable = {
+					name = han_pop_num
+					add = 1
 				}
 			}
-			else = {
+			else_if = {
+				limit = { culture = cu:manchu }
 				change_local_variable = {
 					name = man_pol_str
 					add = pop_pol_str_from_wealth
+					# multiply = this.population
+				}
+				change_local_variable = {
+					name = man_pop_num
+					add = 1
 				}
 			}
 		}
+		change_local_variable = {
+			name = han_pol_str
+			divide = local_var:han_pop_num
+			
+		}
+		change_local_variable = {
+			name = man_pol_str
+			divide = local_var:man_pop_num
+		}
+		set_variable = {
+			name = man_pop_num
+			value = local_var:man_pop_num
+		}
+		set_variable = {
+			name = han_pop_num
+			value = local_var:han_pop_num
+		}
+		remove_local_variable = han_pop_num
+		remove_local_variable = man_pop_num
+		change_local_variable = {
+			name = han_pol_str
+			multiply = han_percent
+		}
+		change_local_variable = {
+			name = man_pol_str
+			multiply = man_percent
+		}
+		set_variable = {
+			name = man_pol_str
+			value = {
+				value = local_var:man_pol_str
+				multiply = 60 # 임시
+			}
+		}
+		set_variable = {
+			name = han_pol_str
+			value = local_var:han_pol_str
+		}
+		## 정말 별로다
+		# 차별에 따른 정치력 감소
 		change_local_variable = {
 			name = han_pol_str
 			multiply = {
@@ -46,22 +94,41 @@
 				add = modifier:state_political_strength_from_discrimination_mult
 			}
 		}
+		#
 		set_variable = {
 			name = china_manchu_power_var_d
 			value = {
-				value = var:china_manchu_power_var
-				subtract = local_var:man_pol_str
-				subtract = var:china_han_power_var
-				add = local_var:han_pol_str
-				multiply = 0.01
+				value = {
+					value = 100
+					subtract = var:china_manchu_power_var
+				}
+				subtract = {
+					value = local_var:han_pol_str
+					divide = {
+						value = local_var:man_pol_str
+						add = local_var:han_pol_str
+					}
+					multiply = 100
+				}
+				subtract = var:china_manchu_power_var
+				add = {
+					value = local_var:man_pol_str
+					divide = {
+						value = local_var:man_pol_str
+						add = local_var:han_pol_str
+					}
+					multiply = 100
+				}
+				multiply = 0.001
 			}
 		}
 		set_variable = {
-			name = china_han_power_var_d
-			value = {
-				value = var:china_manchu_power_var_d
-				multiply = -1
-			}
+			name = man_percent
+			value = man_percent
+		}
+		set_variable = {
+			name = han_percent
+			value = han_percent
 		}
 		remove_local_variable = man_pol_str
 		remove_local_variable = han_pol_str
@@ -90,25 +157,77 @@
 	
 	on_monthly_pulse = {
 		effect = {
+			# 한과 만주 정치력 퍼센티지 근사
 			set_local_variable = { name = man_pol_str value = 0 }
 			set_local_variable = { name = han_pol_str value = 0 }
+			set_local_variable = { name = man_pop_num value = 0 }
+			set_local_variable = { name = han_pop_num value = 0 }
 			every_scope_pop = {
 				if = {
-					limit = { pop_is_discriminated = yes }
+					limit = { culture = cu:han }
 					change_local_variable = {
 						name = han_pol_str
 						add = pop_pol_str_from_wealth
 						# multiply = this.population
 					}
+					change_local_variable = {
+						name = han_pop_num
+						add = 1
+					}
 				}
-				else = {
+				else_if = {
+					limit = { culture = cu:manchu }
 					change_local_variable = {
 						name = man_pol_str
 						add = pop_pol_str_from_wealth
 						# multiply = this.population
 					}
+					change_local_variable = {
+						name = man_pop_num
+						add = 1
+					}
 				}
 			}
+			change_local_variable = {
+				name = han_pol_str
+				divide = local_var:han_pop_num
+				
+			}
+			change_local_variable = {
+				name = man_pol_str
+				divide = local_var:man_pop_num
+			}
+			set_variable = {
+				name = man_pop_num
+				value = local_var:man_pop_num
+			}
+			set_variable = {
+				name = han_pop_num
+				value = local_var:han_pop_num
+			}
+			remove_local_variable = han_pop_num
+			remove_local_variable = man_pop_num
+			change_local_variable = {
+				name = han_pol_str
+				multiply = han_percent
+			}
+			change_local_variable = {
+				name = man_pol_str
+				multiply = man_percent
+			}
+			set_variable = {
+				name = man_pol_str
+				value = {
+					value = local_var:man_pol_str
+					multiply = 60 # 임시
+				}
+			}
+			set_variable = {
+				name = han_pol_str
+				value = local_var:han_pol_str
+			}
+			## 정말 별로다
+			# 차별에 따른 정치력 감소
 			change_local_variable = {
 				name = han_pol_str
 				multiply = {
@@ -116,32 +235,47 @@
 					add = modifier:state_political_strength_from_discrimination_mult
 				}
 			}
+			#
 			set_variable = {
 				name = china_manchu_power_var_d
 				value = {
-					value = var:china_manchu_power_var
-					subtract = local_var:man_pol_str
-					subtract = var:china_han_power_var
-					add = local_var:han_pol_str
-					multiply = 0.01
+					value = {
+						value = 100
+						subtract = var:china_manchu_power_var
+					}
+					subtract = {
+						value = local_var:han_pol_str
+						divide = {
+							value = local_var:man_pol_str
+							add = local_var:han_pol_str
+						}
+						multiply = 100
+					}
+					subtract = var:china_manchu_power_var
+					add = {
+						value = local_var:man_pol_str
+						divide = {
+							value = local_var:man_pol_str
+							add = local_var:han_pol_str
+						}
+						multiply = 100
+					}
+					multiply = 0.001
 				}
 			}
 			set_variable = {
-				name = china_han_power_var_d
-				value = {
-					value = var:china_manchu_power_var_d
-					multiply = -1
-				}
+				name = man_percent
+				value = man_percent
+			}
+			set_variable = {
+				name = han_percent
+				value = han_percent
 			}
 			remove_local_variable = man_pol_str
 			remove_local_variable = han_pol_str
 			change_variable = {
 				name = china_manchu_power_var
 				add = var:china_manchu_power_var_d
-			}
-			change_variable = {
-				name = china_han_power_var
-				subtract = var:china_manchu_power_var_d
 			}
 		}
 	}
