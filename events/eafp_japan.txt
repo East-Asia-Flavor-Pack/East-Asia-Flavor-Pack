@@ -1,0 +1,420 @@
+namespace = eafp_japan
+#일본 저널입니다.
+#기본적으로 변수명은 일본어 발음입니다.
+#다음 분류에 따라 이벤트 번호를 지정했습니다.
+
+# 0000번대 : 시스템 이벤트
+# 1000번대 : 플레이버 이벤트
+# 2000번대 : 막부 개혁 이벤트 체인
+# 3000번대 : 보신전쟁 이벤트 체인
+# 4000번대 : 개항 이벤트 체인
+# 5000번대 : 메이지유신 이벤트 체인
+# 6000번대 : 메이지 헌법 이후 이벤트 체인
+
+
+#####################################
+
+
+eafp_japan.1 = { #튜토리얼 1
+    type = country_event
+    placement = root
+
+    title = eafp_japan.1.t
+    desc = eafp_japan.1.d
+    flavor = eafp_japan.1.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+    
+    is_popup = yes
+    duration = 1
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = { #다음 페이지로
+        default_option = yes
+        name = eafp_japan.1.a
+        trigger_event = { id = eafp_japan.2 }
+    }
+
+    option = { #닫기
+        name = eafp_japan.1.b 
+    }
+}
+
+eafp_japan.2 = { #튜토리얼 2
+    type = country_event
+    placement = root
+
+    title = eafp_japan.2.t
+    desc = eafp_japan.2.d
+    flavor = eafp_japan.2.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+
+    is_popup = yes
+    duration = 1
+    
+    immediate = {}
+
+    trigger = {}
+
+    option = { #다음 페이지로
+        default_option = yes
+        name = eafp_japan.2.a
+        trigger_event = { id = eafp_japan.3 }
+    }
+
+    option = { #이전 페이지로
+        name = eafp_japan.2.b
+        trigger_event = { id = eafp_japan.1 }
+    }
+
+    option = { #닫기
+        name = eafp_japan.2.c
+    }
+}
+
+eafp_japan.3 = { #튜토리얼 3
+    type = country_event
+    placement = root
+
+    title = eafp_japan.3.t
+    desc = eafp_japan.3.d
+    flavor = eafp_japan.3.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+
+    is_popup = yes
+    duration = 1
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = { #이전 페이지로
+        name = eafp_japan.3.a
+        trigger_event = { id = eafp_japan.2 }
+    }
+
+    option = { #닫기
+        default_option = yes
+        name = eafp_japan.3.b
+    }
+}
+
+eafp_japan.1000 = { #홋카이도 개척 완료
+    type = country_event
+    placement = root
+
+    title = eafp_japan.1000.t
+    desc = eafp_japan.1000.d
+    flavor = eafp_japan.1000.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+    
+    duration = 3
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = {
+        default_option = yes
+        name = eafp_japan.1000.a
+        s:STATE_HOKKAIDO.region_state:JAP = {
+            add_modifier = {
+                name = hokkaido_iju
+                months = 36
+            }
+        }
+    }
+}
+
+eafp_japan.1001 = { #홋카이도 개척 완료
+    type = country_event
+    placement = root
+
+    title = eafp_japan.1001.t
+    desc = eafp_japan.1001.d
+    flavor = eafp_japan.1001.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+    
+    duration = 3
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = {
+        default_option = yes
+        name = eafp_japan.1001.a
+        custom_tooltip = {
+			text = eafp_japan.1001.a_tt
+			
+			every_scope_state = {
+				limit = {
+					NOT = {
+						s:STATE_HOKKAIDO.region_state:JAP = THIS
+					}
+				}
+
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = japanese
+						is_pop_type = peasants
+					}
+					change_pop_culture = { target = cu:korean value = 0.001 }
+				}
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = korean
+					}
+					move_pop = s:STATE_HOKKAIDO.region_state:JAP
+				}
+			}
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = korean
+					}
+					change_pop_culture = { target = cu:japanese value = 1.0 }
+				}
+			}
+		}
+    }
+
+    option = {
+		name = eafp_japan.1001.b
+
+		custom_tooltip = {
+			text = eafp_japan.1001.b_tt
+			
+			s:STATE_KANTO.region_state:JAP = {
+
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = japanese
+						is_pop_type = peasants
+					}
+					change_pop_culture = { target = cu:korean value = 0.025 }
+				}
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = korean
+					}
+					move_pop = s:STATE_HOKKAIDO.region_state:JAP
+				}
+			}
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = korean
+					}
+					change_pop_culture = { target = cu:japanese value = 1.0 }
+				}
+			}
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+
+
+eafp_japan.2000 = { #텐포 대기근
+    type = country_event
+    placement = root
+
+    title = eafp_japan.2000.t
+    desc = eafp_japan.2000.d
+    flavor = eafp_japan.2000.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+
+    duration = 3
+    
+    immediate = {
+        random_scope_state = {
+            limit = {
+				any_scope_building = {
+					is_plantation_building = yes
+				}
+			}
+			save_scope_as = tenpo_state
+			random_scope_building = {
+				limit = {
+					is_plantation_building = yes
+				}
+				save_scope_as = tenpo_building
+			}
+        }
+    }
+
+    trigger = {}
+    
+    option = { # 해결 노력
+		name = eafp_japan.2000.a
+		default_option = yes
+        add_journal_entry = {
+            type = japan_bakufu_kaikaku_je
+        }
+		add_modifier = {
+			name = modifier_crop_failure_relief
+			multiplier = money_amount_multiplier_small
+			months = short_modifier_time
+		}
+		scope:tenpo_state = {
+			add_modifier = {
+				name = modifier_crop_failure_tenpo
+				months = normal_modifier_time
+			}
+			add_modifier = {
+				name = nomin_genzei
+				months = normal_modifier_time
+			}
+		}
+		ai_chance = {
+			base = 50
+		}
+	}
+
+	option = { #해결 포기
+		name = eafp_japan.2000.b
+        add_journal_entry = {
+            type = japan_bakufu_kaikaku_je
+        }
+		scope:tenpo_state = {
+			add_modifier = {
+				name = modifier_crop_failure_tenpo
+				months = normal_modifier_time
+			}
+		}
+		custom_tooltip = natural_disaster_variable_tt
+		hidden_effect = {
+			random_list = {
+				50 = {
+					random_scope_state = {
+						limit = {
+							is_incorporated = yes
+						}
+						set_variable = {
+							name = natural_disaster_variable
+							months = short_modifier_time
+						}
+					}
+				}
+				50 = {
+				}
+			}
+		}
+	}
+}
+
+eafp_japan.3000 = { #막부 위기
+    type = country_event
+    placement = root
+
+    title = eafp_japan.3000.t
+    desc = eafp_japan.3000.d
+    flavor = eafp_japan.3000.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+    
+    duration = 3
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = {
+        default_option = yes
+        name = eafp_japan.3000.a
+        add_journal_entry = {
+            type = japan_sonnoha_je
+        }
+    }
+}
+
+eafp_japan.4000 = { #개항 알림
+    type = country_event
+    placement = root
+
+    title = eafp_japan.4000.t
+    desc = eafp_japan.4000.d
+    flavor = eafp_japan.4000.f
+
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+     event_image = { 
+        video = "asia_confucianism_shinto"
+	}
+    
+    duration = 3
+    
+    immediate = {}
+
+    trigger = {}
+    
+    option = {
+        default_option = yes
+        name = eafp_japan.4000.a
+        add_journal_entry = {
+            type = japan_kaikou_je
+        }
+    }
+}
+
+eafp_japan.666 = { #임시
+    type = country_event
+    placement = root
+
+    title = eafp_japan.666.t
+}
