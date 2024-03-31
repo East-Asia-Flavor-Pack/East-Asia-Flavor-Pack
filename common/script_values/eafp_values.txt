@@ -11,17 +11,15 @@ china_warlord_explosion_loyalist_monthly = {
 china_warlord_explosion_treaty_port_monthly = {
 	value = 0
 	every_state_region = {
-		limit = { any_scope_state = { state_is_in_china_proper = yes } }
-		if = {
-			limit = {
-				any_scope_state = {
-					NOT = { owner = ROOT }
-					is_treaty_port = yes
-					any_neighbouring_state = { owner = ROOT }
-				}
+		limit = {
+			any_scope_state = {
+				state_is_in_china_proper = yes
+				NOT = { owner = ROOT }
+				is_treaty_port = yes
+				any_neighbouring_state = { owner = ROOT }
 			}
-			add = 1
 		}
+		add = 1
 	}
 	multiply = 0.0001 # 수치조정 TODO
 }
@@ -29,16 +27,14 @@ china_warlord_explosion_treaty_port_monthly = {
 china_warlord_explosion_lost_state_monthly = {
 	value = 0
 	every_state_region = {
-		limit = { any_scope_state = { state_is_in_china_proper = yes } }
-		if = {
-			limit = {
-				any_scope_state = {
-					NOT = { owner = ROOT }
-					is_treaty_port = no
-				}
+		limit = {
+			any_scope_state = {
+				state_is_in_china_proper = yes
+				NOT = { owner = ROOT }
+				is_treaty_port = no
 			}
-			add = 1
 		}
+		add = 1
 	}
 	multiply = 0.0001 # 수치조정 TODO
 }
@@ -71,6 +67,95 @@ china_warlord_explosion_monthly = {
 	add = china_warlord_explosion_lost_state_monthly
 	add = china_warlord_explosion_capital_monthly
 	add = china_warlord_explosion_modifier_monthly
+}
+
+cixi_coup_d_yehe_nara_popularity = {
+	value = 0
+	every_scope_character = { # 서태후의 인기
+		limit = { has_template = eafp_chi_xingzhen_yehe_nara_template }
+		add = popularity
+	}
+	divide = 900
+}
+
+cixi_coup_d_ruler_popularity = {
+	value = ruler.popularity # 군주의 인기
+	divide = -900
+}
+
+cixi_coup_d_government_legitimacy = {
+	value = government_legitimacy # 정부 정통성
+	subtract = 50
+	divide = -1200
+}
+
+cixi_coup_d_ig_landowners = {
+	value = ig:ig_landowners.ig_approval # 지지도
+	multiply = ig:ig_landowners.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_devout = {
+	value = ig:ig_devout.ig_approval # 지지도
+	multiply = ig:ig_devout.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_armed_forces = {
+	value = ig:ig_armed_forces.ig_approval # 지지도
+	multiply = ig:ig_armed_forces.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_industrialists = {
+	value = ig:ig_industrialists.ig_approval # 지지도
+	multiply = ig:ig_industrialists.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_rural_folk = {
+	value = ig:ig_rural_folk.ig_approval # 지지도
+	multiply = ig:ig_rural_folk.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_petty_bourgeoisie = {
+	value = ig:ig_petty_bourgeoisie.ig_approval # 지지도
+	multiply = ig:ig_petty_bourgeoisie.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_intelligentsia = {
+	value = ig:ig_intelligentsia.ig_approval # 지지도
+	multiply = ig:ig_intelligentsia.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_ig_trade_unions = {
+	value = ig:ig_trade_unions.ig_approval # 지지도
+	multiply = ig:ig_trade_unions.ig_clout # 정치력
+	divide = -1200
+}
+
+cixi_coup_d_base = {
+	value = var:cixi_coup
+	multiply = -0.056 # 1년에 절반씩
+	add = -0.01
+}
+
+cixi_coup_d = {
+	value = cixi_coup_d_base
+	add = cixi_coup_d_yehe_nara_popularity
+	add = cixi_coup_d_ruler_popularity
+	add = cixi_coup_d_government_legitimacy
+	add = cixi_coup_d_ig_landowners
+	add = cixi_coup_d_ig_devout
+	add = cixi_coup_d_ig_armed_forces
+	add = cixi_coup_d_ig_industrialists
+	add = cixi_coup_d_ig_rural_folk
+	add = cixi_coup_d_ig_petty_bourgeoisie
+	add = cixi_coup_d_ig_intelligentsia
+	add = cixi_coup_d_ig_trade_unions
 }
 
 han_percent = {

@@ -322,40 +322,6 @@ je_taiping = {
 				name = taiping_focus_on_defence_modifier
 			}
 		}
-		set_variable = {
-			name = num_unincorporated_states_in_china_proper
-			value = 0
-		}
-		every_scope_state = {
-			limit = {
-				is_incorporated = no
-				state_is_in_china_proper = yes
-				controller = ROOT
-			}
-			ROOT = {
-				change_variable = {
-					name = num_unincorporated_states_in_china_proper
-					add = 1
-				}
-			}
-		}
-		c:TPG = {
-			every_scope_state = {
-				limit = {
-					controller = ROOT
-				}
-				ROOT = {
-					change_variable = {
-						name = num_unincorporated_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = taiping_unincorporated_states_modifier
-			multiplier = var:num_unincorporated_states_in_china_proper
-		}
 	}
 	
 	on_complete = {
@@ -364,8 +330,6 @@ je_taiping = {
 			remove_modifier = taiping_taiping_rebellion
 			remove_modifier = taiping_focus_on_attack_modifier # 추가
 			remove_modifier = taiping_focus_on_defence_modifier # 추가
-			remove_modifier = taiping_unincorporated_states_modifier # 추가
-			remove_variable = num_unincorporated_states_in_china_proper # 추가
 		}
 	}
 
@@ -383,52 +347,8 @@ je_taiping = {
 				country = c:TPG
 				months = 6
 			}
-			remove_modifier = taiping_unincorporated_states_modifier
-			remove_variable = num_unincorporated_states_in_china_proper
 		}
 	}
-
-	on_weekly_pulse = { # 추가
-		effect = {
-			remove_modifier = taiping_unincorporated_states_modifier
-			set_variable = {
-				name = num_unincorporated_states_in_china_proper
-				value = 0
-			}
-			every_scope_state = {
-				limit = {
-					is_incorporated = no
-					state_is_in_china_proper = yes
-					controller = ROOT
-				}
-				ROOT = {
-					change_variable = {
-						name = num_unincorporated_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-			c:TPG = {
-				every_scope_state = {
-					limit = {
-						controller = ROOT
-					}
-					ROOT = {
-						change_variable = {
-							name = num_unincorporated_states_in_china_proper
-							add = 1
-						}
-					}
-				}
-			}
-			add_modifier = {
-				name = taiping_unincorporated_states_modifier
-				multiplier = var:num_unincorporated_states_in_china_proper
-			}
-		}
-	}
-
-	progress_desc = je_taiping_progress # 추가
 
 	weight = 1000
 	should_be_pinned_by_default = yes
@@ -472,6 +392,7 @@ je_taiping_revolution = {
 				name = taiping_focus_on_defence_modifier
 			}
 		}
+
 		set_variable = {
 			name = num_unincorporated_states_in_china_proper
 			value = 0
@@ -502,9 +423,78 @@ je_taiping_revolution = {
 				}
 			}
 		}
+
+		set_variable = {
+			name = num_claimed_states_in_china_proper
+			value = 0
+		}
+		c:CHI = {
+			every_scope_state = {
+				limit = {
+					controller = c:CHI
+					has_claim_by = ROOT
+				}
+				ROOT = {
+					change_variable = {
+						name = num_claimed_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+		}
+		every_scope_state = {
+			limit = {
+				controller = c:CHI
+			}
+			ROOT = {
+				change_variable = {
+					name = num_claimed_states_in_china_proper
+					add = 1
+				}
+			}
+		}
+
+		if = {
+			limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
+			add_modifier = {
+				name = taiping_unincorporated_states_modifier2
+				multiplier = {
+					value = var:num_claimed_states_in_china_proper
+					subtract = var:num_unincorporated_states_in_china_proper
+				}
+			}
+		}
+		else = {
+			add_modifier = {
+				name = taiping_unincorporated_states_modifier
+				multiplier = {
+					value = var:num_unincorporated_states_in_china_proper
+					subtract = var:num_claimed_states_in_china_proper
+				}
+			}
+		}
+
+		if = {
+			limit = { NOT = { has_variable = taiping_fervor_var } }
+			set_variable = {
+				name = taiping_fervor_var
+				value = 0
+			}
+		}
+		else = {
+			change_variable = {
+				name = taiping_fervor_var
+				add = 1
+			}
+			clamp_variable = {
+				name = taiping_fervor_var
+				max = 2
+				min = 0
+			}
+		}
 		add_modifier = {
-			name = taiping_unincorporated_states_modifier
-			multiplier = var:num_unincorporated_states_in_china_proper
+			name = taiping_fervor_low_modifier
+			multiplier = var:taiping_fervor_var
 		}
 	}
 
@@ -523,6 +513,9 @@ je_taiping_revolution = {
 			remove_modifier = taiping_focus_on_defence_modifier # 추가
 			remove_modifier = taiping_unincorporated_states_modifier # 추가
 			remove_variable = num_unincorporated_states_in_china_proper # 추가
+			remove_modifier = taiping_unincorporated_states_modifier2 # 추가
+			remove_variable = num_claimed_states_in_china_proper # 추가
+			remove_modifier = taiping_fervor_low_modifier # 추가
 		}
 		
 	}
@@ -546,6 +539,9 @@ je_taiping_revolution = {
 			}
 			remove_modifier = taiping_unincorporated_states_modifier
 			remove_variable = num_unincorporated_states_in_china_proper
+			remove_modifier = taiping_unincorporated_states_modifier2
+			remove_variable = num_claimed_states_in_china_proper
+			remove_modifier = taiping_fervor_low_modifier
 		}
 	}
 
@@ -558,6 +554,8 @@ je_taiping_revolution = {
 	on_weekly_pulse = { # 추가
 		effect = {
 			remove_modifier = taiping_unincorporated_states_modifier
+			remove_modifier = taiping_unincorporated_states_modifier2
+
 			set_variable = {
 				name = num_unincorporated_states_in_china_proper
 				value = 0
@@ -588,9 +586,55 @@ je_taiping_revolution = {
 					}
 				}
 			}
-			add_modifier = {
-				name = taiping_unincorporated_states_modifier
-				multiplier = var:num_unincorporated_states_in_china_proper
+	
+			set_variable = {
+				name = num_claimed_states_in_china_proper
+				value = 0
+			}
+			c:CHI = {
+				every_scope_state = {
+					limit = {
+						controller = c:CHI
+						has_claim_by = ROOT
+					}
+					ROOT = {
+						change_variable = {
+							name = num_claimed_states_in_china_proper
+							add = 1
+						}
+					}
+				}
+			}
+			every_scope_state = {
+				limit = {
+					controller = c:CHI
+				}
+				ROOT = {
+					change_variable = {
+						name = num_claimed_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+	
+			if = {
+				limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
+				add_modifier = {
+					name = taiping_unincorporated_states_modifier2
+					multiplier = {
+						value = var:num_claimed_states_in_china_proper
+						subtract = var:num_unincorporated_states_in_china_proper
+					}
+				}
+			}
+			else = {
+				add_modifier = {
+					name = taiping_unincorporated_states_modifier
+					multiplier = {
+						value = var:num_unincorporated_states_in_china_proper
+						subtract = var:num_claimed_states_in_china_proper
+					}
+				}
 			}
 		}
 	}
@@ -626,7 +670,7 @@ je_taiping_truce_chi = { # 추가
 			text = taiping_truce_chi
 			end_truce = { country = c:TPG }
 			add_journal_entry = { type = je_chinese_reunification }
-			add_journal_entry = { type = je_taiping2 }
+			add_journal_entry = { type = je_taiping }
 		}
 	}
 	
@@ -661,7 +705,7 @@ je_taiping_truce_tpg = { # 추가
 				name = taiping_rebellion
 				target_country = c:CHI
 				type = dp_taiping_rebellion
-				escalation = 80 # 추가
+				escalation = 75 # 추가
 			}
 			add_journal_entry = { type = je_chinese_reunification }
 			add_journal_entry = { type = je_taiping_revolution }

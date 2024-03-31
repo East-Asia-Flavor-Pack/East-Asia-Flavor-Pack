@@ -40,8 +40,23 @@ chi_war_dynamism.1 = { # 아직 변동치 있고 조건 만족하면 주 소유 
 						}
 						owner = { save_scope_as = state_owner }
 						controller = { save_scope_as = state_controller }
-						set_state_owner = controller
-						set_state_type = unincorporated # 너프함
+						if = {
+							limit = { has_claim_by = scope:state_controller }
+							if = {
+								limit = { is_incorporated = yes }
+								set_state_type = incorporated
+								set_state_owner = scope:state_controller
+								state_region = { add_claim = scope:state_owner }
+							}
+							else = {
+								set_state_type = incorporated
+								set_state_owner = scope:state_controller
+							}
+						}
+						else = {
+							set_state_type = unincorporated
+							set_state_owner = scope:state_controller
+						}
 					}
 				}
 			}
