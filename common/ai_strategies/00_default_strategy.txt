@@ -1134,51 +1134,6 @@ ai_strategy_default = {
 			add = 100
 		}
 
-		if = { # 추가, 북독일계 열강은 산둥반도에
-			limit = {
-				country_has_primary_culture = cu:north_german
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				scope:target_country = c:CHI				
-			}
-			if = {
-				limit = {
-					scope:target_state = { state_region = s:STATE_SHANDONG }
-				}
-				add = 1000
-			}
-			else = {
-				multiply = 0
-			}
-		}
-		if = { # 추가, 러시아계 열강은 성경에
-			limit = {
-				any_primary_culture = {
-					has_discrimination_trait = east_slavic
-				}
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				OR = {
-					scope:target_country = c:CHI
-					AND = {
-						exists = c:MCH
-						scope:target_country = {
-							THIS = c:MCH
-						}
-					}
-				}
-			}
-			if = {
-				limit = {
-					scope:target_state = { state_region = s:STATE_SHENGJING }
-				}
-				add = 1000
-			}
-			else = {
-				multiply = 0
-			}
-		}
-
 		if = { #Carving up China
 			limit = {
 				country_rank >= rank_value:great_power
@@ -1257,6 +1212,47 @@ ai_strategy_default = {
 				}
 			}
 			add = 75
+		}
+		
+		if = { # 추가, 북독일계 열강은 산둥반도에
+			limit = {
+				country_has_primary_culture = cu:north_german
+				country_rank >= rank_value:great_power
+				exists = c:CHI
+				NOT = { scope:target_state = { state_region = s:STATE_SHANDONG } }
+			}
+			multiply = 0
+		}
+		if = { # 추가, 러시아계 열강은 성경에
+			limit = {
+				any_primary_culture = { has_discrimination_trait = east_slavic }
+				country_rank >= rank_value:great_power
+				exists = c:CHI
+				NOT = { scope:target_state = { state_region = s:STATE_SHENGJING } }
+			}
+			multiply = 0
+		}
+		c:RUS ?= { # 러시아가 동방의 지배자 저널 가지거나 완료하면 발작함
+			if = {
+				limit = {
+					OR = {
+						has_journal_entry = je_the_eastern_border
+						AND = {
+							owns_entire_state_region = STATE_OUTER_MANCHURIA 
+							owns_entire_state_region = STATE_JETISY 
+							owns_entire_state_region = STATE_TOMSK
+							OR = {
+								owns_entire_state_region = STATE_KIRGHIZIA
+								any_country = {
+									is_subject_of = c:RUS
+									owns_entire_state_region = STATE_KIRGHIZIA
+								}
+							}
+						}
+					}
+				}
+				add = 100
+			}
 		}
 		
 		# Not worth doing against very small markets
@@ -1812,7 +1808,7 @@ ai_strategy_default = {
 					has_modifier = opium_wars_lost
 				}				
 			}
-			add = 2.5		
+			add = 2.5
 		}
 		####중국상대용 가중치
 		
@@ -2965,9 +2961,9 @@ ai_strategy_default = {
 	# Which buildings should the AI subsidize
 	# Using a different value in a strategy will override this value
 	subsidies = {
-		building_power_plant = should_have
-		building_railway = should_have
-		building_trade_center = should_have		
+		building_power_plant = must_have
+		building_railway = must_have
+		building_trade_center = must_have		
 	}
 	
 	# Specifying values here will override subsidy priorities while at war
@@ -3361,40 +3357,10 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-			if = {	#추가, 독일 북중국 전략지역 가중치
+			if = { # 유럽 열강은 중국에 관심있게
 				limit = {
-					country_has_primary_culture = cu:north_german
+					country_is_in_europe = yes
 					country_rank >= rank_value:great_power
-				}
-				add = 100
-			}
-			if = { # 추가, 러시아 북중국 전략지역 가중치
-				limit = {
-					any_primary_culture = {
-						has_discrimination_trait = east_slavic
-					}
-					country_rank >= rank_value:great_power
-				}
-				add = 75
-			}
-			if = {	#새로 추가한 조건. 요즘 애들이 중국에 관심지역을 안박아서 조약항도 잘 못뜯더라
-				limit = {
-					country_rank >= rank_value:great_power
-					exists = c:CHI
-					c:CHI = {
-						NOT = {
-							has_variable = chinese_westernization_complete
-						}
-					}
-					NOT = {
-						any_scope_state = {
-							OR = {
-								region = sr:region_south_china
-								region = sr:region_north_china
-							}
-							is_treaty_port = yes
-						}
-					}
 				}
 				add = 50
 			}
@@ -3445,34 +3411,12 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-			if = {	#새로 추가한 조건. 요즘 애들이 중국에 관심지역을 안박아서 조약항도 잘 못뜯더라
+			if = { # 유럽 열강은 중국에 관심있게
 				limit = {
+					country_is_in_europe = yes
 					country_rank >= rank_value:great_power
-					NOT = {
-						any_primary_culture = {
-							has_discrimination_trait = east_slavic
-						}
-					}
-					NOT = {
-						country_has_primary_culture = cu:north_german
-					}
-					exists = c:CHI
-					any_country = {
-						THIS = c:CHI
-						has_modifier = opium_wars_lost
-					}
-					NOT = { has_interest_marker_in_region = region_north_china }
-					NOT = {
-						any_scope_state = {
-							OR = {
-								region = sr:region_south_china
-								region = sr:region_north_china
-							}
-							is_treaty_port = yes
-						}
-					}
 				}
-				add = 100
+				add = 50
 			}
 		}
 		region_pacific_coast = {
@@ -5124,59 +5068,6 @@ ai_strategy_default = {
 				
 				add = scope:target_state.ai_state_value:root
 			}
-			
-			# 추가
-			if = { #Do Not Take Chinese States In Full, unless another power has already done so
-				limit = {
-					country_rank >= rank_value:major_power
-					scope:target_state = {
-						owner = { has_journal_entry = je_warlord_china }
-						OR = {
-							region = sr:region_north_china
-							region = sr:region_south_china
-							# region = sr:region_manchuria 
-						}
-						NOT = { # 추가
-							state_region = s:STATE_FORMOSA
-						}
-					}				
-					OR = {
-						country_is_in_north_america = yes
-						country_is_in_europe = yes
-						country_is_in_south_america = yes
-					}					
-					NOT = {
-						any_country = {
-							NOT = { THIS = ROOT }
-							country_rank >= rank_value:major_power
-							OR = {
-								country_is_in_north_america = yes
-								country_is_in_europe = yes
-								country_is_in_south_america = yes
-							}
-							any_scope_state = {
-								NOT = { is_treaty_port = yes }
-								OR = {
-									region = sr:region_north_china
-									region = sr:region_south_china
-									# region = sr:region_manchuria
-								}
-								NOR = { # 추가
-									state_region = s:STATE_ULIASTAI
-									state_region = s:STATE_URGA
-									state_region = s:STATE_EAFP_BEIJING
-									state_region = s:STATE_SHENGJING
-									state_region = s:STATE_HINGGAN
-									state_region = s:STATE_ALXA
-									state_region = s:STATE_QINGHAI
-									state_region = s:STATE_FORMOSA
-								}
-							}
-						}					
-					}
-				}
-				multiply = 0
-			}
 
 			min = 0
 			max = 100				
@@ -5717,43 +5608,43 @@ ai_strategy_default = {
 					}
 					add = 25
 				}
+			}
 
-				if = {
-					limit = {
-						scope:target_country = {
-							has_journal_entry = je_peru_bolivia
-						}
-						OR = {
-							country_has_primary_culture = cu:south_andean
-							country_has_primary_culture = cu:north_andean
-							country_has_primary_culture = cu:platinean
-							country_has_primary_culture = cu:argentine
-							country_has_primary_culture = cu:chilean
-							country_has_primary_culture = cu:colombian
-							country_has_primary_culture = cu:ecuadorian
-						}						
+			if = {
+				limit = {
+					scope:target_country = {
+						has_journal_entry = je_peru_bolivia
 					}
-					add = 75
+					OR = {
+						country_has_primary_culture = cu:south_andean
+						country_has_primary_culture = cu:north_andean
+						country_has_primary_culture = cu:platinean
+						country_has_primary_culture = cu:argentine
+						country_has_primary_culture = cu:chilean
+						country_has_primary_culture = cu:colombian
+						country_has_primary_culture = cu:ecuadorian
+					}						
 				}
+				add = 75
+			}
 
-				# Relations with subject
-				multiply = {
-					value = "scope:target_country.relations:root"
-					multiply = 0.01
-					add = 1
-					min = 0.25
-					max = 2.0				
-				}
-				
-				# Ideological opinion of subject
-				multiply = {
-					value = "ai_ideological_opinion(scope:target_country)"
-					multiply = 0.05
-					add = 1
-					min = 0.25
-					max = 2.0
-				}				
-			}	
+			# Relations with subject
+			multiply = {
+				value = "scope:target_country.relations:root"
+				multiply = 0.01
+				add = 1
+				min = 0.25
+				max = 2.0				
+			}
+			
+			# Ideological opinion of subject
+			multiply = {
+				value = "ai_ideological_opinion(scope:target_country)"
+				multiply = 0.05
+				add = 1
+				min = 0.25
+				max = 2.0
+			}					
 
 			min = 0
 			max = 100			
@@ -5799,24 +5690,6 @@ ai_strategy_default = {
 						scope:target_country.infamy >= infamy_threshold:pariah
 					}
 					add = 25
-				}
-
-				# Relations with target
-				multiply = {
-					value = "scope:target_country.relations:root"
-					multiply = -0.01
-					add = 1
-					min = 0.5
-					max = 2.0				
-				}
-				
-				# Ideological opinion of target
-				multiply = {
-					value = "ai_ideological_opinion(scope:target_country)"
-					multiply = -0.05
-					add = 1
-					min = 0.5
-					max = 2.0
 				}				
 			}
 			
@@ -5827,24 +5700,6 @@ ai_strategy_default = {
 					can_reach_target_country = no
 				}
 				add = 100
-			}
-
-			# Relations with target
-			multiply = {
-				value = "scope:target_country.relations:root"
-				multiply = -0.01
-				add = 1
-				min = 0.5
-				max = 2.0				
-			}
-			
-			# Ideological opinion of target
-			multiply = {
-				value = "ai_ideological_opinion(scope:target_country)"
-				multiply = -0.05
-				add = 1
-				min = 0.5
-				max = 2.0
 			}
 			
 			# Relations with target
