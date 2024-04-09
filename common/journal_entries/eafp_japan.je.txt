@@ -21,50 +21,47 @@ japan_tutorial_je = {#튜토리얼 저널
             value = 0
         }
         
+        scope:journal_entry = {
+            set_variable = test_var
+        }
+        
         s:STATE_KYUSHU.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_kyushu_var #큐슈 다이묘 충성도(높을수록 불충) 변수
+                name = bakuhan_taisei_KYUSHU_var #큐슈 다이묘 충성도(높을수록 불충) 변수
                 value = 50
             }
         }
         s:STATE_TOHOKU.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_tohoku_var #도호쿠 다이묘 충성도 변수
+                name = bakuhan_taisei_TOHOKU_var #도호쿠 다이묘 충성도 변수
                 value = 10
             }
         }
         s:STATE_SHIKOKU.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_shikoku_var #시코쿠 다이묘 충성도 변수
+                name = bakuhan_taisei_SHIKOKU_var #시코쿠 다이묘 충성도 변수
                 value = 40
             }
         }
          s:STATE_CHUGOKU.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_chugoku_var #주고쿠 다이묘 충성도 변수
+                name = bakuhan_taisei_CHUGOKU_var #주고쿠 다이묘 충성도 변수
                 value = 60
             }
         }
         s:STATE_CHUBU.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_chubu_var #주부 다이묘 충성도 변수
+                name = bakuhan_taisei_CHUBU_var #주부 다이묘 충성도 변수
                 value = 20
             }
         }
         s:STATE_KANSAI.region_state:JAP = {
             set_variable = { 
-                name = bakuhan_taisei_kansai_var #간사이 다이묘 충성도 변수
+                name = bakuhan_taisei_KANSAI_var #간사이 다이묘 충성도 변수
                 value = 30
             }
         }
-        trigger_event = {
-            id = eafp_japan.4000
-            days = 50
-        }
-        trigger_event = {
-            id = eafp_japan.3000
-            days = 2
-        }
+        set_variable = gacha_not_open_var
     }
 
     complete = { 
@@ -91,8 +88,10 @@ japan_tutorial_je = {#튜토리얼 저널
 	}	
 
 	goal_add_value = { # 6개월간 튜토리얼 저널을 유지합니다.
-		value = 30
+		value = 50
 	}
+
+    transferable = yes
 
     progressbar = yes
 
@@ -107,7 +106,8 @@ japan_sonnoha_je = {
 
     group = je_group_historical_content
 
-     scripted_button = japan_sonnoha_decisions_button
+    scripted_button = japan_sonnoha_decisions_button
+    scripted_button = japan_daimyo_interaction_button
 
     immediate = {
         set_variable = {
@@ -120,10 +120,6 @@ japan_sonnoha_je = {
             name = sonnoha_var #존황파 변수
             value = 0
         }
-        trigger_event = {
-            id = eafp_japan.2000
-            days = 60
-        } 
         han_modifier_kyushu = yes
 		han_modifier_tohoku = yes
 		han_modifier_shikoku = yes
@@ -206,7 +202,6 @@ japan_sonnoha_je = {
                 type = japan_boshin_war_je
             }
         }
-        
     }
 
     fail = {
@@ -238,6 +233,9 @@ japan_sonnoha_je = {
 
 
     progressbar = yes
+
+    
+    transferable = yes
 
     weight = 12000
 
@@ -390,7 +388,9 @@ japan_kaikou_je = {
 japan_han_detail = {
     group = je_group_historical_content
 
-    visible = { has_variable = han_detail_var }
+    is_shown_when_inactive = {
+		has_variable = han_detail_var
+	}
 
     immediate = {
         set_variable = han_detail_already_set_var
@@ -455,4 +455,248 @@ japan_tokugawa_isin_je = {
 
 japan_meiji_isin_je = {
 
+}
+
+japan_3901_je = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+
+    scripted_button = japan_anken_first_3901_button
+    scripted_button = japan_anken_second_3901_button
+    scripted_button = japan_daimyo_3901_button
+
+    immediate = {
+        set_variable = {
+            name = kansai_3901_var
+            value = 1
+        }
+        set_variable = {
+            name = kyushu_3901_var
+            value = 0
+        }
+        set_variable = {
+            name = chubu_3901_var
+            value = 0
+        }
+        set_variable = {
+            name = chugoku_3901_var
+            value = 1
+        }
+        set_variable = {
+            name = shikoku_3901_var
+            value = 1
+        }
+        set_variable = {
+            name = tohoku_3901_var
+            value = 0
+        }
+        set_variable = {
+            name = anken_var
+            value = 0
+        }
+
+    }
+
+    progress_desc = {
+		first_valid = {
+			triggered_desc = { 
+				desc = no_anken_desc
+				trigger = {
+					OR = {
+                        not = { has_variable = anken_first_var }
+                        not = { has_variable = anken_second_var }
+                    }
+				}
+			}
+            triggered_desc = { 
+				desc = anken_daimyo_3901_desc
+				trigger = {
+					OR = {
+                        has_variable = anken_first_var
+                        has_variable = anken_second_var
+                    }
+				}
+			}
+        }
+    }
+    
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+    }
+
+    on_complete = { 
+            if = { 
+                limit = { has_variable = anken_first_var }
+                switch = {
+                    trigger = var:kansai_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = KANSAI AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = KANSAI AMOUNT = -5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:kyushu_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = KYUSHU AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = KYUSHU AMOUNT = -5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:chubu_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = CHUBU AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = CHUBU AMOUNT = -5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:chugoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = CHUGOKU AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = CHUGOKU AMOUNT = -5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:shikoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = SHIKOKU AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = SHIKOKU AMOUNT = -5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:tohoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = TOHOKU AMOUNT = 5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = TOHOKU AMOUNT = -5 } }
+                    fullback = {}
+                }
+            }
+            else_if = { 
+                limit = { has_variable = anken_second_var }
+                switch = {
+                    trigger = var:kansai_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = KANSAI AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = KANSAI AMOUNT = 5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:kyushu_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = KYUSHU AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = KYUSHU AMOUNT = 5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:chubu_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = CHUBU AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = CHUBU AMOUNT = 5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:chugoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = CHUGOKU AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = CHUGOKU AMOUNT = 5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:shikoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = SHIKOKU AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = SHIKOKU AMOUNT = 5 } }
+                    fullback = {}
+                }
+                switch = {
+                    trigger = var:tohoku_3901_var
+                    0 = { change_bakuhan_taisei_var_effect = { STATE = TOHOKU AMOUNT = -5 } }
+                    1 = { change_bakuhan_taisei_var_effect = { STATE = TOHOKU AMOUNT = 5 } }
+                    fullback = {}
+                }
+            }
+        else = { 
+            custom_tooltip = { 
+                text = no_anken
+                change_variable = {
+                    name = sonnoha_var
+                    add = 3
+                }
+            }
+        }
+        remove_variable = anken_var
+        if = {
+            limit = { has_variable = anken_first_var }
+            remove_variable = anken_first_var
+            trigger_event = {
+                id = eafp_japan.666
+            }
+        }
+        else_if = {
+            limit = { has_variable = anken_second_var }
+            remove_variable = anken_second_var
+            trigger_event = {
+                id = eafp_japan.666
+            }
+        }
+    }
+
+    on_monthly_pulse = {
+		effect = {
+			change_variable = {
+                name = anken_var
+                add = 1
+            }
+		}
+	}
+
+    current_value = {
+		value = root.var:anken_var
+	}	
+
+    goal_add_value = {
+		add = 10
+	}
+
+    progressbar = yes
+
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+
+je_parliament_japan = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+
+    scripted_button = japan_pariament_1_button
+    scripted_button = japan_pariament_2_button
+    scripted_button = japan_pariament_3_button
+    immediate = {
+        set_variable = {
+            name = syugiin_dai
+            value = 1
+        }
+        set_variable = {
+            name = party1_seat_var
+            value = 130
+        }
+        set_variable = {
+            name = party2_seat_var
+            value = 79
+        }
+        set_variable = {
+            name = party3_seat_var
+            value = 41
+        }
+        set_variable = {
+            name = party4_seat_var
+            value = 5
+        }
+        set_variable = {
+            name = party5_seat_var
+            value = 0
+        }
+        set_variable = {
+            name = no_party_seat_var
+            value = 45
+        }
+        seat_effect = yes
+    }
+    complete = {
+        always = no
+    }
 }

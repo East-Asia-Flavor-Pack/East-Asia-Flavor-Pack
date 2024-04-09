@@ -1,0 +1,445 @@
+﻿types japan_panel_types
+{
+	type japan_panel = japan_panel_fullscreen_block_window {
+		visible = "[GetVariableSystem.Exists('japan_open')]"
+		state = {
+			name = japan_panel_open
+			trigger_on_create = yes
+			on_start = "[GetVariableSystem.Set('japan_last_tab', 'overview_japan')]"
+		}
+		name = "japan_panel"
+
+
+		blockoverride
+		"animation_state_block"
+		{
+			state = {
+				name = _show
+				start_sound = {
+					soundeffect = "snapshot:/Dynamic/mute_world_80"
+				}
+				start_sound = {
+					soundeffect = "snapshot:/Dynamic/mute_vfx_war_100"
+				}
+			}
+		}
+
+		blockoverride "window_header_name" {
+			text = "concept_japan_panel"
+		}
+
+		blockoverride "fixed_top" {
+			tab_buttons = {
+				blockoverride "first_button" {
+					text = "OVERVIEW"
+				}
+				blockoverride "first_button_tooltip" {
+					tooltip = "OVERVIEW"
+				}
+				blockoverride "first_button_click" {
+					onclick = "[GetVariableSystem.Set('japan_last_tab', 'overview_japan')]"
+					onclick = "[GetVariableSystem.Set('japan_open', 'overview_japan')]"
+				}
+				blockoverride "first_button_visibility" {
+					visible = "[GetVariableSystem.HasValue('japan_open', 'overview_japan')]"
+				}
+				blockoverride "first_button_visibility_checked" {
+					visible = "[Not(GetVariableSystem.HasValue('japan_open', 'overview_japan'))]"
+				}
+				blockoverride "first_button_selected" {
+					text = "OVERVIEW"
+				}
+				blockoverride "second_button" {
+					text = "FIGURE"
+				}
+				blockoverride "second_button_tooltip" {
+					tooltip = "FIGURE"
+				}
+				blockoverride "second_button_click" {
+					onclick = "[GetVariableSystem.Set('japan_open', 'japan_figure')]"
+					onclick = "[GetVariableSystem.Set('japan_last_tab', 'japan_figure')]"
+				}
+				blockoverride "second_button_visibility" {
+					visible = no
+				}
+				blockoverride "second_button_visibility_checked" {
+					visible = no
+				}
+				blockoverride "second_button_selected" {
+					text = "FIGURE"
+				}
+			}
+		}
+		blockoverride "entire_content_area" {
+			japan_panel_overview_content = {
+				visible = "[GetVariableSystem.HasValue('japan_open', 'overview_japan')]"
+				using = default_fade_in_out
+				layoutpolicy_horizontal = expanding
+				layoutpolicy_vertical = expanding
+			}
+			japan_panel_figure = {
+				visible = "[GetVariableSystem.HasValue('japan_open', 'japan_figure')]"
+				using = default_fade_in_out
+				layoutpolicy_horizontal = expanding
+				layoutpolicy_vertical = expanding
+			}
+		}
+	}
+
+
+
+
+	type japan_panel_overview_content = vbox {
+		name = "japan_panel_overview_content"
+			layoutpolicy_horizontal = fixed
+			layoutpolicy_vertical = fixed	
+			
+			
+		background = { #배경
+			texture = "gfx/interface/japan_gui/naikaku.dds"
+			alpha = 0.1
+			fittype = center
+			
+			modify_texture = {
+				texture = "gfx/interface/masks/fade_vertical_center.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = alphamultiply
+			}
+			modify_texture = {
+				texture = "gfx/interface/masks/fade_horizontal_less_left.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = alphamultiply
+			}
+			modify_texture = {
+				texture = "gfx/interface/masks/fade_horizontal_less_right.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = alphamultiply
+			}
+		}
+
+		
+
+		hbox = {
+			widget = {
+				size = { 1500 1000}
+				button = {
+					texture = "gfx/interface/japan_gui/chubu.png"
+					tooltip = "STATE_CHUBU"
+					parentanchor = center
+					scale = 0.5
+					position = { 68 -71 }
+					onclick = "[GetVariableSystem.Toggle('chubu_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/chugoku.png"
+					tooltip = "STATE_CHUGOKU"
+					parentanchor = center
+					scale = 0.5
+					position = { -92 -8}
+					onclick = "[GetVariableSystem.Toggle('chugoku_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/shikoku.png"
+					tooltip = "STATE_SHIKOKU"
+					scale = 0.5
+					position = { -70 40}
+					parentanchor = center
+					onclick = "[GetVariableSystem.Toggle('shikoku_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/kyushu.png"
+					tooltip = "STATE_KYUSHU"
+					scale = 0.5
+					position = { -150 78}
+					parentanchor = center
+					onclick = "[GetVariableSystem.Toggle('kyushu_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/kansai.png"
+					tooltip = "STATE_KANSAI"
+					scale = 0.5
+					parentanchor = center
+					onclick = "[GetVariableSystem.Toggle('kansai_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/kanto.png"
+					tooltip = "STATE_KANTO"
+					scale = 0.5
+					parentanchor = center
+					position = { 130 -52}
+					onclick = "[GetVariableSystem.Toggle('kanto_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/tohoku.png"
+					tooltip = "STATE_TOHOKU"
+					scale = 0.5
+					parentanchor = center
+					position = { 163 -180}
+					onclick = "[GetVariableSystem.Toggle('tohoku_open')]"
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/hokkaido.png"
+					tooltip = "STATE_HOKKAIDO"
+					scale = 0.5
+					parentanchor = center
+					position = { 240 -370.5}
+					onclick = "[GetVariableSystem.Toggle('hokkaido_open')]"
+				}
+				
+			}
+		}
+	}
+
+	type japan_panel_figure = hbox {
+		name = "japan_panel_figure"
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+
+		vbox = {
+		visible = "[GetPlayer.MakeScope.Var('gacha_not_open_var').IsSet]"
+		layoutpolicy_horizontal = preferred
+		layoutpolicy_vertical = preferred
+		margin_bottom = 950
+			
+			widget = {
+				using = default_list_position
+				direction = vertical
+				allow_outside = yes
+				ignoreinvisible = yes
+				widget = {
+					
+					layoutpolicy_horizontal = expanding
+					layoutpolicy_vertical = expanding
+					size = { 1700 800 }
+					using = entry_bg_fancy
+					allow_outside = yes
+					ignoreinvisible = yes
+					scrollarea = {
+						layoutpolicy_horizontal = expanding
+						layoutpolicy_vertical = expanding
+						scrollbarpolicy_horizontal = always_off
+						
+						scrollbar_vertical = {
+							using = vertical_scrollbar		
+						}
+						size = { 1700 800 }
+						scrollwidget = {
+							dynamicgridbox = {
+								datamodel = "[GetGlobalList('japan_figure_list')]"
+								item = {
+									widget = {
+										background = entry_bg_simple
+										size = { 1500 100 }
+										allow_outside = yes
+										ignoreinvisible = yes
+										character_portrait_small = {
+											datacontext = "[Scope.GetCharacter]"
+											position = { 9 20 }
+											blockoverride "show_hat" {}
+											blockoverride "highlight" {}
+										}
+										textbox = {
+											layoutpolicy_horizontal = growing
+											size = { 10 30 }
+											position = { 80 15 }
+											raw_text = "[Scope.GetCharacter.GetFullName]"
+											default_format = "#title"
+											fontsize = 25
+											align = nobaseline
+											elide = center
+										}
+										textbox = {
+											layoutpolicy_horizontal = growing
+											size = { 10 30 }
+											position = { 80 65 }
+											text = "CHARACTER_AGE_X" 
+											default_format = "#title"
+											fontsize = 18
+											align = nobaseline
+											elide = center
+										}
+										textbox = {
+											layoutpolicy_horizontal = growing
+											size = { 10 30 }
+											position = { 210 65 }
+											text = "CHARACTER_IG_INTL" 
+											default_format = "#title"
+											fontsize = 18
+											align = nobaseline
+											elide = center
+										}
+										button = {
+											using = default_button_action
+											allow_outside = yes
+											size = { 100 45 }
+											position = { 200 13 }
+											text = "character_invite"
+											using = tooltip_below
+											parentanchor = hcenter
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				button = {
+					using = default_button_action
+					allow_outside = yes
+					datacontext = "[GetScriptedGui('gacha_start_button')]"
+					onclick = "[ScriptedGui.Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+					enabled = "[ScriptedGui.IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).End )]"
+				}
+			}
+		}
+		hbox = {
+			visible = "[GetPlayer.MakeScope.Var('gacha_start_var').IsSet]"
+			widget = {
+				size = { 1000 1000}
+				icon = {
+					parentanchor = center
+					texture = "gfx/interface/japan_gui/arona0.png"
+					scale = 0.8
+					modify_texture = {
+						name = arona1
+						texture = "gfx/interface/japan_gui/arona1.png"
+						blend_mode = normal
+						alpha = 0
+					}
+					modify_texture = {
+						name = arona2
+						texture = "gfx/interface/japan_gui/arona2.png"
+						blend_mode = normal
+						alpha = 0
+					}
+					modify_texture = {
+						name = arona3
+						texture = "gfx/interface/japan_gui/arona3.png"
+						blend_mode = normal
+						alpha = 0
+					}
+					modify_texture = {
+						name = arona5
+						texture = "gfx/interface/japan_gui/arona5.png"
+						blend_mode = normal
+						alpha = 0
+					}
+					modify_texture = {
+						name = arona4
+						texture = "gfx/interface/japan_gui/arona4.png"
+						blend_mode = normal
+						alpha = 0
+					}
+					state = {
+						trigger_on_create = yes
+						duration = 5
+						name = 1
+						next = 2
+						modify_texture = {
+							name = arona1
+							alpha = 1
+						}
+					}
+					
+					state = {
+						name = 2
+						next = 3
+						duration = 0.5
+						scale = 0.8
+						modify_texture = {
+							name = arona2
+							alpha = 1
+						}
+					}
+					state = {
+						name = 3
+						next = 4
+						duration = 1
+						modify_texture = {
+							name = arona3
+							alpha = 1
+						}
+					}
+					state = {
+						name = 4
+						next = 5
+						duration = 4
+						modify_texture = {
+							name = arona5
+							alpha = 1
+						}
+					}
+					state = {
+						name = 5
+						duration = 1
+						modify_texture = {
+							name = arona4
+							alpha = 1
+						}
+					}
+				}
+				
+			button = {
+				using = default_button_action
+				size = { 70 70 }
+				position = { 285 360 }
+				alpha = 0
+				onclick = "[GetVariableSystem.Toggle('gacha_open')]"
+				}
+			}
+		}
+
+		hbox = {
+			visible = "[GetPlayer.MakeScope.Var('gacha_open_var').IsSet]"
+			widget = {
+				size = { 1500 1500}
+				parentanchor = hcenter
+				margin_top = 300
+				icon = {
+					texture = "gfx/interface/japan_gui/gacha.png"
+					scale = 1.5
+					position = { 50 50 }
+				}
+				icon = {
+					texture = "gfx/interface/japan_gui/logo.png"
+					scale = 0.4
+					position = { 1080 50 }
+				}
+				icon = {
+					texture = "gfx/interface/japan_gui/gacha_main.png"
+					position = { 580 500 }
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/gacha1.png"
+					position = { 585 644 }
+				}
+				button = {
+					texture = "gfx/interface/japan_gui/gacha10.png"
+					position = { 730 646 }
+				}
+				textbox = {
+					text = "pickup"
+					fontsize = 13
+					position = { 600 577 }
+				}
+			}
+		}
+	}
+
+	type japan_panel_fullscreen_block_window = fullscreen_block_window {
+		blockoverride "back_button_fullscreen" {
+			back_button_large = {
+				position = { 11 15 }
+				parentanchor = top|left
+				onclick = "[GetVariableSystem.Toggle('japan_open')]"
+				input_action = "back"
+			}
+		}
+	}
+	
+}
+
+	
