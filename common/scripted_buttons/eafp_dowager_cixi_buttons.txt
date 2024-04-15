@@ -7,52 +7,21 @@
 	}
 
 	possible = {
-		NOT = { has_variable = remove_cixi_temp }
+		scope:Xingzhen_Yehe_Nara_scope.popularity < ruler.popularity
+		NOT = { has_journal_entry = je_remove_cixi }
+	}
+
+	selected = {
+		has_journal_entry = je_remove_cixi
 	}
 
 	effect = {
-		custom_tooltip = {
-			text = remove_cixi_tt
-			set_variable = {
-				name = remove_cixi_temp
-				value = {
-					value = ruler.age
-					multiply = 2
-					add = 10
-					add = {
-						value = var:cixi_coup_d
-						multiply = -100
-					}
-				}
-			}
-			random_list = { # 테스트 todo
-				100 = {
-					modifier = {
-						add = {
-							value = var:remove_cixi_temp
-							multiply = -1
-						}
-					}
-					trigger_event = {
-						id = dowager_cixi_events.7
-						days = { 30 60 }
-					}
-				}
-				0 = {
-					modifier = {
-						add = var:remove_cixi_temp
-					}
-					trigger_event = {
-						id = dowager_cixi_events.4
-						days = { 30 60 }
-					}
-				}
-			}
-			set_variable = {
-				name = remove_cixi_temp
-				months = 12
-			}
-		}
+		custom_tooltip = remove_cixi_tt
+		add_journal_entry = { type = je_remove_cixi }
+	}
+
+	ai_chance = {
+		value = 0
 	}
 }
 
@@ -77,4 +46,117 @@ reconstruct_summer_palace_button = {
 	}
 }
 
-#서태후 권위 깎거나 호의 높일 여러 이벤트 TODO
+reduce_cixi_power_authority_button = {
+	name = "reduce_cixi_power_authority_button"
+	desc = "reduce_cixi_power_authority_button_desc"
+
+	visible = {
+		NOT = { has_variable = reduce_cixi_power_authority_cooldown_var }
+	}
+
+	possible = {
+		authority > 0
+		custom_tooltip = {
+			text = reduce_cixi_power_authority_cooldown_tt
+			NOT = { has_variable = reduce_cixi_power_authority_cooldown_var }
+		}
+	}
+
+	effect = {
+		add_modifier = {
+			name = reduce_cixi_power_authority_country
+			months = 12
+		}
+		scope:Xingzhen_Yehe_Nara_scope = {
+			add_modifier = {
+				name = reduce_cixi_power_character
+				months = 12
+				multiplier = 1.5
+			}
+		}
+		hidden_effect = {
+			set_variable = {
+				name = reduce_cixi_power_authority_cooldown_var
+				months = 6
+			}
+		}
+	}
+
+	ai_chance = {
+		base = 0
+	}
+}
+
+reduce_cixi_power_bureaucracy_button = {
+	name = "reduce_cixi_power_bureaucracy_button"
+	desc = "reduce_cixi_power_bureaucracy_button_desc"
+
+	possible = {
+		bureaucracy > 0
+		custom_tooltip = {
+			text = reduce_cixi_power_bureaucracy_cooldown_tt
+			NOT = { has_variable = reduce_cixi_power_bureaucracy_cooldown_var }
+		}
+	}
+
+	effect = {
+		add_modifier = {
+			name = reduce_cixi_power_bureaucracy_country
+			months = 12
+		}
+		scope:Xingzhen_Yehe_Nara_scope = {
+			add_modifier = {
+				name = reduce_cixi_power_character
+				months = 12
+				multiplier = 1.5
+			}
+		}
+		hidden_effect = {
+			set_variable = {
+				name = reduce_cixi_power_bureaucracy_cooldown_var
+				months = 6
+			}
+		}
+	}
+
+	ai_chance = {
+		base = 0
+	}
+}
+
+reduce_cixi_power_money_button = {
+	name = "reduce_cixi_power_money_button"
+	desc = "reduce_cixi_power_money_button_desc"
+
+	possible = {
+		scaled_gold_reserves >= 0.15
+		custom_tooltip = {
+			text = reduce_cixi_power_money_cooldown_tt
+			NOT = { has_variable = reduce_cixi_power_money_cooldown_var }
+		}
+	}
+
+	effect = {
+		add_treasury = {
+			value = gold_reserves_limit
+			multiply = -0.15
+		}
+		scope:Xingzhen_Yehe_Nara_scope = {
+			add_modifier = {
+				name = reduce_cixi_power_character
+				months = 12
+				multiplier = 1.5
+			}
+		}
+		hidden_effect = {
+			set_variable = {
+				name = reduce_cixi_power_money_cooldown_var
+				months = 6
+			}
+		}
+	}
+
+	ai_chance = {
+		base = 0
+	}
+}

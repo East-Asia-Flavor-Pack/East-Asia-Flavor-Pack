@@ -2465,6 +2465,685 @@ chinese_westernization.304 = { # (도시 이름) 방직 공장 (상해궤기직�
 	}
 }
 
+chinese_westernization.305 = { # 부임지 옮기기
+	type = country_event
+	placement = scope:former_post_state
+
+	title = chinese_westernization.305.t
+	desc = chinese_westernization.305.d
+	flavor = chinese_westernization.305.f
+	
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	cooldown = { months = long_modifier_time }
+
+	trigger = {
+		any_scope_building = { # 산업화 달성 조건 참조
+			state = { state_is_in_china_proper = yes }
+			level >= 5
+			trigger_if = {
+				limit = { is_building_type = building_arms_industry }
+				OR = {
+					has_active_production_method = pm_rifles
+					has_active_production_method = pm_repeaters
+					has_active_production_method = pm_bolt_action_rifles
+				}
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_arms_industry }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_shipyards }
+				OR = {
+					has_active_production_method = pm_metal_shipbuilding
+					has_active_production_method = pm_arc_welding_shipbuilding
+				}
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_shipyards }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_railway }
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_railway }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_textile_mills }
+				OR = {
+					has_active_production_method = pm_sewing_machines
+					has_active_production_method = pm_electric_sewing_machines
+				}
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_textile_mills }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_furniture_manufacturies }
+				OR = {
+					has_active_production_method = pm_lathe
+					has_active_production_method = pm_mechanized_workshops
+				}
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_furniture_manufacturies }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_tooling_workshops }
+				OR = {
+					has_active_production_method = pm_steel
+					has_active_production_method = pm_rubber_grips
+				}
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						NOT = { has_building = building_tooling_workshops }
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_coal_mine }
+				OR = {
+					has_active_production_method = pm_condensing_engine_pump_building_coal_mine
+					has_active_production_method = pm_diesel_pump_building_coal_mine
+				}
+				save_temporary_scope_as = building_scope
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						state_region = {
+							remaining_undepleted = {
+								type = bg_coal_mining
+								amount >= scope:building_scope.level
+							}
+						}
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_iron_mine }
+				OR = {
+					has_active_production_method = pm_condensing_engine_pump_building_iron_mine
+					has_active_production_method = pm_diesel_pump_building_iron_mine
+				}
+				save_temporary_scope_as = building_scope
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						state_region = {
+							remaining_undepleted = {
+								type = bg_iron_mining
+								amount >= scope:building_scope.level
+							}
+						}
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_lead_mine }
+				OR = {
+					has_active_production_method = pm_condensing_engine_pump_building_lead_mine
+					has_active_production_method = pm_diesel_pump_building_lead_mine
+				}
+				save_temporary_scope_as = building_scope
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						state_region = {
+							remaining_undepleted = {
+								type = bg_lead_mining
+								amount >= scope:building_scope.level
+							}
+						}
+					}
+				}
+			}
+			trigger_else_if = {
+				limit = { is_building_type = building_sulfur_mine }
+				OR = {
+					has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+					has_active_production_method = pm_diesel_pump_building_sulfur_mine
+				}
+				save_temporary_scope_as = building_scope
+				ROOT = {
+					any_scope_state = {
+						state_is_in_china_proper = yes
+						NOT = { THIS = scope:building_scope.state }
+						state_region = {
+							remaining_undepleted = {
+								type = bg_sulfur_mining
+								amount >= scope:building_scope.level
+							}
+						}
+					}
+				}
+			}
+			trigger_else = {
+				always = no
+			}
+		}
+	}
+
+	immediate = {
+		random_scope_building = {
+			limit = {
+				state = { state_is_in_china_proper = yes }
+				level >= 5
+				trigger_if = {
+					limit = { is_building_type = building_arms_industry }
+					OR = {
+						has_active_production_method = pm_rifles
+						has_active_production_method = pm_repeaters
+						has_active_production_method = pm_bolt_action_rifles
+					}
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_arms_industry }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_shipyards }
+					OR = {
+						has_active_production_method = pm_metal_shipbuilding
+						has_active_production_method = pm_arc_welding_shipbuilding
+					}
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_shipyards }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_railway }
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_railway }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_textile_mills }
+					OR = {
+						has_active_production_method = pm_sewing_machines
+						has_active_production_method = pm_electric_sewing_machines
+					}
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_textile_mills }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_furniture_manufacturies }
+					OR = {
+						has_active_production_method = pm_lathe
+						has_active_production_method = pm_mechanized_workshops
+					}
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_furniture_manufacturies }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_tooling_workshops }
+					OR = {
+						has_active_production_method = pm_steel
+						has_active_production_method = pm_rubber_grips
+					}
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							NOT = { has_building = building_tooling_workshops }
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_coal_mine }
+					OR = {
+						has_active_production_method = pm_condensing_engine_pump_building_coal_mine
+						has_active_production_method = pm_diesel_pump_building_coal_mine
+					}
+					save_temporary_scope_as = building_scope
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							state_region = {
+								remaining_undepleted = {
+									type = bg_coal_mining
+									amount >= scope:building_scope.level
+								}
+							}
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_iron_mine }
+					OR = {
+						has_active_production_method = pm_condensing_engine_pump_building_iron_mine
+						has_active_production_method = pm_diesel_pump_building_iron_mine
+					}
+					save_temporary_scope_as = building_scope
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							state_region = {
+								remaining_undepleted = {
+									type = bg_iron_mining
+									amount >= scope:building_scope.level
+								}
+							}
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_lead_mine }
+					OR = {
+						has_active_production_method = pm_condensing_engine_pump_building_lead_mine
+						has_active_production_method = pm_diesel_pump_building_lead_mine
+					}
+					save_temporary_scope_as = building_scope
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							state_region = {
+								remaining_undepleted = {
+									type = bg_lead_mining
+									amount >= scope:building_scope.level
+								}
+							}
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { is_building_type = building_sulfur_mine }
+					OR = {
+						has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+						has_active_production_method = pm_diesel_pump_building_sulfur_mine
+					}
+					save_temporary_scope_as = building_scope
+					ROOT = {
+						any_scope_state = {
+							state_is_in_china_proper = yes
+							NOT = { THIS = scope:building_scope.state }
+							state_region = {
+								remaining_undepleted = {
+									type = bg_sulfur_mining
+									amount >= scope:building_scope.level
+								}
+							}
+						}
+					}
+				}
+				trigger_else = {
+					always = no
+				}
+			}
+			save_scope_as = building_scope
+		}
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				NOT = { THIS = scope:building_scope.state }
+				trigger_if = {
+					limit = { scope:building_scope = { is_building_type = building_arms_industry } }
+					NOT = { has_building = building_arms_industry }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_shipyards } }
+					NOT = { has_building = building_shipyards }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_railway } }
+					NOT = { has_building = building_railway }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_textile_mills } }
+					NOT = { has_building = building_textile_mills }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_furniture_manufacturies } }
+					NOT = { has_building = building_furniture_manufacturies }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_tooling_workshops } }
+					NOT = { has_building = building_tooling_workshops }
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_coal_mine } }
+					NOT = { has_building = building_coal_mine }
+					state_region = {
+						remaining_undepleted = {
+							type = bg_coal_mining
+							amount >= scope:building_scope.level
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_iron_mine } }
+					NOT = { has_building = building_iron_mine }
+					state_region = {
+						remaining_undepleted = {
+							type = bg_iron_mining
+							amount >= scope:building_scope.level
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_lead_mine } }
+					NOT = { has_building = building_lead_mine }
+					state_region = {
+						remaining_undepleted = {
+							type = bg_lead_mining
+							amount >= scope:building_scope.level
+						}
+					}
+				}
+				trigger_else_if = {
+					limit = { scope:building_scope = { is_building_type = building_sulfur_mine } }
+					NOT = { has_building = building_sulfur_mine }
+					state_region = {
+						remaining_undepleted = {
+							type = bg_sulfur_mining
+							amount >= scope:building_scope.level
+						}
+					}
+				}
+				trigger_else = {
+					always = no
+				}
+			}
+			save_scope_as = state_scope
+		}
+		scope:building_scope.state = {
+			save_scope_as = former_post_state
+		}
+		create_character = {
+			culture = cu:han	
+			save_scope_as = viceroy_scope
+			on_created = {
+				place_character_in_void = 10000
+			}
+		}
+	}
+
+	option = {
+		name = chinese_westernization.305.a
+
+		trigger = { scope:building_scope = { is_building_type = building_arms_industry } }
+
+		scope:state_scope = {
+			create_building = {
+				building = building_arms_industry
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_arms_industry
+		}
+		
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chinese_westernization.305.a
+
+		trigger = { scope:building_scope = { is_building_type = building_shipyards } }
+
+		scope:state_scope = {
+			create_building = {
+				building = building_shipyards
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_shipyards
+		}
+		
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_railway } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_railway
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_railway
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_textile_mills } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_textile_mills
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_textile_mills
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_furniture_manufacturies } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_furniture_manufacturies
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_furniture_manufacturies
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_tooling_workshops } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_tooling_workshops
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_tooling_workshops
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_coal_mine } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_coal_mine
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_coal_mine
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_iron_mine } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_iron_mine
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_iron_mine
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_lead_mine } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_lead_mine
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_lead_mine
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+	
+	option = {
+		name = chinese_westernization.305.a
+	
+		trigger = { scope:building_scope = { is_building_type = building_sulfur_mine } }
+	
+		scope:state_scope = {
+			create_building = {
+				building = building_sulfur_mine
+				level = scope:building_scope.level
+			}
+		}
+		scope:former_post_state = {
+			remove_building = building_sulfur_mine
+		}
+		
+	
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = chinese_westernization.305.b
+		
+		add_modifier = {
+			name = chiwes305b
+			months = 12
+		}
+
+		default_option = yes
+		ai_chance = {
+			base = 9
+		}
+	}
+
+	after = {
+		scope:viceroy_scope = { kill_character = { hidden = yes } }
+	}
+}
+
 # 윤선초상국 (주식회사, 조선소)
 
 chinese_westernization.399 = { # 세계의 공장

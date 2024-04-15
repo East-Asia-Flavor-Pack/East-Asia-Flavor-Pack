@@ -488,10 +488,20 @@ warlord_china_events.4 = { # 몽골 위구르 종속국 탈주 (있으면)
 			}
 			c:TUV = { save_scope_as = scope_TUV }
 		}
-		trigger_event = {
-			id = warlord_china_events.5
-			months = 2
-			popup = yes
+		if = {
+			limit = { ig:ig_armed_forces = { has_ideology = ideology:ideology_stratocratic } } # 아직 팔기군이면
+			trigger_event = {
+				id = warlord_china_events.5 # warlord_china_events.6
+				months = 2
+				popup = yes
+			}
+		}
+		else = {
+			trigger_event = {
+				id = warlord_china_events.5
+				months = 2
+				popup = yes
+			}
 		}
 	}
 
@@ -650,6 +660,138 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 	}
 }
 
+warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.6.t
+	desc = warlord_china_events.6.d
+	flavor = warlord_china_events.6.f
+
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		random_character = {
+			limit = { has_variable = YSK_var }
+			set_character_busy_and_immortal = no
+			kill_character = { hidden = yes }
+		}
+	}
+
+	option = { # 항복
+		name = warlord_china_events.6.a
+
+		default_option = yes
+
+		remove_modifier = tianming
+
+		custom_tooltip = {
+			text = warlord_china_events.6.tta
+
+			play_as = c:ROC
+
+			c:ROC = {
+				annex = c:CHI
+				trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
+				set_variable = chinese_central_government
+			}
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = { # 만주로 몽진
+		name = warlord_china_events.6.b
+
+		trigger = {
+			exists = c:MCH
+			c:MCH = {
+				is_subject_of = c:CHI
+				is_subject_type = subject_type_military_headquarters_china
+			}
+			c:MCH = {
+				any_scope_state = {
+					has_modifier = manchurian_containment
+				}
+			}
+
+		}
+		
+		remove_modifier = tianming
+
+		custom_tooltip = {
+			text = warlord_china_events.6.ttb
+			
+			# CHI 법 MCH에 복붙
+			every_law = {
+				limit = {
+					c:CHI = { has_law = PREV.type }
+				}
+				c:MCH = { activate_law = PREV.type }
+			}
+
+			# CHI 지도자 MCH로
+			ruler = {
+				set_home_country = c:MCH
+				transfer_character = c:MCH
+				set_character_as_ruler = yes
+			}
+
+			c:MCH = {
+				set_variable = imperial_family_exiled
+				every_scope_character = {
+					limit = {
+						is_ruler = no
+					}
+					random_list = {
+						80 = {
+							kill_character = { hidden = yes }
+						}
+						20 = {}
+					}
+				}
+			}
+
+			play_as = c:MCH
+
+			c:ROC = {
+				annex = c:CHI
+				trigger_event = { id = warlord_china_events.21 days = 0 popup = yes }
+				set_variable = chinese_central_government
+			}
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = { # 결사 항전
+		name = warlord_china_events.6.c
+		
+		default_option = yes
+
+		remove_modifier = tianming
+
+		ai_chance = {
+			base = 0
+		}
+	}
+
+	after = {
+	}
+}
+
 warlord_china_events.21 = { # 공화국의 탄생
 	type = country_event
 	placement = root
@@ -674,10 +816,20 @@ warlord_china_events.21 = { # 공화국의 탄생
 			value = 0
 		}
 		add_journal_entry = { type = je_abolish_monarchy }
-		trigger_event = {
-			id = warlord_china_events.22
-			days = 15
-			popup = yes
+		if = {
+			limit = { any_character = { has_variable = YSK_var } }
+			trigger_event = {
+				id = warlord_china_events.22
+				days = 15
+				popup = yes
+			}
+		}
+		else = {
+			trigger_event = {
+				id = warlord_china_events.24
+				days = 30
+				popup = yes
+			}
 		}
 		every_scope_state = {
 			set_state_type = incorporated
@@ -696,7 +848,7 @@ warlord_china_events.21 = { # 공화국의 탄생
 	}
 }
 
-warlord_china_events.22 = { # 타협의 결과
+warlord_china_events.22 = { # 타협의 결과 (원세개 있음)
 	type = country_event
 	placement = root
 
@@ -714,47 +866,60 @@ warlord_china_events.22 = { # 타협의 결과
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+
 	immediate = {
 		ruler = { save_scope_as = old_ruler }
-		if = {
-			limit = { any_character = { has_variable = YSK_var } }
-			random_character = {
-				limit = { has_variable = YSK_var }
-				save_scope_as = new_ruler
-				set_character_busy_and_immortal = no
-				set_character_as_ruler = yes
-			}
-		}
-		else = {
-			create_character = {
-				culture = cu:han
-				ig_leader = yes
-				interest_group = ig_armed_forces
-				ideology = ideology_authoritarian
-				traits = {
-					ambitious
-					persistent
-				}
-				on_created = {
-					save_scope_as = new_ruler
-					set_character_as_ruler = yes
-				}
-			}
+		random_character = {
+			limit = { has_variable = YSK_var }
+			save_scope_as = new_ruler
+			set_character_busy_and_immortal = no
+			set_character_as_ruler = yes
 		}
 		trigger_event = {
 			id = warlord_china_events.23
 			days = 15
 			popup = yes
 		}
+		add_modifier = {
+			name = warchi22
+			months = very_long_modifier_time
+			is_decaying = yes
+		}
+		scope:new_ruler = {
+			add_modifier = {
+				name = warchi22char
+				months = normal_modifier_time
+			}
+		}
+		call_election = {
+			months = 12
+		}
+		add_journal_entry = {
+			type = je_roc_provisional_presidency
+		}
 	}
 
 	option = {
 		name = warlord_china_events.22.a
 		
-		add_modifier = {
-			name = warchi22
-			months = very_long_modifier_time
-			is_decaying = yes
+		show_as_tooltip = {
+			add_modifier = {
+				name = warchi22
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+			scope:new_ruler = {
+				add_modifier = {
+					name = warchi22char
+					months = normal_modifier_time
+				}
+			}
+			call_election = {
+				months = 12
+			}
+			add_journal_entry = {
+				type = je_roc_provisional_presidency
+			}
 		}
 
 		default_option = yes
@@ -765,7 +930,456 @@ warlord_china_events.22 = { # 타협의 결과
 	}
 }
 
-warlord_china_events.23 = { # 타협의 여파
+warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.23.t
+	desc = warlord_china_events.23.d
+	flavor = warlord_china_events.23.f
+
+	duration = 1
+
+	event_image = {
+		video = "unspecific_armored_train"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	immediate = {
+		set_global_variable = china_shatters
+		
+		set_variable = chinese_central_government
+
+		remove_variable = revolutionary_prov_gov_var
+
+		# 호남 군벌
+		if = {
+			limit = { exists = s:STATE_HUNAN.region_state:ROC }
+			create_country = {
+				tag = HNA
+				origin = this
+				state = s:STATE_HUNAN.region_state:ROC
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:HNA = { save_scope_as = scope_HNA }
+		}
+		# 광서 군벌
+		if = {
+			limit = { exists = s:STATE_GUANGXI.region_state:ROC }
+			create_country = {
+				tag = GNG
+				origin = this
+				state = s:STATE_GUANGXI.region_state:ROC
+				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = c:HNA }
+						s:STATE_GUANGXI = {
+							set_owner_of_provinces = {
+								country = c:HNA
+								provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+							}
+						}
+					}
+					else = {
+						s:STATE_GUANGXI = {
+							set_owner_of_provinces = {
+								country = ROOT
+								provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+							}
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:GNG = { save_scope_as = scope_GNG }
+		}
+		# 안휘 군벌
+		if = {
+			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:ROC }
+			create_country = {
+				tag = AHU
+				origin = this
+				state = s:STATE_SOUTHERN_ANHUI.region_state:ROC
+
+				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:ROC }
+						s:STATE_NORTHERN_ANHUI = {
+							set_owner_of_provinces = {
+								country = c:AHU
+								provinces = { x23849F x942097 xC44EE7 xF5E291 x87DFF6 x9DE44A xFD70D3 x055124 x515101 xD05101 x467DAC x6895C0 }
+							}
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:AHU = { save_scope_as = scope_AHU }
+		}
+
+		#if = {
+		#	limit = { exists = s:STATE_ZHILI.region_state:ROC }
+		#	create_country = { #Zhili Clique
+		#		tag = ZHI
+		#		origin = this
+		#		state = s:STATE_ZHILI.region_state:ROC
+		#		on_created = {
+		#			warlord_setup_effect = yes
+		#			set_variable = warlord_state
+		#		}
+		#	}
+		#	c:ZHI = { save_scope_as = scope_ZHI }
+		#}
+		# 봉천 군벌
+		if = {
+			limit = { exists = s:STATE_SHENGJING.region_state:ROC }
+			create_country = {
+				tag = MCH
+				origin = this
+				state = s:STATE_SHENGJING.region_state:ROC
+				on_created = {
+					# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+					if = {
+						limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:ROC }
+						s:STATE_SOUTHERN_MANCHURIA = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { x08DC34 x292695 x301D5F x385E45 x3F61E8 x5496F2 x54B71E x5D6142 x74C59F x76800C x78B1C2 x8BA6E3 x8CAF49 x912C9D xA05162 xA05180 xA05646 xA107B9 xA495CD xC3FFC1 xC4B939 xCD5324 xD5000E xDF828B xE43B63 xEB92A2 xF471D5 xF956C5 }
+							}
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_EAFP_BEIJING.region_state:ROC }
+						s:STATE_EAFP_BEIJING = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { xDBA5F1 x666827 xC2EAB6 xCB1B7A x879FAD x367825 x45139C xCAE219 xF5B726 x5DEC3D x205BDC x35B5D1 x601436 xAD1C65 x24EFE1 xFD0842 x771A9C x6EA4B4 x2F0832 x123862 xCE9058 x4F7D66 x8B4B0F x6018AE x3650A5 x6BFF9D xF5F399 x4E8F6B x55F9B4 xCE4FAC xFF1F93 }
+							}
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:ROC }
+						s:STATE_NORTHERN_MANCHURIA = {
+							set_owner_of_provinces = {
+								country = c:MCH
+								provinces = { x9EE58F xD9928F x70A32C xDD9465 x6E3E01 xEB4991 x8872E0 x6BEA77 x87B373 x67F6E8 x256526 x09B0AA x84E33B x0356D6 x02055B x34694E x5AC7BE x815EBF xA1CF50 x6FA3BE xABB756 }
+							}
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:MCH = { save_scope_as = scope_MCH }
+		}
+		# 산서 군벌
+		if = {
+			limit = { exists = s:STATE_SHANXI.region_state:ROC }
+			create_country = {
+				tag = SHN
+				origin = this
+				state = s:STATE_SHANXI.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:SHN = { save_scope_as = scope_SHN }
+		}
+		# 신강 군벌
+		if = {
+			limit = { exists = s:STATE_TIANSHAN.region_state:ROC }
+			create_country = {
+				tag = XIN
+				origin = this
+				state = s:STATE_TIANSHAN.region_state:ROC
+
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_DZUNGARIA.region_state:ROC }
+						s:STATE_DZUNGARIA.region_state:ROC = {
+							set_state_owner = c:XIN
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_JETISY.region_state:ROC }
+						s:STATE_JETISY.region_state:ROC = {
+							set_state_owner = c:XIN
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_KIRGHIZIA.region_state:ROC }
+						s:STATE_KIRGHIZIA.region_state:ROC = {
+							set_state_owner = c:XIN
+						}
+					}
+					add_primary_culture = cu:han
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:XIN = { save_scope_as = scope_XIN }
+		}
+		# 운남 군벌
+		if = {
+			limit = { exists = s:STATE_YUNNAN.region_state:ROC }
+			create_country = {
+				tag = YUN
+				origin = this
+				state = s:STATE_YUNNAN.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:YUN = { save_scope_as = scope_YUN }
+		}
+		# 귀주 군벌
+		if = {
+			limit = { exists = s:STATE_GUIZHOU.region_state:ROC }
+			create_country = {
+				tag = GUI
+				origin = this
+				state = s:STATE_GUIZHOU.region_state:ROC
+		
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:GUI = { save_scope_as = scope_GUI }
+		}
+		# 광동 군벌
+		if = {
+			limit = { exists = s:STATE_GUANGDONG.region_state:ROC }
+			create_country = {
+				tag = YUE
+				origin = this
+				state = s:STATE_GUANGDONG.region_state:ROC
+
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
+						s:STATE_SHAOZHOU.region_state:ROC = {
+							set_state_owner = c:YUE
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:YUE = { save_scope_as = scope_YUE }
+		}
+		else_if = {
+			limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
+			create_country = {
+				tag = YUE
+				origin = this
+				state = s:STATE_SHAOZHOU.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:YUE = { save_scope_as = scope_YUE }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SICHUAN.region_state:ROC }
+			create_country = {
+				tag = SIH
+				origin = this
+				state = s:STATE_SICHUAN.region_state:ROC
+		
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:SIH = { save_scope_as = scope_SIH }
+		}
+
+		#if = {
+		#	limit = { exists = s:STATE_SHANDONG.region_state:ROC }
+		#	create_country = {
+		#		tag = SHA
+		#		origin = this
+		#		state = s:STATE_SHANDONG.region_state:ROC
+		#
+		#		on_created = {
+		#			warlord_setup_effect = yes
+		#			set_variable = warlord_state
+		#		}
+		#	}
+		#	c:SHA = { save_scope_as = scope_SHA }
+		#}
+		# 서북 군벌
+		if = {
+			limit = { exists = s:STATE_NINGXIA.region_state:ROC }
+			create_country = {
+				tag = XIB
+				origin = this
+				state = s:STATE_NINGXIA.region_state:ROC
+
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_GANSU.region_state:ROC }
+						s:STATE_GANSU.region_state:ROC = {
+							set_state_owner = c:XIB
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_ALXA.region_state:ROC }
+						s:STATE_ALXA.region_state:ROC = {
+							set_state_owner = c:XIB
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:XIB = { save_scope_as = scope_XIB }
+		}
+		else_if = {
+			limit = { exists = s:STATE_GANSU.region_state:ROC }
+			create_country = {
+				tag = YUE
+				origin = this
+				state = s:STATE_GANSU.region_state:ROC
+
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_ALXA.region_state:ROC }
+						s:STATE_ALXA.region_state:ROC = {
+							set_state_owner = c:XIB
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:XIB = { save_scope_as = scope_XIB }
+		}
+		# 새로 추가한 것들
+		# 복건 군벌
+		if = {
+			limit = { exists = s:STATE_FUJIAN.region_state:ROC }
+			create_country = {
+				tag = FJN
+				origin = this
+				state = s:STATE_FUJIAN.region_state:ROC
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:FJN = { save_scope_as = scope_FJN }
+		}
+		# 강서 군벌
+		if = {
+			limit = { exists = s:STATE_JIANGXI.region_state:ROC }
+			create_country = {
+				tag = JGX
+				origin = this
+				state = s:STATE_JIANGXI.region_state:ROC
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:JGX = { save_scope_as = scope_JGX }
+		}
+		# 강소 군벌
+		if = {
+			limit = { exists = s:STATE_NANJING.region_state:ROC }
+			create_country = {
+				tag = JGS
+				origin = this
+				state = s:STATE_NANJING.region_state:ROC
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_JIANGSU.region_state:ROC }
+						s:STATE_JIANGSU.region_state:ROC = {
+							set_state_owner = c:JGS
+						}
+					}
+					if = {
+						limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+						s:STATE_SUZHOU.region_state:ROC = {
+							set_state_owner = c:JGS
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:JGS = { save_scope_as = scope_JGS }
+		}
+		else_if = {
+			limit = { exists = s:STATE_JIANGSU.region_state:ROC }
+			create_country = {
+				tag = JGS
+				origin = this
+				state = s:STATE_JIANGSU.region_state:ROC
+
+				on_created = {
+					if = {
+						limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+						s:STATE_SUZHOU.region_state:ROC = {
+							set_state_owner = c:JGS
+						}
+					}
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:JGS = { save_scope_as = scope_JGS }
+		}
+		else_if = {
+			limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+			create_country = {
+				tag = JGS
+				origin = this
+				state = s:STATE_SUZHOU.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:JGS = { save_scope_as = scope_JGS }
+		}
+
+		every_subject_or_below = {
+			make_independent = yes
+		}
+	}
+
+	option = {
+		name = warlord_china_events.23.a
+		
+		default_option = yes
+
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 	type = country_event
 	placement = root
 
@@ -1826,153 +2440,8 @@ warlord_china_events.110 = { #Prisoner Killing
 	}
 }
 
-warlord_china_events.111 = { # 부하가 군자금으로 도박해서 날려먹음
-	type = country_event
-	placement = root
-	duration = 3
 
-	title = warlord_china_events.111.t
-	desc = warlord_china_events.111.d
-	flavor = warlord_china_events.111.f
 
-	event_image = {
-		video = "asia_farmers_market"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	immediate = {
-		# 새 인물 만들기 void에
-
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.111.a
-		# 쳐내기
-
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.111.b
-		# 돈 더 쥐어주기
-	}
-}
-
-warlord_china_events.112 = { # 성공
-	type = country_event
-	placement = root
-	duration = 3
-
-	title = warlord_china_events.112.t
-	desc = warlord_china_events.112.d
-	flavor = warlord_china_events.112.f
-
-	event_image = {
-		video = "asia_farmers_market"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	immediate = {
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.112.a
-		# TODO
-
-	}
-}
-
-warlord_china_events.113 = { # 실패
-	type = country_event
-	placement = root
-	duration = 3
-
-	title = warlord_china_events.113.t
-	desc = warlord_china_events.113.d
-	flavor = warlord_china_events.113.f
-
-	event_image = {
-		video = "asia_farmers_market"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	immediate = {
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.113.a
-		# TODO
-
-	}
-}
-
-warlord_china_events.114 = { # 숙영지에서 불꽃놀이 하다가 적에게 위치 들킴
-	type = country_event
-	placement = root
-	duration = 3
-
-	title = warlord_china_events.114.t
-	desc = warlord_china_events.114.d
-	flavor = warlord_china_events.114.f
-
-	event_image = {
-		video = "asia_farmers_market"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	immediate = {
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.114.a
-		# TODO
-
-	}
-}
-
-warlord_china_events.115 = { # 경극단 불러 병사 사기 진작 할까??
-	type = country_event
-	placement = root
-	duration = 3
-
-	title = warlord_china_events.115.t
-	desc = warlord_china_events.115.d
-	flavor = warlord_china_events.115.f
-
-	event_image = {
-		video = "asia_farmers_market"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	immediate = {
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.115.a
-		# TODO
-
-	}
-}
 
 # Yan Xishan Thought
 warlord_china_events.301 = {

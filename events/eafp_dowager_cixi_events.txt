@@ -26,6 +26,19 @@ dowager_cixi_events.1 = { # 서태후의 권력 장악 (기상정변)
 		create_character = {
 			template = eafp_chi_xingzhen_yehe_nara_template
 		}
+		add_journal_entry = {
+			type = je_dowager_cixi
+		}
+		trigger_event = {
+			id = dowager_cixi_events.2
+			months = { 120 180 }
+		}
+		if = {
+			limit = { NOT = { any_character = { has_template = chi_gong_character_template } } }
+			create_character = {
+				template = chi_gong_character_template
+			}
+		}
 	}
 
 	option = {
@@ -34,17 +47,10 @@ dowager_cixi_events.1 = { # 서태후의 권력 장악 (기상정변)
 		
 		custom_tooltip = dowager_cixi_events.1.tt
 		hidden_effect = {
-			add_journal_entry = {
-				type = je_dowager_cixi
-			}
-			trigger_event = {
-				id = dowager_cixi_events.2
-				months = { 120 180 }
-			}
-			trigger_event = {
-				id = dowager_cixi_events.6
-				months = { 12 18 }
-			}
+			#trigger_event = {
+			#	id = dowager_cixi_events.6
+			#	months = { 12 18 }
+			#}
 		}
 
 		ai_chance = {
@@ -81,6 +87,10 @@ dowager_cixi_events.2 = { # 동태후의 사망
 			save_scope_as = Xingzhen_Yehe_Nara_scope
 			remove_trait = shengmu_huangtaihou
 			add_trait = chi_the_elder_of_the_imperial_family
+		}
+		trigger_event = {
+			id = dowager_cixi_events.8
+			months = 2
 		}
 	}
 
@@ -131,8 +141,6 @@ dowager_cixi_events.3 = { # 서태후의 사망
 		name = dowager_cixi_events.3.a
 		default_option = yes
 
-		remove_modifier = cixis_extravagance_modifier
-
 		ai_chance = {
 			base = 100
 		}
@@ -158,11 +166,9 @@ dowager_cixi_events.4 = { # 서태후 축출
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		scope:Xingzhen_Yehe_Nara_scope = { kill_character = { hidden = yes } }
-		remove_modifier = cixis_extravagance_modifier
-		hidden_effect = {
-			remove_variable = cixi_coup
-			remove_variable = cixi_coup_d
+		scope:Xingzhen_Yehe_Nara_scope = {
+			set_variable = cixi_removed
+			kill_character = { hidden = yes }
 		}
 	}
 
@@ -172,7 +178,6 @@ dowager_cixi_events.4 = { # 서태후 축출
 
 		show_as_tooltip = {
 			scope:Xingzhen_Yehe_Nara_scope = { kill_character = { hidden = yes } }
-			remove_modifier = cixis_extravagance_modifier
 		}
 
 		ai_chance = {
@@ -204,16 +209,31 @@ dowager_cixi_events.5 = { # 서태후의 쿠데타
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-
+		if = {
+			NOT = { exists = heir }
+			create_character = {
+				heir = yes
+				last_name = "Aisin_Gioro"
+				age = { 5 16 }
+				culture = cu:manchu
+			}
+		}
+		ruler = {
+			kill_character = {
+				hidden = yes
+			}
+		}
 	}
 
 	option = {
 		name = dowager_cixi_events.5.a
 		default_option = yes
 		
-		ruler = {
-			kill_character = {
-				hidden = yes
+		show_as_tooltip = {
+			ruler = {
+				kill_character = {
+					hidden = yes
+				}
 			}
 		}
 
@@ -223,7 +243,7 @@ dowager_cixi_events.5 = { # 서태후의 쿠데타
 	}
 }
 
-dowager_cixi_events.6 = { # 서태후의 사치
+dowager_cixi_events.6 = { # 서태후의 개혁 지지
 	type = country_event
 	placement = ROOT
 
@@ -238,6 +258,16 @@ dowager_cixi_events.6 = { # 서태후의 사치
 	}
 
 	trigger = {
+		OR = {
+			AND = {
+				scope:Xingzhen_Yehe_Nara_scope = { has_ideology = ideology:ideology_cixi1 }
+				var:china_warlord_explosion_sum >= 0.8
+			}
+			AND = {
+				scope:Xingzhen_Yehe_Nara_scope = { has_ideology = ideology:ideology_cixi2 }
+				var:china_warlord_explosion_sum >= 0.9
+			}
+		}
 		
 	}
 
@@ -252,9 +282,30 @@ dowager_cixi_events.6 = { # 서태후의 사치
 	option = {
 		name = dowager_cixi_events.6.a
 		default_option = yes
-		
-		add_modifier = {
-			name = cixis_extravagance_modifier
+
+		trigger = {
+			var:china_warlord_explosion_sum >= 0.8
+			var:china_warlord_explosion_sum < 0.9
+		}
+
+		scope:Xingzhen_Yehe_Nara_scope = {
+			set_ideology = ideology:ideology_cixi2
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = dowager_cixi_events.6.a
+
+		trigger = {
+			var:china_warlord_explosion_sum >= 0.9
+		}
+
+		scope:Xingzhen_Yehe_Nara_scope = {
+			set_ideology = ideology:ideology_cixi3
 		}
 
 		ai_chance = {
@@ -263,7 +314,7 @@ dowager_cixi_events.6 = { # 서태후의 사치
 	}
 }
 
-dowager_cixi_events.7 = { # 서태후 축출 실패
+dowager_cixi_events.7 = { # 공친왕 축출
 	type = country_event
 	placement = ROOT
 
@@ -277,34 +328,60 @@ dowager_cixi_events.7 = { # 서태후 축출 실패
 		texture = "gfx/event_pictures/china/coronation.png"
 	}
 
-	trigger = {
-		
-	}
-
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-
+		scope:Xingzhen_Yehe_Nara_scope = {
+			add_modifier = {
+				name = reduce_cixi_power_character
+				months = 12
+			}
+		}
+		random_scope_character = {
+			limit = { has_template = chi_gong_character_template }
+			save_scope_as = purge_target
+		}
 	}
 
 	option = {
 		name = dowager_cixi_events.7.a
 		default_option = yes
-		
-		custom_tooltip = {
-			text = dowager_cixi_events.7.tt
-			change_variable = {
-				name = cixi_coup
-				add = 0.5
+
+		show_as_tooltip = {
+			scope:Xingzhen_Yehe_Nara_scope = {
+				add_modifier = {
+					name = reduce_cixi_power_character
+					months = 12
+				}
 			}
+		}
+		scope:purge_target = {
+			kill_character = { hidden = yes }
 		}
 
 		ai_chance = {
 			base = 100
 		}
 	}
+}
+
+dowager_cixi_events.8 = { # 공친왕 축출 트리거용
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		if = {
+			limit = {
+				any_scope_character = {
+					has_template = chi_gong_character_template
+				}
+			}
+			trigger_event = dowager_cixi_events.7
+		}
+	}
+
 }
 
 dowager_cixi_events.11 = { # 이화원 재건
