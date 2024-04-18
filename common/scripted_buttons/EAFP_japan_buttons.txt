@@ -7,7 +7,7 @@ japan_tutorial_button = {
 	}
 
 	possible = {
-		root.var:japan_tutorial_var < 30
+		root.var:japan_tutorial_var < 61
 	}
 
 	effect = {
@@ -16,7 +16,7 @@ japan_tutorial_button = {
 		}
 		change_variable = {
 			name = japan_tutorial_var
-			add = 30
+			add = 60
 		}
 		set_variable = {
             name = lia_var_regent_character
@@ -25,161 +25,318 @@ japan_tutorial_button = {
 	}
 }
 
-japan_sonnoha_decisions_button = {
-	name = "japan_sonnoha_decisions_button"
-	desc = "japan_sonnoha_decisions_button_desc"
+japan_hokkaido_button = {
+	name = "japan_hokkaido_button"
+	desc = "japan_hokkaido_button_desc"
 
 	visible = {
-		NOT = { has_variable = sonnoha_decisions_on }
+		always = yes
 	}
 
 	possible = {
-		NOT = { has_variable = sonnoha_decisions_on }
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			not = { has_modifier = hokkaido_iju }
+		}
 	}
 
 	effect = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			add_modifier = {
+				name = hokkaido_iju
+				months = 12
+			}
+		}
+		trigger_event = {
+			id = eafp_japan.1001
+		}
+	}
+}
+
+japan_kaikakuha_button = {
+	name = "japan_kaikakuha_button"
+	desc = "japan_kaikakuha_button_desc"
+
+	visible = {
+		owner = { 
+			NOT = { 
+				OR = {
+					has_variable = yoshinobu_start 
+					has_variable = is_hitotsubashiha
+					has_variable = is_nankiha
+				}
+			
+			} 
+			
+		}
+	}
+
+
+	possible = {
+		hidden_trigger = {
+			not = { has_variable = supporting_nankiha_time_var }
+			not = { has_variable = supporting_hitotsubashiha_time_var }
+		}
+	}
+
+	selected = {
+		has_variable = supporting_hitotsubashiha_var
+	}
+
+	effect = {
+		set_variable = supporting_hitotsubashiha_var
 		set_variable = {
-			name = sonnoha_decisions_on
+			name = supporting_hitotsubashiha_time_var
+			month = 60
+		}
+		remove_variable = supporting_nankiha_var
+		custom_tooltip = {
+			text = supporting_hitotsubashiha_tt
+		}
+		custom_tooltip = {
+			text = hitotsubashiha_progress_increase_5_tt
+			change_variable = { name = hitotsubashiha_var add = 3 }
 		}
 	}
-
 }
 
-japan_hokkaido_button = {
-	name = "japan_hokkaido_button"
-	desc = "japan_hokkaido_button_desc"
+japan_hoshuha_button = {
+	name = "japan_hoshuha_button"
+	desc = "japan_hoshuha_button_desc"
 
 	visible = {
-		always = yes
+		owner = { 
+			NOT = { 
+				OR = {
+					has_variable = yoshinobu_start 
+					has_variable = is_hitotsubashiha
+					has_variable = is_nankiha
+				}
+			
+			} 
+			
+		}
 	}
 
 	possible = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			not = { has_modifier = hokkaido_iju }
+		hidden_trigger = {
+			not = { has_variable = supporting_nankiha_time_var }
+			not = { has_variable = supporting_hitotsubashiha_time_var }
 		}
 	}
 
+	selected = {
+		has_variable = supporting_nankiha_var
+	}
+
 	effect = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			add_modifier = {
-				name = hokkaido_iju
-				months = 12
-			}
+		set_variable = supporting_nankiha_var
+		set_variable = {
+			name = supporting_nankiha_time_var
+			month = 60
 		}
-		trigger_event = {
-			id = eafp_japan.1001
+		remove_variable = supporting_hitotsubashiha_var
+		custom_tooltip = {
+			text = supporting_nankiha_tt
+		}
+		custom_tooltip = {
+			text = nankiha_progress_increase_5_tt
+			change_variable = { name = hitotsubashiha_var add = 3 }
 		}
 	}
 }
 
-japan_hokkaido_button = {
-	name = "japan_hokkaido_button"
-	desc = "japan_hokkaido_button_desc"
+japan_hitotsubashiha_button = {
+	name = "japan_hitotsubashiha_button"
+	desc = "japan_hitotsubashiha_button_desc"
 
-	visible = {
-		always = yes
+	visible = { 
+			owner = {
+					has_variable = yoshinobu_start
+			}
 	}
 
 	possible = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			not = { has_modifier = hokkaido_iju }
+		hidden_trigger = {
+			not = { has_variable = supporting_nankiha_time_var }
+			not = { has_variable = supporting_hitotsubashiha_time_var }
 		}
 	}
 
+	selected = {
+		has_variable = supporting_hitotsubashiha_var
+	}
+
 	effect = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			add_modifier = {
-				name = hokkaido_iju
-				months = 12
-			}
+		set_variable = supporting_hitotsubashiha_var
+		set_variable = {
+			name = supporting_hitotsubashiha_time_var
+			month = 60
 		}
-		trigger_event = {
-			id = eafp_japan.1001
+		remove_variable = supporting_nankiha_var
+		custom_tooltip = {
+			text = supporting_hitotsubashiha_tt
+		}
+		custom_tooltip = {
+			text = hitotsubashiha_progress_increase_5_tt
+			change_variable = { name = hitotsubashiha_var add = 3 }
 		}
 	}
 }
 
-
-japan_daimyo_interaction_button = {
-	name = "japan_daimyo_interaction_button"
-	desc = "japan_daimyo_interaction_button_desc"
+japan_nankiha_button = {
+	name = "japan_nankiha_button"
+	desc = "japan_nankiha_button_desc"
 
 	visible = {
-			c:JAP = THIS
-			has_variable = sonnoha_decisions_on
+		owner = {
+				has_variable = yoshinobu_start
+		}
+	}
+
+	possible = {
+		hidden_trigger = {
+			not = { has_variable = supporting_nankiha_time_var }
+			not = { has_variable = supporting_hitotsubashiha_time_var }
+		}
+	}
+
+	selected = {
+		has_variable = supporting_nankiha_var
+	}
+
+	effect = {
+		set_variable = supporting_nankiha_var
+		set_variable = {
+			name = supporting_nankiha_time_var
+			month = 60
+		}
+		remove_variable = supporting_hitotsubashiha_var
+		custom_tooltip = {
+			text = supporting_nankiha_tt
+		}
+		custom_tooltip = {
+			text = nankiha_progress_increase_5_tt
+			change_variable = { name = hitotsubashiha_var add = 3 }
+		}
+	}
+}
+
+japan_bakufu_kaikaku_button = {
+	name = "japan_bakufu_kaikaku_button"
+	desc = "japan_bakufu_kaikaku_button_desc"
+
+	visible = {
+		not = { has_variable = kaikaku_start }
 	}
 
 	possible = {
 		custom_tooltip = {
-			text = daimyo_interaction_tt
-			c:JAP = THIS
-			has_variable = sonnoha_decisions_on
-			NOT = { has_variable = daimyo_interaction_var }
+			text = not_ienari
+			ruler = {
+					not = { has_template = jap_ienari_tokugawa_template }
+				}
+			}
+		custom_tooltip = {
+			text = hiritsu_over_tt
+			bakufu_hitotsubashiha_hiritsu > 15
 		}
 	}
 
 	effect = {
+		set_variable = kaikaku_start
+		add_journal_entry = {
+			type = japan_bakufu_kaikoku_je
+		}
+		add_journal_entry = {
+			type = japan_bakufu_zaisei_je
+		}
+		add_journal_entry = {
+			type = japan_bakufu_guntai_je
+		}
+		add_journal_entry = {
+			type = japan_bakufu_naibu_je
+		}
+		add_journal_entry = {
+			type = japan_bakufu_bakuhan_je
+		}
+	}
+}
+
+japan_hitotsubashiha_phase_1_button = {
+	name = "japan_hitotsubashiha_phase_1_button"
+	desc = "japan_hitotsubashiha_phase_1_button_desc"
+
+	visible = {
+		not = { has_variable = hitotsubashiha_phase_1_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var > 100
+	}
+
+	possible = {
+		not = { has_variable = hitotsubashiha_phase_1_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var >= 300
+	}
+
+	effect = {
+		set_variable = hitotsubashiha_phase_1_set
+	}
+}
+
+japan_hitotsubashiha_phase_2_button = {
+	name = "japan_hitotsubashiha_phase_2_button"
+	desc = "japan_hitotsubashiha_phase_2_button_desc"
+
+	visible = {
+		not = { has_variable = hitotsubashiha_phase_2_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var > 300
+	}
+
+	possible = {
+		not = { has_variable = hitotsubashiha_phase_2_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var >= 500
+	}
+
+	effect = {
+		set_variable = hitotsubashiha_phase_2_set
+		
+	}
+}
+
+japan_hitotsubashiha_phase_3_button = {
+	name = "japan_hitotsubashiha_phase_3_button"
+	desc = "japan_hitotsubashiha_phase_3_button_desc"
+
+	visible = {
+		not = { has_variable = hitotsubashiha_phase_3_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var > 500
+	}
+
+	possible = {
+		not = { has_variable = hitotsubashiha_phase_3_set }
+		has_variable = is_hitotsubashiha
+		var:hitotsubashiha_var >= 750
+	}
+
+	effect = {
+		set_variable = hitotsubashiha_phase_3_set
 		trigger_event = {
-			id = eafp_japan.3900
+			id = eafp_japan.9998
+			days = 5
 		}
-		set_variable = {
-			name = daimyo_interaction_var
-			months = 12
+		custom_tooltip = {
+			text = caution_tt
 		}
 	}
 }
 
-japan_anken_first_3901_button = {
-	name = "japan_anken_first_3901_button"
-	desc = "japan_anken_first_3901_button_desc"
 
-	visible = {
-		has_variable = anken_var
-	}
 
-	possible = {
-		not = { has_variable = anken_first_var }
-	}
 
-	effect = {
-		set_variable = anken_first_var
-		remove_variable = anken_second_var
-	}
-}
 
-japan_anken_second_3901_button = {
-	name = "japan_anken_second_3901_button"
-	desc = "japan_anken_second_3901_button_desc"
-
-	visible = {
-		has_variable = anken_var
-	}
-
-	possible = {
-		not = { has_variable = anken_second_var }
-	}
-
-	effect = {
-		remove_variable = anken_first_var
-		set_variable = anken_second_var
-	}
-}
-
-japan_daimyo_3901_button = {
-	name = "japan_daimyo_3901_button"
-	desc = "japan_daimyo_3901_button_desc"
-
-	visible = {
-		has_variable = anken_var
-	}
-
-	possible = {
-		always = no
-	}
-
-	effect = {
-	}
-}
 
 
 japan_pariament_1_button = {
