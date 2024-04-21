@@ -1,0 +1,1628 @@
+﻿lia_rlg_test = {
+	is_shown = {
+		is_player = yes
+		#always = no
+	}
+
+	possible = {
+		is_player = yes
+		#always = no
+		#any_scope_pop = {
+		#	exists = this
+		#	#soldier_clothes_pop_trigger = yes
+		#	#struggling_pop_trigger = no
+		#	home_country = {
+		#		exists = capital
+		#		OR = {
+		#			capital = {
+		#				state_is_in_east_asia = no
+		#			}
+		#			has_technology_researched = rifling
+		#		}
+		#	}
+		#}
+	}
+
+	when_taken = {
+		add_treasury = 100000
+		#add_treasury = var:hui_temp
+		#s:STATE_SEOUL = {
+		#	region_state:KOR = {
+		#		#remove_building = building_university
+		#		remove_building = building_gyeongbokgung_poor
+		#	}
+		#}
+		#random_state = {
+		#	limit = {
+		#		OR = {
+		#			this = s:STATE_GANSU.region_state:CHI
+		#			this = s:STATE_QINGHAI.region_state:CHI
+		#		}
+		#	}
+		#	save_scope_as = revolt_state
+		#}
+		#scope:revolt_state = {
+		#	add_modifier = {
+		#		name = hui_revolt_1
+		#		months = 48
+		#	}
+		#}
+		#add_modifier = {
+		#	name = lia_rlg_modi_deci_nametest
+		#}
+		#change_variable = {
+		#	name = china_warlord_explosion
+		#	add = 1
+		#}
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_gbg_aid = {
+	is_shown = {
+		exists = c:KOR
+		THIS = c:KOR
+		owns_entire_state_region = STATE_LIA_SEOUL
+		has_building = building_gyeongbokgung_poor
+		NOT = { has_journal_entry = je_rlg_seoul_gyeongbokgung_poor }
+		NOT = { has_journal_entry = je_rlg_seoul_gyeongbokgung_rebuild }
+		year >= 1850
+	}
+
+	possible = {
+		NOT = { has_building = building_gyeongbokgung }
+	}
+
+	when_taken = {
+		trigger_event = {
+			id = lia_event_rlg.1510
+		}
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_qudvnd = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        NOT = { has_variable = lia_var_rlg_qudvnd }
+	}
+
+	possible = {
+        has_law = law_type:law_monarchy
+	}
+
+	when_taken = {
+        add_treasury = 10000
+        set_variable = lia_var_rlg_qudvnd
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_support = {   #인구과밀 모디파이어 달릴시 경작지 조금 늘려서 완화가능하도록 뚫어주는 디시전이 될 것
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_metropolis
+        var:lia_var_rlg_metropolis >= 0
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_support }
+        scaled_debt < 0.3
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 2달.
+			name = lia_var_rlg_support
+			value = 1
+			months = 2
+		}
+        trigger_event = {
+            id = lia_event_rlg.5
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_land = {   #인구과밀 모디파이어 달릴시 경작지 조금 늘려서 완화가능하도록 뚫어주는 디시전이 될 것
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_metropolis
+        var:lia_var_rlg_metropolis >= 1
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_land }
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 반년
+			name = lia_var_rlg_land
+			value = 1
+			months = 6
+		}
+        add_treasury = lia_rlg_want_cost_b  #gdp의 2%
+        trigger_event = {
+            id = lia_event_rlg.4
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_seoul = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        has_journal_entry = je_rlg_start
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_start }
+		s:STATE_SEOUL.region_state:KOR = {
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 1
+			}
+			any_scope_building = {
+				is_building_type = building_government_administration
+				level >= 10
+			}
+            has_building = building_railway
+            state_population > 3000000
+        }
+        OR = {
+            has_diplomatic_pact = {
+                type = increase_relations
+                who = c:USA
+            }
+            has_diplomatic_pact = {
+                type = increase_relations
+                who = c:AUS
+            }
+            has_diplomatic_pact = {
+                type = increase_relations
+                who = c:PRU
+            }
+            #has_diplomatic_pact = {
+            #    type = increase_relations
+            #    who = c:GER
+            #}
+            has_diplomatic_pact = {
+                type = increase_relations
+                who = c:GBR
+            }
+        }
+
+	}
+
+	when_taken = {
+        set_variable = lia_var_rlg_start
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_add = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_metropolis
+        var:lia_var_rlg_metropolis >= 1
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_add }
+        custom_tooltip = {
+            text = lia_rlg_deci_add_con1
+            OR = {
+                var:lia_var_rlg_count < 3
+                has_variable = lia_var_rlg_add_2
+            }
+        }
+        custom_tooltip = {
+            text = lia_rlg_deci_add_con2
+            OR = {
+                var:lia_var_rlg_count < 5
+                has_variable = lia_var_rlg_add_3
+            }
+        }
+        custom_tooltip = {
+            text = lia_rlg_deci_add_con3
+            var:lia_var_rlg_count < 7
+        }
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 1년
+			name = lia_var_rlg_add
+			value = 1
+			months = 12
+		}
+        trigger_event = {
+            id = lia_event_rlg.3
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_rokmc = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_BUSAN
+        owns_entire_state_region = STATE_LIA_ULSAN
+	}
+
+	when_taken = {
+		set_variable = {
+			name = lia_var_rlg_ulsan_deci_exp
+			value = 0
+		}
+		set_variable = {
+			name = lia_var_rlg_ulsan_deci_lab
+			value = 0
+		}
+		set_variable = {
+			name = lia_var_rlg_ulsan_deci_juh
+			value = 0
+		}
+		set_variable = {
+			name = lia_var_rlg_ulsan_deci_isa
+			value = 0
+		}
+		set_variable = {
+			name = lia_var_rlg_ulsan_deci_srp
+			value = 0
+		}
+        s:STATE_LIA_ULSAN.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_ulsan_b_mc1
+            }
+        }
+        remove_variable = lia_var_rlg_ulsan_deci
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_kmc_exp = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci_exp
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_LIA_ULSAN
+	}
+
+	when_taken = {
+        add_treasury = -100000
+        s:STATE_LIA_ULSAN.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_ulsan_b_exp
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_2
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_2
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_3
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_3
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_4
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_4
+                add = 20
+            }
+        }
+        
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc1
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc1
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc2
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc2
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc2
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc3
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc3
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc3
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc4
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc4
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc4
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc5
+                }
+            }
+        }
+        remove_variable = lia_var_rlg_ulsan_deci_exp
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_kmc_lab = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci_lab
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_LIA_ULSAN
+	}
+
+	when_taken = {
+        add_treasury = -100000
+        s:STATE_LIA_ULSAN.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_ulsan_b_lab
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_2
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_2
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_3
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_3
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_4
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_4
+                add = 20
+            }
+        }
+        
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc1
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc1
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc2
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc2
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc2
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc3
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc3
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc3
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc4
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc4
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc4
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc5
+                }
+            }
+        }
+        remove_variable = lia_var_rlg_ulsan_deci_lab
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_kmc_juh = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci_juh
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_LIA_ULSAN
+	}
+
+	when_taken = {
+        add_treasury = -100000
+        add_modifier = {
+            name = lia_rlg_modi_ulsan_b_juh
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_2
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_2
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_3
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_3
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_4
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_4
+                add = 20
+            }
+        }
+        
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc1
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc1
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc2
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc2
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc2
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc3
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc3
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc3
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc4
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc4
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc4
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc5
+                }
+            }
+        }
+        remove_variable = lia_var_rlg_ulsan_deci_juh
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_kmc_isa = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci_isa
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_LIA_ULSAN
+        NOT = { has_variable = lia_var_rlg_ulsan_deci_isa_timer }
+	}
+
+	when_taken = {
+        add_treasury = -50000
+		set_variable = {    #쿨타임 2년
+			name = lia_var_rlg_ulsan_deci_isa_timer
+			value = 1
+			months = 24
+		}
+        s:STATE_LIA_ULSAN.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_ulsan_b_isa
+                months = 3
+            }
+        }
+        
+        random_list = {
+			60 = {
+                s:STATE_BUSAN = {
+                    random_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = korean
+                            }
+                            change_pop_culture = {
+                                target = cu:sephardic
+                                value = 0.02
+                            }
+                        }
+                    }
+                }
+                s:STATE_BUSAN = {
+                    every_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = sephardic
+                            }
+                            move_pop = s:STATE_LIA_ULSAN.region_state:KOR
+                        }
+                    }
+                    add_devastation = 10
+                }
+                s:STATE_LIA_ULSAN.region_state:KOR = {
+                    every_scope_pop = {
+                        limit = {
+                            has_pop_culture = sephardic
+                        }
+                        change_pop_culture = {
+                            target = cu:korean
+                            value = 1.00
+                        }
+                    }
+                }
+			}
+			15 = {
+                s:STATE_YANGHO = {
+                    random_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = korean
+                            }
+                            change_pop_culture = {
+                                target = cu:sephardic
+                                value = 0.02
+                            }
+                        }
+                    }
+                }
+                s:STATE_YANGHO = {
+                    every_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = sephardic
+                            }
+                            move_pop = s:STATE_LIA_ULSAN.region_state:KOR
+                        }
+                    }
+                    add_devastation = 10
+                }
+                s:STATE_LIA_ULSAN.region_state:KOR = {
+                    every_scope_pop = {
+                        limit = {
+                            has_pop_culture = sephardic
+                        }
+                        change_pop_culture = {
+                            target = cu:korean
+                            value = 1.00
+                        }
+                    }
+                }
+			}
+			15 = {
+                s:STATE_SEOUL = {
+                    random_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = korean
+                            }
+                            change_pop_culture = {
+                                target = cu:sephardic
+                                value = 0.02
+                            }
+                        }
+                    }
+                }
+                s:STATE_SEOUL = {
+                    every_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = sephardic
+                            }
+                            move_pop = s:STATE_LIA_ULSAN.region_state:KOR
+                        }
+                    }
+                    add_devastation = 10
+                }
+                s:STATE_LIA_ULSAN.region_state:KOR = {
+                    every_scope_pop = {
+                        limit = {
+                            has_pop_culture = sephardic
+                        }
+                        change_pop_culture = {
+                            target = cu:korean
+                            value = 1.00
+                        }
+                    }
+                }
+			}
+			5 = {
+                s:STATE_PYONGYANG = {
+                    random_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = korean
+                            }
+                            change_pop_culture = {
+                                target = cu:sephardic
+                                value = 0.02
+                            }
+                        }
+                    }
+                }
+                s:STATE_PYONGYANG = {
+                    every_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = sephardic
+                            }
+                            move_pop = s:STATE_LIA_ULSAN.region_state:KOR
+                        }
+                    }
+                    add_devastation = 10
+                }
+                s:STATE_LIA_ULSAN.region_state:KOR = {
+                    every_scope_pop = {
+                        limit = {
+                            has_pop_culture = sephardic
+                        }
+                        change_pop_culture = {
+                            target = cu:korean
+                            value = 1.00
+                        }
+                    }
+                }
+			}
+			5 = {
+                s:STATE_SARIWON = {
+                    random_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = korean
+                            }
+                            change_pop_culture = {
+                                target = cu:sephardic
+                                value = 0.02
+                            }
+                        }
+                    }
+                }
+                s:STATE_SARIWON = {
+                    every_scope_state = {
+                        every_scope_pop = {
+                            limit = {
+                                has_pop_culture = sephardic
+                            }
+                            move_pop = s:STATE_LIA_ULSAN.region_state:KOR
+                        }
+                    }
+                    add_devastation = 10
+                }
+                s:STATE_LIA_ULSAN.region_state:KOR = {
+                    every_scope_pop = {
+                        limit = {
+                            has_pop_culture = sephardic
+                        }
+                        change_pop_culture = {
+                            target = cu:korean
+                            value = 1.00
+                        }
+                    }
+                }
+			}
+        }
+        
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_2
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_2
+                add = 10
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_3
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_3
+                add = 10
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_4
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_4
+                add = 10
+            }
+        }
+        
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc1
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc1
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc2
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc2
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc2
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc3
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc3
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc3
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc4
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc4
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc4
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc5
+                }
+            }
+        }
+
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_kmc_srp = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        exists = var:lia_var_rlg_ulsan_deci_srp
+	}
+
+	possible = {
+        owns_entire_state_region = STATE_LIA_ULSAN
+	}
+
+	when_taken = {
+        add_treasury = -100000
+        s:STATE_LIA_ULSAN.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_ulsan_b_src
+            }
+        }
+        s:STATE_LIA_UIJU.region_state:KOR = {
+            every_scope_building = {
+                limit = {
+                    is_building_type = building_barracks
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_srp
+                }
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_2
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_2
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_3
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_3
+                add = 20
+            }
+        }
+        if = {
+            limit = {
+                has_journal_entry = je_rlg_ulsan_b_4
+            }
+            change_variable = {
+                name = lia_var_rlg_ulsan_b_4
+                add = 20
+            }
+        }
+        
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc1
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc1
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc2
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc2
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc2
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc3
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc3
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc3
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc4
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_LIA_ULSAN = {
+                    any_scope_state = {
+                        has_modifier = lia_rlg_modi_ulsan_b_mc4
+                    }
+                }
+            }
+            s:STATE_LIA_ULSAN.region_state:KOR = {
+                remove_modifier = lia_rlg_modi_ulsan_b_mc4
+                add_modifier = {
+                    name = lia_rlg_modi_ulsan_b_mc5
+                }
+            }
+        }
+        remove_variable = lia_var_rlg_ulsan_deci_srp
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_rail_1 = {   #일단은 이렇게 해 두고, 나중에 효과 좀 더 다듬을거야.
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        OR = {
+            has_journal_entry = je_rlg_uiju_a_1
+            has_journal_entry = je_rlg_uiju_a_2
+            has_journal_entry = je_rlg_uiju_a_3
+            has_journal_entry = je_rlg_uiju_a_4
+        }
+	}
+
+	possible = {
+        OR = {
+            s:STATE_BEIJING = {
+                any_scope_state = {
+                    NOT = { has_building = building_railway }
+                }
+            }
+            s:STATE_SHENGJING = {
+                any_scope_state = {
+                    NOT = { has_building = building_railway }
+                }
+            }
+        }
+	}
+
+	when_taken = {
+        add_treasury = -250000
+        s:STATE_BEIJING = {
+            every_scope_state = {
+				create_building = { 
+					building = "building_railway"
+					level = 1
+				}
+            }
+        }
+        s:STATE_SHENGJING = {
+            every_scope_state = {
+				create_building = { 
+					building = "building_railway"
+					level = 1
+				}
+            }
+        }
+        every_country = {
+            limit = {
+                has_state_in_state_region = STATE_BEIJING
+            }
+            if = {
+                limit = {
+                    NOT = { has_technology_researched = railways }
+                }
+                add_technology_progress = { progress = 2500 technology = railways }
+            }
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_rail_2 = {   #일단은 이렇게 해 두고, 나중에 효과 좀 더 다듬을거야.
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        OR = {
+            has_journal_entry = je_rlg_najin_a_3
+            has_journal_entry = je_rlg_najin_a_4
+        }
+	}
+
+	possible = {
+        OR = {
+            s:STATE_SOUTHERN_MANCHURIA = {
+                any_scope_state = {
+                    NOT = { has_building = building_railway }
+                }
+            }
+            s:STATE_OUTER_MANCHURIA = {
+                any_scope_state = {
+                    NOT = { has_building = building_railway }
+                }
+            }
+            s:STATE_EAFP_OUTER_MANCHURIA = {	#외만주 주 쪼개기로 인한 추가부분!
+                any_scope_state = {
+                    NOT = { has_building = building_railway }
+                }
+            }
+        }
+	}
+
+	when_taken = {
+        add_treasury = -200000
+        s:STATE_SOUTHERN_MANCHURIA = {
+            every_scope_state = {
+				create_building = { 
+					building = "building_railway"
+					level = 1
+				}
+            }
+        }
+        s:STATE_OUTER_MANCHURIA = {
+            every_scope_state = {
+				create_building = { 
+					building = "building_railway"
+					level = 1
+				}
+            }
+        }
+        s:STATE_EAFP_OUTER_MANCHURIA = {
+            every_scope_state = {
+				create_building = { 
+					building = "building_railway"
+					level = 1
+				}
+            }
+        }
+        every_country = {
+            limit = {
+                has_state_in_state_region = STATE_SOUTHERN_MANCHURIA
+            }
+            if = {
+                limit = {
+                    NOT = { has_technology_researched = railways }
+                }
+                add_technology_progress = { progress = 2500 technology = railways }
+            }
+        }
+        every_country = {
+            limit = {
+                has_state_in_state_region = STATE_OUTER_MANCHURIA
+            }
+            if = {
+                limit = {
+                    NOT = { has_technology_researched = railways }
+                }
+                add_technology_progress = { progress = 2500 technology = railways }
+            }
+        }
+        every_country = {
+            limit = {
+                has_state_in_state_region = STATE_EAFP_OUTER_MANCHURIA
+            }
+            if = {
+                limit = {
+                    NOT = { has_technology_researched = railways }
+                }
+                add_technology_progress = { progress = 2500 technology = railways }
+            }
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_rail_3 = {   #일단은 이렇게 해 두고, 나중에 효과 좀 더 다듬을거야.
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        OR = {
+            has_journal_entry = je_rlg_najin_a_3
+            has_journal_entry = je_rlg_najin_a_4
+            has_journal_entry = je_rlg_najin_b_3
+            has_journal_entry = je_rlg_najin_b_4
+        }
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_rail_3 }
+        OR = {
+            any_state = {
+                state_region = s:STATE_MOSCOW
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_TVER
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_GALICH
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_PERM
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_URAL
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_TOBOLSK
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_TOMSK
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_IRKUTSK
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_TRANS_BAIKAL
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_OKHOTSK
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_OUTER_MANCHURIA
+                NOT = { has_building = building_railway }
+            }
+            any_state = {
+                state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                NOT = { has_building = building_railway }
+            }
+        }
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 1달
+			name = lia_var_rlg_rail_3
+			value = 1
+			days = 30
+		}
+        add_treasury = -150000
+		every_country = {
+            limit = {
+                has_state_in_state_region = STATE_MOSCOW
+            }
+            if = {
+                limit = {
+                    NOT = { has_technology_researched = railways }
+                }
+                add_technology_progress = { progress = 1000 technology = railways }
+            }
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+        random_state = {
+            limit = {
+                is_largest_state_in_region = yes
+                NOT = { has_building = building_railway }
+                OR = {
+                    state_region = s:STATE_MOSCOW
+                    state_region = s:STATE_TVER
+                    state_region = s:STATE_GALICH
+                    state_region = s:STATE_PERM
+                    state_region = s:STATE_URAL
+                    state_region = s:STATE_TOBOLSK
+                    state_region = s:STATE_TOMSK
+                    state_region = s:STATE_IRKUTSK
+                    state_region = s:STATE_TRANS_BAIKAL
+                    state_region = s:STATE_OKHOTSK
+                    state_region = s:STATE_OUTER_MANCHURIA
+					state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                }
+            }
+			create_building = { 
+				building = "building_railway"
+				level = 1
+			}
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+lia_rlg_deci_elec = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        has_variable = lia_var_rlg_sell_elec
+	}
+
+	possible = {
+        NOT = { has_variable = lia_var_rlg_sell_elec_timer }
+        owns_entire_state_region = STATE_PYONGYANG
+		s:STATE_PYONGYANG = {
+            region_state:KOR = {
+                any_scope_building = {
+                    is_building_type = building_power_plant
+                    level >= 10
+                }
+            }
+        }
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 4년
+			name = lia_var_rlg_sell_elec_timer
+			value = 1
+			months = 48
+		}
+        s:STATE_PYONGYANG.region_state:KOR = {
+            add_modifier = {
+                name = lia_rlg_modi_uiju_a_esl
+                months = 48
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_PYONGYANG = {
+                    region_state:KOR = {
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level >= 10
+                        }
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level < 20
+                        }
+                    }
+                }
+            }
+            add_modifier = {
+                name = lia_rlg_modi_uiju_a_sl1
+                months = 48
+            }
+            every_state = {
+                limit = {
+                    OR = {
+                        state_region = s:STATE_SHENGJING
+                        state_region = s:STATE_SOUTHERN_MANCHURIA
+                        state_region = s:STATE_NORTHERN_MANCHURIA
+                        state_region = s:STATE_OUTER_MANCHURIA
+						state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                    }
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_bu1
+                    months = 48
+                }
+            }
+            every_country = {
+                limit = {
+                    owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_by1
+                    months = 48
+                }
+                if = {
+                    limit = {
+                        NOT = { has_technology_researched = electrical_generation }
+                    }
+                    add_technology_progress = { progress = 2500 technology = electrical_generation }
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_PYONGYANG = {
+                    region_state:KOR = {
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level >= 20
+                        }
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level < 30
+                        }
+                    }
+                }
+            }
+            add_modifier = {
+                name = lia_rlg_modi_uiju_a_sl2
+                months = 48
+            }
+            every_state = {
+                limit = {
+                    OR = {
+                        state_region = s:STATE_SHENGJING
+                        state_region = s:STATE_SOUTHERN_MANCHURIA
+                        state_region = s:STATE_NORTHERN_MANCHURIA
+                        state_region = s:STATE_OUTER_MANCHURIA
+						state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                    }
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_bu2
+                    months = 48
+                }
+            }
+            every_country = {
+                limit = {
+                    owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_by2
+                    months = 48
+                }
+                if = {
+                    limit = {
+                        NOT = { has_technology_researched = electrical_generation }
+                    }
+                    add_technology_progress = { progress = 2500 technology = electrical_generation }
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_PYONGYANG = {
+                    region_state:KOR = {
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level >= 30
+                        }
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level < 40
+                        }
+                    }
+                }
+            }
+            add_modifier = {
+                name = lia_rlg_modi_uiju_a_sl3
+                months = 48
+            }
+            every_state = {
+                limit = {
+                    OR = {
+                        state_region = s:STATE_SHENGJING
+                        state_region = s:STATE_SOUTHERN_MANCHURIA
+                        state_region = s:STATE_NORTHERN_MANCHURIA
+                        state_region = s:STATE_OUTER_MANCHURIA
+						state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                    }
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_bu3
+                    months = 48
+                }
+            }
+            every_country = {
+                limit = {
+                    owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_by3
+                    months = 48
+                }
+                if = {
+                    limit = {
+                        NOT = { has_technology_researched = electrical_generation }
+                    }
+                    add_technology_progress = { progress = 2500 technology = electrical_generation }
+                }
+            }
+        }
+        if = {
+            limit = {
+                s:STATE_PYONGYANG = {
+                    region_state:KOR = {
+                        any_scope_building = {
+                            is_building_type = building_power_plant
+                            level >= 40
+                        }
+                    }
+                }
+            }
+            add_modifier = {
+                name = lia_rlg_modi_uiju_a_sl4
+                months = 48
+            }
+            every_state = {
+                limit = {
+                    OR = {
+                        state_region = s:STATE_SHENGJING
+                        state_region = s:STATE_SOUTHERN_MANCHURIA
+                        state_region = s:STATE_NORTHERN_MANCHURIA
+                        state_region = s:STATE_OUTER_MANCHURIA
+						state_region = s:STATE_EAFP_OUTER_MANCHURIA
+                    }
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_bu4
+                    months = 48
+                }
+            }
+            every_country = {
+                limit = {
+                    owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+                }
+                add_modifier = {
+                    name = lia_rlg_modi_uiju_a_by4
+                    months = 48
+                }
+                if = {
+                    limit = {
+                        NOT = { has_technology_researched = electrical_generation }
+                    }
+                    add_technology_progress = { progress = 2500 technology = electrical_generation }
+                }
+            }
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_rlg_deci_agricol = {
+	is_shown = {
+		exists = c:KOR
+		this = c:KOR
+        owns_entire_state_region = STATE_YANGHO
+        owns_entire_state_region = STATE_LIA_GWANGJU
+	}
+
+	possible = {
+        s:STATE_LIA_GWANGJU = {
+            any_scope_state = {
+                has_modifier = lia_rlg_modi_gwangju_b_col
+            }
+        }
+        NOT = { has_variable = lia_var_rlg_agricol_inv_timer }
+	}
+
+	when_taken = {
+		set_variable = {    #쿨타임 3년
+			name = lia_var_rlg_agricol_inv_timer
+			value = 1
+			months = 36
+		}
+        trigger_event = {
+            id = lia_event_rlg.1389
+        }
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
