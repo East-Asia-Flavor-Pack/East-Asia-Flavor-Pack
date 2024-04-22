@@ -1,0 +1,84 @@
+je_concession_calc = { # 조계지 계산용 저널
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+	
+	is_shown_when_inactive = {
+		is_ai = yes
+		OR = {
+			AND = {
+				has_global_variable = concession_calc_holder
+				OR = {
+					this = global_var:concession_calc_holder
+					global_var:concession_calc_holder = {
+						OR = {
+							is_country_alive = no
+							OR = {
+								is_ai = no
+								NOT = { # Human players eligible only if they conquered all the AIs
+									any_country = {
+										is_ai = yes
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			NOT = {
+				has_global_variable = concession_calc_holder
+			}
+		}
+	}
+	
+	possible = {
+		always = yes
+	}
+	
+	immediate = {
+		if = {
+			limit = {
+				OR = {
+					NOT = {
+						has_global_variable = concession_calc_holder
+					}
+					global_var:concession_calc_holder = {
+						OR = {
+							is_country_alive = no
+							OR = {
+								is_ai = no
+								NOT = {
+									any_country = {
+										is_ai = yes
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			set_global_variable = {
+				name  = concession_calc_holder
+				value = this
+			}
+		}
+	}
+	
+	invalid = {
+		OR = {
+			is_ai = no
+			AND = {
+				has_global_variable = concession_calc_holder
+				this != global_var:concession_calc_holder
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			concessions_in_china.1
+		}
+	}
+
+	can_deactivate = yes
+	transferable   = no
+	can_revolution_inherit = no
+}

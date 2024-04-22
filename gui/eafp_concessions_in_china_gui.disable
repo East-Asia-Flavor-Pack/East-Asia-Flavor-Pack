@@ -1,0 +1,154 @@
+# COPY-PASTED FOR NOW
+@panel_width_minus_30 = 510
+@panel_width_minus_20 = 520	
+@panel_width_minus_10 = 530			# used to be 450
+@panel_width = 540  				# used to be 460
+@panel_width_half = 270				# used to be 230
+@panel_width_plus_10 = 550  		# used to be 470
+@panel_width_plus_14 = 554			# used to be 474
+@panel_width_plus_14_half = 277		# used to be 237
+@panel_width_plus_20 = 560			# used to be 480
+@panel_width_plus_30 = 570			# used to be 490
+@panel_width_plus_70 = 610			# used to be 530
+
+types eafp_concessions_in_china {
+	type eafp_concessions_in_china = container {
+		
+		using = sidepanel_plus_sidebar_size
+		layoutpolicy_vertical = expanding
+		alwaystransparent = no
+		using = clickthrough_blocker
+		layer = layer_ingame_menu
+
+		container = {
+			position = { 10 5 }
+			flowcontainer = {
+				direction = horizontal
+				margin = { 0 5 }
+
+				sort_button = {
+					align = center|nobaseline
+					raw_text = "주"
+					size = { 150 20 }
+
+					onclick = "[MapListPanel.Sort('name')]"
+				}
+
+				sort_button = {
+					align = left|nobaseline
+					size = { 250 20 }
+				}
+				sort_button = {
+					align = hcenter|nobaseline
+					raw_text = "조계지 수"
+					size = { 100 20 }
+				}
+			}
+			
+			flowcontainer = {
+				position = { -1 40 }
+				datamodel = "[GetGlobalList('concession_candidate_states_gvarlist')]"
+				
+				direction = vertical
+				item = {
+					flowcontainer = {
+						datacontext = "[Scope.GetState]"
+						visible = "[GetScriptedGui('is_state_with_concession').IsShown( GuiScope.SetRoot(Scope.GetState.MakeScope).End)]" 
+						button = {
+							using = clean_button
+							size = { 500 40 }
+							onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
+							onrightclick = "[RightClickMenuManager.ShowForState(State.AccessSelf)]"
+							onmousehierarchyenter = "[AccessHighlightManager.HighlightState(State.Self)]"
+							onmousehierarchyleave = "[AccessHighlightManager.RemoveHighlight]"
+							icon = {
+								name = "map_list_status_bg"
+								texture = "gfx/interface/map_list/map_list_status_bg.dds"
+								framesize = { 600 40 }
+								size = { 300 40 }
+								position = { 0 0 }
+								alpha = 0.4
+								frame = "[MapListOption.GetBackgroundStatusFrame]"
+
+								alwaystransparent = yes
+
+								state = {
+									name = map_list_status_mouse_enter
+									alpha = 0.8
+									duration = 0.08
+								}
+								state = {
+									name = map_list_status_mouse_press
+									alpha = 0.8
+									duration = 0.08
+								}
+								state = {
+									name = map_list_status_mouse_release
+									alpha = 0.8
+									duration = 0.08
+								}
+								state = {
+									name = map_list_status_mouse_leave
+									alpha = 0.4
+									duration = 0.12
+								}
+							}
+							textbox = {
+								margin = { 20 0 }
+								size = { 150 40 }
+								position = { 0 0 }
+								align = left
+								raw_text = "[Scope.GetState.GetOwner.GetFlagTextIcon]  [Scope.GetState.GetName]"
+								parentanchor = vcenter
+								elide = right
+							}
+							overlappingitembox = {
+								margin = { 20 0 }
+								size = { 250 40 }
+								position = { 150 0 }
+								datacontext = "[Scope.GetState]"
+								datamodel = "[State.MakeScope.GetList('concession_owner_varlist')]"
+	
+								item = {
+									container = {
+										widget = {
+											size = { 35 40 }
+	
+											tiny_flag = {
+												position = { 0 2 }
+												datacontext = "[Scope.GetCountry]"
+												blockoverride "tooltip" {}
+												parentanchor = center
+											}
+										}
+									}
+								}
+							}
+							textbox = {
+								datacontext = "[Scope.GetState]"
+								margin = { 20 0 }
+								size = { 100 40 }
+								position = { 400 0 }
+								align = right|nobaseline
+								parentanchor = vcenter
+								elide = right
+								block "shown_on_map_value" {
+									text = "[GuiScope.SetRoot( State.MakeScope ).ScriptValue('concession_owner_varlist_size')|0]"
+									tooltip = "STATE_CONCESSION"
+								}
+							}
+						}
+						
+					}
+				}
+			}
+
+			flowcontainer = {
+				direction = horizontal
+
+				widget = { size = { 5 5 }}
+			}
+		}
+	}
+}
+

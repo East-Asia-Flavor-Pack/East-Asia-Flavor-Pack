@@ -1,58 +1,20 @@
 ﻿namespace = concessions_in_china
 
+# concession_candidate_states_gvarlist : 이제는 주 보여주기만 하는 용도임 (gui)
+# 모든 주 지역에 대해 $STATE$_concession_owner_varlist global variable list를 통해 조계지 가진 나라 저장함 <- 이게 가장 나음
+# 적당히 어느 나라 잡고 (je_concession_calc) 거기다가 계산 짬때림 (concessions_in_china.1)
+
 #################### 조계지 계산 ####################
-# 중국 측 이벤트
+# 계산 국가 이벤트
 concessions_in_china.1 = {
 	type = country_event
 	hidden = yes
 
 	trigger = {
-		any_scope_state = {
-			has_variable_list = concession_owner_varlist
-		}
+		# je_concession_calc에서 달마다 돌아감
 	}
 
 	immediate = {
-		# 혁명 주 처리
-		if = {
-			limit = {
-				has_revolution = yes
-			}
-			every_scope_state = {
-				limit = {
-					has_variable_list = concession_owner_varlist
-					is_split_state = yes
-					state_region = { 
-						any_scope_state = {
-							is_treaty_port = no
-							owner = { is_revolutionary = yes }
-							NOT = { has_variable_list = concession_owner_varlist }
-						}
-					}
-				}
-				save_scope_as = temp_state
-				state_region = { 
-					every_scope_state = {
-						limit = {
-							is_treaty_port = no
-							owner = { is_revolutionary = yes }
-							NOT = { has_variable_list = concession_owner_varlist }
-						}
-						save_scope_as = temp_state2
-						scope:temp_state = {
-							every_in_list = {
-								variable = concession_owner_varlist
-								scope:temp_state2 = {
-									add_to_variable_list = { name = concession_owner_varlist target = PREV }
-								}
-							}
-						}
-						clear_saved_scope = temp_state2
-					}
-				}
-				clear_saved_scope = temp_state
-			}
-		}
 		# 조계지 배당금 계산
 		set_variable = {
 			name = concession_payment_var
@@ -512,10 +474,6 @@ concessions_in_china.1001 = {
 				}
 				save_scope_as = concession_target_state
 				add_to_variable_list = { name = concession_owner_varlist target = ROOT }
-				scope:concession_target_state.state_region = {
-					save_scope_as = concession_state_region
-					concession_state_region_status_calc_scope = yes
-				}
 			}
 		}
 
@@ -920,10 +878,6 @@ concessions_in_china.1004 = {
 				}
 				save_scope_as = concession_target_state
 				remove_list_variable = { name = concession_owner_varlist target = scope:concession_owner_country }
-				scope:concession_target_state.state_region = {
-					save_scope_as = concession_state_region
-					concession_state_region_status_calc_scope = yes
-				}
 			}
 		}
 	}
@@ -1121,7 +1075,6 @@ concessions_in_china.1005 = {
 			add_to_variable_list = { name = concession_state_owner_varlist target = ROOT }
 		}
 
-		concession_state_region_status_calc = yes
 	}
 
 	option = { # 전부 폐지
@@ -1210,7 +1163,6 @@ concessions_in_china.1005 = {
 
 	after = {
 		remove_variable = conchi1005
-		concession_state_region_status_calc = yes
 		if = {
 			limit = {
 				any_scope_state = {
