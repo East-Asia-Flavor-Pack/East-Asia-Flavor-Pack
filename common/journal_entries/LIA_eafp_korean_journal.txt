@@ -767,3 +767,602 @@ je_lia_korean_seowon = {
 	
 	should_be_pinned_by_default = yes
 }
+##경복궁 중건
+####경복궁 중건 관련 저널들
+je_rlg_seoul_gyeongbokgung_poor = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+    
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		exists = c:KOR
+		THIS = c:KOR
+		NOT = { has_variable = lia_var_rlg_gbg_poor_ok }
+	}
+
+	possible = {
+		exists = c:KOR
+		THIS = c:KOR
+		NOT = { has_variable = lia_var_rlg_gbg_poor_ok }
+	}
+    
+	#immediate = {
+	#}
+    
+	complete = {
+		has_journal_entry = je_rlg_seoul_1
+	}
+
+	on_complete = {
+		#trigger_event = {
+		#	id = lia_modern_events.1
+		#}
+		set_variable = lia_var_rlg_gbg_poor_ok
+		add_journal_entry = {
+			type = je_rlg_seoul_gyeongbokgung_rebuild
+		}
+	}
+
+	should_be_pinned_by_default = no
+}
+
+je_rlg_seoul_gyeongbokgung_rebuild = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+		exists = c:KOR
+		this = c:KOR
+		owns_entire_state_region = STATE_LIA_SEOUL
+		s:STATE_LIA_SEOUL = {
+			region_state:KOR = {
+				any_scope_building = {
+					is_building_type = building_gyeongbokgung_poor
+				}
+			}
+		}
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+	
+	scripted_button = lia_eafp_scripted_button_wonnap
+	scripted_button = lia_eafp_scripted_button_dangbaek
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_gyeongbokgung_rebuild
+			value = 0
+		}
+		set_variable = lia_var_rlg_wonnap_possible
+		trigger_event = {
+			id = lia_event_rlg.1500
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = lia_event_rlg.1510
+		}
+		random_scope_state = {
+			limit = {
+				has_building = building_dangbaek
+			}
+			remove_building = building_dangbaek
+		}
+	}
+	
+	on_weekly_pulse = {
+		random_events = {
+			100 = 0
+			10 = lia_event_rlg.1504	#화재
+			10 = lia_event_rlg.1507	#상소
+		}
+        effect = {
+			if = {
+				limit = {
+					var:lia_var_rlg_gyeongbokgung_rebuild >= 500
+				}
+				trigger_event = {
+					id = lia_event_rlg.1504
+				}
+			}
+		}
+	}
+	
+	on_monthly_pulse = {
+		effect = {
+			hidden_effect = {
+				if = {
+					limit = {
+						any_scope_building = {
+							is_building_type = building_gyeongbokgung_poor
+							has_active_production_method = pm_rebuild_gyeongbokgung_1
+						}
+					}
+					change_variable = {
+						name = lia_var_rlg_gyeongbokgung_rebuild
+						add = 20
+					}
+				}
+				if = {
+					limit = {
+						any_scope_building = {
+							is_building_type = building_gyeongbokgung_poor
+							has_active_production_method = pm_rebuild_gyeongbokgung_2
+						}
+					}
+					change_variable = {
+						name = lia_var_rlg_gyeongbokgung_rebuild
+						add = 30
+					}
+				}
+				if = {
+					limit = {
+						any_scope_building = {
+							is_building_type = building_gyeongbokgung_poor
+							has_active_production_method = pm_rebuild_gyeongbokgung_3
+						}
+					}
+					change_variable = {
+						name = lia_var_rlg_gyeongbokgung_rebuild
+						add = 40
+					}
+				}
+				if = {
+					limit = {
+						any_scope_building = {
+							is_building_type = building_gyeongbokgung_poor
+							has_active_production_method = pm_rebuild_gyeongbokgung_4
+						}
+					}
+					change_variable = {
+						name = lia_var_rlg_gyeongbokgung_rebuild
+						add = 50
+					}
+				}
+			}
+		}
+	}
+    
+	current_value = {
+		value = root.var:lia_var_rlg_gyeongbokgung_rebuild
+	}
+
+	goal_add_value = {
+		add = 1000
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
+
+je_rlg_seoul_dangbaek = {
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		always = no
+	}
+
+	immediate = {
+		set_variable = {
+			name = lia_var_rlg_dangbaek_inflation
+			value = 0
+		}
+	}
+	
+	timeout = 1460
+
+	on_timeout = {
+		every_scope_state = {
+			limit = {
+				has_building = building_dangbaek
+			}
+			remove_building = building_dangbaek
+		}
+	}
+	
+	on_complete = {
+		trigger_event = {
+			id = lia_event_rlg.1509
+		}
+	}
+	
+	fail = {
+		NOT = {
+			any_scope_state = {
+				has_building = building_dangbaek
+			}
+		}
+	}
+
+	on_fail = {
+		every_scope_state = {
+			limit = {
+				has_building = building_dangbaek
+			}
+			remove_building = building_dangbaek
+		}
+	}
+	
+	on_weekly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					var:lia_var_rlg_dangbaek_inflation <= 100
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					add = 1
+				}
+			}
+			if = {
+				limit = {
+					var:lia_var_rlg_dangbaek_inflation <= 100
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					add = 2
+				}
+			}
+			if = {
+				limit = {
+					var:lia_var_rlg_dangbaek_inflation <= 100
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					add = 3
+				}
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+						has_active_production_method = pm_tech_dangbaek_2
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.3
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+						has_active_production_method = pm_tech_dangbaek_2
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.6
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+						has_active_production_method = pm_tech_dangbaek_2
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.9
+				}
+			}
+			#
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+						has_active_production_method = pm_tech_dangbaek_3
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.6
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+						has_active_production_method = pm_tech_dangbaek_3
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.2
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+						has_active_production_method = pm_tech_dangbaek_3
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.8
+				}
+			}
+			##
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+						has_active_production_method = pm_gold_dangbaek_1_l
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.3
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+						has_active_production_method = pm_gold_dangbaek_2_l
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.6
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+						has_active_production_method = pm_gold_dangbaek_3_l
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.9
+				}
+			}
+			#
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+						has_active_production_method = pm_gold_dangbaek_1_m
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.5
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+						has_active_production_method = pm_gold_dangbaek_2_m
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.0
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+						has_active_production_method = pm_gold_dangbaek_3_m
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.5
+				}
+			}
+			#
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_1
+						has_active_production_method = pm_gold_dangbaek_1_h
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.7
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_2
+						has_active_production_method = pm_gold_dangbaek_2_h
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.4
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_dangbaek
+						has_active_production_method = pm_base_dangbaek_3
+						has_active_production_method = pm_gold_dangbaek_3_h
+					}
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 2.1
+				}
+			}
+			##
+			if = {
+				limit = {
+					THIS.GDP <= 5000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.2
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 7000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.4
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 9000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.6
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 12000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 0.8
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 15000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.0
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 20000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.2
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 25000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.4
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 35000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.6
+				}
+			}
+			else_if = {
+				limit = {
+					THIS.GDP <= 50000000
+				}
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 1.8
+				}
+			}
+			else_if = {
+				change_variable = {
+					name = lia_var_rlg_dangbaek_inflation
+					subtract = 2.0
+				}
+			}
+			##
+			remove_modifier = lia_modi_dangbaek_inflation
+			add_modifier = {
+				name = lia_modi_dangbaek_inflation
+				multiplier = root.var:lia_var_rlg_dangbaek_inflation
+				months = 36
+				is_decaying = yes
+			}
+		}
+	}
+	
+	current_value = {
+		value = root.var:lia_var_rlg_dangbaek_inflation
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+    
+	progressbar = yes
+    
+	#fail = {
+	#}
+
+	#on_fail = {
+	#}
+    
+	#invalid = {
+	#}
+
+	should_be_pinned_by_default = yes
+}
