@@ -53,6 +53,13 @@
 			}
 			set_variable = open_to_missionaries_state
 		}
+
+		scope:journal_entry = { # 추가
+			set_variable = {
+				name = num_months_in_progress
+				value = 0
+			}
+		}
 	}
 
 	on_monthly_pulse = {
@@ -93,6 +100,46 @@
 					set_variable = open_to_missionaries_state
 				}
 			#}
+
+			scope:journal_entry = { # 추가
+				if = {
+					limit = {
+						is_progressing = yes 
+					}
+					change_variable = {
+						name = num_months_in_progress
+						add = 1
+					}
+				}
+				else = {
+					change_variable = {
+						name = num_months_in_progress
+						subtract = 1
+					}
+				}
+				clamp_variable = {
+					name = num_months_in_progress
+					max = 12
+					min = 0
+				}
+			}
+			if = { # 추가
+				limit = {
+					custom_tooltip = {
+						text = lost_war_tt
+						OR = {
+							has_variable = recently_lost_war
+							AND = {
+								has_variable = recently_had_war
+								NOT = {
+									has_variable = recently_won_war
+								}
+							}
+						}
+					}
+				}
+				remove_variable = CHI_deported_missionaries
+			}
 		}
 		random_events = {
 			500 = 0
@@ -109,6 +156,10 @@
 
 	complete = {
 		custom_tooltip = {
+			text = je_chinese_missions_complete_tt
+			scope:journal_entry = { is_goal_complete = yes } # 추가
+		}
+		custom_tooltip = {
 			text = missionary_ban_tt
 			has_variable = CHI_deported_missionaries
 		}
@@ -118,6 +169,28 @@
 			has_law = law_type:law_isolationism
 			has_law = law_type:law_closed_borders
 		}
+		
+	}
+
+	is_progressing = { # 추가
+		custom_tooltip = {
+			text = missionary_ban_tt
+			has_variable = CHI_deported_missionaries
+		}
+		OR = {
+			# is_country_type = recognized
+			has_law = law_type:law_state_atheism
+			has_law = law_type:law_isolationism
+			has_law = law_type:law_closed_borders
+		}
+	}
+
+	current_value = { # 추가
+		value = scope:journal_entry.var:num_months_in_progress
+	}
+	
+	goal_add_value = { # 추가
+		value = 12
 	}
 
 	weight = 10000
