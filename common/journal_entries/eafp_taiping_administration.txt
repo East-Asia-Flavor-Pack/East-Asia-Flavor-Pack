@@ -1,0 +1,282 @@
+﻿je_taiping_house_on_sand = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds" # TODO
+
+	group = je_group_historical_content
+
+	complete = {
+		
+	}
+
+	immediate = {
+		c:CHI = {
+			save_scope_as = china_scope
+		}
+		# 이하 추가
+		if = {
+			limit = { has_variable = taiping_focus_on_attack }
+			remove_variable = taiping_focus_on_attack
+			add_modifier = {
+				name = taiping_focus_on_attack_modifier
+			}
+		}
+		if = {
+			limit = { has_variable = taiping_focus_on_defence }
+			remove_variable = taiping_focus_on_defence
+			add_modifier = {
+				name = taiping_focus_on_defence_modifier
+			}
+		}
+
+		set_variable = {
+			name = num_unincorporated_states_in_china_proper
+			value = 0
+		}
+		every_scope_state = {
+			limit = {
+				is_incorporated = no
+				state_is_in_china_proper = yes
+				controller = ROOT
+			}
+			ROOT = {
+				change_variable = {
+					name = num_unincorporated_states_in_china_proper
+					add = 1
+				}
+			}
+		}
+		c:CHI = {
+			every_scope_state = {
+				limit = {
+					controller = ROOT
+				}
+				ROOT = {
+					change_variable = {
+						name = num_unincorporated_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+		}
+
+		set_variable = {
+			name = num_claimed_states_in_china_proper
+			value = 0
+		}
+		c:CHI = {
+			every_scope_state = {
+				limit = {
+					controller = c:CHI
+					has_claim_by = ROOT
+				}
+				ROOT = {
+					change_variable = {
+						name = num_claimed_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+		}
+		every_scope_state = {
+			limit = {
+				controller = c:CHI
+			}
+			ROOT = {
+				change_variable = {
+					name = num_claimed_states_in_china_proper
+					add = 1
+				}
+			}
+		}
+
+		if = {
+			limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
+			add_modifier = {
+				name = taiping_unincorporated_states_modifier2
+				multiplier = {
+					value = var:num_claimed_states_in_china_proper
+					subtract = var:num_unincorporated_states_in_china_proper
+				}
+			}
+		}
+		else = {
+			add_modifier = {
+				name = taiping_unincorporated_states_modifier
+				multiplier = {
+					value = var:num_unincorporated_states_in_china_proper
+					subtract = var:num_claimed_states_in_china_proper
+				}
+			}
+		}
+
+		if = {
+			limit = { NOT = { has_variable = taiping_fervor_var } }
+			set_variable = {
+				name = taiping_fervor_var
+				value = 0
+			}
+		}
+		else = {
+			change_variable = {
+				name = taiping_fervor_var
+				add = 1
+			}
+			clamp_variable = {
+				name = taiping_fervor_var
+				max = 2
+				min = 0
+			}
+		}
+		add_modifier = {
+			name = taiping_fervor_low_modifier
+			multiplier = var:taiping_fervor_var
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = heavenly.6 days = 0 }
+		custom_tooltip = {
+			text = rebellion_effects_remove
+			remove_modifier = taiping_taiping_rebellion
+			every_interest_group = {
+				limit = {
+					has_modifier = taiping_taiping_revolution
+				}
+				remove_modifier = taiping_taiping_revolution
+			}
+			remove_modifier = taiping_focus_on_attack_modifier # 추가
+			remove_modifier = taiping_focus_on_defence_modifier # 추가
+			remove_modifier = taiping_unincorporated_states_modifier # 추가
+			remove_variable = num_unincorporated_states_in_china_proper # 추가
+			remove_modifier = taiping_unincorporated_states_modifier2 # 추가
+			remove_variable = num_claimed_states_in_china_proper # 추가
+			remove_modifier = taiping_fervor_low_modifier # 추가
+		}
+		
+	}
+
+	fail = {
+		# NOT = {
+		# 	exists = c:TPG
+		# }
+		exists = c:CHI # 추가
+		has_truce_with = c:CHI # 추가
+	}
+
+	on_fail = { # 추가
+		hidden_effect = {
+			add_journal_entry = { type = je_taiping_truce_tpg }
+			remove_modifier = taiping_focus_on_attack_modifier
+			remove_modifier = taiping_focus_on_defence_modifier
+			end_truce = {
+				country = c:CHI
+				months = 6
+			}
+			remove_modifier = taiping_unincorporated_states_modifier
+			remove_variable = num_unincorporated_states_in_china_proper
+			remove_modifier = taiping_unincorporated_states_modifier2
+			remove_variable = num_claimed_states_in_china_proper
+			remove_modifier = taiping_fervor_low_modifier
+		}
+	}
+
+	#on_monthly_pulse = { # 추가
+	#	effect = {
+	#		trigger_event = { id = heavenly.1002 months = 1 }
+	#	}
+	#}
+
+	on_weekly_pulse = { # 추가
+		effect = {
+			remove_modifier = taiping_unincorporated_states_modifier
+			remove_modifier = taiping_unincorporated_states_modifier2
+
+			set_variable = {
+				name = num_unincorporated_states_in_china_proper
+				value = 0
+			}
+			every_scope_state = {
+				limit = {
+					is_incorporated = no
+					state_is_in_china_proper = yes
+					controller = ROOT
+				}
+				ROOT = {
+					change_variable = {
+						name = num_unincorporated_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+			c:CHI = {
+				every_scope_state = {
+					limit = {
+						controller = ROOT
+					}
+					ROOT = {
+						change_variable = {
+							name = num_unincorporated_states_in_china_proper
+							add = 1
+						}
+					}
+				}
+			}
+	
+			set_variable = {
+				name = num_claimed_states_in_china_proper
+				value = 0
+			}
+			c:CHI = {
+				every_scope_state = {
+					limit = {
+						controller = c:CHI
+						has_claim_by = ROOT
+					}
+					ROOT = {
+						change_variable = {
+							name = num_claimed_states_in_china_proper
+							add = 1
+						}
+					}
+				}
+			}
+			every_scope_state = {
+				limit = {
+					controller = c:CHI
+				}
+				ROOT = {
+					change_variable = {
+						name = num_claimed_states_in_china_proper
+						add = 1
+					}
+				}
+			}
+	
+			if = {
+				limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
+				add_modifier = {
+					name = taiping_unincorporated_states_modifier2
+					multiplier = {
+						value = var:num_claimed_states_in_china_proper
+						subtract = var:num_unincorporated_states_in_china_proper
+					}
+				}
+			}
+			else = {
+				add_modifier = {
+					name = taiping_unincorporated_states_modifier
+					multiplier = {
+						value = var:num_unincorporated_states_in_china_proper
+						subtract = var:num_claimed_states_in_china_proper
+					}
+				}
+			}
+		}
+	}
+
+	progress_desc = je_taiping_revolution_progress # 추가
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+
+	transferable = no
+}
