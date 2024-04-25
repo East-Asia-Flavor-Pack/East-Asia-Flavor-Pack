@@ -1,0 +1,44 @@
+﻿test_decision1 = {
+	is_shown = {
+		is_ai = no
+	}
+	
+	possible = {
+		is_ai = no
+	}
+	
+	when_taken = {
+		if = {
+			limit = { has_global_variable_list = concession_candidate_states_gvarlist }
+			clear_global_variable_list = concession_candidate_states_gvarlist
+		}
+		every_state_region = {
+			limit = { # 중국 본토 주지역
+				OR = {
+					region = sr:region_north_china
+					region = sr:region_south_china
+				}
+				NOR = {
+					THIS = s:STATE_ULIASTAI
+					THIS = s:STATE_URGA
+					THIS = s:STATE_EAFP_BEIJING
+					THIS = s:STATE_SHENGJING
+					THIS = s:STATE_HINGGAN
+					THIS = s:STATE_ALXA
+					THIS = s:STATE_QINGHAI
+					THIS = s:STATE_FORMOSA
+				}
+				
+			}
+			ordered_scope_state = {
+				limit = { is_treaty_port = no }
+				order_by = population
+				add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = THIS }
+			}
+		}
+	}
+
+	ai_chance = {
+		base = 0
+	}
+}

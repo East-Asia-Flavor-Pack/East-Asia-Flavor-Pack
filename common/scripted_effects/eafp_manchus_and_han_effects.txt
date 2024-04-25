@@ -1,0 +1,570 @@
+﻿je_manchus_and_han_pop_pol_str_calc = {
+	set_local_variable = { name = manchu_pol_str value = 0 }
+	set_local_variable = { name = han_pol_str value = 0 }
+
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	# 만주
+
+	every_scope_state = {
+		every_scope_pop = {
+			limit = { culture = cu:manchu }
+	
+			set_local_variable = {
+				name = pol_str_modifier
+				value = 1
+			}
+	
+			# 팝 타입에 따른 정치력 모디파이어
+			if = {
+				limit = { is_pop_type = academics }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_academics_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = aristocrats }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_aristocrats_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = bureaucrats }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_bureaucrats_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = capitalists }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_capitalists_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = clergymen }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_clergymen_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = clerks }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_clerks_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = engineers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_engineers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = farmers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_farmers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = laborers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_laborers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = machinists }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_machinists_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = officers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_officers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = peasants }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_peasants_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = shopkeepers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_shopkeepers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = slaves }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_slaves_pol_str_mult
+					}
+				}
+			}
+
+			# 그 외 정치력 계산
+			if = {
+				limit = { state = owner.capital } # 수도
+				change_local_variable = {
+					name = pol_str_modifier
+					add = 0.25
+				}
+			}
+			if = {
+				limit = { state = { is_incorporated = no } } # 비편입주
+				change_local_variable = {
+					name = pol_str_modifier
+					add = -0.5
+				}
+			}
+	
+			clamp_local_variable = {
+				name = pol_str_modifier
+				max = 100
+				min = 0
+			}
+
+			if = { # 노동 종사자 비율 조정
+				limit = { is_pop_type = aristocrats }
+				change_local_variable = {
+					name = pol_str_modifier
+					multiply = 0.8
+				}
+			}
+	
+			# 팝 크기 계산
+			change_pop_culture = {
+				target = cu:wanjang
+				value = 1.00
+			}
+			state = {
+				save_scope_value_as = {
+					name = wealth_pop_num
+					value = {
+						value = wanjang_percent
+						multiply = state_population
+					}
+				}
+			}
+			set_local_variable = {
+				name = pol_str
+				value = {
+					value = scope:wealth_pop_num
+					multiply = pop_pol_str_from_wealth
+				}
+			}
+			clear_saved_scope = wealth_pop_num
+	
+			# 재산에서 나온 정치력 * 모디파이어
+			change_local_variable = {
+				name = pol_str
+				multiply = local_var:pol_str_modifier
+			}
+	
+			change_local_variable = {
+				name = manchu_pol_str
+				add = local_var:pol_str
+			}
+	
+			state = {
+				random_scope_pop = {
+					limit = { culture = cu:wanjang }
+					change_pop_culture = {
+						target = cu:manchu
+						value = 1.00
+					}
+				}
+			}
+		}
+	}
+
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	# 한
+
+	every_scope_state = {
+		every_scope_pop = {
+			limit = { culture = cu:han }
+
+			set_local_variable = {
+				name = pol_str_modifier
+				value = 1
+			}
+	
+			# 팝 타입에 따른 정치력 모디파이어
+			if = {
+				limit = { is_pop_type = academics }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_academics_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = aristocrats }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_aristocrats_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = bureaucrats }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_bureaucrats_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = capitalists }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_capitalists_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = clergymen }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_clergymen_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = clerks }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_clerks_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = engineers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_engineers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = farmers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_farmers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = laborers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_laborers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = machinists }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_machinists_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = officers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_officers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = peasants }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_peasants_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = shopkeepers }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_shopkeepers_pol_str_mult
+					}
+				}
+			}
+			if = {
+				limit = { is_pop_type = slaves }
+				owner = {
+					change_local_variable = {
+						name = pol_str_modifier
+						add = modifier:country_slaves_pol_str_mult
+					}
+				}
+			}
+
+			# 차별에 따른 정치력 모디파이어
+			state = {
+				change_local_variable = {
+					name = pol_str_modifier
+					add = modifier:state_political_strength_from_discrimination_mult
+				}
+			}
+
+			# 그 외 정치력 계산
+			if = {
+				limit = { state = owner.capital } # 수도
+				change_local_variable = {
+					name = pol_str_modifier
+					add = 0.25
+				}
+			}
+			if = {
+				limit = { state = { is_incorporated = no } } # 비편입주
+				change_local_variable = {
+					name = pol_str_modifier
+					add = -0.5
+				}
+			}
+
+			clamp_local_variable = {
+				name = pol_str_modifier
+				max = 100
+				min = 0
+			}
+
+			if = { # 노동 종사자 비율 조정
+				limit = { is_pop_type = aristocrats }
+				change_local_variable = {
+					name = pol_str_modifier
+					multiply = 0.8
+				}
+			}
+
+			# 팝 크기 계산
+			change_pop_culture = {
+				target = cu:wanjang
+				value = 1.00
+			}
+			state = {
+				save_scope_value_as = {
+					name = wealth_pop_num
+					value = {
+						value = wanjang_percent
+						multiply = state_population
+					}
+				}
+			}
+			set_local_variable = {
+				name = pol_str
+				value = {
+					value = scope:wealth_pop_num
+					multiply = pop_pol_str_from_wealth
+				}
+			}
+			clear_saved_scope = wealth_pop_num
+	
+			# 재산에서 나온 정치력 * 모디파이어
+			change_local_variable = {
+				name = pol_str
+				multiply = local_var:pol_str_modifier
+			}
+	
+			change_local_variable = {
+				name = han_pol_str
+				add = local_var:pol_str
+			}
+	
+			state = {
+				random_scope_pop = {
+					limit = { culture = cu:wanjang }
+					change_pop_culture = {
+						target = cu:han
+						value = 1.00
+					}
+				}
+			}
+		}
+	}
+
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+	####################################################################################################
+
+	set_variable = {
+		name = manchu_pol_str
+		value = {
+			value = local_var:manchu_pol_str
+			multiply = 0.25 # 노동 종사자 비율
+		}
+	}
+	set_variable = {
+		name = han_pol_str
+		value = {
+			value = local_var:han_pol_str
+			multiply = 0.25 # 노동 종사자 비율
+		}
+	}
+}
+
+je_manchus_and_han_modifier_calc = {
+	hidden_effect = {
+		# 로컬, 변동치 계산용
+		set_variable = {
+			name = china_manchu_multiplier_var
+			value = 0.3
+		}
+	
+		change_variable = {
+			name = china_manchu_multiplier_var
+			multiply = {
+				value = var:china_manchu_support_var
+				multiply = 2
+				subtract = 1
+			}
+		}
+		change_variable = {
+			name = china_manchu_multiplier_var
+			multiply = var:china_manchu_power_var
+		}
+
+		set_variable = {
+			name = china_han_multiplier_var
+			value = 0.15
+		}
+
+		change_variable = {
+			name = china_han_multiplier_var
+			multiply = {
+				value = var:china_manchu_power_var
+				multiply = 2
+				subtract = 1
+			}
+		}
+		change_variable = {
+			name = china_han_multiplier_var
+			multiply = var:china_han_power_var
+		}
+
+		if = {
+			limit = { has_modifier = manchu_influence1 }
+			remove_modifier = manchu_influence1
+		}
+		if = {
+			limit = { has_modifier = manchu_influence2 }
+			remove_modifier = manchu_influence2
+		}
+		if = {
+			limit = { has_modifier = han_influence1 }
+			remove_modifier = han_influence1
+		}
+		if = {
+			limit = { has_modifier = han_influence2 }
+			remove_modifier = han_influence2
+		}
+
+		if = {
+			limit = { var:china_manchu_multiplier_var > 0 }
+			add_modifier = {
+				name = manchu_influence1
+				multiplier = var:china_manchu_multiplier_var
+			}
+		}
+		else_if = {
+			limit = { var:china_manchu_multiplier_var < 0 }
+			add_modifier = {
+				name = manchu_influence2
+				multiplier = {
+					value = var:china_manchu_multiplier_var
+					multiply = -1
+				}
+			}
+		}
+
+		if = {
+			limit = { var:china_han_multiplier_var > 0 }
+			add_modifier = {
+				name = han_influence1
+				multiplier = var:china_han_multiplier_var
+			}
+		}
+		else_if = {
+			limit = { var:china_han_multiplier_var < 0 }
+			add_modifier = {
+				name = han_influence2
+				multiplier = {
+					value = var:china_han_multiplier_var
+					multiply = -1
+				}
+			}
+		}
+	}
+}
