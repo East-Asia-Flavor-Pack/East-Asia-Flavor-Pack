@@ -13,12 +13,12 @@
 	every_scope_state = {
 		every_scope_pop = {
 			limit = { culture = cu:manchu }
-	
+			
 			set_local_variable = {
 				name = pol_str_modifier
 				value = 1
 			}
-	
+			
 			# 팝 타입에 따른 정치력 모디파이어
 			if = {
 				limit = { is_pop_type = academics }
@@ -147,6 +147,18 @@
 				}
 			}
 
+			# 재산에 따른 정치력 모디파이어
+			change_local_variable = {
+				name = pol_str_modifier
+				add = state.modifier:state_political_strength_from_wealth_mult
+			}
+
+			# 정치력 모디파이어 곱
+			change_local_variable = {
+				name = pol_str_modifier
+				add = state.modifier:state_pop_pol_str_mult
+			}
+
 			# 그 외 정치력 계산
 			if = {
 				limit = { state = owner.capital } # 수도
@@ -162,10 +174,10 @@
 					add = -0.5
 				}
 			}
-	
+			
 			clamp_local_variable = {
 				name = pol_str_modifier
-				max = 100
+				max = 10000
 				min = 0
 			}
 
@@ -176,7 +188,7 @@
 					multiply = 0.8
 				}
 			}
-	
+			
 			# 팝 크기 계산
 			change_pop_culture = {
 				target = cu:wanjang
@@ -191,26 +203,25 @@
 					}
 				}
 			}
+			# ( 재산에 따른 정치력 * 정치력 모디파이어 (곱) + 정치력 깡 더하기 ) * 해당 재산 사람 수
 			set_local_variable = {
 				name = pol_str
 				value = {
 					value = scope:wealth_pop_num
-					multiply = pop_pol_str_from_wealth
+					multiply = {
+						value = pop_pol_str_from_wealth
+						multiply = local_var:pol_str_modifier
+						add = state.modifier:state_pop_pol_str_add
+					}
 				}
 			}
 			clear_saved_scope = wealth_pop_num
-	
-			# 재산에서 나온 정치력 * 모디파이어
-			change_local_variable = {
-				name = pol_str
-				multiply = local_var:pol_str_modifier
-			}
-	
+
 			change_local_variable = {
 				name = manchu_pol_str
 				add = local_var:pol_str
 			}
-	
+			
 			state = {
 				random_scope_pop = {
 					limit = { culture = cu:wanjang }
@@ -234,12 +245,12 @@
 	every_scope_state = {
 		every_scope_pop = {
 			limit = { culture = cu:han }
-
+			
 			set_local_variable = {
 				name = pol_str_modifier
 				value = 1
 			}
-	
+			
 			# 팝 타입에 따른 정치력 모디파이어
 			if = {
 				limit = { is_pop_type = academics }
@@ -368,12 +379,22 @@
 				}
 			}
 
+			# 재산에 따른 정치력 모디파이어
+			change_local_variable = {
+				name = pol_str_modifier
+				add = state.modifier:state_political_strength_from_wealth_mult
+			}
+
 			# 차별에 따른 정치력 모디파이어
-			state = {
-				change_local_variable = {
-					name = pol_str_modifier
-					add = modifier:state_political_strength_from_discrimination_mult
-				}
+			change_local_variable = {
+				name = pol_str_modifier
+				add = state.modifier:state_political_strength_from_discrimination_mult
+			}
+
+			# 정치력 모디파이어 곱
+			change_local_variable = {
+				name = pol_str_modifier
+				add = state.modifier:state_pop_pol_str_mult
 			}
 
 			# 그 외 정치력 계산
@@ -391,10 +412,10 @@
 					add = -0.5
 				}
 			}
-
+			
 			clamp_local_variable = {
 				name = pol_str_modifier
-				max = 100
+				max = 10000
 				min = 0
 			}
 
@@ -405,7 +426,7 @@
 					multiply = 0.8
 				}
 			}
-
+			
 			# 팝 크기 계산
 			change_pop_culture = {
 				target = cu:wanjang
@@ -420,26 +441,25 @@
 					}
 				}
 			}
+			# ( 재산에 따른 정치력 * 정치력 모디파이어 (곱) + 정치력 깡 더하기 ) * 해당 재산 사람 수
 			set_local_variable = {
 				name = pol_str
 				value = {
 					value = scope:wealth_pop_num
-					multiply = pop_pol_str_from_wealth
+					multiply = {
+						value = pop_pol_str_from_wealth
+						multiply = local_var:pol_str_modifier
+						add = state.modifier:state_pop_pol_str_add
+					}
 				}
 			}
 			clear_saved_scope = wealth_pop_num
-	
-			# 재산에서 나온 정치력 * 모디파이어
-			change_local_variable = {
-				name = pol_str
-				multiply = local_var:pol_str_modifier
-			}
-	
+
 			change_local_variable = {
 				name = han_pol_str
 				add = local_var:pol_str
 			}
-	
+			
 			state = {
 				random_scope_pop = {
 					limit = { culture = cu:wanjang }
@@ -476,11 +496,11 @@
 }
 
 je_manchus_and_han_modifier_calc = {
-	hidden_effect = {
+	hidden_effect = { # 만주 한 권력 지지에 따른 변동치
 		# 로컬, 변동치 계산용
 		set_variable = {
 			name = china_manchu_multiplier_var
-			value = 0.3
+			value = 0.5
 		}
 	
 		change_variable = {
@@ -498,13 +518,13 @@ je_manchus_and_han_modifier_calc = {
 
 		set_variable = {
 			name = china_han_multiplier_var
-			value = 0.15
+			value = 0.3
 		}
 
 		change_variable = {
 			name = china_han_multiplier_var
 			multiply = {
-				value = var:china_manchu_power_var
+				value = var:china_han_support_var
 				multiply = 2
 				subtract = 1
 			}
@@ -521,7 +541,7 @@ je_manchus_and_han_modifier_calc = {
 		if = {
 			limit = { has_modifier = manchu_influence2 }
 			remove_modifier = manchu_influence2
-		}
+				}
 		if = {
 			limit = { has_modifier = han_influence1 }
 			remove_modifier = han_influence1
@@ -566,5 +586,243 @@ je_manchus_and_han_modifier_calc = {
 				}
 			}
 		}
+	}
+	hidden_effect = { # 기인 봉급 변동치
+		remove_modifier = chi_banner_subsidies_modifier
+		add_modifier = {
+			name = chi_banner_subsidies_modifier
+			multiplier = {
+				value = total_population
+				multiply = manchu_percent_country
+				multiply = modifier:country_banner_subsidies_add
+			}
+		}
+	}
+}
+
+je_manchus_and_han_d_var_calc = {
+	#################### 지지도 계산 ####################
+	# 만주
+	set_variable = {
+		name = china_manchu_support_d_decay_var
+		value = {
+			value = var:china_manchu_support_var
+			subtract = modifier:country_china_manchu_support_baseline_add
+			multiply = -0.02 # TODO
+		}
+	}
+	set_variable = {
+		name = china_manchu_support_d_from_radical_var
+		value = {
+			value = radical_fraction_manchu
+			multiply = -0.05 # TODO
+		}
+	}
+	set_variable = {
+		name = china_manchu_support_d_from_loyalist_var
+		value = {
+			value = loyalist_fraction_manchu
+			multiply = 0.05 # TODO
+		}
+	}
+	set_variable = {
+		name = china_manchu_support_d_var
+		value = {
+			value = var:china_manchu_support_d_decay_var
+			add = var:china_manchu_support_d_from_radical_var
+			add = var:china_manchu_support_d_from_loyalist_var
+		}
+	}
+	# 한
+	set_variable = {
+		name = china_han_support_d_decay_var
+		value = {
+			value = var:china_han_support_var
+			subtract = modifier:country_china_han_support_baseline_add
+			multiply = -0.02 # TODO
+		}
+	}
+	set_variable = {
+		name = china_han_support_d_from_radical_var
+		value = {
+			value = radical_fraction_han
+			multiply = -0.05 # TODO
+		}
+	}
+	set_variable = {
+		name = china_han_support_d_from_loyalist_var
+		value = {
+			value = loyalist_fraction_han
+			multiply = 0.05 # TODO
+		}
+	}
+	set_variable = {
+		name = china_han_support_d_var
+		value = {
+			value = var:china_han_support_d_decay_var
+			add = var:china_han_support_d_from_radical_var
+			add = var:china_han_support_d_from_loyalist_var
+		}
+	}
+	#################### 권력 계산 ####################
+	je_manchus_and_han_pop_pol_str_calc = yes
+	set_variable = { # dM% = a ( m% - M% )
+		name = china_manchu_power_d_from_pol_str_var
+		value = {
+			value = 0.1 # TODO
+			multiply = {
+				value = {
+					value = var:manchu_pol_str
+					divide = {
+						value = var:manchu_pol_str
+						add = var:han_pol_str
+					}
+				}
+				subtract = var:china_manchu_power_var
+			}
+		}
+	}
+	set_variable = {
+		name = china_han_power_d_from_pol_str_var
+		value = {
+			value = var:china_manchu_power_d_from_pol_str_var
+			multiply = -1
+		}
+	}
+	#remove_variable = manchu_pol_str
+	#remove_variable = han_pol_str
+	set_variable = {
+		name = china_manchu_power_d_var
+		value = var:china_manchu_power_d_from_pol_str_var
+	}
+	set_variable = {
+		name = china_han_power_d_var
+		value = var:china_han_power_d_from_pol_str_var
+	}
+}
+
+clear_je_manchu_and_han_stuffs = {
+	hidden_effect = {
+		clear_variable_list = chi_manchu_privileges
+
+		# 만결
+		clear_variable_list = chi_manchu_vacancies_list
+		remove_variable = chi_manchu_vacancies_1
+		remove_variable = chi_manchu_vacancies_2
+		remove_variable = chi_manchu_vacancies_3
+		remove_variable = chi_manchu_vacancies_4
+
+		#만성
+		clear_variable_list = chi_manchu_cities_list
+		remove_variable = chi_manchu_cities_1
+		remove_variable = chi_manchu_cities_2
+		remove_variable = chi_manchu_cities_3
+
+		#팔기군
+		clear_variable_list = chi_banner_armies_list
+		remove_variable = chi_banner_armies_1
+		remove_variable = chi_banner_armies_2
+		remove_variable = chi_banner_armies_3
+		remove_variable = chi_banner_armies_4
+
+		#기인 봉급
+		clear_variable_list = chi_banner_subsidies_list
+		remove_variable = chi_banner_subsidies_1
+		remove_variable = chi_banner_subsidies_2
+		remove_variable = chi_banner_subsidies_3
+		remove_variable = chi_banner_subsidies_4
+
+		#만화 정책
+		clear_variable_list = chi_manchurianization_policies_list
+		remove_variable = chi_manchurianization_policies_1
+		remove_variable = chi_manchurianization_policies_2
+		remove_variable = chi_manchurianization_policies_3
+
+		# 현재 가지고 있는 특권들
+		remove_variable = chi_manchu_vacancies_var
+		remove_variable = chi_manchu_cities_var
+		remove_variable = chi_banner_armies_var
+		remove_variable = chi_banner_subsidies_var
+		remove_variable = chi_manchurianization_policies_var
+
+		# 변동치 제거
+		remove_modifier = chi_manchu_vacancies_1_modifier
+		remove_modifier = chi_manchu_vacancies_2_modifier
+		remove_modifier = chi_manchu_vacancies_3_modifier
+		remove_modifier = chi_manchu_vacancies_4_modifier
+
+		remove_modifier = chi_manchu_cities_1_modifier
+		remove_modifier = chi_manchu_cities_2_modifier
+		remove_modifier = chi_manchu_cities_3_modifier
+
+		remove_modifier = chi_banner_armies_1_modifier
+		remove_modifier = chi_banner_armies_2_modifier
+		remove_modifier = chi_banner_armies_3_modifier
+		remove_modifier = chi_banner_armies_4_modifier
+
+		remove_modifier = chi_banner_subsidies_1_modifier
+		remove_modifier = chi_banner_subsidies_2_modifier
+		remove_modifier = chi_banner_subsidies_3_modifier
+		remove_modifier = chi_banner_subsidies_4_modifier
+
+		remove_modifier = chi_manchurianization_policies_1_modifier
+		remove_modifier = chi_manchurianization_policies_2_modifier
+		remove_modifier = chi_manchurianization_policies_3_modifier
+
+		remove_variable = china_manchu_support_var
+		remove_variable = china_han_support_var
+		remove_variable = china_manchu_support_d_decay_var
+		remove_variable = china_manchu_support_d_from_radical_var
+		remove_variable = china_manchu_support_d_from_loyalist_var
+		remove_variable = china_manchu_support_d_var
+		remove_variable = china_han_support_d_decay_var
+		remove_variable = china_han_support_d_from_radical_var
+		remove_variable = china_han_support_d_from_loyalist_var
+		remove_variable = china_han_support_d_var
+		
+		remove_variable = china_manchu_power_var
+		remove_variable = china_manchu_power_d_var
+		remove_variable = china_manchu_power_d_from_policies_var
+		remove_variable = china_manchu_power_d_from_pol_str_var
+		remove_variable = china_han_power_var
+		remove_variable = china_han_power_d_var
+		remove_variable = china_han_power_d_from_policies_var
+		remove_variable = china_han_power_d_from_pol_str_var
+
+		remove_variable = china_manchu_multiplier_var
+		remove_variable = china_han_multiplier_var
+		remove_modifier = manchu_influence1
+		remove_modifier = manchu_influence2
+		remove_modifier = han_influence1
+		remove_modifier = han_influence2
+		remove_modifier = chi_banner_subsidies_modifier
+	}
+}
+
+add_manchu_power = {
+	change_variable = {
+		name = china_manchu_power_var
+		add = $VALUE$
+	}
+}
+
+add_han_power = {
+	change_variable = {
+		name = china_han_power_var
+		add = $VALUE$
+	}
+}
+
+add_manchu_support = {
+	change_variable = {
+		name = china_manchu_support_var
+		add = $VALUE$
+	}
+}
+
+add_han_support = {
+	change_variable = {
+		name = china_han_support_var
+		add = $VALUE$
 	}
 }
