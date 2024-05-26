@@ -1,0 +1,129 @@
+﻿je_nian_army = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_historical_content
+
+	possible = {
+		OR = {
+			has_journal_entry = je_taiping
+			has_journal_entry = je_taiping_truce_chi
+		}
+		NOT = { has_global_variable = nian_happened }
+		any_scope_state = {
+			region = sr:region_north_china
+			state_is_in_china_proper = yes
+			devastation >= 0.25
+		}
+	}
+
+	immediate = {
+		trigger_event = { id = nian_army.1 popup = yes }
+		set_global_variable = nian_happened
+		c:TPG = {
+			save_scope_as = tpg_scope
+		}
+		set_variable = {
+			name = nian_army_progress_var
+			value = 50
+		}
+		set_variable = {
+			name = nian_army_progress_var_d
+			value = {
+				value = 2
+				add = {
+					value = north_china_num_garrison_units
+					multiply = -0.02
+				}
+			}
+		}
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_nian_army_complete
+			var:nian_army_progress_var <= 0
+		}
+	}
+
+	on_complete = {
+		remove_variable = nian_army_progress_var
+		trigger_event = { id = nian_army.2 popup = yes }
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = je_nian_army_fail
+			var:nian_army_progress_var >= 100
+		}
+	}
+
+	on_fail = {
+		remove_variable = nian_army_progress_var
+		trigger_event = { id = nian_army.3 popup = yes }
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_invalid = {
+		remove_variable = nian_army_progress_var
+	}
+
+	modifiers_while_active = {
+		
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			set_variable = {
+				name = nian_army_progress_var_d
+				value = {
+					value = 2
+					add = {
+						value = north_china_num_garrison_units
+						multiply = -0.02
+					}
+				}
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {			
+			set_variable = {
+				name = nian_army_progress_var_d
+				value = {
+					value = 2
+					add = {
+						value = north_china_num_garrison_units
+						multiply = -0.02
+					}
+				}
+			}
+			change_variable = {
+				name = nian_army_progress_var
+				add = var:nian_army_progress_var_d
+			}
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+	weight = 8000
+
+	current_value = {
+		value = var:nian_army_progress_var
+	}
+
+	goal_add_value = {
+		add = 50
+	}
+
+	status_desc = je_nian_army_desc
+
+	progressbar = yes
+}
