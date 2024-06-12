@@ -1795,14 +1795,6 @@ ai_strategy_default = {
 			limit = {
 				country_rank >= rank_value:major_power
 				exists = c:CHI
-				scope:target_country = c:CHI
-			}
-			add = 1.5		
-		}
-		if = {
-			limit = {
-				country_rank >= rank_value:major_power
-				exists = c:CHI
 				scope:target_country = {
 					THIS = c:CHI
 					has_modifier = opium_wars_lost
@@ -1941,9 +1933,9 @@ ai_strategy_default = {
 		if = {
 			limit = {
 				has_global_variable = china_shatters
-				has_variable = warlord_state
+				has_journal_entry = je_warlord_china2 # 수정
 				scope:target_country = {
-					has_variable = warlord_state
+					has_journal_entry = je_warlord_china2 # 수정
 				}
 			}
 			add = 0.5
@@ -2691,14 +2683,20 @@ ai_strategy_default = {
 			multiply = 0.75	
 		}		
 		
-		if = { # 수정, 용이변하 뜨면 리미트 해제함
-			# limit = { has_strategy = ai_strategy_maintain_mandate_of_heaven }
+		#if = {
+		#	limit = { has_strategy = ai_strategy_maintain_mandate_of_heaven }
+		#	multiply = 0.1		
+		#}	
+
+		if = { # 추가
 			limit = {
 				has_strategy = ai_strategy_maintain_mandate_of_heaven
-				NOT = { has_journal_entry = je_chinese_westernization }
-				NOT = { has_variable = chinese_westernization_complete }
+				OR = {
+					has_journal_entry = je_chinese_westernization
+					has_variable = chinese_westernization_complete
+				}
 			}
-			multiply = 0.1		
+			add = 25
 		}		
 
 		min = 1
@@ -2774,6 +2772,15 @@ ai_strategy_default = {
 			}
 			multiply = 1.25
 		}		
+
+		if = { # 추가, 육군 스팸 막기
+			# limit = { has_strategy = ai_strategy_maintain_mandate_of_heaven }
+			limit = {
+				has_strategy = ai_strategy_maintain_mandate_of_heaven
+				NOT = { has_variable = chinese_westernization_complete }
+			}
+			multiply = 0.92
+		}	
 
 		max = 500
 		min = 1
@@ -3568,6 +3575,22 @@ ai_strategy_default = {
 				}
 				add = 1000
 			}
+
+			#### 중국대상 가중치 추가
+			if = { 
+				limit = {
+					country_rank >= rank_value:major_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
+				}
+				multiply = 1.5
+			}
+			####
 			
 			if = {
 				limit = {
@@ -4164,7 +4187,7 @@ ai_strategy_default = {
 		}		
 		antagonize = {
 			value = 0
-
+			
 			#### 중국대상 가중치 추가
 			if = { 
 				limit = {
@@ -4177,10 +4200,10 @@ ai_strategy_default = {
 						}
 					}
 				}
-				add = 50
+				add = 25
 			}
 			####
-			
+
 			if = {
 				limit = {
 					countries_are_valid_rivals = yes
@@ -4230,7 +4253,7 @@ ai_strategy_default = {
 				min = 0.25
 				max = 2.0
 			}							
-			
+
 			if = {
 				limit = {
 					lenient_ai_behavior_trigger = yes
@@ -4396,7 +4419,7 @@ ai_strategy_default = {
 			# PUT ALL ADDITIVE CONQUER SCORES INSIDE THE BELOW IF STATEMENT TO PREVENT AI FROM ATTACKING UNREACHABLE COUNTRIES
 			if = {
 				limit = { can_reach_target_country = yes }
-				
+
 				####중국대상 가중치 추가
 				if = {
 					limit = {
@@ -4419,7 +4442,7 @@ ai_strategy_default = {
 							}
 						}
 					}
-					add = 50
+					add = 25
 				}
 				####
 
@@ -5294,6 +5317,22 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
+
+			#### 중국대상 가중치 추가
+			if = { 
+				limit = {
+					country_rank >= rank_value:major_power
+					exists = c:CHI
+					scope:target_country = {
+						THIS = c:CHI
+						NOT = {
+							has_variable = chinese_westernization_complete
+						}
+					}
+				}
+				add = 50
+			}
+			####
 
 			min = 0
 			max = 100			

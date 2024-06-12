@@ -726,6 +726,9 @@ heavenly.4 = {
 		add_journal_entry = { # 추가
 			type = je_hui_revolt_pre
 		}
+		add_journal_entry = { # 타이머 추가
+			type = je_taiping_timer
+		}
 		add_journal_entry = {
 			type = je_taiping
 		}
@@ -2291,6 +2294,213 @@ CHI_missionaries.15 = {
 		add_modifier = {
 			name = CHImis15b
 			months = normal_modifier_time
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+CHI_missionaries.16 = { # 살인범 조차지로 도주
+	type = country_event
+	placement = scope:state_scope
+
+	title = CHI_missionaries.16.t
+	desc = CHI_missionaries.16.d
+	flavor = CHI_missionaries.16.f
+
+	event_image = {
+		video = "southamerica_public_figure_assassination"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		has_variable = missionary_works_counter
+		var:missionary_works_counter >= 5
+		any_scope_state = {
+			has_variable = open_to_missionaries_state
+			state_region = {
+				any_scope_state = {
+					is_treaty_port = yes
+				}
+			}
+		}
+	}
+	immediate = {
+		random_scope_state = {
+			limit = {
+				has_variable = open_to_missionaries_state
+				state_region = {
+					any_scope_state = {
+						is_treaty_port = yes
+					}
+				}
+			}
+			save_scope_as = state_scope
+		}
+		scope:state_scope = {
+			state_region = {
+				random_scope_state = {
+					limit = { is_treaty_port = yes }
+					save_scope_as = treaty_port
+					owner = { save_scope_as = treaty_port_owner }
+				}
+			}
+		}
+		save_scope_as = china_scope
+		# change_variable = { name = missionary_works_counter add = 1 }
+	}
+	option = { # 송환 요구
+		name = CHI_missionaries.16.a
+		scope:treaty_port_owner = {
+			trigger_event = CHI_missionaries.17
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 넘어감
+		name = CHI_missionaries.16.b
+		default_option = yes
+		add_modifier = {
+			name = CHImis16b
+			months = normal_modifier_time
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+CHI_missionaries.17 = { # 송환 요구?
+	type = country_event
+	placement = scope:treaty_port
+
+	title = CHI_missionaries.17.t
+	desc = CHI_missionaries.17.d
+	flavor = CHI_missionaries.17.f
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	option = { # 송환
+		name = CHI_missionaries.17.a
+		hidden_effect = {
+			scope:china_scope = {
+				trigger_event = CHI_missionaries.18
+			}
+		}
+		show_as_tooltip = {
+			scope:china_scope = {
+				change_relations = {
+					country = ROOT
+					value = 20
+				}
+			}
+		}
+		add_modifier = {
+			name = CHImis17a
+			months = normal_modifier_time
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = { # 안함
+		name = CHI_missionaries.17.b
+		default_option = yes
+		hidden_effect = {
+			scope:china_scope = {
+				trigger_event = CHI_missionaries.19
+			}
+		}
+		show_as_tooltip = {
+			scope:china_scope = {
+				change_relations = {
+					country = ROOT
+					value = -40
+				}
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+CHI_missionaries.18 = { # 송환
+	type = country_event
+	placement = scope:state_scope
+
+	title = CHI_missionaries.18.t
+	desc = CHI_missionaries.18.d
+	flavor = CHI_missionaries.18.f
+
+	event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	option = { # 송환
+		name = CHI_missionaries.18.a
+		default_option = yes
+		scope:treaty_port_owner = {
+			change_relations = {
+				country = ROOT
+				value = 20
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+CHI_missionaries.19 = { # 송환 거부
+	type = country_event
+	placement = scope:state_scope
+
+	title = CHI_missionaries.19.t
+	desc = CHI_missionaries.19.d
+	flavor = CHI_missionaries.19.f
+
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	option = { # 송환
+		name = CHI_missionaries.19.a
+		default_option = yes
+		scope:treaty_port_owner = {
+			change_relations = {
+				country = ROOT
+				value = -40
+			}
 		}
 		ai_chance = {
 			base = 1

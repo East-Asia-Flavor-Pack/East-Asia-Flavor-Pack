@@ -407,6 +407,7 @@ je_taiping = {
 	on_fail = { # 아예 다시 씀
 		hidden_effect = {
 			add_journal_entry = { type = je_taiping_truce_chi }
+			c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg } }
 			remove_modifier = taiping_focus_on_attack_modifier
 			remove_modifier = taiping_focus_on_defence_modifier
 			end_truce = {
@@ -601,7 +602,7 @@ je_taiping_revolution = {
 
 	on_fail = { # 추가
 		hidden_effect = {
-			add_journal_entry = { type = je_taiping_truce_tpg }
+			# add_journal_entry = { type = je_taiping_truce_tpg } 청나라 쪽에서 추가
 			remove_modifier = taiping_focus_on_attack_modifier
 			remove_modifier = taiping_focus_on_defence_modifier
 			end_truce = {
@@ -740,8 +741,20 @@ je_taiping_truce_chi = { # 추가
 		custom_tooltip = {
 			text = taiping_truce_chi
 			end_truce = { country = c:TPG }
+			c:TPG = {
+				create_diplomatic_play = {
+					name = taiping_rebellion
+					target_country = c:CHI
+					type = dp_taiping_rebellion
+					escalation = 75 # 추가
+				}
+			}
 			add_journal_entry = { type = je_chinese_reunification }
 			add_journal_entry = { type = je_taiping }
+			c:TPG = {
+				add_journal_entry = { type = je_chinese_reunification }
+				add_journal_entry = { type = je_taiping_revolution }
+			}
 		}
 	}
 	
@@ -771,15 +784,6 @@ je_taiping_truce_tpg = { # 추가
 	on_timeout = {
 		custom_tooltip = {
 			text = taiping_truce_tpg
-			end_truce = { country = c:TPG }
-			create_diplomatic_play = {
-				name = taiping_rebellion
-				target_country = c:CHI
-				type = dp_taiping_rebellion
-				escalation = 75 # 추가
-			}
-			add_journal_entry = { type = je_chinese_reunification }
-			add_journal_entry = { type = je_taiping_revolution }
 		}
 	}
 

@@ -206,14 +206,293 @@ nian_army.3 = {
 	}
 
 	immediate = {
-
+		if = {
+			limit = { exists = c:TPG }
+			ordered_scope_state = {
+				limit = { region = sr:region_north_china }
+				order_by = turmoil
+				save_scope_as = NIN_state
+			}
+			ordered_scope_state = {
+				limit = { region = sr:region_north_china }
+				order_by = turmoil
+				position = 1
+				save_scope_as = NIN_state2
+			}
+			ordered_scope_state = {
+				limit = { region = sr:region_north_china }
+				order_by = turmoil
+				position = 2
+				save_scope_as = NIN_state3
+			}
+			create_country = { # TODO
+				tag = NIN
+				origin = this
+				state = scope:NIN_state
+				on_created = {
+					if = {
+						limit = {
+							any_character = {
+								has_variable = is_lexing_zhang
+							}
+						}
+						random_character = {
+							limit = { has_variable = is_lexing_zhang }
+							set_home_country = c:NIN
+							transfer_character = c:NIN
+							set_as_interest_group_leader = yes
+							set_character_as_ruler = yes
+							add_character_role = general
+						}
+					}
+					else = {
+						create_character = {
+							first_name = Lexing
+							last_name = Zhang
+							historical = yes
+							birth_date = 1811.01.01
+							culture = cu:han
+							ig_leader = yes
+							interest_group = ig_rural_folk
+							ruler = yes
+							ideology = ideology_traditionalist
+							traits = {
+								ambitious
+								firebrand
+								bandit
+							}
+							on_created = {
+								set_variable = is_lexing_zhang
+								add_character_role = general
+							}
+						}
+					}
+					create_character = {
+						first_name = Zongyu
+						last_name = Zhang
+						historical = yes
+						birth_date = 1826.01.01 # 임의로 넣음
+						culture = cu:han
+						heir = yes
+						ideology = ideology_traditionalist
+						traits = {
+							direct
+							firebrand
+							bandit
+						}
+						on_created = {
+							set_variable = is_zongyu_zhang
+							add_character_role = general
+						}
+					}
+					if = {
+						limit = {
+							NOT = {
+								has_ruling_interest_group = ig_rural_folk
+							}
+						}
+						ig:ig_rural_folk = {
+							add_ruling_interest_group = yes
+						}
+					}
+					activate_law = law_type:law_chiefdom
+					add_modifier = {
+						name = uprising_conscription
+						months = normal_modifier_time
+					}
+				}
+			}
+			scope:NIN_state2 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			scope:NIN_state3 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			c:TPG = {
+				create_diplomatic_pact = {
+					country = c:NIN
+					type = vassal
+				}
+			}
+			every_diplomatic_play = {
+				limit = {
+					c:TPG = {
+						is_diplomatic_play_initiator = yes
+					}
+					c:CHI = {
+						is_diplomatic_play_target = yes
+					}
+				}
+				add_initiator_backers = { c:NIN }
+			}
+	
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+		else = {
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = very_large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
 	}
 
 	option = {
 		name = nian_army.3.a
 		default_option = yes
-		# TODO
+		
+		limit = { NOT = { exists = c:TPG } }
 
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = very_large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+	}
+
+	option = {
+		name = nian_army.3.b
+
+		limit = { exists = c:TPG }
+		
+		show_as_tooltip = {
+			create_country = { # TODO
+				tag = NIN
+				origin = this
+				state = scope:NIN_state
+				on_created = {
+					if = {
+						limit = {
+							any_character = {
+								has_variable = is_lexing_zhang
+							}
+						}
+						random_character = {
+							limit = { has_variable = is_lexing_zhang }
+							set_home_country = c:NIN
+							transfer_character = c:NIN
+							set_as_interest_group_leader = yes
+							set_character_as_ruler = yes
+							add_character_role = general
+						}
+					}
+					else = {
+						create_character = {
+							first_name = Lexing
+							last_name = Zhang
+							historical = yes
+							birth_date = 1811.01.01
+							culture = cu:han
+							ig_leader = yes
+							interest_group = ig_rural_folk
+							ruler = yes
+							ideology = ideology_traditionalist
+							traits = {
+								ambitious
+								firebrand
+								bandit
+							}
+							on_created = {
+								set_variable = is_lexing_zhang
+								add_character_role = general
+							}
+						}
+					}
+					create_character = {
+						first_name = Zongyu
+						last_name = Zhang
+						historical = yes
+						birth_date = 1826.01.01 # 임의로 넣음
+						culture = cu:han
+						heir = yes
+						ideology = ideology_traditionalist
+						traits = {
+							direct
+							firebrand
+							bandit
+						}
+						on_created = {
+							set_variable = is_zongyu_zhang
+							add_character_role = general
+						}
+					}
+					if = {
+						limit = {
+							NOT = {
+								has_ruling_interest_group = ig_rural_folk
+							}
+						}
+						ig:ig_rural_folk = {
+							add_ruling_interest_group = yes
+						}
+					}
+					activate_law = law_type:law_chiefdom
+					add_modifier = {
+						name = uprising_conscription
+						months = normal_modifier_time
+					}
+				}
+			}
+			scope:NIN_state2 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			scope:NIN_state3 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			c:TPG = {
+				create_diplomatic_pact = {
+					country = c:NIN
+					type = vassal
+				}
+			}
+			every_diplomatic_play = {
+				limit = {
+					c:TPG = {
+						is_diplomatic_play_initiator = yes
+					}
+					c:CHI = {
+						is_diplomatic_play_target = yes
+					}
+				}
+				add_initiator_backers = { c:NIN }
+			}
+	
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
 	}
 }
 
