@@ -17,28 +17,26 @@ je_lia_korean_kings_health = {
 	scripted_button = lia_eafp_scripted_button_health_in
 	
 	complete = {	#삼정문제 완화 후 후계지정뒤 사망
+		always = no
+	}
+
+	on_complete = {
+		custom_tooltip = {
+			text = je_lia_korean_land_problem_complete_cond_tt
+			always = no
+		}
+	}
+	
+	fail = {	#삼정문제 미해결과 급사
 		scope:journal_entry = {
 			is_goal_complete = yes
 		}
 	}
 
-	on_complete = {
-
-	}
-	
-	fail = {	#삼정문제 미해결과 급사
-		always = no
-		#custom_tooltip = {
-		#	text = je_china_failure_tt
-		#	var:china_warlord_explosion_sum >= 1 # 수정
-		#}
-	}
-
 	on_fail = { # 추가
-		# trigger_event = { id = warlord_china_events.100 }
-		#hidden_effect = {
-		#}
-		#custom_tooltip = je_warlord_china_on_fail
+		ruler = {
+			kill_character = yes
+		}
 	}
 
 	status_desc = {
@@ -46,41 +44,41 @@ je_lia_korean_kings_health = {
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_death
 				trigger = {
-					root.var:lia_var_je_kings_health >= 575
+					root.var:lia_var_je_kings_health >= 285
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_verylow
 				trigger = {
-					root.var:lia_var_je_kings_health >= 500
-					root.var:lia_var_je_kings_health < 575
+					root.var:lia_var_je_kings_health >= 250
+					root.var:lia_var_je_kings_health < 285
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_low
 				trigger = {
-					root.var:lia_var_je_kings_health >= 400
-					root.var:lia_var_je_kings_health < 500
+					root.var:lia_var_je_kings_health >= 200
+					root.var:lia_var_je_kings_health < 250
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_medium
 				trigger = {
-					root.var:lia_var_je_kings_health >= 150
-					root.var:lia_var_je_kings_health < 400
+					root.var:lia_var_je_kings_health >= 80
+					root.var:lia_var_je_kings_health < 200
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_high
 				trigger = {
-					root.var:lia_var_je_kings_health >= 50
-					root.var:lia_var_je_kings_health < 150
+					root.var:lia_var_je_kings_health >= 30
+					root.var:lia_var_je_kings_health < 80
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_veryhigh
 				trigger = {
-					root.var:lia_var_je_kings_health < 50
+					root.var:lia_var_je_kings_health < 30
 				}
 			}
 		}
@@ -90,7 +88,7 @@ je_lia_korean_kings_health = {
 		effect = {
 			change_variable = {
 					name = lia_var_je_kings_health
-					add = 1
+					add = 0.5
 			}
 		}
 	}
@@ -100,7 +98,7 @@ je_lia_korean_kings_health = {
 	}
 
 	goal_add_value = {
-		  value = 600
+		  value = 300
 	}
 
 	progressbar = yes
@@ -364,6 +362,12 @@ je_lia_korean_land_problem = {
 	scripted_button = lia_eafp_scripted_button_sam_all
 	scripted_button = lia_eafp_scripted_button_test
 	
+	progress_desc = {
+		first_valid = {
+			desc = je_lia_korean_land_problem_pgdesc
+		}
+	}
+	
 	on_weekly_pulse = {
 		effect = {
 			#등급 업/다운
@@ -585,9 +589,28 @@ je_lia_korean_regent = {
 
 	on_weekly_pulse = {
 		effect = {
-			change_global_variable = {
-				name = lia_global_var_je_regent
-				add = 0.5
+			#권력공유 타입별 매주 힘의균형도 자연증가량
+			if = {
+				limit = {
+					OR = {
+						AND = {
+							var:lia_var_regent_type = 1
+							global_var:lia_global_var_je_regent <= 200
+						}
+						AND = {
+							var:lia_var_regent_type = 2
+							global_var:lia_global_var_je_regent <= 300
+						}
+						AND = {
+							var:lia_var_regent_type = 3
+							global_var:lia_global_var_je_regent <= 400
+						}
+					}
+				}
+				change_global_variable = {
+					name = lia_global_var_je_regent
+					add = 0.5
+				}
 			}
 			#change_global_variable = {	#테스트용
 			#	name = lia_global_var_je_regent_attitude
@@ -597,6 +620,7 @@ je_lia_korean_regent = {
 	}
 	on_monthly_pulse = {
 		effect = {
+			#권력공유 타입별 매달 관계도 자연감소량
 			lia_kor_regent_attitude_roll = yes
 		}
 	}
