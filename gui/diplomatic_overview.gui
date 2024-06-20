@@ -1,0 +1,606 @@
+# COPY-PASTED FOR NOW
+@panel_width_minus_10 = 530			# used to be 450
+@panel_width = 540  				# used to be 460
+@panel_width_half = 270				# used to be 230
+@panel_width_plus_10 = 550  		# used to be 470
+@panel_width_plus_14 = 554			# used to be 474
+@panel_width_plus_14_half = 277		# used to be 237
+@panel_width_plus_20 = 560			# used to be 480
+@panel_width_plus_30 = 570			# used to be 490
+@panel_width_plus_70 = 610			# used to be 530
+
+types diplomatic_panel
+{
+	type diplomatic_overview_panel = default_block_window {
+		name = "diplomatic_overview_panel"
+		enabled = yes
+		datacontext = "[GetPlayer]"
+		
+		blockoverride "animation_state_block" {
+			state = {
+				name = _show
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/diplomacy"
+				}
+			}
+
+			state = {
+				name = _hide
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/diplomacy_stop"
+				}
+			}
+		}
+		
+		blockoverride "window_header_name"
+		{
+			text = "DIPLOMATIC_OVERVIEW_TITLE"
+		}
+
+		blockoverride "fixed_top"
+		{		
+			# Power Rank
+			top_illu = {
+
+				blockoverride "illu" {
+					texture = "gfx/interface/illustrations/top_illus/top_illu_diplomacy.dds"
+				}
+				
+				datacontext = "[GetPlayer]"
+
+				flowcontainer = {
+					parentanchor = center
+					
+					rank_badge = {}
+					
+					textbox = {
+						text = "[Country.GetRank|v]"
+						tooltip = "[Country.GetRankTooltip]"
+						autoresize = yes
+						margin = { 10 0 }
+						align = nobaseline
+						parentanchor = vcenter
+						using = fontsize_xxl
+					}
+				}
+			}
+
+			map_modes = {
+				blockoverride "first_button_click" {
+					onclick = "[DiplomaticOverviewPanel.ShowAttitude]"
+				}
+				blockoverride "first_button_selected" {
+					visible = "[DiplomaticOverviewPanel.IsShowingAttitude]"
+				}
+				blockoverride "first_button_not_selected" {
+					visible = "[Not(DiplomaticOverviewPanel.IsShowingAttitude)]"
+				}
+				blockoverride "first_button_icon" {
+					texture = "gfx/interface/icons/map_mode_icons/attitude.dds"
+				}
+				blockoverride "first_button_text" {
+					text = "MAP_MODE_ATTITUDE_COUNTRY"
+				}
+				blockoverride "second_button_click" {
+					onclick = "[DiplomaticOverviewPanel.ShowRelations]"
+				}
+				blockoverride "second_button_selected" {
+					visible = "[DiplomaticOverviewPanel.IsShowingRelations]"
+				}
+				blockoverride "second_button_not_selected" {
+					visible = "[Not(DiplomaticOverviewPanel.IsShowingRelations)]"
+				}
+				blockoverride "second_button_icon" {
+					texture = "gfx/interface/icons/map_mode_icons/relations.dds"
+				}
+				blockoverride "second_button_text" {
+					text = "MAP_MODE_RELATIONS_COUNTRY"
+				}
+				blockoverride "third_button" {}
+				blockoverride "fourth_button" {}
+			}
+
+			widget = { size = { 10 10 }}
+
+			### TABS
+			tab_buttons = {
+				# Diplomacy overview
+				blockoverride "first_button" {
+					text = "OVERVIEW"
+				}
+				blockoverride "first_button_tooltip" {
+					tooltip = "OVERVIEW"
+				}
+				blockoverride "first_button_click" {
+					onclick = "[InformationPanel.SelectTab('default')]"
+				}
+				blockoverride "first_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('default')]"
+				}
+				blockoverride "first_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('default') )]"
+				}
+				blockoverride "first_button_selected" {
+					text = "OVERVIEW"
+				}	
+
+				# Release subjects
+				blockoverride "second_button" {
+					text = "RELEASE_SUBJECT"
+				}
+				blockoverride "second_button_tooltip" {
+					tooltip = "RELEASE_SUBJECT"
+				}
+				blockoverride "second_button_click" {
+					onclick = "[InformationPanel.SelectTab('release_subject')]"
+				}
+				blockoverride "second_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('release_subject')]"
+				}
+				blockoverride "second_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('release_subject') )]"
+				}
+				blockoverride "second_button_selected" {
+					text = "RELEASE_SUBJECT"
+				}
+
+				# Countries
+				blockoverride "third_button" {
+					text = "concept_countries"
+				}
+				blockoverride "third_button_tooltip" {
+					tooltip = "concept_countries"
+				}
+				blockoverride "third_button_click" {
+					onclick = "[InformationPanel.SelectTab('country_browser')]"
+				}
+				blockoverride "third_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('country_browser')]"
+				}
+				blockoverride "third_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('country_browser') )]"
+				}
+				blockoverride "third_button_selected" {
+					text = "concept_countries"
+				}
+			}
+		}
+
+		blockoverride "scrollarea_content"
+		{
+			container = {
+				diplomacy_overview_tab_content = {
+					visible = "[InformationPanel.IsTabSelected('default')]"
+				}
+
+				release_subject_tab_content = {
+					visible = "[InformationPanel.IsTabSelected('release_subject')]"
+				}
+
+				flowcontainer = {
+					visible = "[InformationPanel.IsTabSelected('country_browser')]"
+					margin_top = 10
+					using = default_list_position
+					direction = vertical
+					minimumsize = { @panel_width -1 }
+					maximumsize = { @panel_width -1 }
+
+					widget = {
+						size = { @panel_width 30 }
+						
+						hbox = {
+							
+							sort_button = {
+								size = { 40 30 }
+								onclick = "[DiplomaticOverviewPanel.Sort('rank')]"
+								button = {
+									texture = "gfx/interface/buttons/sort_button_icons/sort_icon_rank.dds"
+									size = { 25 25 }
+									parentanchor = center
+									alwaystransparent = yes
+								}
+
+								tooltip = "SORT_BY_RANK"
+							}
+
+							sort_button = {
+								layoutstretchfactor_horizontal = 4
+								layoutpolicy_horizontal = preferred
+								size = { 0 30 }
+								text = "COUNTRY_TITLE"
+								onclick = "[DiplomaticOverviewPanel.Sort('name')]"
+							}
+
+							sort_button = {
+								visible = "[DiplomaticOverviewPanel.IsShowingRelations]"
+								layoutstretchfactor_horizontal = 2
+								layoutpolicy_horizontal = preferred
+								size = { 0 30 }
+								text = "RELATIONS"
+								onclick = "[DiplomaticOverviewPanel.Sort('relations')]"
+							}
+
+							sort_button = {
+								visible = "[DiplomaticOverviewPanel.IsShowingAttitude]"
+								layoutstretchfactor_horizontal = 2
+								layoutpolicy_horizontal = preferred
+								size = { 0 30 }
+								text = "ATTITUDE"
+								onclick = "[DiplomaticOverviewPanel.Sort('attitude')]"
+							}
+
+							sort_button = {
+								layoutstretchfactor_horizontal = 1
+								layoutpolicy_horizontal = preferred
+								size = { 0 30 }
+								text = "INFAMY"
+								onclick = "[DiplomaticOverviewPanel.Sort('infamy')]"
+							}
+						}
+					}		
+					
+					flowcontainer = {
+						datamodel = "[DiplomaticOverviewPanel.GetCountries]"
+						minimumsize = { @panel_width -1 }
+						maximumsize = { @panel_width -1 }
+						direction = vertical
+						margin_top = 5
+						
+						item = {
+							widget = {
+								size = { @panel_width 35 }
+								name = "tutorial_highlight_country"
+								
+								divider_clean = {
+									parentanchor = bottom
+									position = { 0 2 }
+								}
+						
+								hbox = {
+									spacing = 10
+
+									widget = {
+										size = { 50 40 }
+										alwaystransparent = no
+										tooltip = "[Country.GetRankTooltip]"
+
+										rank_badge = {
+											size = { 50 50 }
+											
+											blockoverride "datacontext " { 
+												datacontext = "[Country]"
+											}
+
+											blockoverride "rank_text" {
+												raw_text = "#BOLD [Country.GetCountryScorePositionDesc]"
+											}
+											blockoverride "rank_text_2" {
+												raw_text = "#BOLD [Country.GetCountryScorePositionDesc]"
+												visible = no
+											}
+										}
+									}
+
+									hbox = {
+										layoutstretchfactor_horizontal = 4
+										layoutpolicy_horizontal = preferred
+										size = { 0 30 }
+										spacing = 10
+										
+										tiny_flag = {}
+
+										button = {
+											using = clean_button
+											layoutpolicy_horizontal = preferred
+											size = { 0 30 }
+											
+											onclick = "[InformationPanelBar.OpenCountryPanel(Country.Self)]"
+												
+											textbox = {
+												text = "[Country.GetNameNoFlag]"
+												size = { 100% 100% }
+												elide = right
+												align = nobaseline
+												parentanchor = vcenter
+												alwaystransparent = yes
+												margin_left = 12
+											}
+										}
+									}
+
+									textbox = {
+										visible = "[DiplomaticOverviewPanel.IsShowingRelations]"
+										layoutstretchfactor_horizontal = 2
+										layoutpolicy_horizontal = preferred
+										size = { 0 30 }
+										text = "[Country.GetRelationsWithDesc( GetPlayer )|+]"
+										elide = right
+										align = nobaseline
+										tooltip = "[GetPlayer.GetRelationsTooltip( Country.Self )]"
+									}
+
+									textbox = {
+										visible = "[DiplomaticOverviewPanel.IsShowingAttitude]"
+										layoutstretchfactor_horizontal = 2
+										layoutpolicy_horizontal = preferred
+										size = { 0 30 }
+										text = "[Country.GetAttitudeTowards(GetPlayer).GetName]"
+										tooltip = "[Country.GetAttitudeTowards(GetPlayer).GetTooltip]"
+										elide = right
+										align = nobaseline
+									}
+
+									textbox = {
+										layoutstretchfactor_horizontal = 1
+										layoutpolicy_horizontal = preferred
+										size = { 0 30 }
+										raw_text = "#v [Country.GetInfamy|-1]#!"
+										elide = right
+										align = right|nobaseline
+										tooltip = "[Country.GetInfamyDesc]"
+										margin_right = 10
+										alpha = "[TransparentIfZero(Country.GetInfamy)]"
+									}
+								}
+							}
+						}
+					}	
+				}
+			}
+		}
+
+		blockoverride "fixed_bottom"
+		{
+			divider_decorative = {
+				visible = "[InformationPanel.IsTabSelected('default')]"
+				size = { 0 2 }
+				layoutpolicy_horizontal = expanding
+			}
+
+			widget = {
+				visible = "[InformationPanel.IsTabSelected('default')]" 
+				size = { 5 5 }
+			}
+
+			flowcontainer = {
+				direction = vertical
+				spacing = 5
+				visible = "[InformationPanel.IsTabSelected('default')]"
+
+				button = {
+					using = default_button
+					text = "DECLARE_INTEREST_BUTTON"
+					align = center|nobaseline
+					size = { @panel_width 50 }
+					using = fontsize_large
+					onclick = "[GetLensToolbar.ActivateOption('declare_interest')]"
+					tooltip = "declare_interest_tooltip"
+				}
+			}
+
+			flowcontainer = {
+				direction = vertical
+				spacing = 5
+				visible = "[InformationPanel.IsTabSelected('countries')]"
+
+				button = {
+					name = "tutorial_highlight_country_browser"
+					using = default_button
+					text = "OPEN_DIPLOMATIC_BROWSER"
+					align = center|nobaseline
+					size = { @panel_width 50 }
+					using = fontsize_large
+					onclick = "[InformationPanelBar.OpenPanel('countries')]"
+				}
+			}
+		}
+	}
+
+	type diplomacy_overview_tab_content = flowcontainer {
+		direction = vertical
+		using = default_list_position
+		using = default_content_fade
+
+		diplomatic_info = {
+			using = default_list_position
+			datacontext = "[AccessPlayer]"
+		}
+
+		widget = { size = { 10 10 }}
+
+		default_header = {
+			using = default_list_position
+			blockoverride "text" {
+				text = "concept_interests"
+			}
+		}
+
+		flowcontainer = {
+			parentanchor = hcenter
+			visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessInterests))]"
+			
+			sort_button = {
+				size = { 375 30 }
+				text = "INTEREST_IN"
+			}
+
+			sort_button = {
+				size = { 155 30 }
+				tooltip = PROGRESS
+				button = {
+					texture = "gfx/interface/buttons/sort_button_icons/sort_icon_progress.dds"
+					size = { 25 25 }
+					parentanchor = center
+					alwaystransparent = yes
+				}
+			}
+		}
+
+		flowcontainer = {
+			using = default_list_position
+			datamodel = "[AccessPlayer.AccessInterests]"
+			visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessInterests))]"
+			direction = vertical
+
+			item = {
+				flowcontainer = {
+					datacontext = "[Interest.GetStrategicRegion]"
+					tooltip = "INTEREST_MARKER_TOOLTIP"
+					using = unclickable_listentry
+					margin_bottom = 10 
+					spacing = 10
+					onmousehierarchyenter = "[AccessHighlightManager.HighlightStrategicRegion(StrategicRegion.Self)]"
+					onmousehierarchyleave = "[AccessHighlightManager.RemoveHighlight]"
+					alwaystransparent = no
+					
+					# Needs to be in a widget to avoid conflict of aligments
+					widget = {
+						size = { 370 30 }
+						parentanchor = vcenter
+						
+						textbox = {
+							visible = "[Interest.IsActive]"
+							text = "[StrategicRegion.GetName]"
+							autoresize = yes
+							minimumsize = { 370 -1 }
+							parentanchor = vcenter
+						}
+						textbox = {
+							visible = "[Not(Interest.IsActive)]"
+							text = "[StrategicRegion.GetName]"
+							autoresize = yes
+							minimumsize = { 370 -1 }
+							parentanchor = vcenter
+							alpha = 0.5
+						}
+					}	
+
+					widget = {
+						size = { 150 30 }
+						parentanchor = vcenter
+						
+						container = {
+							visible = "[Interest.ShouldShowProgressBar]"
+							parentanchor = center
+							
+							bad_progressbar_horizontal = {
+								size = { 120 16 }
+								visible = "[Interest.IsActive]"
+								parentanchor = center
+								blockoverride "values" {
+									value = "[Interest.GetProgress]"
+									min = 0
+									max = 1
+								}
+
+								textbox = {
+									text = "[Interest.GetProgress|%0]"
+									parentanchor = center
+									autoresize = yes
+									align = nobaseline	
+								}
+							}
+
+							default_progressbar_horizontal = {
+								size = { 120 16 }
+								visible = "[Not(Interest.IsActive)]"
+								parentanchor = center					
+								blockoverride "values" {
+									value = "[Interest.GetProgress]"
+									min = 0
+									max = 1
+								}
+
+								textbox = {
+									text = "[Interest.GetProgress|%0]"
+									parentanchor = center
+									autoresize = yes
+									align = nobaseline	
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	type release_subject_tab_content = container {
+		minimumsize = { @panel_width_plus_20 -1 }
+		maximumsize = { @panel_width_plus_20 -1 }
+		using = default_content_fade
+		
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessReleasableCountries)]"
+			}
+			blockoverride "text" {
+				text = "NO_RELEASABLE_COUNTRIES"
+			}
+		}	
+		
+		flowcontainer = {
+			parentanchor = hcenter
+			direction = vertical
+			visible = "[Not(IsDataModelEmpty(AccessPlayer.AccessReleasableCountries))]"		
+			spacing = 10
+
+			default_header = {
+				blockoverride = "text" {
+					text = "RELEASABLE_COUNTRIES"
+				}
+			}
+
+			flowcontainer = {
+				parentanchor = hcenter
+				direction = vertical
+				datamodel = "[AccessPlayer.AccessReleasableCountries]"
+				spacing = 5
+			
+				item = {
+					releasable_country_button = {}
+				}
+			}	
+		}			
+	}
+
+	type releasable_country_button = container {
+		datacontext = "[CountryCreation.GetDefinition]"
+		onmousehierarchyenter = "[AccessHighlightManager.HighlightCountryCreation(CountryCreation.Self)]"
+		onmousehierarchyleave = "[AccessHighlightManager.RemoveHighlight]"
+		alwaystransparent = no
+
+		country_button = {
+			enabled = "[CountryCreation.CanReleaseCountryAtAll(GetPlayer)]"
+			onclick = "[PopupManager.ShowReleaseCountryConfirmation(CountryCreation.Self)]"
+			tooltip = "RELEASE_COUNTRY_TOOLTIP"
+
+
+			blockoverride "country_name" {
+				text = "RELEASE_COUNTRY_NAME"
+			}
+			
+			blockoverride "country_tier" {
+				text = "RELEASE_COUNTRY_TIER"
+			}
+			
+
+			blockoverride "flag_definition" {
+				# Using medium size textures in small flag for better downscaling of flag details
+				texture = "[CountryDefinition.GetFlag('release').GetMediumFlagTexture]"
+				frame = "[CountryDefinition.GetFlag('release').GetMediumFlagFrame]"
+				framesize = "[GetMediumFlagFrameSize]"
+			}
+
+			blockoverride "right_number" {
+				visible = "[Not(CountryCreation.ShowRequiredNumStates(GetPlayer))]"
+				text = "RELEASE_COUNTRY_NUM_STATES"
+			}
+
+			blockoverride "right_number_two" {
+				visible = "[CountryCreation.ShowRequiredNumStates(GetPlayer)]"
+				text = "RELEASE_COUNTRY_REQ_STATES"
+			}
+		}
+	}
+}
