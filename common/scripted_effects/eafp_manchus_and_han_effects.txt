@@ -625,12 +625,31 @@ je_manchus_and_han_d_var_calc = {
 			multiply = 0.05 # TODO
 		}
 	}
+	if = {
+		limit = {
+			OR = {
+				is_enacting_law = law_type:law_cultural_exclusion
+				is_enacting_law = law_type:law_multicultural
+			}
+		}
+		set_variable = {
+			name = china_manchu_support_d_from_enacting_law_var
+			value = -0.1
+		}
+	}
+	else = {
+		set_variable = {
+			name = china_manchu_support_d_from_enacting_law_var
+			value = 0
+		}
+	}
 	set_variable = {
 		name = china_manchu_support_d_var
 		value = {
 			value = var:china_manchu_support_d_decay_var
 			add = var:china_manchu_support_d_from_radical_var
 			add = var:china_manchu_support_d_from_loyalist_var
+			add = var:china_manchu_support_d_from_enacting_law_var
 		}
 	}
 	# 한
@@ -656,16 +675,36 @@ je_manchus_and_han_d_var_calc = {
 			multiply = 0.05 # TODO
 		}
 	}
+	if = {
+		limit = {
+			OR = {
+				is_enacting_law = law_type:law_ethnostate
+				is_enacting_law = law_type:law_national_supremacy
+			}
+		}
+		set_variable = {
+			name = china_han_support_d_from_enacting_law_var
+			value = -0.1
+		}
+	}
+	else = {
+		set_variable = {
+			name = china_han_support_d_from_enacting_law_var
+			value = 0
+		}
+	}
 	set_variable = {
 		name = china_han_support_d_var
 		value = {
 			value = var:china_han_support_d_decay_var
 			add = var:china_han_support_d_from_radical_var
 			add = var:china_han_support_d_from_loyalist_var
+			add = var:china_han_support_d_from_enacting_law_var
 		}
 	}
 	#################### 권력 계산 ####################
-	je_manchus_and_han_pop_pol_str_calc = yes
+	# manchu_pol_str과 han_pol_str은 je_manchus_and_han_pop_pol_str_calc에서 계산
+
 	set_variable = { # dM% = a ( m% - M% )
 		name = china_manchu_power_d_from_pol_str_var
 		value = {
@@ -689,8 +728,6 @@ je_manchus_and_han_d_var_calc = {
 			multiply = -1
 		}
 	}
-	#remove_variable = manchu_pol_str
-	#remove_variable = han_pol_str
 	set_variable = {
 		name = china_manchu_power_d_var
 		value = var:china_manchu_power_d_from_pol_str_var
@@ -774,10 +811,12 @@ clear_je_manchu_and_han_stuffs = {
 		remove_variable = china_manchu_support_d_decay_var
 		remove_variable = china_manchu_support_d_from_radical_var
 		remove_variable = china_manchu_support_d_from_loyalist_var
+		remove_variable = china_manchu_support_d_from_enacting_law_var
 		remove_variable = china_manchu_support_d_var
 		remove_variable = china_han_support_d_decay_var
 		remove_variable = china_han_support_d_from_radical_var
 		remove_variable = china_han_support_d_from_loyalist_var
+		remove_variable = china_han_support_d_from_enacting_law_var
 		remove_variable = china_han_support_d_var
 		
 		remove_variable = china_manchu_power_var
@@ -789,14 +828,65 @@ clear_je_manchu_and_han_stuffs = {
 		remove_variable = china_han_power_d_from_policies_var
 		remove_variable = china_han_power_d_from_pol_str_var
 
-		remove_variable = china_manchu_multiplier_var
-		remove_variable = china_han_multiplier_var
 		remove_modifier = manchu_influence1
 		remove_modifier = manchu_influence2
 		remove_modifier = han_influence1
 		remove_modifier = han_influence2
+		# 변동치 바로 사라지지 않고 10년 감쇠
+		if = {
+			limit = { var:china_manchu_multiplier_var > 0 }
+			add_modifier = {
+				name = manchu_influence1
+				multiplier = var:china_manchu_multiplier_var
+				is_decaying = yes
+				years = 10
+			}
+		}
+		else_if = {
+			limit = { var:china_manchu_multiplier_var < 0 }
+			add_modifier = {
+				name = manchu_influence2
+				multiplier = {
+					value = var:china_manchu_multiplier_var
+					multiply = -1
+				}
+				is_decaying = yes
+				years = 10
+			}
+		}
+
+		if = {
+			limit = { var:china_han_multiplier_var > 0 }
+			add_modifier = {
+				name = han_influence1
+				multiplier = var:china_han_multiplier_var
+				is_decaying = yes
+				years = 10
+			}
+		}
+		else_if = {
+			limit = { var:china_han_multiplier_var < 0 }
+			add_modifier = {
+				name = han_influence2
+				multiplier = {
+					value = var:china_han_multiplier_var
+					multiply = -1
+				}
+				is_decaying = yes
+				years = 10
+			}
+		}
+		remove_variable = china_manchu_multiplier_var
+		remove_variable = china_han_multiplier_var
 		remove_modifier = chi_banner_subsidies_modifier
+
+		remove_variable = manchu_pol_str
+		remove_variable = han_pol_str
 	}
+}
+
+je_manchus_and_han_ai_effects = {
+	
 }
 
 add_manchu_power = {

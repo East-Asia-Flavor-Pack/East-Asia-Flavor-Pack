@@ -1,0 +1,1372 @@
+﻿namespace = nian_army
+
+nian_army.1 = {
+	type = country_event
+	placement = root
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	title = nian_army.1.t
+	desc = nian_army.1.d
+	flavor = nian_army.1.f
+
+	duration = 3
+
+	trigger = {
+		#Triggered by JE
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = nian_army.1.a
+		default_option = yes
+		show_as_tooltip = {
+			add_journal_entry = { type = je_nian_army }
+		}
+	}
+}
+
+nian_army.2 = {
+	type = country_event
+	placement = root
+	event_image = {
+		video = "unspecific_military_parade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.2.t
+	desc = nian_army.2.d
+	flavor = nian_army.2.f
+
+	duration = 3
+
+	trigger = {
+		
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			save_scope_as = state1
+		}
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+				NOT = { THIS = scope:state1 }
+			}
+			save_scope_as = state2
+		}
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+				NOT = { THIS = scope:state1 }
+				NOT = { THIS = scope:state2 }
+			}
+			save_scope_as = state3
+		}
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+				NOT = { THIS = scope:state1 }
+				NOT = { THIS = scope:state2 }
+				NOT = { THIS = scope:state3 }
+			}
+			save_scope_as = state4
+		}
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+				NOT = { THIS = scope:state1 }
+				NOT = { THIS = scope:state2 }
+				NOT = { THIS = scope:state3 }
+				NOT = { THIS = scope:state4 }
+			}
+			save_scope_as = state5
+		}
+	}
+
+	option = {
+		name = nian_army.2.a
+		default_option = yes
+		every_scope_state = {
+			limit = {
+				OR = {
+					THIS = scope:state1
+					THIS = scope:state2
+					THIS = scope:state3
+					THIS = scope:state4
+					THIS = scope:state5
+				}
+			}
+			add_radicals_in_state = {
+				value = small_radicals
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.005
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.01
+				pop_type = farmers
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.01
+				pop_type = laborers
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.01
+				pop_type = peasants
+				culture = cu:han
+			}
+			state_region = {
+				add_devastation = 30 
+			}
+		}
+
+	}
+	option = {
+		name = nian_army.2.b
+
+		every_scope_state = {
+			limit = {
+				OR = {
+					THIS = scope:state1
+					THIS = scope:state2
+					THIS = scope:state3
+					THIS = scope:state4
+					THIS = scope:state5
+				}
+			}
+			kill_population_percent_in_state = {
+				percent = 0.0025
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.005
+				pop_type = farmers
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.005
+				pop_type = laborers
+				culture = cu:han
+			}
+			kill_population_percent_in_state = {
+				percent = 0.005
+				pop_type = peasants
+				culture = cu:han
+			}
+			state_region = {
+				add_devastation = 15
+			}
+		}
+	}
+}
+
+nian_army.3 = {
+	type = country_event
+	placement = root
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.3.t
+	desc = nian_army.3.d
+	flavor = nian_army.3.f
+
+	duration = 3
+
+	trigger = {
+	}
+
+	immediate = {
+		if = {
+			limit = { exists = c:TPG }
+			ordered_scope_state = {
+				limit = { region = sr:region_north_china }
+				order_by = turmoil
+				save_scope_as = NIN_state
+			}
+			ordered_scope_state = {
+				limit = {
+					region = sr:region_north_china
+					any_neighbouring_state = {
+						THIS = scope:NIN_state
+					}
+				}
+				order_by = turmoil
+				save_scope_as = NIN_state2
+			}
+			ordered_scope_state = {
+				limit = {
+					region = sr:region_north_china
+					any_neighbouring_state = {
+						OR = {
+							THIS = scope:NIN_state
+							THIS = scope:NIN_state2
+						}
+					}
+					NOR = {
+						THIS = scope:NIN_state
+						THIS = scope:NIN_state2
+					}
+				}
+				order_by = turmoil
+				save_scope_as = NIN_state3
+			}
+			create_country = {
+				tag = NIN
+				origin = this
+				state = scope:NIN_state
+				on_created = {
+					if = {
+						limit = {
+							any_character = {
+								has_variable = is_lexing_zhang
+							}
+						}
+						random_character = {
+							limit = { has_variable = is_lexing_zhang }
+							set_home_country = c:NIN
+							transfer_character = c:NIN
+							set_as_interest_group_leader = yes
+							set_character_as_ruler = yes
+							add_character_role = general
+						}
+					}
+					else = {
+						create_character = {
+							first_name = Lexing
+							last_name = Zhang
+							historical = yes
+							birth_date = 1811.01.01
+							culture = cu:han
+							ig_leader = yes
+							interest_group = ig_rural_folk
+							ruler = yes
+							ideology = ideology_traditionalist
+							traits = {
+								ambitious
+								firebrand
+								bandit
+							}
+							on_created = {
+								set_variable = is_lexing_zhang
+								add_character_role = general
+							}
+						}
+					}
+					create_character = {
+						first_name = Zongyu
+						last_name = Zhang
+						historical = yes
+						birth_date = 1826.01.01 # 임의로 넣음
+						culture = cu:han
+						heir = yes
+						ideology = ideology_traditionalist
+						traits = {
+							direct
+							firebrand
+							bandit
+						}
+						on_created = {
+							set_variable = is_zongyu_zhang
+							add_character_role = general
+						}
+					}
+					if = {
+						limit = {
+							NOT = {
+								has_ruling_interest_group = ig_rural_folk
+							}
+						}
+						ig:ig_rural_folk = {
+							add_ruling_interest_group = yes
+						}
+					}
+					add_modifier = {
+						name = uprising_conscription
+						months = normal_modifier_time
+					}
+				}
+			}
+			scope:NIN_state2 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			scope:NIN_state3 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			c:TPG = {
+				create_diplomatic_pact = {
+					country = c:NIN
+					type = vassal
+				}
+			}
+			every_diplomatic_play = {
+				limit = {
+					c:TPG = {
+						is_diplomatic_play_initiator = yes
+					}
+				}
+				add_initiator_backers = { c:NIN }
+			}
+			c:NIN = {
+				every_scope_state = {
+					this.state_region = {
+						add_claim = c:CHI
+					}
+					add_modifier = {
+						name = modifier_taiping_hiring_bonus
+						months = 24
+					}
+				}
+			}
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+		else = {
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = very_large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+	}
+
+	option = {
+		name = nian_army.3.a
+		default_option = yes
+		
+		trigger = { NOT = { exists = c:TPG } }
+
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = very_large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+	}
+
+	option = {
+		name = nian_army.3.a
+
+		trigger = { exists = c:TPG }
+		
+		show_as_tooltip = {
+			create_country = {
+				tag = NIN
+				origin = this
+				state = scope:NIN_state
+				on_created = {
+				}
+			}
+			scope:NIN_state2 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			scope:NIN_state3 = {
+				set_state_owner = c:NIN
+				set_state_type = incorporated
+			}
+			every_diplomatic_play = {
+				limit = {
+					c:TPG = {
+						is_diplomatic_play_initiator = yes
+					}
+				}
+				add_initiator_backers = { c:NIN }
+			}
+	
+			every_scope_state = {
+				limit = { region = sr:region_north_china }
+				add_radicals_in_state = {
+					value = large_radicals
+					culture = cu:han
+				}
+				state_region = {
+					add_devastation = 15
+				}
+			}
+		}
+	}
+}
+
+nian_army.4 = {
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		change_variable = {
+			name = nian_army_progress_var
+			add = 50
+		}
+	}
+}
+
+nian_army.11 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "europenorthamerica_russian_serfs"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.11.t
+	desc = nian_army.11.d
+	flavor = nian_army.11.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 채우기
+		name = nian_army.11.a
+		default_option = yes
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = medium_radicals
+			}
+		}
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+	}
+	option = { # 넘어가기
+		name = nian_army.11.b
+		add_treasury = { # 주 gdp 0.5%
+			value = scope:state_scope.gdp
+			divide = 1000000
+			multiply = 0.5
+			round = yes
+			multiply = -1000
+		}
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+	}
+}
+
+nian_army.12 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "asia_union_leader"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.12.t
+	desc = nian_army.12.d
+	flavor = nian_army.12.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 연좌
+		name = nian_army.12.a
+		default_option = yes
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = medium_radicals
+			}
+		}
+		custom_description = {
+			text = nian_army_drift
+			value = -10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -10
+	        }
+		}
+	}
+	option = { # 넘어가기
+		name = nian_army.12.b
+		custom_description = {
+			text = nian_army_drift
+			value = 10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 10
+	        }
+		}
+	}
+}
+
+nian_army.13 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "europenorthamerica_before_the_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.13.t
+	desc = nian_army.13.d
+	flavor = nian_army.13.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 포위 뚫기
+		name = nian_army.13.a
+		default_option = yes
+		add_modifier = {
+			name = niaarm13a
+			months = short_modifier_time
+		}
+		custom_description = {
+			text = nian_army_drift
+			value = -5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -5
+	        }
+		}
+	}
+	option = { # 넘어가기
+		name = nian_army.13.b
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+	}
+}
+
+nian_army.14 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "europenorthamerica_before_the_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.14.t
+	desc = nian_army.14.d
+	flavor = nian_army.14.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 전략 바꾸기
+		name = nian_army.14.a
+		default_option = yes
+		custom_description = {
+			text = nian_army_drift
+			value = -5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -5
+	        }
+		}
+	}
+	option = { # 그대로 실행
+		name = nian_army.14.b
+		custom_description = {
+			text = nian_army_drift
+			value = -10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -10
+	        }
+		}
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+	}
+}
+
+nian_army.15 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "europenorthamerica_russian_serfs"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.15.t
+	desc = nian_army.15.d
+	flavor = nian_army.15.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 강제 시행
+		name = nian_army.15.a
+		default_option = yes
+		custom_description = {
+			text = nian_army_drift
+			value = -5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -5
+	        }
+		}
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = medium_radicals
+			}
+			add_modifier = {
+				name = niaarm15a
+				months = short_modifier_time
+			}
+		}
+	}
+	option = { # 보상 후 시행
+		name = nian_army.15.b
+		custom_description = {
+			text = nian_army_drift
+			value = -5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -5
+	        }
+		}
+		scope:state_scope = {
+			add_modifier = {
+				name = niaarm15b
+				months = short_modifier_time
+			}
+		}
+	}
+	option = { # 안함
+		name = nian_army.15.c
+		custom_description = {
+			text = nian_army_drift
+			value = 10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 10
+	        }
+		}
+	}
+}
+
+nian_army.16 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.16.t
+	desc = nian_army.16.d
+	flavor = nian_army.16.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 처형
+		name = nian_army.16.a
+		default_option = yes
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+	}
+	option = { # 회유
+		name = nian_army.16.b
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+	}
+}
+
+nian_army.17 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.17.t
+	desc = nian_army.17.d
+	flavor = nian_army.17.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 처형
+		name = nian_army.17.a
+		default_option = yes
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+	}
+	option = { # 봐줌
+		name = nian_army.17.b
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+	}
+}
+
+nian_army.18 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "europenorthamerica_before_the_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.18.t
+	desc = nian_army.18.d
+	flavor = nian_army.18.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 소탕
+		name = nian_army.18.a
+		default_option = yes
+		custom_description = {
+			text = nian_army_drift
+			value = 5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 5
+	        }
+		}
+		add_modifier = {
+			name = niaarm18a
+			months = short_modifier_time
+		}
+	}
+	option = { # 방어 굳히기
+		name = nian_army.18.b
+		custom_description = {
+			text = nian_army_drift
+			value = 10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = 10
+	        }
+		}
+		add_modifier = {
+			name = niaarm18b
+			months = short_modifier_time
+		}
+	}
+}
+
+nian_army.19 = {
+	type = country_event
+	placement = scope:state_scope
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	title = nian_army.19.t
+	desc = nian_army.19.d
+	flavor = nian_army.19.f
+
+	duration = 3
+	
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_china_proper = yes
+				region = sr:region_north_china
+			}
+			weight = {
+				base = 0.1
+				modifier = {
+					turmoil > 0.1
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.2
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.3
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.4
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.5
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.6
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.7
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.8
+					add = 1
+				}
+				modifier = {
+					turmoil > 0.9
+					add = 1
+				}
+			}
+			save_scope_as = state_scope
+		}
+	}
+
+	option = { # 공개 처형
+		name = nian_army.19.a
+		default_option = yes
+		scope:state_scope = {
+			add_radicals_in_state = {
+				value = small_radicals
+			}
+		}
+		custom_description = {
+			text = nian_army_drift
+			value = -10
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -10
+	        }
+		}
+	}
+	option = { # 비밀 처형
+		name = nian_army.19.b
+		custom_description = {
+			text = nian_army_drift
+			value = -5
+	        change_variable = {
+	            name = nian_army_progress_var
+	            add = -5
+	        }
+		}
+	}
+}

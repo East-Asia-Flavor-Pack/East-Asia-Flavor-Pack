@@ -3,8 +3,14 @@
 	
 	group = je_group_historical_content
 
+	scripted_button = decree_examinations_manchu_button
+	scripted_button = decree_examinations_han_button
+	scripted_button = promote_officials_manchu_button
+	scripted_button = promote_officials_han_button
+	scripted_button = grant_money_manchu_button
+	scripted_button = grant_money_han_button
+
 	immediate = {
-		# TODO 특권 gui 만들기
 		# 가능한 특권들
 		# 만결
 		add_to_variable_list = {
@@ -236,6 +242,7 @@
 			value = 0.32
 		}
 
+		je_manchus_and_han_pop_pol_str_calc = yes
 		je_manchus_and_han_d_var_calc = yes
 		je_manchus_and_han_modifier_calc = yes
 		cu:manchu = {
@@ -274,9 +281,21 @@
 		manchu_above_all
 	}
 
-	on_monthly_pulse = {
+	on_weekly_pulse = {
 		effect = {
 			je_manchus_and_han_d_var_calc = yes
+			je_manchus_and_han_modifier_calc = yes
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			je_manchus_and_han_pop_pol_str_calc = yes # 계산 많아서 달마다 돌림
+			je_manchus_and_han_d_var_calc = yes
+			if = {
+				limit = { is_ai = yes }
+				je_manchus_and_han_ai_effects = yes
+			}
 
 			#################### 지지도 계산 ####################
 			change_variable = {
@@ -293,6 +312,16 @@
 					add = modifier:country_china_han_support_monthly_add
 				}
 			}
+			clamp_variable = {
+				name = china_manchu_support_var
+				max = 1
+				min = 0
+			}
+			clamp_variable = {
+				name = china_han_support_var
+				max = 1
+				min = 0
+			}
 
 			#################### 권력 계산 ####################
 			change_variable = {
@@ -308,6 +337,16 @@
 					value = var:china_han_power_d_var
 					subtract = modifier:country_china_manchu_power_monthly_add
 				}
+			}
+			clamp_variable = {
+				name = china_manchu_power_var
+				max = 1
+				min = 0
+			}
+			clamp_variable = {
+				name = china_han_power_var
+				max = 1
+				min = 0
 			}
 
 			je_manchus_and_han_modifier_calc = yes
@@ -391,6 +430,9 @@
 
 	progress_desc = je_manchus_and_han_progress
 
+
 	weight = 1000
-	should_be_pinned_by_default = no
+	should_be_pinned_by_default = yes
+
+	transferable = no
 }

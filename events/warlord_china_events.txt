@@ -458,20 +458,22 @@ warlord_china_events.4 = { # 몽골 위구르 종속국 탈주 (있으면)
 		every_subject_or_below = {
 			if = {
 				limit = {
-					is_subject_type = subject_type_military_headquarters_china
-					NOT = {
-						any_scope_state = {
-							has_modifier = manchurian_containment
-						}
-					}
+					NOT = { any_scope_state = { has_modifier = manchurian_containment } }
 				}
-				make_independent = yes
-				warlord_setup_effect = yes
+				if = {
+					limit = { is_subject_type = subject_type_military_headquarters_china }
+					make_independent = yes
+					warlord_setup_effect = yes
+				}
+				else = {
+					make_independent = yes
+				}
 			}
-			else = { make_independent = yes }
 		}
 		if = {
 			limit = { exists = c:MGL }
+			s:STATE_ULIASTAI = { add_claim = c:MGL }
+			s:STATE_URGA = { add_claim = c:MGL }
 			s:STATE_HINGGAN = { add_claim = c:MGL }
 			s:STATE_ALXA = { add_claim = c:MGL }
 		}
@@ -830,6 +832,9 @@ warlord_china_events.21 = { # 공화국의 탄생
 				days = 30
 				popup = yes
 			}
+			add_journal_entry = {
+				type = je_provisional_presidency_sys
+			}
 		}
 		every_scope_state = {
 			set_state_type = incorporated
@@ -964,7 +969,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 				state = s:STATE_HUNAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:HNA = { save_scope_as = scope_HNA }
@@ -996,7 +1000,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:GNG = { save_scope_as = scope_GNG }
@@ -1021,7 +1024,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:AHU = { save_scope_as = scope_AHU }
@@ -1035,7 +1037,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 		#		state = s:STATE_ZHILI.region_state:ROC
 		#		on_created = {
 		#			warlord_setup_effect = yes
-		#			set_variable = warlord_state
 		#		}
 		#	}
 		#	c:ZHI = { save_scope_as = scope_ZHI }
@@ -1077,7 +1078,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:MCH = { save_scope_as = scope_MCH }
@@ -1092,7 +1092,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:SHN = { save_scope_as = scope_SHN }
@@ -1126,7 +1125,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 					}
 					add_primary_culture = cu:han
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIN = { save_scope_as = scope_XIN }
@@ -1141,7 +1139,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUN = { save_scope_as = scope_YUN }
@@ -1156,7 +1153,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 		
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:GUI = { save_scope_as = scope_GUI }
@@ -1177,7 +1173,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUE = { save_scope_as = scope_YUE }
@@ -1191,7 +1186,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUE = { save_scope_as = scope_YUE }
@@ -1206,7 +1200,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 		
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:SIH = { save_scope_as = scope_SIH }
@@ -1221,7 +1214,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 		#
 		#		on_created = {
 		#			warlord_setup_effect = yes
-		#			set_variable = warlord_state
 		#		}
 		#	}
 		#	c:SHA = { save_scope_as = scope_SHA }
@@ -1247,8 +1239,13 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 							set_state_owner = c:XIB
 						}
 					}
+					if = {
+						limit = { exists = s:STATE_QINGHAI.region_state:ROC }
+						s:STATE_QINGHAI.region_state:ROC = {
+							set_state_owner = c:XIB
+						}
+					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIB = { save_scope_as = scope_XIB }
@@ -1268,10 +1265,50 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIB = { save_scope_as = scope_XIB }
+		}
+		# 몽골 (이미 합병됐을 때)
+		if = {
+			limit = {
+				exists = s:STATE_ULIASTAI.region_state:ROC
+				NOT = { exists = c:MGL }
+			}
+			create_country = {
+				tag = MGL
+				origin = this
+				state = s:STATE_ULIASTAI.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					if = {
+						limit = { exists = s:STATE_URGA.region_state:ROC }
+						s:STATE_URGA.region_state:ROC = {
+							set_state_owner = c:MGL
+						}
+					}
+					s:STATE_ULIASTAI = { add_claim = c:MGL }
+					s:STATE_URGA = { add_claim = c:MGL }
+					s:STATE_HINGGAN = { add_claim = c:MGL }
+					s:STATE_ALXA = { add_claim = c:MGL }
+				}
+			}
+			c:MGL = { save_scope_as = scope_MGL }
+		}
+		# 투바 (몽골 이미 합병됐을 때)
+		if = {
+			limit = { exists = s:STATE_TUVA.region_state:ROC }
+			create_country = {
+				tag = TUV
+				origin = this
+				state = s:STATE_TUVA.region_state:ROC
+	
+				on_created = {
+					warlord_setup_effect = yes
+				}
+			}
+			c:TUV = { save_scope_as = scope_TUV }
 		}
 		# 새로 추가한 것들
 		# 복건 군벌
@@ -1283,7 +1320,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 				state = s:STATE_FUJIAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:FJN = { save_scope_as = scope_FJN }
@@ -1297,7 +1333,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 				state = s:STATE_JIANGXI.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGX = { save_scope_as = scope_JGX }
@@ -1323,7 +1358,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1343,7 +1377,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1357,7 +1390,6 @@ warlord_china_events.23 = { # 타협의 여파 (원세개 있음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1413,7 +1445,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 				state = s:STATE_HUNAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:HNA = { save_scope_as = scope_HNA }
@@ -1445,7 +1476,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:GNG = { save_scope_as = scope_GNG }
@@ -1470,7 +1500,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:AHU = { save_scope_as = scope_AHU }
@@ -1484,7 +1513,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 		#		state = s:STATE_ZHILI.region_state:ROC
 		#		on_created = {
 		#			warlord_setup_effect = yes
-		#			set_variable = warlord_state
 		#		}
 		#	}
 		#	c:ZHI = { save_scope_as = scope_ZHI }
@@ -1526,7 +1554,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:MCH = { save_scope_as = scope_MCH }
@@ -1541,7 +1568,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:SHN = { save_scope_as = scope_SHN }
@@ -1575,7 +1601,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 					}
 					add_primary_culture = cu:han
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIN = { save_scope_as = scope_XIN }
@@ -1590,7 +1615,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUN = { save_scope_as = scope_YUN }
@@ -1605,7 +1629,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 		
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:GUI = { save_scope_as = scope_GUI }
@@ -1626,7 +1649,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUE = { save_scope_as = scope_YUE }
@@ -1640,7 +1662,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:YUE = { save_scope_as = scope_YUE }
@@ -1655,7 +1676,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 		
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:SIH = { save_scope_as = scope_SIH }
@@ -1670,7 +1690,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 		#
 		#		on_created = {
 		#			warlord_setup_effect = yes
-		#			set_variable = warlord_state
 		#		}
 		#	}
 		#	c:SHA = { save_scope_as = scope_SHA }
@@ -1696,8 +1715,13 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 							set_state_owner = c:XIB
 						}
 					}
+					if = {
+						limit = { exists = s:STATE_QINGHAI.region_state:ROC }
+						s:STATE_QINGHAI.region_state:ROC = {
+							set_state_owner = c:XIB
+						}
+					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIB = { save_scope_as = scope_XIB }
@@ -1717,10 +1741,50 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:XIB = { save_scope_as = scope_XIB }
+		}
+		# 몽골 (이미 합병됐을 때)
+		if = {
+			limit = {
+				exists = s:STATE_ULIASTAI.region_state:ROC
+				NOT = { exists = c:MGL }
+			}
+			create_country = {
+				tag = MGL
+				origin = this
+				state = s:STATE_ULIASTAI.region_state:ROC
+
+				on_created = {
+					warlord_setup_effect = yes
+					if = {
+						limit = { exists = s:STATE_URGA.region_state:ROC }
+						s:STATE_URGA.region_state:ROC = {
+							set_state_owner = c:MGL
+						}
+					}
+					s:STATE_ULIASTAI = { add_claim = c:MGL }
+					s:STATE_URGA = { add_claim = c:MGL }
+					s:STATE_HINGGAN = { add_claim = c:MGL }
+					s:STATE_ALXA = { add_claim = c:MGL }
+				}
+			}
+			c:MGL = { save_scope_as = scope_MGL }
+		}
+		# 투바 (몽골 이미 합병됐을 때)
+		if = {
+			limit = { exists = s:STATE_TUVA.region_state:ROC }
+			create_country = {
+				tag = TUV
+				origin = this
+				state = s:STATE_TUVA.region_state:ROC
+	
+				on_created = {
+					warlord_setup_effect = yes
+				}
+			}
+			c:TUV = { save_scope_as = scope_TUV }
 		}
 		# 새로 추가한 것들
 		# 복건 군벌
@@ -1732,7 +1796,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 				state = s:STATE_FUJIAN.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:FJN = { save_scope_as = scope_FJN }
@@ -1746,7 +1809,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 				state = s:STATE_JIANGXI.region_state:ROC
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGX = { save_scope_as = scope_JGX }
@@ -1772,7 +1834,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1792,7 +1853,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 						}
 					}
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1806,7 +1866,6 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 
 				on_created = {
 					warlord_setup_effect = yes
-					set_variable = warlord_state
 				}
 			}
 			c:JGS = { save_scope_as = scope_JGS }
@@ -1828,505 +1887,7 @@ warlord_china_events.24 = { # 중국 분할 (원세개 없음)
 	}
 }
 
-warlord_china_events.100 = { #Split china up into warlord states
-	type = country_event
-	placement = root
-	duration = 3
-
-	title = warlord_china_events.100.t
-	desc = warlord_china_events.100.d
-	flavor = warlord_china_events.100.f
-
-	event_image = {
-		video = "unspecific_armored_train"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	trigger = {
-		exists = c:CHI
-		this = c:CHI
-		NOT = { has_global_variable = china_shatters }
-	}
-
-	immediate = {
-		set_global_variable = china_shatters
-		
-		set_variable = chinese_central_government
-		
-		if = {
-			limit = { exists = s:STATE_HUNAN.region_state:CHI }
-			create_country = {
-				tag = HNA
-				origin = this
-				state = s:STATE_HUNAN.region_state:CHI
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:HNA = { save_scope_as = scope_HNA }
-		}
-		if = {
-			limit = { exists = s:STATE_GUANGXI.region_state:CHI }
-			create_country = { #Guangxi
-				tag = GNG
-				origin = this
-				state = s:STATE_GUANGXI.region_state:CHI
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:GNG = { save_scope_as = scope_GNG }
-		}
-
-		if = {
-			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:CHI }
-			create_country = { #Anhui Clique
-				tag = AHU
-				origin = this
-				state = s:STATE_SOUTHERN_ANHUI.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:AHU = { save_scope_as = scope_AHU }
-		}
-
-		if = {
-			limit = { exists = s:STATE_ZHILI.region_state:CHI }
-			create_country = { #Zhili Clique
-				tag = ZHI
-				origin = this
-				state = s:STATE_ZHILI.region_state:CHI
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:ZHI = { save_scope_as = scope_ZHI }
-		}
-
-		if = {
-			limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
-			create_country = { #Fengtian Clique
-				tag = MCH
-				origin = this
-				state = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:MCH = { save_scope_as = scope_MCH }
-		}
-
-		if = {
-			limit = { exists = s:STATE_SHANXI.region_state:CHI }
-			create_country = {  #Shanxi
-				tag = SHN
-				origin = this
-				state = s:STATE_SHANXI.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:SHN = { save_scope_as = scope_SHN }
-		}
-
-		if = {
-			limit = { exists = s:STATE_TIANSHAN.region_state:CHI }
-			create_country = {  #Xinjiang Clique
-				tag = XIN
-				origin = this
-				state = s:STATE_TIANSHAN.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:XIN = { save_scope_as = scope_XIN }
-		}
-
-		if = {
-			limit = { exists = s:STATE_YUNNAN.region_state:CHI }
-			create_country = {  #Yunnan
-				tag = YUN
-				origin = this
-				state = s:STATE_YUNNAN.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:YUN = { save_scope_as = scope_YUN }
-		}
-
-		if = {
-			limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
-			create_country = { #Guizhou
-				tag = GUI
-				origin = this
-				state = s:STATE_GUIZHOU.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:GUI = { save_scope_as = scope_GUI }
-		}
-
-		if = {
-			limit = { exists = s:STATE_GUANGDONG.region_state:CHI }
-			create_country = { #Guangdong
-				tag = YUE
-				origin = this
-				state = s:STATE_GUANGDONG.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:YUE = { save_scope_as = scope_YUE }
-		}
-
-		if = {
-			limit = { exists = s:STATE_SICHUAN.region_state:CHI }
-			create_country = {
-				tag = SIH
-				origin = this
-				state = s:STATE_SICHUAN.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:SIH = { save_scope_as = scope_SIH }
-		}
-
-		if = {
-			limit = { exists = s:STATE_SHANDONG.region_state:CHI }
-			create_country = {
-				tag = SHA
-				origin = this
-				state = s:STATE_SHANDONG.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:SHA = { save_scope_as = scope_SHA }
-		}
-
-		if = {
-			limit = { exists = s:STATE_NINGXIA.region_state:CHI }
-			create_country = {
-				tag = XIB
-				origin = this
-				state = s:STATE_NINGXIA.region_state:CHI
-
-				on_created = {
-					warlord_setup_effect = yes
-					set_variable = warlord_state
-				}
-			}
-			c:XIB = { save_scope_as = scope_XIB }
-		}
-
-		#if = {
-		#	limit = { exists = s:STATE_ULIASTAI.region_state:CHI }
-		#	create_country = {
-		#		tag = MGL
-		#		origin = this
-		#		state = s:STATE_ULIASTAI.region_state:CHI
-
-		#		on_created = {
-		#			warlord_setup_effect = yes
-		#		}
-		#	}
-		#	c:MGL = { save_scope_as = scope_MGL }
-		#}
-
-		#if = {
-		#	limit = { exists = s:STATE_TUVA.region_state:CHI }
-		#	create_country = {
-		#		tag = TUV
-		#		origin = this
-		#		state = s:STATE_TUVA.region_state:CHI
-
-		#		on_created = {
-		#			warlord_setup_effect = yes
-		#		}
-		#	}
-		#	c:TUV = { save_scope_as = scope_TUV }
-		#}
-
-		every_subject_or_below = {
-			make_independent = yes
-		}
-
-		random_country = {
-			limit = {
-				has_variable = warlord_state
-				NOR = {
-					has_variable = var_warlord_two
-					has_variable = var_warlord_three
-					has_variable = var_warlord_four 
-				}
-			}
-			save_scope_as = scope_random_warlord_one
-			set_variable = var_warlord_one
-		}
-
-		random_country = {
-			limit = {
-				has_variable = warlord_state
-				NOR = {
-					has_variable = var_warlord_one
-					has_variable = var_warlord_three
-					has_variable = var_warlord_four
-				}
-			}
-			save_scope_as = scope_random_warlord_two
-			set_variable = var_warlord_two
-		}
-
-		random_country = {
-			limit = {
-				has_variable = warlord_state
-				NOR = {
-					has_variable = var_warlord_one
-					has_variable = var_warlord_two
-					has_variable = var_warlord_four
-				}
-			}
-			save_scope_as = scope_random_warlord_three
-			set_variable = var_warlord_three
-		}
-
-		random_country = {
-			limit = {
-				has_variable = warlord_state
-				NOR = {
-					has_variable = var_warlord_one
-					has_variable = var_warlord_two
-					has_variable = var_warlord_three
-				}
-			}
-			save_scope_as = scope_random_warlord_four
-			set_variable = var_warlord_four
-		}
-	}
-
-	option = {
-		name = warlord_china_events.100.ab
-		trigger = {
-			exists = scope:scope_random_warlord_one
-			is_player = yes
-		}
-		custom_tooltip = warlord_china_implosion_tt
-		while = {
-			limit = {
-				any_scope_state = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = { has_variable = warlord_state }
-					}
-				}
-			}
-			random_country = {
-				limit = {
-					has_variable = warlord_state
-					any_neighbouring_state = {
-						is_capital = no
-						owner = ROOT
-					}
-				}
-				save_scope_as = test_scope
-			}
-			random_scope_state = {
-				limit = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = scope:test_scope
-					}
-				}
-				set_state_owner = scope:test_scope
-			}
-			clear_saved_scope = test_scope
-		}
-		play_as = scope:scope_random_warlord_one
-	}
-
-	option = {
-		name = warlord_china_events.100.b
-		trigger = {
-			exists = scope:scope_random_warlord_two
-			is_player = yes
-		}
-		custom_tooltip = warlord_china_implosion_tt
-		while = {
-			limit = {
-				any_scope_state = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = { has_variable = warlord_state }
-					}
-				}
-			}
-			random_country = {
-				limit = {
-					has_variable = warlord_state
-					any_neighbouring_state = {
-						is_capital = no
-						owner = ROOT
-					}
-				}
-				save_scope_as = test_scope
-			}
-			random_scope_state = {
-				limit = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = scope:test_scope
-					}
-				}
-				set_state_owner = scope:test_scope
-			}
-			clear_saved_scope = test_scope
-		}
-		play_as = scope:scope_random_warlord_two
-	}
-
-	option = {
-		name = warlord_china_events.100.c
-		trigger = {
-			exists = scope:scope_random_warlord_three
-			is_player = yes
-		}
-		custom_tooltip = warlord_china_implosion_tt
-		while = {
-			limit = {
-				any_scope_state = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = { has_variable = warlord_state }
-					}
-				}
-			}
-			random_country = {
-				limit = {
-					has_variable = warlord_state
-					any_neighbouring_state = {
-						is_capital = no
-						owner = ROOT
-					}
-				}
-				save_scope_as = test_scope
-			}
-			random_scope_state = {
-				limit = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = scope:test_scope
-					}
-				}
-				set_state_owner = scope:test_scope
-			}
-			clear_saved_scope = test_scope
-		}
-		play_as = scope:scope_random_warlord_three
-	}
-
-	option = {
-		name = warlord_china_events.100.aa
-		trigger = {
-			exists = scope:scope_random_warlord_four
-			is_player = yes
-		}
-		custom_tooltip = warlord_china_implosion_tt
-		while = {
-			limit = {
-				any_scope_state = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = { has_variable = warlord_state }
-					}
-				}
-			}
-			random_country = {
-				limit = {
-					has_variable = warlord_state
-					any_neighbouring_state = {
-						is_capital = no
-						owner = ROOT
-					}
-				}
-				save_scope_as = test_scope
-			}
-			random_scope_state = {
-				limit = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = scope:test_scope
-					}
-				}
-				set_state_owner = scope:test_scope
-			}
-			clear_saved_scope = test_scope
-		}
-		play_as = scope:scope_random_warlord_four
-	}
-
-	option = {
-		default_option = yes
-		name = warlord_china_events.100.a
-		custom_tooltip = warlord_china_implosion_tt
-		while = {
-			limit = {
-				any_scope_state = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = { has_variable = warlord_state }
-					}
-				}
-			}
-			random_country = {
-				limit = {
-					has_variable = warlord_state
-					any_neighbouring_state = {
-						is_capital = no
-						owner = ROOT
-					}
-				}
-				save_scope_as = test_scope
-			}
-			random_scope_state = {
-				limit = {
-					is_capital = no
-					any_neighbouring_state = {
-						owner = scope:test_scope
-					}
-				}
-				set_state_owner = scope:test_scope
-			}
-			clear_saved_scope = test_scope
-		}
-	}
-}
+# warlord_china_events.100 삭제
 
 warlord_china_events.200 = { #Fragile Unity Victory
 	type = country_event
