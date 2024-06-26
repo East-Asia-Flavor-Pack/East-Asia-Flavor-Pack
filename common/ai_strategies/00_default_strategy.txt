@@ -4,6 +4,10 @@
 ai_strategy_default = {
 	icon = "gfx/interface/icons/ai_strategy_icons/placate_population.dds" # Never shown
 
+	# If this trigger evaluates to true for any active strategy, the AI will try to form a power bloc
+	# Empty trigger counts as evaluating false in this specific case
+	will_form_power_bloc = {}
+
 	# These are the tax levels the AI will try to stay within, though it can go above max tax level if in a financial emergency
 	# Using a different value in a strategy will override these values
 	desired_tax_level = medium
@@ -52,6 +56,313 @@ ai_strategy_default = {
 		value = 25 
 	}
 	
+	# Added to willingness to support a country in diplomatic plays	
+	# Using this value in other strategies will function additively
+	# root = supporting country doing the AI evaluation
+	# scope:country = country we're evaluating support for (either initiator or target)
+	# scope:enemy_country = the opposing side's leader
+	# scope:diplomatic_play_type = the type of diplomatic play
+	# scope:is_initiator = bool, set to true if evaluating support for initiator, false if target
+	# NOTE: You need to include a description when adding values here so there are correct tooltips, this is different from most of ai strategy data!
+	diplomatic_play_support = {
+		value = 0
+
+		if = {
+			limit = { 
+				exists = scope:is_initiator
+				scope:diplomatic_play_type = play_type:dp_secession
+				root = {
+					has_variable = risorgimento_unifying_stance
+				}
+				scope:country = {
+					OR = {
+						country_has_primary_culture = cu:north_italian
+						country_has_primary_culture = cu:south_italian
+					}
+				}
+				scope:enemy_country = {
+					NOR = {
+						country_has_primary_culture = cu:north_italian
+						country_has_primary_culture = cu:south_italian
+					}
+				}
+			}
+			add = {
+				value = 150
+				desc = "risorgimento_support"
+			}
+		}	
+
+		### The Great Game
+
+		if = { # Great Powers will tend to meddle if you directly declare war on enemy countries to easily subjugate them.
+			limit = {
+				OR = {
+					c:GBR ?= this
+					c:RUS ?= this
+				}
+				has_journal_entry = je_great_game_control
+				has_diplomatic_relevance = scope:enemy_country
+				scope:enemy_country = { # enemy_country is the rival Great Power
+					OR = {
+						c:GBR ?= this
+						c:RUS ?= this
+					}
+					NOT = {
+						this = root
+					}
+					has_journal_entry = je_great_game_control
+				}
+				scope:country = { # country is the country they're at war with
+					OR = {
+						capital.region = sr:region_persia
+						capital.region = sr:region_central_asia
+					}
+					NOT = {
+						is_subject_of = scope:enemy_country
+					}
+				}
+				OR = {
+					has_strategic_adjacency = scope:country
+					AND = {
+						has_port = yes 
+						navy_size >= 10
+						scope:country = { has_port = yes }
+					}
+				}
+			}
+			if = {
+				limit = {
+					OR = { # They will meddle if you seek anything that subjugates them or harms the balance of power.
+						scope:diplomatic_play_type = play_type:dp_make_protectorate
+						scope:diplomatic_play_type = play_type:dp_join_power_bloc
+						any_diplomatic_play = {
+							scope:country = {
+								is_diplomatic_play_enemy_of = scope:enemy_country
+							}
+							OR = {
+								has_play_goal = make_protectorate
+								has_play_goal = conquer_state
+								has_play_goal = join_power_bloc
+							}
+						}
+					}
+				}
+				add = {
+					value = 100
+					desc = "defending_against_great_game_rival"
+				}
+			}
+			else_if = {
+				limit = {
+					OR = { # They will meddle less if you just want to take states.
+						scope:diplomatic_play_type = play_type:dp_conquer_state
+						any_diplomatic_play = {
+							scope:country = {
+								is_diplomatic_play_enemy_of = scope:enemy_country
+							}
+							OR = {
+								has_play_goal = conquer_state
+							}
+						}
+					}
+				}
+				add = {
+					value = 50
+					desc = "defending_against_great_game_rival"
+				}
+			}
+			else = {
+				add = {
+					value = 25
+					desc = "defending_against_great_game_rival"
+				}
+			}
+		}
+
+		if = { # Britain will step in in favour of an Afghan country that it's supporting
+			limit = {
+				OR = {
+					c:GBR ?= this
+				}
+				has_variable = committed_to_afghanistan_assistance
+				scope:country = {
+					has_variable = AFG_appealed_to_GBR
+				}
+				scope:enemy_country = {
+					OR = {
+						country_has_primary_culture = cu:pashtun
+						country_has_primary_culture = cu:tajik
+					}
+				}
+			}
+			add = {
+				value = 50
+				desc = "support_for_afghan_claimant"
+			}
+		}
+		
+		if = { # Subjects of an overlord that has committed to assisting a claimant will be more inclined to help.
+			limit = {
+				overlord ?= {
+					has_variable = committed_to_afghanistan_assistance
+				}
+				OR = {
+					AND = {
+						exists = c:GBR
+						is_subject_of = c:GBR
+						scope:country = {
+							has_variable = AFG_appealed_to_GBR
+						}
+					}
+					AND = {
+						exists = c:RUS
+						is_subject_of = c:RUS
+						scope:country = {
+							has_variable = AFG_appealed_to_RUS
+						}
+					}
+				}
+				scope:enemy_country = {
+					OR = {
+						country_has_primary_culture = cu:pashtun
+						country_has_primary_culture = cu:tajik
+					}
+				}
+			}
+			add = {
+				value = 50
+				desc = "overlord_support_for_afghan_claimant"
+			}
+		}
+		
+		if = { # Britain will step in in favour of an Afghan country that it's supporting
+			limit = {
+				c:RUS ?= this
+				has_variable = committed_to_afghanistan_assistance
+				scope:country = {
+					has_variable = AFG_appealed_to_RUS
+				}
+				scope:enemy_country = {
+					OR = {
+						country_has_primary_culture = cu:pashtun
+						country_has_primary_culture = cu:tajik
+					}
+				}
+			}
+			add = {
+				value = 50
+				desc = "support_for_afghan_claimant"
+			}
+		}
+
+		if = { # Donghak Rebellion - Japanese Behaviours - Pro-Government
+			limit = {
+				c:JAP ?= this
+				has_journal_entry = je_korean_rebellion
+				has_variable = sided_with_korean_gov
+				scope:country = {
+					country_has_primary_culture = cu:korean
+					is_revolutionary = no
+				}
+			}
+			add = {
+				value = 100
+				desc = "committed_to_upholding_korean_government"
+			}
+		}
+
+		if = { # Donghak Rebellion - Japanese Behaviours - Anti-Government
+			limit = {
+				c:JAP ?= this
+				has_journal_entry = je_korean_rebellion
+				has_variable = sided_with_korean_rebels
+				scope:country = {
+					country_has_primary_culture = cu:korean
+					is_revolutionary = yes
+				}
+			}
+			add = {
+				value = 100
+				desc = "committed_to_overthrowing_korean_government"
+			}
+		}
+
+		if = { # Modernised Japan and Russia will defend Korea from one another
+			limit = {
+				c:RUS ?= this
+				scope:country = {
+					country_has_primary_culture = cu:korean
+				}
+				scope:enemy_country = {
+					country_has_primary_culture = cu:japanese
+				}
+			}
+			add = {
+				value = 50
+				desc = "defending_korea"
+			}
+		}
+		
+		if = { # Modernised Japan and Russia will defend Korea from one another
+			limit = {
+				c:JAP ?= this
+				NOT = {
+					has_law = law_type:law_isolationism
+					has_law = law_type:law_closed_borders
+				}
+				scope:country = {
+					country_has_primary_culture = cu:korean
+				}
+				scope:enemy_country = {
+					country_has_primary_culture = cu:russian
+				}
+			}
+			add = {
+				value = 50
+				desc = "defending_korea"
+			}
+		}
+		
+		if = { # Qing and other Central Asian Khanates will be more willing help a player Kenesary Khan
+			limit = {
+				scope:country = {
+					c:KAZ ?= this
+					is_player = yes
+				}
+				has_strategic_adjacency = scope:country
+				OR = {
+					c:CHI ?= this
+					capital.region = sr:region_central_asia
+				}
+				scope:enemy_country = {
+					country_has_primary_culture = cu:russian
+				}
+			}
+			add = {
+				value = 50
+				desc = "supporting_kenesary"
+			}
+		}
+		
+		if = { # Recognition of Kenesary
+			limit = {
+				scope:country = {
+					c:KAZ ?= this
+				}
+				has_strategic_adjacency = scope:country
+				has_variable = kenesary_recognizer_var
+				scope:enemy_country = {
+					country_has_primary_culture = cu:russian
+				}
+			}
+			add = {
+				value = 100
+				desc = "recognised_kenesary"
+			}
+		}
+	}	
+
 	# Added to base neutrality in diplomatic plays	
 	# Using this value in other strategies will function additively
 	diplomatic_play_neutrality = {
@@ -66,11 +377,14 @@ ai_strategy_default = {
 		if = { # Isolationist Japan should tend to back down against market opening plays
 			limit = {
 				exists = c:JAP
-				THIS = c:JAP
+				this = c:JAP
 				has_law = law_type:law_isolationism 
 				NOT = { has_variable = japan_forced_to_open_market }
 				scope:diplomatic_play = { 
-					has_play_goal = open_market
+					OR = {
+						has_play_goal = open_market
+						has_play_goal = foreign_investment_rights
+					}				
 				}
 			}
 			add = -75
@@ -78,8 +392,7 @@ ai_strategy_default = {
 
 		if = { #Taiping should never surrender against China.
 			limit = {
-				exists = c:TPG
-				THIS = c:TPG
+				c:TPG ?= THIS
 				exists = c:CHI
 				is_diplomatic_play_enemy_of = c:CHI
 			}
@@ -105,29 +418,28 @@ ai_strategy_default = {
 		if = { #Caucasian states & Kazakhstan should never surrender against Russia
 			limit = {
 				OR = {
-					AND = {		
-						exists = c:CIR
-						THIS = c:CIR	
-					}
-					AND = {		
-						exists = c:CHC
-						THIS = c:CHC	
-					}
-					AND = {
-						exists = c:KAZ
-						THIS = c:KAZ
-					}
+					c:CIR ?= THIS
+					c:CHC ?= THIS
+					c:KAZ ?= THIS
 				}
 				exists = c:RUS
 				is_diplomatic_play_enemy_of = c:RUS
 			}
 			add = 1000
 		}
+
+		if = { #Bribery
+			limit = {
+				has_modifier = modifier_central_asian_bribe_payments
+				exists = c:RUS
+				is_diplomatic_play_enemy_of = c:RUS
+			}
+			add = -25
+		}
 		
 		if = { #Likewise for Mughals.
 			limit = {
-				exists = c:MUG
-				THIS = c:MUG
+				c:MUG ?= THIS
 				exists = c:BIC
 				is_diplomatic_play_enemy_of = c:BIC
 			}
@@ -198,9 +510,11 @@ ai_strategy_default = {
 							state_region = s:STATE_CALIFORNIA
 							state_region = s:STATE_NEVADA
 							state_region = s:STATE_UTAH
+							state_region = s:STATE_COLORADO
 							state_region = s:STATE_ARIZONA
 							state_region = s:STATE_NEW_MEXICO
 							state_region = s:STATE_TEXAS
+							state_region = s:STATE_KANSAS
 						}
 					}
 				}
@@ -346,17 +660,6 @@ ai_strategy_default = {
 			add = 15
 		}
 		
-		# Rebellious AI wants to use the obligation to break free
-		if = {
-			limit = {
-				has_attitude = {
-					who = scope:target_country
-					attitude = rebellious
-				}				
-			}
-			add = 30 
-		}
-		
 		# Having an obligation can stop a country from attacking us
 		if = {
 			limit = {
@@ -392,22 +695,6 @@ ai_strategy_default = {
 			}
 			add = 5
 		}	
-
-		# Countries with Economic Imperialism is always looking to bring more countries into their market
-		if = {
-			limit = {
-				has_strategy = ai_strategy_economic_imperialism
-				scope:target_country.country_rank < country_rank
-				NOR = {
-					scope:target_country = { is_subject = yes }
-					has_diplomatic_pact = {
-						who = scope:target_country
-						type = customs_union
-					}					
-				}
-			}		
-			add = 5
-		}
 	
 		multiply = {
 			value = "scope:target_country.relations:root"
@@ -433,7 +720,6 @@ ai_strategy_default = {
 			max = 1.5
 		}
 		
-		
 		if = { # If AI doesn't care about them at all, they don't want an obligation
 			limit = {
 				has_attitude = {
@@ -451,6 +737,11 @@ ai_strategy_default = {
 				}						
 			}
 			multiply = 0.25
+		}			
+		
+		if = { # Overlords care a bit more about Obligations from their Subjects, since they can use them to keep them in check
+			limit = { scope:target_country = { is_subject_of = root } }
+			add = 10
 		}			
 
 		min = 0
@@ -654,17 +945,17 @@ ai_strategy_default = {
 			if = {
 				limit = {
 					has_journal_entry = je_consolidate_colonial_rule
-					scope:target_state = {
-						OR = {
-							state_region = s:STATE_BURMA
-							state_region = s:STATE_KACHIN
-							state_region = s:STATE_SHAN_STATES
-							state_region = s:STATE_SINDH
-							state_region = s:STATE_PUNJAB
-							state_region = s:STATE_KASHMIR
-							state_region = s:STATE_PASHTUNISTAN
-							state_region = s:STATE_BALUCHISTAN
-							state_region = s:STATE_HIMALAYAS
+					scope:target_country = {
+						NOT = { is_subject_of = ROOT }
+						any_scope_state = {
+							OR = {
+								region = sr:region_north_india
+								region = sr:region_south_india
+								region = sr:region_himalayas
+								state_region = s:STATE_BURMA
+								state_region = s:STATE_KACHIN
+								state_region = s:STATE_SHAN_STATES
+								state_region = s:STATE_PEGU
 						}
 					}
 				}
@@ -714,12 +1005,38 @@ ai_strategy_default = {
 
 			if = {
 				limit = {
+					has_journal_entry = je_unify_afghanistan
+					scope:target_state = {
+						is_homeland_of_country_cultures = root
+					}
+				}
+				add = 75
+			}
+
+			if = {
+				limit = {
+					has_journal_entry = je_eastern_frontier
+					scope:target_state = {
+						OR = {
+							region = sr:region_persia
+							region = sr:region_central_asia
+							region = sr:region_north_india
+						}
+						has_claim_by = ROOT
+					}
+				}
+				add = 75
+			}
+
+			if = {
+				limit = {
 					has_journal_entry = je_manifest_destiny_mexico
 					scope:target_state = {
 						OR = {
 							state_region = s:STATE_CALIFORNIA
 							state_region = s:STATE_NEVADA
 							state_region = s:STATE_UTAH
+							state_region = s:STATE_COLORADO
 							state_region = s:STATE_ARIZONA
 							state_region = s:STATE_NEW_MEXICO
 							state_region = s:STATE_TEXAS
@@ -752,8 +1069,8 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-
-			if = {
+#여기까지 함
+			if = {   
 				limit = {
 					has_journal_entry = je_the_eastern_border
 					scope:target_state = {
