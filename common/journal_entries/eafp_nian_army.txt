@@ -74,16 +74,18 @@
 		trigger_event = { id = nian_army.4 days = 1 }
 	}
 
+	scripted_progress_bar = nian_army_progress_bar
+
 	complete = {
 		custom_tooltip = {
 			text = je_nian_army_complete
-			exists = var:nian_army_progress_var
-			var:nian_army_progress_var < 0
+			scope:journal_entry = { 
+				"scripted_bar_progress(nian_army_progress_bar)" <= 0
+			}
 		}
 	}
 
 	on_complete = {
-		remove_variable = nian_army_progress_var
 		remove_variable = nian_army_progress_var_d
 		trigger_event = { id = nian_army.2 popup = yes }
 	}
@@ -91,13 +93,13 @@
 	fail = {
 		custom_tooltip = {
 			text = je_nian_army_fail
-			exists = var:nian_army_progress_var
-			var:nian_army_progress_var >= 100
+			scope:journal_entry = { 
+				"scripted_bar_progress(nian_army_progress_bar)" >= 100
+			}
 		}
 	}
 
 	on_fail = {
-		remove_variable = nian_army_progress_var
 		remove_variable = nian_army_progress_var_d
 		trigger_event = { id = nian_army.3 popup = yes }
 	}
@@ -110,7 +112,6 @@
 	}
 
 	on_invalid = {
-		remove_variable = nian_army_progress_var
 	}
 
 	modifiers_while_active = {
@@ -225,15 +226,5 @@
 
 	weight = 8000
 
-	current_value = {
-		value = var:nian_army_progress_var
-	}
-
-	goal_add_value = {
-		add = 100
-	}
-
 	# status_desc = je_nian_army_desc
-
-	progressbar = yes
 }
