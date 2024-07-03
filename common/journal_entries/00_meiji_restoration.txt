@@ -55,8 +55,8 @@ je_meiji_restoration = {
 		effect = {
 			if = {
 				limit = {
+					government_legitimacy >= 50
 					ig:ig_landowners = {
-						is_powerful = no
 						is_in_government = no
 					}
 					has_insurrectionary_interest_groups = no
@@ -87,9 +87,9 @@ je_meiji_restoration = {
 			custom_tooltip = je_meiji_restoration_goal
 		}
 		ig:ig_landowners = {
-			is_powerful = no
 			is_in_government = no
 		}
+		government_legitimacy >= 50
 		has_insurrectionary_interest_groups = no
 		is_at_war = no
 		owns_entire_state_region = STATE_KANTO
@@ -97,14 +97,36 @@ je_meiji_restoration = {
 
 	on_complete = {
 		set_variable = meiji_restoration_complete
+		if = {
+			limit = { has_modifier = shogun_ig_forced_to_open_market }
+			remove_modifier = shogun_ig_forced_to_open_market
+		}			
 		trigger_event = {
 			id = meiji.1
 		}
 	}
+	
+	on_fail = {
+		if = {
+			limit = { has_modifier = shogun_ig_forced_to_open_market }
+			remove_modifier = shogun_ig_forced_to_open_market
+		}
+		if = {
+			limit = { has_law = law_type:law_monarchy }		
+			add_modifier = {
+				name = honorable_restoration_failed
+				months = very_long_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
 
 	fail = {
-		NOT = {
-			has_law = law_type:law_monarchy
+		OR = {
+			ig:ig_landowners = {
+				is_in_government = yes
+			}
+			NOT = { has_law = law_type:law_monarchy }			
 		}
 	}
 
@@ -222,7 +244,6 @@ je_meiji_army = {
 	complete = {
 		NOT = { has_law = law_type:law_serfdom }
 		ig:ig_armed_forces = {
-			is_powerful = no
 			is_in_government = no
 		}
 		has_technology_researched = napoleonic_warfare
