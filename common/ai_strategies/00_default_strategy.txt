@@ -36,6 +36,21 @@ ai_strategy_default = {
 	# Using a different value in a strategy will override this value
 	revolution_aversion = {
 		value = 5 
+
+		# Ottomans should avoid getting into revolutions before they deal with Egypt
+		if = {
+			limit = { 
+				has_journal_entry = je_sick_man_syria 
+				game_date < 1845.1.1
+			}
+			add = 100
+		}	
+		
+		# Revolution aversion for July Monarchy
+		if = {
+			limit = { has_journal_entry = je_divided_monarchists }
+			add = 100
+		}
 	}
 	
 	# If base chance for law to pass is below this, don't enact it
@@ -497,6 +512,24 @@ ai_strategy_default = {
 				desc = "recognised_kenesary"
 			}
 		}
+
+		if = { # Chinese unification warlord coalitions
+			limit = {
+				has_variable = warlord_state
+				scope:country = {
+					has_variable = warlord_state
+				}
+				scope:enemy_country = { 
+					has_journal_entry = je_reunify_china
+					has_variable = warlord_state
+					this.country_rank >= scope:country.country_rank
+			 	}
+			}
+			add = {
+				value = 25
+				desc = "alignment_politics"
+			}
+		}
 	}	
 
 	# Added to base neutrality in diplomatic plays	
@@ -518,6 +551,27 @@ ai_strategy_default = {
 	# Using this value in other strategies will function additively
 	diplomatic_play_boldness = {
 		value = 50
+
+		# Great Powers with the appropriate flags should get involved in Egypt vs Ottomans
+		if = {
+			limit = {
+				OR = {
+					has_variable = veiled_protectorate_support_ottomans
+					has_variable = veiled_protectorate_support_egypt
+				}	
+					
+				OR = {
+					scope:diplomatic_play.initiator = { c:TUR ?= this }
+					scope:diplomatic_play.target = { c:TUR ?= this }
+				}
+				OR = {
+					scope:diplomatic_play.initiator = { c:EGY ?= this }
+					scope:diplomatic_play.target = { c:EGY ?= this }
+				}
+			}
+			
+			add = 100
+		}
 		
 		if = { # Isolationist Japan should tend to back down against market opening plays
 			limit = {
@@ -1024,7 +1078,7 @@ ai_strategy_default = {
 						OR = {
 							scope:target_state = { 
 								is_split_state = yes 
-								region = { 
+								state_region = { 
 									any_scope_state = { owner = ROOT }
 								}
 							}
@@ -1100,7 +1154,7 @@ ai_strategy_default = {
 							OR = {
 								region = sr:region_north_india
 								region = sr:region_south_india
-								region = sr:region_himalayas
+								state_region = s:STATE_HIMALAYAS
 								state_region = s:STATE_BURMA
 								state_region = s:STATE_KACHIN
 								state_region = s:STATE_SHAN_STATES
@@ -1524,7 +1578,7 @@ ai_strategy_default = {
 			limit = {	
 				scope:target_state = { 
 					is_treaty_port = yes 
-					region = { 
+					state_region = { 
 						any_scope_state = { 
 							OR = {
 								owner = { is_subject_of = ROOT }
@@ -1628,35 +1682,7 @@ ai_strategy_default = {
 			limit = {
 				country_rank >= rank_value:great_power
 				exists = c:CHI
-				OR = {
-					sr:region_north_china = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { this = root }
-								country_is_in_europe = yes
-							}
-						}
-					}
-					sr:region_south_china = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { this = root }
-								country_is_in_europe = yes
-							}
-						}
-					}
-					sr:region_manchuria = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { this = root }
-								country_is_in_europe = yes
-							}
-						}
-					}
-				}
+				should_carve_up_china = yes
 				scope:target_state = {
 					OR = {
 						region = sr:region_north_china
@@ -1665,50 +1691,7 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 25
-		}
-		else_if = {
-			limit = {
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				OR = {
-					sr:region_north_china = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { THIS = ROOT }
-								country_rank >= rank_value:great_power
-							}
-						}
-					}
-					sr:region_south_china = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { THIS = ROOT }
-								country_rank >= rank_value:great_power
-							}
-						}
-					}
-					sr:region_manchuria = {
-						any_scope_state = {
-							is_treaty_port = yes
-							owner = {
-								NOT = { THIS = ROOT }
-								country_rank >= rank_value:great_power
-							}
-						}
-					}
-				}
-				scope:target_state = {
-					OR = {
-						region = sr:region_north_china
-						region = sr:region_south_china
-						region = sr:region_manchuria
-					}
-				}
-			}
-			add = 75
+			add = 100
 		}
 		
 		if = { # 추가, 북독일계 열강은 산둥반도에
@@ -2065,12 +2048,11 @@ ai_strategy_default = {
 			}	
 		}
 
-		# AI should open up Japan, not subjugate them
+		# AI should open up large isolationist powers, not subjugate them
 		if = {
 			limit = {
 				has_strategy = ai_strategy_economic_imperialism
 				scope:target_country = { 
-					c:JAP ?= this		
 					has_law = law_type:law_isolationism
 					gdp >= 5000000
 				} 			
@@ -2592,7 +2574,7 @@ ai_strategy_default = {
 	# How likely is the AI to start a diplomatic play against another country if their attitude allows for it
 	# Using this value in other strategies will function additively
 	aggression = {
-		value = 0
+		value = 0.5
 		
 		#### 영국이 아편전쟁 말고 딴짓 하지 말게
 		if = {
@@ -2646,7 +2628,7 @@ ai_strategy_default = {
 				scope:target_country = { is_country_type = unrecognized }
 			}
 			
-			add = 1
+			add = 0.5
 		}
 
 		# Higher aggression against subject/overlord if domineering or rebellious
@@ -2674,7 +2656,7 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 25
+			add = 100
 		}		
 		
 		# Opium wars aggressor should be very, very aggressive against target if they're banning opium
@@ -2740,11 +2722,9 @@ ai_strategy_default = {
 
 		if = { #Carving up China
 			limit = {
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				any_country = {
-					NOT = { THIS = ROOT }
-					country_is_in_europe = yes
+				should_carve_up_china = yes
+				scope:target_country = {
+					is_country_type = unrecognized
 					any_scope_state = {
 						OR = {
 							region = sr:region_north_china
@@ -2752,68 +2732,26 @@ ai_strategy_default = {
 							region = sr:region_manchuria
 						}
 						is_treaty_port = yes
-					}
-				}
-				scope:target_country = {
-					c:CHI ?= this
+					}					
 				}
 			}
-			add = 15
-		}
-		else_if = {
-			limit = {
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				any_country = {
-					NOT = { THIS = ROOT }
-					country_rank >= rank_value:great_power
-					any_scope_state = {
-						OR = {
-							region = sr:region_north_china
-							region = sr:region_south_china
-							region = sr:region_manchuria
-						}
-						is_treaty_port = yes
-					}
-				}
-				scope:target_country = {
-					c:CHI ?= this
-				}
-			}
-			add = 35
+			add = 5
 		}
 
 		# Ottomans should be very aggressive against owners of Syria and Egypt when they have the relevant JE's
 		if = {
 			limit = {
 				OR = {
-					AND = {
-						has_journal_entry = je_sick_man_syria
-						scope:target_country = {
-							OR = {
-								owns_entire_state_region = STATE_ALEPPO
-								owns_entire_state_region = STATE_SYRIA
-								owns_entire_state_region = STATE_LEBANON
-								owns_entire_state_region = STATE_PALESTINE
-								owns_entire_state_region = STATE_TRANSJORDAN
-								owns_entire_state_region = STATE_ADANA
-							}
-						}
-					}
-					AND = {
-						has_journal_entry = je_sick_man_egypt
-						scope:target_country = {
-							OR = {
-								owns_entire_state_region = STATE_SINAI
-								owns_entire_state_region = STATE_UPPER_EGYPT
-								owns_entire_state_region = STATE_MIDDLE_EGYPT
-								owns_entire_state_region = STATE_LOWER_EGYPT
-							}
-						}
-					}
+					has_journal_entry = je_sick_man_syria
+					has_journal_entry = je_sick_man_egypt
+					has_journal_entry = je_veiled_protectorate
+				}
+				exists = c:EGY
+				scope:target_country = {
+					THIS = c:EGY
 				}
 			}
-			add = 25
+			add = 100
 		}
 
 		# USA should be extremely aggressive against owners of their Manifest Destiny states
@@ -2836,7 +2774,7 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 25
+			add = 5
 		}
 
 		# Extra french aggression for Haiti renouncing debt payments
@@ -2869,7 +2807,7 @@ ai_strategy_default = {
 					country_has_primary_culture = cu:ecuadorian
 				}
 			}
-			add = 25
+			add = 5
 		}
 
 		# Even more aggression if you have the War of the Confederation JE
@@ -2881,22 +2819,6 @@ ai_strategy_default = {
 				}
 			}
 			add = 75
-		}
-		
-		# Veiled Protectorate
-		if = {
-			limit = {
-				OR = {
-					has_journal_entry = je_sick_man_syria
-					has_journal_entry = je_sick_man_egypt
-					has_journal_entry = je_veiled_protectorate
-				}
-				exists = c:EGY
-				scope:target_country = {
-					THIS = c:EGY
-				}
-			}
-			add = 5
 		}
 
 		# East India Company vs its neighbors
@@ -2910,7 +2832,7 @@ ai_strategy_default = {
 						OR = {
 							region = sr:region_north_india
 							region = sr:region_south_india
-							region = sr:region_himalayas
+							state_region = s:STATE_HIMALAYAS
 							state_region = s:STATE_BURMA
 							state_region = s:STATE_KACHIN
 							state_region = s:STATE_SHAN_STATES
@@ -2934,7 +2856,7 @@ ai_strategy_default = {
 						OR = {
 							region = sr:region_north_india
 							region = sr:region_south_india
-							region = sr:region_himalayas
+							state_region = s:STATE_HIMALAYAS
 							state_region = s:STATE_BURMA
 							state_region = s:STATE_KACHIN
 							state_region = s:STATE_SHAN_STATES
@@ -3057,7 +2979,7 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 5
+			add = 1
 		}
 		
 		if = {
@@ -3067,16 +2989,7 @@ ai_strategy_default = {
 					has_radical_leftist_economy = yes				
 				}				
 			}
-			add = 5
-		}		
-		
-		if = { # The EIC/Raj should never go against its suzerain, as doing so is suicide
-			limit = {
-				exists = c:BIC
-				this = c:BIC
-				is_subject_of = scope:target_country
-			}
-			multiply = 0.0
+			add = 1
 		}
 		
 		if = { #Indian suzerain will be aggressive against Russia
@@ -3121,14 +3034,6 @@ ai_strategy_default = {
 			add = 10
 		}
 		
-        # Neutral Switzerland
-        if = {
-            limit = {
-                exists = c:SWI
-				this = c:SWI
-            }
-            add = -25
-        }
         # France should very aggressively go for Algeria.
 		if = {
 			limit = {
@@ -3145,8 +3050,9 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 10
+			add = 5
 		}
+
 		# Russia should very aggressively go for the Caucasus if it's still a great power.
 		if = {
 			limit = {
@@ -3173,7 +3079,7 @@ ai_strategy_default = {
 					has_global_variable = caucasus_failure_var
 				}
 			}
-			add = 100
+			add = 10
 		}
 
 		if = {
@@ -3204,23 +3110,8 @@ ai_strategy_default = {
 					}
 				}
 			}
-			add = 50
+			add = 5
 		}
-
-        # Isolationist Paraguay under Francia should not go awol.
-        if = {
-            limit = {
-            	has_journal_entry = je_francocracia
-            }
-            multiply = 0.1
-        }
-        # Paraguay is less likely to be aggressive when modernizing.
-        if = {
-            limit = {
-            	has_journal_entry = je_modernizing_paraguay
-            }
-			multiply = 0.25
-        }
 		
         # Paraguay should be highly aggressive while they have the war JE.
         if = {
@@ -3394,6 +3285,39 @@ ai_strategy_default = {
 			}
 			add = 35
 		}
+
+		# Neutral Switzerland
+        if = {
+            limit = {
+				exists = c:SWI
+				this = c:SWI
+            }
+            multiply = 0.1
+        }	
+
+        # Isolationist Paraguay under Francia should not go awol.
+        if = {
+            limit = {
+            	has_journal_entry = je_francocracia
+            }
+            multiply = 0.1
+        }
+        # Paraguay is less likely to be aggressive when modernizing.
+        if = {
+            limit = {
+            	has_journal_entry = je_modernizing_paraguay
+            }
+			multiply = 0.25
+        }
+		
+		if = { # The EIC/Raj should never go against its suzerain, as doing so is suicide
+			limit = {
+				exists = c:BIC
+				this = c:BIC
+				is_subject_of = scope:target_country
+			}
+			multiply = 0.0
+		}
 	}
 	
 	# How much construction output should the AI aim for
@@ -3403,13 +3327,13 @@ ai_strategy_default = {
 
 		add = {
 			value = investment_pool_income
-			divide = 750 # 1 construction output per this much into the investment pool				
+			divide = 500 # 1 construction output per this much into the investment pool				
 		}
 		
 		add = {
 			value = income
 					
-			divide = 3000 # 1 construction output per this much income
+			divide = 2500 # 1 construction output per this much income
 
 			min = 0
 		}		
@@ -3513,37 +3437,78 @@ ai_strategy_default = {
 			divide = 1000000 # 1 level of barracks per 1 million unincorporated population	
 		}
 		
-		max = 250 # No more than 250 from population
+		# Coastal population reduces spending on army as that spending is needed for navy too
+		subtract = {
+			value = cached_ai_incorporated_coastal_population
+			divide = 1000000 
+		}		
+		
+		subtract = {
+			value = cached_ai_unincorporated_coastal_population
+			divide = 4000000 
+		}				
+		
+		# Extra army size from rank
+		if = {
+			limit = { country_rank = rank_value:great_power }
+			add = 25
+		}
+		if = {
+			limit = { country_rank = rank_value:major_power }
+			add = 10
+		}
+
+		save_temporary_value_as = pre_overseas_empire_value
+	
+		# Countries with a huge overseas subject population should focus more on navy
+		subtract = {
+			value = cached_ai_overseas_subject_population
+			divide = 10000000
+			max = {
+				value = scope:pre_overseas_empire_value
+				divide = 2
+			}
+		}			
+		
+		max = 200 # No more than 200 from population & rank
 
 		add = {
-			value = gdp
-			divide = 500000 # 1 level of barracks per 500k gdp
+			value = income
+			multiply = {
+				value = 1
+				subtract = { # Coastal population reduces spending on army as that spending is needed for navy too
+					value = cached_ai_incorporated_coastal_population
+					divide = cached_ai_incorporated_population
+					divide = 2
+				}		
+			}
+			divide = 2000 # 1 level of barracks per 2k income					
 		}				
 		
 		# More advanced standing armies are expensive and should be smaller relative to population
 		if = {
 			limit = { has_technology_researched = line_infantry }
-			multiply = 0.9
+			multiply = 0.8
 		}
 
 		if = {
 			limit = { has_technology_researched = general_staff }
-			multiply = 0.9
+			multiply = 0.8
 		}
 
 		if = {
 			limit = { has_technology_researched = trench_works }
-			multiply = 0.9
+			multiply = 0.8
 		}
 
 		if = {
 			limit = { has_technology_researched = nco_training }
-			multiply = 0.9
+			multiply = 0.8
 		}
 		
 		if = {
 			limit = { has_technology_researched = mobile_armor }
-			multiply = 0.9
+			multiply = 0.8
 		}	
 
 		# Factor in strategies
@@ -3562,7 +3527,7 @@ ai_strategy_default = {
 
 		if = {
 			limit = { has_law = law_type:law_national_militia }
-			multiply = 0.25
+			multiply = 0.33
 		}			
 
 		if = {
@@ -3589,48 +3554,48 @@ ai_strategy_default = {
 	wanted_navy_size = {
 		value = 0
 	
-		# 1 level of naval base per 350k coastal incorporated population							
+		# 1 level of naval base per 500k coastal incorporated population							
 		add = {
 			value = cached_ai_incorporated_coastal_population
-			divide = 350000 
+			divide = 500000 
 		}
 
-		# 1 level of naval base per 1 million coastal unincorporated population					
+		# 1 level of naval base per 2 million coastal unincorporated population					
 		add = {
 			value = cached_ai_unincorporated_coastal_population
-			divide = 1000000 
+			divide = 2000000 
 		}
 
-		# 1 level of naval base per 1 million population in direct overseas subjects	
+		# 1 level of naval base per 2 million population in direct overseas subjects	
 		add = {
 			value = cached_ai_overseas_subject_population
-			divide = 1000000 
+			divide = 2000000 
 		}	
 
-		max = 250 # No more than 250 from population		
+		max = 100 # No more than 100 from population		
 
-		# 1 level of naval base per 1 million gdp, multiplied by relative incorporated coastal population to total incorporated population
+		# 1 level of naval base per 3k income, multiplied by relative incorporated coastal population to total incorporated population
 		add = {
-			value = gdp
+			value = income
 			divide = cached_ai_incorporated_population
 			multiply = cached_ai_incorporated_coastal_population
-			divide = 1000000 
+			divide = 3000
 		}			
 		
 		# More advanced navies are expensive and should be smaller relative to population
 		if = {
 			limit = { has_technology_researched = ironclad_tech }
-			multiply = 0.8
+			multiply = 0.75
 		}
 
 		if = {
 			limit = { has_technology_researched = dreadnought }
-			multiply = 0.8
+			multiply = 0.75
 		}
 
 		if = {
 			limit = { has_technology_researched = battleship_tech }
-			multiply = 0.8
+			multiply = 0.75
 		}
 
 		# Factor in strategies
@@ -3764,22 +3729,18 @@ ai_strategy_default = {
 	# scope:military_formation = military formation
 	# Using this value in other strategies will function additively
 	conscript_battalion_ratio = {
-		value = 0
+		value = 0.5
 		if = {
 			limit = { has_law = law_type:law_national_militia }
-			add = 5
-		}
-		else_if = {
-			limit = { has_law = law_type:law_professional_army }
-			add = 1
+			add = 2.5
 		}			
 		else_if = {
 			limit = { has_law = law_type:law_peasant_levies }
-			add = 1.5
+			add = 0.5
 		}	
 		else_if = {
 			limit = { has_law = law_type:law_mass_conscription }
-			add = 2
+			add = 0.5
 		}	
 
 		if = {
@@ -4007,11 +3968,16 @@ ai_strategy_default = {
 	strategic_region_scores = {
 		region_anatolia = {
 			if = {
-				limit = { # Great Powers care about Egyptian-Ottoman conflict in Arabia/Anatolia early game
-					exists = c:TUR
-					c:TUR = { has_journal_entry = je_sick_man_syria }
-					country_rank = rank_value:great_power
-					navy_size >= 50
+				limit = { # Certain Great Powers care about Egyptian-Ottoman conflict in the early game
+					OR = {
+						has_variable = veiled_protectorate_support_ottomans
+						has_variable = veiled_protectorate_support_egypt
+					}
+					OR = {
+						navy_size >= 25
+						is_adjacent_to_country = c:TUR
+						is_adjacent_to_country = c:EGY
+					}					
 				}
 				add = 1000
 			}
@@ -4029,17 +3995,17 @@ ai_strategy_default = {
 		}	
 		region_arabic = {
 			if = {
-				limit = { # Great Powers care about Egyptian-Ottoman conflict in Arabia/Anatolia early game
-				exists = c:TUR
-				exists = c:EGY
-				c:TUR = { has_journal_entry = je_sick_man_syria }
-				country_rank = rank_value:great_power
-				OR = {
-					navy_size >= 25
-					is_adjacent_to_country = c:TUR
-					is_adjacent_to_country = c:EGY
+				limit = { # Certain Great Powers care about Egyptian-Ottoman conflict in the early game
+					OR = {
+						has_variable = veiled_protectorate_support_ottomans
+						has_variable = veiled_protectorate_support_egypt
+					}
+					OR = {
+						navy_size >= 25
+						is_adjacent_to_country = c:TUR
+						is_adjacent_to_country = c:EGY
+					}					
 				}
-			}
 				add = 1000
 			}
 		}
@@ -4076,6 +4042,20 @@ ai_strategy_default = {
 			}				
 		}				
 		region_nile_basin = {
+			if = {
+				limit = { # Certain Great Powers care about Egyptian-Ottoman conflict in the early game
+					OR = {
+						has_variable = veiled_protectorate_support_ottomans
+						has_variable = veiled_protectorate_support_egypt
+					}
+					OR = {
+						navy_size >= 25
+						is_adjacent_to_country = c:TUR
+						is_adjacent_to_country = c:EGY
+					}					
+				}
+				add = 1000
+			}		
 			if = {
 				limit = {
 					OR = {
@@ -4221,6 +4201,20 @@ ai_strategy_default = {
 			}
 		}
 		region_balkans = {
+			if = {
+				limit = { # Certain Great Powers care about Egyptian-Ottoman conflict in the early game
+					OR = {
+						has_variable = veiled_protectorate_support_ottomans
+						has_variable = veiled_protectorate_support_egypt
+					}
+					OR = {
+						navy_size >= 25
+						is_adjacent_to_country = c:TUR
+						is_adjacent_to_country = c:EGY
+					}					
+				}
+				add = 1000
+			}		
 			if = {
 				limit = {
 					country_is_in_europe = yes
@@ -4490,7 +4484,7 @@ ai_strategy_default = {
 			# Large isolationist countries should ignore the world
 			if = {
 				limit = {
-					c:JAP ?= this
+					has_law = law_type:law_isolationism
 					gdp >= 5000000		
 				}
 				add = 10000
@@ -4763,7 +4757,7 @@ ai_strategy_default = {
 			# Don't befriend large isolationist powers
 			if = {
 				limit = { 			
-					NAND = {
+					scope:target_country = {
 						has_law = law_type:law_isolationism
 						gdp >= 5000000		
 					}	
