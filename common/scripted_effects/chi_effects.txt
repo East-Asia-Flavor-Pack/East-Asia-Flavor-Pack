@@ -291,3 +291,625 @@ chi_empire_of_chimera_decline = {
 		}
 	}
 }
+
+china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
+	# 호남 군벌
+	if = {
+		limit = { exists = s:STATE_HUNAN.region_state:ROC }
+		create_country = {
+			tag = HNA
+			origin = this
+			state = s:STATE_HUNAN.region_state:ROC
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:HNA = { save_scope_as = scope_HNA }
+	}
+	# 광서 군벌
+	if = {
+		limit = { exists = s:STATE_GUANGXI.region_state:ROC }
+		create_country = {
+			tag = GNG
+			origin = this
+			state = s:STATE_GUANGXI.region_state:ROC
+			on_created = {
+				# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+				if = {
+					limit = { exists = c:HNA }
+					s:STATE_GUANGXI = {
+						set_owner_of_provinces = {
+							country = c:HNA
+							provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+						}
+					}
+				}
+				else = {
+					s:STATE_GUANGXI = {
+						set_owner_of_provinces = {
+							country = ROOT
+							provinces = { x432FE3 xFF1286 xB0B0E0 x6EB824 x505080 xD8799B x368CDE x9E70F2 x135B0F xF4850E x0359FB xDDB27C x244859 x12B2EF }
+						}
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:GNG = { save_scope_as = scope_GNG }
+	}
+	# 안휘 군벌
+	if = {
+		limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:ROC }
+		create_country = {
+			tag = AHU
+			origin = this
+			state = s:STATE_SOUTHERN_ANHUI.region_state:ROC
+
+			on_created = {
+				# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+				if = {
+					limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:ROC }
+					s:STATE_NORTHERN_ANHUI = {
+						set_owner_of_provinces = {
+							country = c:AHU
+							provinces = { x23849F x942097 xC44EE7 xF5E291 x87DFF6 x9DE44A xFD70D3 x055124 x515101 xD05101 x467DAC x6895C0 }
+						}
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:AHU = { save_scope_as = scope_AHU }
+	}
+
+	#if = {
+	#	limit = { exists = s:STATE_ZHILI.region_state:CHI }
+	#	create_country = { #Zhili Clique
+	#		tag = ZHI
+	#		origin = this
+	#		state = s:STATE_ZHILI.region_state:CHI
+	#		on_created = {
+	#			warlord_setup_effect = yes
+	#			set_variable = warlord_state
+	#			random_list = {
+	#				4 = {
+
+	#				}
+	#				1 = {
+	#					set_strategy = ai_strategy_unify_china
+	#				}
+	#			}
+	#		}
+	#	}
+	#	c:ZHI = { save_scope_as = scope_ZHI }
+	#}
+
+	# 봉천 군벌
+	if = {
+		limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
+		create_country = { #Fengtian Clique
+			tag = MCH
+			origin = this
+			state = s:STATE_SHENGJING.region_state:ROC
+			on_created = {
+				# 땅 그지같이 나뉘어서 프로빈스 따로 조정
+				if = {
+					limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:ROC }
+					s:STATE_SOUTHERN_MANCHURIA = {
+						set_owner_of_provinces = {
+							country = c:MCH
+							provinces = { x08DC34 x292695 x301D5F x385E45 x3F61E8 x5496F2 x54B71E x5D6142 x74C59F x76800C x78B1C2 x8BA6E3 x8CAF49 x912C9D xA05162 xA05180 xA05646 xA107B9 xA495CD xC3FFC1 xC4B939 xCD5324 xD5000E xDF828B xE43B63 xEB92A2 xF471D5 xF956C5 }
+						}
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_EAFP_BEIJING.region_state:ROC }
+					s:STATE_EAFP_BEIJING = {
+						set_owner_of_provinces = {
+							country = c:MCH
+							provinces = { xDBA5F1 x666827 xC2EAB6 xCB1B7A x879FAD x367825 x45139C xCAE219 xF5B726 x5DEC3D x205BDC x35B5D1 x601436 xAD1C65 x24EFE1 xFD0842 x771A9C x6EA4B4 x2F0832 x123862 xCE9058 x4F7D66 x8B4B0F x6018AE x3650A5 x6BFF9D xF5F399 x4E8F6B x55F9B4 xCE4FAC xFF1F93 }
+						}
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_NORTHERN_MANCHURIA.region_state:ROC }
+					s:STATE_NORTHERN_MANCHURIA = {
+						set_owner_of_provinces = {
+							country = c:MCH
+							provinces = { x9EE58F xD9928F x70A32C xDD9465 x6E3E01 xEB4991 x8872E0 x6BEA77 x87B373 x67F6E8 x256526 x09B0AA x84E33B x0356D6 x02055B x34694E x5AC7BE x815EBF xA1CF50 x6FA3BE xABB756 }
+						}
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+				add_primary_culture = cu:han # 추가
+			}
+		}
+		c:MCH = { save_scope_as = scope_MCH }
+	}
+	# 산서 군벌
+	if = {
+		limit = { exists = s:STATE_SHANXI.region_state:ROC }
+		create_country = {
+			tag = SHN
+			origin = this
+			state = s:STATE_SHANXI.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:SHN = { save_scope_as = scope_SHN }
+	}
+	# 신강 군벌
+	if = {
+		limit = { exists = s:STATE_TIANSHAN.region_state:ROC }
+		create_country = {
+			tag = XIN
+			origin = this
+			state = s:STATE_TIANSHAN.region_state:ROC
+
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_DZUNGARIA.region_state:ROC }
+					s:STATE_DZUNGARIA.region_state:ROC = {
+						set_state_owner = c:XIN
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_JETISY.region_state:ROC }
+					s:STATE_JETISY.region_state:ROC = {
+						set_state_owner = c:XIN
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_KIRGHIZIA.region_state:ROC }
+					s:STATE_KIRGHIZIA.region_state:ROC = {
+						set_state_owner = c:XIN
+					}
+				}
+				add_primary_culture = cu:han
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+				add_primary_culture = cu:han # 추가
+			}
+		}
+		c:XIN = { save_scope_as = scope_XIN }
+	}
+	# 운남 군벌
+	if = {
+		limit = { exists = s:STATE_YUNNAN.region_state:ROC }
+		create_country = {
+			tag = YUN
+			origin = this
+			state = s:STATE_YUNNAN.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:YUN = { save_scope_as = scope_YUN }
+	}
+	# 귀주 군벌
+	if = {
+		limit = { exists = s:STATE_GUIZHOU.region_state:ROC }
+		create_country = {
+			tag = GUI
+			origin = this
+			state = s:STATE_GUIZHOU.region_state:ROC
+	
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:GUI = { save_scope_as = scope_GUI }
+	}
+	# 광동 군벌
+	if = {
+		limit = { exists = s:STATE_GUANGDONG.region_state:ROC }
+		create_country = {
+			tag = YUE
+			origin = this
+			state = s:STATE_GUANGDONG.region_state:ROC
+
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
+					s:STATE_SHAOZHOU.region_state:ROC = {
+						set_state_owner = c:YUE
+					}
+				}
+				warlord_setup_effect = yes
+			}
+		}
+		c:YUE = { save_scope_as = scope_YUE }
+	}
+	else_if = {
+		limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
+		create_country = {
+			tag = YUE
+			origin = this
+			state = s:STATE_SHAOZHOU.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:YUE = { save_scope_as = scope_YUE }
+	}
+
+	if = {
+		limit = { exists = s:STATE_SICHUAN.region_state:ROC }
+		create_country = {
+			tag = SIH
+			origin = this
+			state = s:STATE_SICHUAN.region_state:ROC
+	
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:SIH = { save_scope_as = scope_SIH }
+	}
+
+	#if = {
+	#	limit = { exists = s:STATE_SHANDONG.region_state:ROC }
+	#	create_country = {
+	#		tag = SHA
+	#		origin = this
+	#		state = s:STATE_SHANDONG.region_state:ROC
+	#
+	#		on_created = {
+	#			warlord_setup_effect = yes
+	#		}
+	#	}
+	#	c:SHA = { save_scope_as = scope_SHA }
+	#}
+	# 서북 군벌
+	if = {
+		limit = { exists = s:STATE_NINGXIA.region_state:ROC }
+		create_country = {
+			tag = XIB
+			origin = this
+			state = s:STATE_NINGXIA.region_state:ROC
+
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_GANSU.region_state:ROC }
+					s:STATE_GANSU.region_state:ROC = {
+						set_state_owner = c:XIB
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_ALXA.region_state:ROC }
+					s:STATE_ALXA.region_state:ROC = {
+						set_state_owner = c:XIB
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_QINGHAI.region_state:ROC }
+					s:STATE_QINGHAI.region_state:ROC = {
+						set_state_owner = c:XIB
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+				add_primary_culture = cu:han # 추가
+			}
+		}
+		c:XIB = { save_scope_as = scope_XIB }
+	}
+	else_if = {
+		limit = { exists = s:STATE_GANSU.region_state:ROC }
+		create_country = {
+			tag = YUE
+			origin = this
+			state = s:STATE_GANSU.region_state:ROC
+
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_ALXA.region_state:ROC }
+					s:STATE_ALXA.region_state:ROC = {
+						set_state_owner = c:XIB
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+				add_primary_culture = cu:han # 추가
+			}
+		}
+		c:XIB = { save_scope_as = scope_XIB }
+	}
+	# 몽골 (이미 합병됐을 때)
+	if = {
+		limit = {
+			exists = s:STATE_ULIASTAI.region_state:ROC
+			NOT = { exists = c:MGL }
+		}
+		create_country = {
+			tag = MGL
+			origin = this
+			state = s:STATE_ULIASTAI.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+				if = {
+					limit = { exists = s:STATE_URGA.region_state:ROC }
+					s:STATE_URGA.region_state:ROC = {
+						set_state_owner = c:MGL
+					}
+				}
+				s:STATE_ULIASTAI = { add_claim = c:MGL }
+				s:STATE_URGA = { add_claim = c:MGL }
+				s:STATE_HINGGAN = { add_claim = c:MGL }
+				s:STATE_ALXA = { add_claim = c:MGL }
+			}
+		}
+		c:MGL = { save_scope_as = scope_MGL }
+	}
+	# 투바 (몽골 이미 합병됐을 때)
+	if = {
+		limit = { exists = s:STATE_TUVA.region_state:ROC }
+		create_country = {
+			tag = TUV
+			origin = this
+			state = s:STATE_TUVA.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+			}
+		}
+		c:TUV = { save_scope_as = scope_TUV }
+	}
+	# 새로 추가한 것들
+	# 복건 군벌
+	if = {
+		limit = { exists = s:STATE_FUJIAN.region_state:ROC }
+		create_country = {
+			tag = FJN
+			origin = this
+			state = s:STATE_FUJIAN.region_state:ROC
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:FJN = { save_scope_as = scope_FJN }
+	}
+	# 강서 군벌
+	if = {
+		limit = { exists = s:STATE_JIANGXI.region_state:ROC }
+		create_country = {
+			tag = JGX
+			origin = this
+			state = s:STATE_JIANGXI.region_state:ROC
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:JGX = { save_scope_as = scope_JGX }
+	}
+	# 강소 군벌
+	if = {
+		limit = { exists = s:STATE_NANJING.region_state:ROC }
+		create_country = {
+			tag = JGS
+			origin = this
+			state = s:STATE_NANJING.region_state:ROC
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_JIANGSU.region_state:ROC }
+					s:STATE_JIANGSU.region_state:ROC = {
+						set_state_owner = c:JGS
+					}
+				}
+				if = {
+					limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+					s:STATE_SUZHOU.region_state:ROC = {
+						set_state_owner = c:JGS
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:JGS = { save_scope_as = scope_JGS }
+	}
+	else_if = {
+		limit = { exists = s:STATE_JIANGSU.region_state:ROC }
+		create_country = {
+			tag = JGS
+			origin = this
+			state = s:STATE_JIANGSU.region_state:ROC
+
+			on_created = {
+				if = {
+					limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+					s:STATE_SUZHOU.region_state:ROC = {
+						set_state_owner = c:JGS
+					}
+				}
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:JGS = { save_scope_as = scope_JGS }
+	}
+	else_if = {
+		limit = { exists = s:STATE_SUZHOU.region_state:ROC }
+		create_country = {
+			tag = JGS
+			origin = this
+			state = s:STATE_SUZHOU.region_state:ROC
+
+			on_created = {
+				warlord_setup_effect = yes
+				set_variable = warlord_state
+				random_list = {
+					4 = {
+
+					}
+					1 = {
+						set_strategy = ai_strategy_unify_china
+					}
+				}
+			}
+		}
+		c:JGS = { save_scope_as = scope_JGS }
+	}
+
+	if = {
+		limit = { exists = s:STATE_ALTAI.region_state:CHI }
+		create_country = {
+			tag = ALI
+			origin = this
+			state = s:STATE_ALTAI.region_state:CHI
+
+			on_created = {
+				warlord_setup_effect = yes
+			}
+		}
+		c:ALI = { save_scope_as = scope_ALI }
+	}
+
+	every_subject_or_below = {
+		make_independent = yes
+	}
+}
