@@ -622,6 +622,178 @@ je_lia_korean_regent = {
 		effect = {
 			#권력공유 타입별 매달 관계도 자연감소량
 			lia_kor_regent_attitude_roll = yes
+			##이하 역사 이벤트용 히든 이펙트
+			if = {
+				limit = {
+					game_date > 1839.6.1
+					ig:ig_landowners = {
+						leader = {
+							has_variable = is_yugun_eafp
+						}
+					}
+				}
+				hidden_effect = {
+					ig:ig_landowners = {
+						leader = {
+							add_modifier = lia_modi_yugun_bad
+						}
+					}
+				}
+			}
+		}
+	}
+
+	#current_value = {
+	#	value = root.var:lia_var_je_regent
+	#}
+
+	#goal_add_value = {
+	#	  value = 500
+	#}
+
+	#progressbar = yes
+
+	weight = 1000
+	
+	should_be_pinned_by_default = yes
+}
+
+##유학의 왕국 - 대충 유학자나 종교 관련 이벤트 이모저모
+je_lia_korean_confu = {
+	icon = "gfx/interface/icons/lia_icons/lia_con.png"
+
+	group = je_group_historical_content
+
+	immediate = {
+		#set_variable = {
+		#	name = lia_var_je_regent
+		#	value = 100
+		#}
+		#set_variable = {
+		#	name = lia_var_regent_type
+		#	value = 0
+		#}
+		#heir = {
+		#	save_scope_as = lia_regent_character
+		#}
+	}
+	
+	#scripted_button = lia_eafp_scripted_button_regent_balance
+	
+	complete = {	#상황따라 유동적
+		custom_tooltip = {
+			text = je_lia_korean_land_problem_complete_cond_tt
+			always = no
+		}
+	}
+
+	on_complete = {
+
+	}
+	
+	fail = {	#없음
+		#국교가 유교가 아닐것을 넣는걸 고려해보자.
+		#custom_tooltip = {
+		#	text = je_lia_korean_land_problem_complete_cond_tt
+		#	always = no
+		#}
+		NOT = { country_has_state_religion = rel:confucian }
+	}
+
+	on_fail = { # 추가
+		# trigger_event = { id = warlord_china_events.100 }
+		#hidden_effect = {
+		#}
+		custom_tooltip = je_lia_korean_land_problem_complete_cond_tt
+	}
+
+	#status_desc = {
+	#	first_valid = {
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_5
+	#			trigger = {
+	#				root.var:lia_var_je_regent >= 125
+	#				root.var:lia_var_je_regent < 150
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_4
+	#			trigger = {
+	#				root.var:lia_var_je_regent >= 100
+	#				root.var:lia_var_je_regent < 125
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_3
+	#			trigger = {
+	#				root.var:lia_var_je_regent >= 75
+	#				root.var:lia_var_je_regent < 100
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_2
+	#			trigger = {
+	#				root.var:lia_var_je_regent >= 50
+	#				root.var:lia_var_je_regent < 75
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_1
+	#			trigger = {
+	#				root.var:lia_var_je_regent >= 25
+	#				root.var:lia_var_je_regent < 50
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = je_lia_korean_regent_balance_0
+	#			trigger = {
+	#				root.var:lia_var_je_regent < 25
+	#			}
+	#		}
+	#	}
+	#}
+
+	on_monthly_pulse = {
+		####역사관련 이벤트 점화
+		#random_events = {	#랜덤성
+		#	100 = 0
+		#	10 = eafp_random_events.1
+		#	10 = eafp_random_events.2
+		#	10 = eafp_random_events.3
+		#}
+		effect = {	#비랜덤성
+			if = {	#기해박해-이지연의 상소문
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k120 }
+					game_date > 1839.3.1
+					any_interest_group = {
+						leader = {
+							has_variable = is_juagun_eafp
+						}
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.120
+					days = { 1 30 }
+				}
+				set_global_variable = eafp_check_evt_k120
+			}
+			if = {	#윤상도의 옥
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k122 }
+					game_date > 1840.1.1
+					any_interest_group = {
+						leader = {
+							has_variable = is_chusa_eafp
+						}
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.122
+					days = { 1 30 }
+				}
+				set_global_variable = eafp_check_evt_k122
+			}
 		}
 	}
 
@@ -650,10 +822,7 @@ je_lia_korean_seowon = {
 		country_has_primary_culture = cu:korean
 		any_scope_state = {
 			any_scope_building = {
-				OR = {
-					has_active_production_method = pm_eafp_seowon_building_subsistence
-					has_active_production_method = pm_eafp_seowon
-				}
+				has_active_production_method = pm_eafp_seowon
 			}
 		}
 	}
@@ -663,19 +832,9 @@ je_lia_korean_seowon = {
 		country_has_primary_culture = cu:korean
 		NOT = { has_global_variable = lia_kor_seowon_complete }
 		any_scope_state = {
-			OR = {
-				any_scope_building = {
-					is_building_type = building_subsistence_rice_paddies
-					NOT = { has_active_production_method = pm_eafp_seowon_building_subsistence }
-				}
-				any_scope_building = {
-					is_building_type = building_rice_farm
-					NOT = { has_active_production_method = pm_eafp_seowon }
-				}
-				any_scope_building = {
-					is_building_type = building_livestock_ranch
-					NOT = { has_active_production_method = pm_eafp_seowon }
-				}
+			any_scope_building = {
+				is_building_type = building_manor_house
+				NOT = { has_active_production_method = pm_eafp_seowon }
 			}
 		}
 	}
@@ -838,7 +997,7 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	complete = {
 		exists = c:KOR
 		this = c:KOR
-		owns_entire_state_region = STATE_LIA_SEOUL
+		owns_entire_state_region = STATE_LIA_SEOUL	##수정요함
 		s:STATE_LIA_SEOUL = {
 			region_state:KOR = {
 				any_scope_building = {

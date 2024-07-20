@@ -215,3 +215,125 @@ dp_boxer_rebellion2 = {
 
 	on_war_end = {}
 }
+
+dp_annex_subject = {
+	war_goal = annex_country
+	
+	texture = "gfx/interface/icons/war_goals/annex_country.dds"
+	confirmation_sound = "event:/SFX/UI/SubjectInteractions/subject_button_small_annex"
+	possible = {
+		NOT = { is_country_type = decentralized }
+		aggressive_diplomatic_plays_permitted = yes
+		scope:target_country = {
+			NOT = { is_country_type = decentralized }
+			is_direct_subject_of = root
+			OR = {
+				has_diplomatic_pact = { who = root type = puppet }
+				has_diplomatic_pact = { who = root type = vassal }
+			}
+		}
+		NAND = {
+			has_journal_entry = je_peru_bolivia
+			scope:target_country = {
+				OR = {
+					country_has_primary_culture = cu:quechua
+					country_has_primary_culture = cu:south_andean
+				}
+			}
+		}			
+		
+		OR = {
+			power_bloc ?= {	#파워블록이 천명 유형으로 존재하지 않거나.
+				custom_tooltip = {
+					text = "POWER_BLOC_TRIGGER_EAFP_LEADER_CANNOT_ANNEX_NOT"
+					NOT = { modifier:power_bloc_eafp_leader_cannot_annex_bool = yes }
+				}
+			}	#혹은
+			is_power_bloc_leader = no	#내가 파워블록의 리더가 아니거나,
+			#혹은
+			AND = {
+				NOT = { scope:target_country = { is_subject_type = subject_type_vassal } }	#현재 대상국이 속국 등급이 아니고
+				NOT = { scope:target_country = { is_subject_type = subject_type_puppet } }	#괴뢰국 등급도 아니거나,
+			}	#혹은
+			AND = {
+				power_bloc ?= {	#세계의 중심 퍽을 찍고서,
+					custom_tooltip = {
+						text = "POWER_BLOC_TRIGGER_EAFP_LEADER_ALLOW_ANNEX"
+						modifier:power_bloc_eafp_leader_allow_annex_bool = yes
+					}
+				}
+				custom_tooltip = {
+					text = "POWER_BLOC_TRIGGER_EAFP_TARGET_IS_IN_EASTASIA"
+					scope:target_country = {	#대상국의 수도가 위치한 전략지역이
+						OR = {
+							capital.region = sr:region_north_china	#북중국이거나
+							capital.region = sr:region_south_china	#남중국이거나
+							capital.region = sr:region_manchuria	#만주 라면.
+						}
+					}
+				}
+			}
+		}	#허가.
+	}
+	
+	ai_acceptance_max = 75
+
+	on_weekly_pulse = {}
+	
+	on_war_begins = {
+		scope:initiator = {
+			every_subject_or_below = {
+				limit = {
+					is_direct_subject_of = scope:initiator
+					NOT = { this = scope:target_country }
+				}
+				add_liberty_desire = 25
+				add_modifier = {
+					name = modifier_has_annexed_another_subject
+					months = 60
+					is_decaying = no
+				}
+			}
+		}
+	}
+
+	on_war_end = {}
+}
+
+dp_unify_china = {
+	war_goal = annex_country
+	
+	texture = "gfx/interface/icons/war_goals/annex_country.dds"
+	
+	selectable_in_lens = {
+		OR = {
+			has_government_type = gov_warlord_state
+			global_var:chinese_central_government ?= THIS
+		}
+	}
+	
+	possible = {
+		NOT = { exists = c:CHI }
+		NOT = { is_country_type = decentralized }
+		is_subject = no
+		OR = {
+			has_government_type = gov_warlord_state
+			global_var:chinese_central_government ?= THIS
+		}
+		
+		scope:target_country = {
+			NOT = { is_country_type = decentralized }
+			aggressive_diplomatic_plays_permitted = yes
+			OR = {
+				has_government_type = gov_warlord_state
+				global_var:chinese_central_government ?= THIS
+			}
+		}
+	}
+	
+	on_weekly_pulse = {}
+	
+	on_war_begins = {}
+
+	on_war_end = {}
+}
