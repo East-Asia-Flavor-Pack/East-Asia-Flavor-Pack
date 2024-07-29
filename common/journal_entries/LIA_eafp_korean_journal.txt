@@ -13,6 +13,8 @@ je_lia_korean_kings_health = {
 		}
 	}
 	
+	scripted_progress_bar = eafp_progress_bar_kings_health
+	
 	scripted_button = lia_eafp_scripted_button_health_out
 	scripted_button = lia_eafp_scripted_button_health_in
 	
@@ -23,14 +25,20 @@ je_lia_korean_kings_health = {
 	on_complete = {
 		custom_tooltip = {
 			text = je_lia_korean_land_problem_complete_cond_tt
-			always = no
+			#always = no
 		}
 	}
 	
 	fail = {	#삼정문제 미해결과 급사
-		scope:journal_entry = {
-			is_goal_complete = yes
+		custom_tooltip = {
+			text = je_lia_korean_kings_health_goal
+			scope:journal_entry = {
+				"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 300
+			}
 		}
+		#scope:journal_entry = {
+		#	is_goal_complete = yes
+		#}
 	}
 
 	on_fail = { # 추가
@@ -86,22 +94,22 @@ je_lia_korean_kings_health = {
 
 	on_weekly_pulse = {
 		effect = {
-			change_variable = {
-					name = lia_var_je_kings_health
-					add = 0.5
-			}
+			#change_variable = {
+			#		name = lia_var_je_kings_health
+			#		add = 0.5
+			#}
 		}
 	}
 
-	current_value = {
-		value = root.var:lia_var_je_kings_health
-	}
+	#current_value = {
+	#	value = root.var:lia_var_je_kings_health
+	#}
 
-	goal_add_value = {
-		  value = 300
-	}
+	#goal_add_value = {
+	#	  value = 300
+	#}
 
-	progressbar = yes
+	#progressbar = yes
 
 	weight = 1000
 	
@@ -316,6 +324,11 @@ je_lia_korean_land_problem = {
 			name = lia_kor_landexp_gb_ad
 			value = 75
 		}
+		add_modifier = {
+			name = lia_modi_land_problem_mil_country
+			months = -1
+			multiplier = lia_val_total_mil_modi_mult
+		}
 	}
 
 	complete = {	#중기적 개혁
@@ -362,6 +375,10 @@ je_lia_korean_land_problem = {
 	scripted_button = lia_eafp_scripted_button_sam_all
 	scripted_button = lia_eafp_scripted_button_test
 	
+	modifiers_while_active = {
+		#fra_republican_unrest
+	}
+	
 	progress_desc = {
 		first_valid = {
 			desc = je_lia_korean_land_problem_pgdesc
@@ -381,6 +398,12 @@ je_lia_korean_land_problem = {
 			lia_land_problem_expup = yes
 			#모디파이어 업데이트
 			lia_land_problem_add_modifier = yes
+			remove_modifier = lia_modi_land_problem_mil_country
+			add_modifier = {
+				name = lia_modi_land_problem_mil_country
+				months = -1
+				multiplier = lia_val_total_mil_modi_mult
+			}
 		}
 		#hidden_effect = {
 		#	lia_land_problem_add_modifier = yes
@@ -625,7 +648,7 @@ je_lia_korean_regent = {
 			##이하 역사 이벤트용 히든 이펙트
 			if = {
 				limit = {
-					game_date > 1839.6.1
+					game_date > 1839.3.1
 					ig:ig_landowners = {
 						leader = {
 							has_variable = is_yugun_eafp
@@ -636,6 +659,23 @@ je_lia_korean_regent = {
 					ig:ig_landowners = {
 						leader = {
 							add_modifier = lia_modi_yugun_bad
+						}
+					}
+				}
+			}
+			if = {
+				limit = {
+					game_date > 1839.10.1
+					ig:ig_landowners = {
+						leader = {
+							has_variable = is_yugun_eafp
+						}
+					}
+				}
+				hidden_effect = {
+					ig:ig_landowners = {
+						leader = {
+							kill_character = yes
 						}
 					}
 				}
@@ -678,7 +718,11 @@ je_lia_korean_confu = {
 		#}
 	}
 	
-	#scripted_button = lia_eafp_scripted_button_regent_balance
+	scripted_button = lia_eafp_scripted_button_educating
+	
+	modifiers_while_active = {
+		lia_modi_confucian_state
+	}
 	
 	complete = {	#상황따라 유동적
 		custom_tooltip = {
@@ -762,6 +806,19 @@ je_lia_korean_confu = {
 		#	10 = eafp_random_events.3
 		#}
 		effect = {	#비랜덤성
+			##캣홀릭 
+			if = {
+				limit = {
+					NOR = {
+						has_global_variable = lia_global_var_religion_defeat	#전쟁 패배등으로 인한 열강과의 불평등조약 체결로 인해
+						has_global_variable = lia_global_var_religion_win	#자력갱생을 통한 이데올로기적 우월성 재확인으로 인해
+					}
+				}
+				lia_effect_cal_catholic_modi_mult = yes
+			}
+			lia_effect_catholic_spread = yes
+			lia_effect_missionary_spawn = yes
+			##이벤트
 			if = {	#기해박해-이지연의 상소문
 				limit = {
 					NOT = { has_global_variable = eafp_check_evt_k120 }

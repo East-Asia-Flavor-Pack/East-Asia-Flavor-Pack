@@ -12,170 +12,85 @@
 
 #ai_chance				Scriptable value for the chance (0-100) that the AI will use this interaction when available, default 0
 
-marry_ruler_or_heir = {
-	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_royalist.dds"
+#### 이하 모드 컨텐츠 관련 인물 상호작용들
+
+#####################
+
+#####################
+
+#### 이하 유배/임관 관련 상호작용 수정~
+grant_command_to_agitator = {	#지휘권 부여
+	icon = "gfx/interface/character_panel/grant_command.dds"
 	clicksound = "event:/SFX/UI/Military/command_grant"
 
 	potential = {
+		has_dlc_feature = agitators
+		has_role = agitator
+		NOT = { has_role = general }
+		NOT = { has_role = admiral }
 		owner = scope:actor
-		OR = {
-			is_ruler = yes
-			is_heir = yes
-		}
-		scope:actor ?= {
-			has_law = law_type:law_monarchy
-			religion = {
-				has_discrimination_trait = christian
-			}
-		}
-		age >= 18
-		NOT = { has_variable = spouse_seeker }
-		NOT = { has_variable = is_married }
 	}
 
 	possible = {
-		any_country = {
-			NOT = { THIS = scope:actor }
-			has_law = law_type:law_monarchy
-			religion = scope:actor.religion
-			ruler = {
-				age > 36
-				NOT = {
-					has_variable = marriage_target
-				}
+		age >= define:NCharacters|ADULT_AGE
+		is_female = no
+		exists = owner.capital.land_hq
+		OR = {	#비밀선교사가 아니거나 완전분리 제정
+			NOT = { has_ideology = ideology:ideology_eafp_missionary }
+			owner = {
+				has_law = law_type:law_total_separation
 			}
 		}
 	}
+
 	effect = {
-		set_variable = spouse_seeker
-		owner = { 
-			trigger_event = { id = wedding.2 popup = yes } 
-		}
+		add_character_role = general
 	}
+
 	cooldown = { months = normal_modifier_time }
 
 	ai_chance = {
-		value = 25
-	}
-}
-
-abdicate_monarch = {
-	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_republican.dds"
-	clicksound = "event:/SFX/UI/Military/command_grant"
-
-	potential = {
-		has_dlc_feature = voice_of_the_people_content
-		owner = scope:actor
-		is_ruler = yes
-		owner = {
-			has_law = law_type:law_monarchy
-		}
-		exists = owner.heir
-	}
-
-	possible = {
-		OR = {
-			interest_group = {
-				ig_approval <= angry
-			}
-			interest_group = {
-				is_marginal = yes
-			}
-			popularity <= -50
-			has_trait = psychological_affliction
-			age >= 75
-			owner = {
-				any_interest_group = {
-					is_insurrectionary = yes
-				}
-			}
-		}
-		trigger_if = {
-			limit = {
-				NOT = {
-					owner = {
-						any_interest_group = {
-							is_insurrectionary = yes
-						}
-					}
-				}
-			}
-			owner.heir = {
-				age >= 18
-			}
-		}
-	}
-
-	effect = {
-		custom_tooltip = leader_abdicates_the_throne_display_tt
+		value = 0
 		if = {
 			limit = {
-				owner = {
-					any_interest_group = {
-						is_insurrectionary = yes
-					}
-				}
+				has_commander_traits = yes
 			}
-			owner = {
-				trigger_event = { id = resignation.3 popup = yes }
-			}
-		}
-		else = {
-			owner = {
-				trigger_event = { id = wedding.3 popup = yes}
-			}
-		}
-	}
-
-	cooldown = { months = 360 }
-	show_confirmation_box = yes
-
-	ai_chance = {
-		value = -50
+			add = 50
+		}	
 		if = {
-			limit = {	
-				interest_group = {
-					ig_approval <= angry
-				}
+			limit = {
+				is_interest_group_type = ig_armed_forces
 			}
 			add = 25
 		}	
 		if = {
 			limit = {
-				interest_group = {
-					is_marginal = yes
-				}				
+				NOT = {
+					owner = {	
+						any_scope_general = {
+							exists = yes
+						}
+					}
+				}	
 			}
 			add = 25
 		}
 		if = {
 			limit = {
-				popularity <= -50			
+				owner = {
+					any_scope_war = {
+						any_scope_front = {
+							is_vulnerable_front = root
+						}
+					}
+				}	
 			}
-			add = 25
-		}
-		if = {
-			limit = {
-				popularity <= -75			
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				age >= 75			
-			}
-			add = 50
-		}
-		if = {
-			limit = {
-				has_trait = psychological_affliction			
-			}
-			add = 25
+			add = 100
 		}
 	}
 }
 
-exile_character = {
+exile_character = {	#반체제 인사 유배
 	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
 
 	potential = {
@@ -206,6 +121,7 @@ exile_character = {
 			}
 			has_role = agitator
 		}
+		NOT = { has_ideology = ideology:ideology_eafp_missionary }	#비밀선교사가 아니어야함
 		custom_tooltip = {
 			text = ideology_not_too_close_tt
 			NOT = {
@@ -339,7 +255,6 @@ exile_character = {
 				limit = {
 					has_role = politician
 				}
-				set_as_interest_group_leader = no
 				remove_character_role = politician
 			}
 		}
