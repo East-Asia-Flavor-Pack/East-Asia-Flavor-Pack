@@ -1625,6 +1625,25 @@ lia_val_total_mil_modi_mult = {
 	add = global_var:lia_kor_landlvl_yangseo_mil
 	add = global_var:lia_kor_landlvl_gwanbuk_mil
 }
+#모든 주 지역개발도 등급 합산
+lia_val_total_land_level = {
+	value = 0
+	add = global_var:lia_kor_landlvl_seoul_civ
+	add = global_var:lia_kor_landlvl_yangho_civ
+	add = global_var:lia_kor_landlvl_yeongnam_civ
+	add = global_var:lia_kor_landlvl_yangseo_civ
+	add = global_var:lia_kor_landlvl_gwanbuk_civ
+	add = global_var:lia_kor_landlvl_seoul_adm
+	add = global_var:lia_kor_landlvl_yangho_adm
+	add = global_var:lia_kor_landlvl_yeongnam_adm
+	add = global_var:lia_kor_landlvl_yangseo_adm
+	add = global_var:lia_kor_landlvl_gwanbuk_adm
+	add = global_var:lia_kor_landlvl_seoul_mil
+	add = global_var:lia_kor_landlvl_yangho_mil
+	add = global_var:lia_kor_landlvl_yeongnam_mil
+	add = global_var:lia_kor_landlvl_yangseo_mil
+	add = global_var:lia_kor_landlvl_gwanbuk_mil
+}
 
 #활동중인 선교사 수
 lia_val_total_missionary = {
@@ -1638,7 +1657,101 @@ lia_val_total_missionary = {
 		}
 	}
 }
-
+#### gdp기반 수치, 돈 환산용
+# (0.04% of GDP + 2000) * LIA_STRESS, 스트레스 저널 없을때 대용
+lia_val_stress_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -40
+	add = -2000
+	#multiply = prev.$LIA_STRESS$
+	multiply = var:lia_var_stress_cost
+	max = 100000
+}
+# 1.20% of GDP + 20000, 환심사기 상호작용 비용
+lia_val_buy_favor_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -1200
+	add = -20000
+}
+##
+# 3.00% of GDP + 200000, 횡령 집중 재산 기준
+lia_val_embezzle_focus = {
+	value = ROOT.gdp
+	divide = 100000
+	round = yes
+	multiply = 3000
+	add = 200000
+}
+# 1.00% of GDP + 25000, 사익추구 행동 - 소규모 횡령
+lia_val_embezzle_s_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -1000
+	add = -25000
+}
+# 1.50% of GDP + 50000, 사익추구 행동 - 중규모 횡령
+lia_val_embezzle_m_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -1500
+	add = -50000
+}
+# 2.00% of GDP + 100000, 사익추구 행동 - 대규모 횡령
+lia_val_embezzle_l_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -2000
+	add = -100000
+}
+# 1.00% of GDP + 20000, 사익추구 행동 - 힘의균형 조정
+lia_val_pulling_balance_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = -1000
+	add = -10000
+}
+# 1.00% of GDP + 20000, 사익추구 행동 - 힘의균형 조정 <<캐릭터 스코프용>>
+lia_val_pulling_balance_cost_cha = {
+	value = ROOT.gdp
+	divide = 100000
+	round = yes
+	multiply = -1000
+	add = -10000
+}
+# 0.60% of GDP + 8000, 사익추구 행동 - 지역 수탈 착복금 기본값
+lia_val_land_exploit_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = 600
+	add = 8000
+}
+# 0.50% of GDP + 150000, 사익추구 행동 - 사영화 위한 자금 융통.
+lia_val_forced_privatization_cost = {
+	value = THIS.gdp
+	divide = 100000
+	round = yes
+	multiply = 500
+	add = 150000
+	max = 400000	#최대 400k
+}
+# 0.50% of GDP + 150000, 사익추구 행동 - 사영화 위한 자금 융통. <<캐릭터 스코프용>>
+lia_val_forced_privatization_cost_cha = {
+	value = ROOT.gdp
+	divide = 100000
+	round = yes
+	multiply = 500
+	add = 150000
+	max = 400000	#최대 400k
+}
 ####(2024/4 RLG절개수술 임시옮김)
 # 0.25% of GDP
 lia_rlg_want_cost_a = {
