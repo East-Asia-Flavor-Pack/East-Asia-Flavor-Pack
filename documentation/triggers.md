@@ -1118,7 +1118,7 @@ global_population > 2000000000Traits: <, <=, =, !=, >, >=
 
 ## global_variable_list_size
 Checks the size of a variable list  
-variable_list_size = { name = X target >= Y }  
+variable_list_size = { name = X value >= Y }  
 Where X is the name of the variable  
 Where Y is a script value or number  
 **Supported Scopes**: none/all  
@@ -2744,7 +2744,7 @@ lobby_formation_reason = diplomacy
 
 ## local_variable_list_size
 Checks the size of a variable list  
-variable_list_size = { name = X target >= Y }  
+variable_list_size = { name = X value >= Y }  
 Where X is the name of the variable  
 Where Y is a script value or number  
 **Supported Scopes**: none/all  
@@ -3720,7 +3720,7 @@ power_bloc =
 
 ## variable_list_size
 Checks the size of a variable list  
-variable_list_size = { name = X target >= Y }  
+variable_list_size = { name = X value >= Y }  
 Where X is the name of the variable  
 Where Y is a script value or number  
 **Supported Scopes**: none/all  
