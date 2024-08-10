@@ -657,6 +657,15 @@ je_lia_korean_regent = {
 		effect = {
 			#권력공유 타입별 매달 관계도 자연감소량
 			lia_kor_regent_attitude_roll = yes
+			#힘의균형 레벨별 조건부 패시브 효과 체크
+			if = {
+				limit = {
+					has_variable = lia_var_regent_type
+					var:lia_var_regent_type >= 1
+					var:lia_var_regent_type <= 3
+				}
+				lia_kor_regent_corruption_passive = yes
+			}
 			##이하 역사 이벤트용 히든 이펙트
 			if = {
 				limit = {
@@ -731,6 +740,8 @@ je_lia_korean_confu = {
 	}
 	
 	scripted_button = lia_eafp_scripted_button_educating
+	scripted_button = lia_eafp_scripted_button_treaty_list
+	scripted_button = lia_eafp_scripted_button_treaty_test
 	
 	modifiers_while_active = {
 		lia_modi_confucian_state
@@ -830,7 +841,7 @@ je_lia_korean_confu = {
 			}
 			lia_effect_catholic_spread = yes
 			lia_effect_missionary_spawn = yes
-			##이벤트
+			##역사적 이벤트
 			if = {	#기해박해-이지연의 상소문
 				limit = {
 					NOT = { has_global_variable = eafp_check_evt_k120 }
@@ -862,6 +873,20 @@ je_lia_korean_confu = {
 					days = { 1 30 }
 				}
 				set_global_variable = eafp_check_evt_k122
+			}
+			if = {	#병오박해-김대건 발각
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k120 }
+					game_date > 1846.4.1
+					any_scope_character = {
+						has_variable = is_daegeon_eafp
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.120
+					days = { 1 30 }
+				}
+				set_global_variable = eafp_check_evt_k120
 			}
 		}
 	}

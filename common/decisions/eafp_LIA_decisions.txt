@@ -94,51 +94,38 @@ lia_rlg_test_pair = {
 	possible = {
 		is_player = yes
 		#always = no
-		#any_scope_pop = {
-		#	exists = this
-		#	#soldier_clothes_pop_trigger = yes
-		#	#struggling_pop_trigger = no
-		#	home_country = {
-		#		exists = capital
-		#		OR = {
-		#			capital = {
-		#				state_is_in_east_asia = no
-		#			}
-		#			has_technology_researched = rifling
-		#		}
-		#	}
-		#}
 	}
 
 	when_taken = {
-		add_treasury = lia_val_total_mil_modi_mult
-		#set_variable = {
-		#	name = lia_var_regent_type
-		#	value = 2
-		#}
-		create_character = {
-			# 김대건 안드레아. 45년 조선에 귀국.
-			first_name = Daegeon
-			last_name = Kim
-			historical = yes
-			birth_date = 1801.8.21
-			culture = cu:korean
-			religion = rel:catholic
-			interest_group = ig_intelligentsia
-			ideology = ideology_eafp_missionary
-			is_agitator = yes
-			traits = {
-				pious
-				erudite
+		add_treasury = 777
+		every_in_list = {
+			variable = lia_var_list_full_treaty_001
+			if = {
+				limit = {
+					#THIS != c:GBR
+				}
+				set_global_variable = {
+					name = lia_var_test_pair_001
+					values = PREV.THIS
+				}
 			}
-			on_created = {	#추가함. 24.07.19
-				add_modifier = {
-					name = lia_modi_missionary_stealth
-					months = 36
+			ROOT = { add_treasury = 333 }
+			ROOT = { add_treasury = PREV.THIS }
+			ROOT = {
+				change_global_variable = {
+					name = lia_var_test_pair_001
+					multiply = 1.5
+					divide = 1.5
 				}
-				set_variable = {
-					name = is_daegeon_eafp
+			}
+			if = {
+				limit = {
+					THIS > 10000000
 				}
+				ROOT = { add_treasury = 555 }
+			}
+			else = { 
+				ROOT = { add_treasury = 444 }
 			}
 		}
 	}
@@ -147,6 +134,102 @@ lia_rlg_test_pair = {
 		base = 0
     }	
 }
+
+lia_rlg_test_trip = {
+	is_shown = {
+		is_player = yes
+		#always = no
+	}
+
+	possible = {
+		is_player = yes
+		#always = no
+	}
+
+	when_taken = {
+		add_treasury = 10777
+		add_treasury = global_var:lia_global_var_treaty_datacode
+		add_treasury = global_var:lia_global_var_treaty_num
+		add_treasury = global_var:lia_var_test_pair_001
+		if = {
+			limit = {
+				has_global_variable = lia_var_test_pair_001
+			}
+			add_treasury = 77777
+		}
+		global_var:lia_var_test_pair_001 = {
+			add_treasury = 77777
+		}
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+lia_treaty_test_fra = {
+	is_shown = {
+		is_player = yes
+		#always = no
+	}
+
+	possible = {
+		is_player = yes
+		#always = no
+	}
+
+	when_taken = {
+		add_treasury = 100000
+		lia_effect_treaty_relation_set_full = {
+			LIA_NATION_1 = ROOT
+			LIA_NATION_2 = c:FRA
+			LIA_TREATY_YEAR = year
+			LIA_TREATY_COD1 = 02
+			LIA_TREATY_COD2 = 00
+			LIA_TREATY_COD3 = 01
+			LIA_TREATY_COD4 = 01
+			LIA_TREATY_GAIN = 00
+		}
+		add_treasury = global_var:lia_global_var_temp_3n
+		add_treasury = global_var:lia_global_var_temp_2n
+		add_treasury = global_var:lia_global_var_temp_1n
+	}
+	
+	ai_chance = {
+		base = 0
+    }	
+}
+
+#lia_rlg_test_var_0 = {
+#	is_shown = {
+#		is_player = yes
+#	}
+#	possible = {
+#		is_player = yes
+#	}
+#	when_taken = {
+#		lia_effect_var_parameter_test = {
+#			LIA_PARA_NUM = 17
+#		}
+#	}
+#	ai_chance = {
+#		base = 0
+#    }	
+#}
+#lia_rlg_test_var_1 = {
+#	is_shown = {
+#		is_player = yes
+#	}
+#	possible = {
+#		is_player = yes
+#	}
+#	when_taken = {
+#		add_treasury = var:lia_var_17
+#	}
+#	ai_chance = {
+#		base = 0
+#    }	
+#}
 
 #lia_rlg_gbg_aid = {
 #	is_shown = {

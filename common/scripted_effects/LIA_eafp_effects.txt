@@ -7227,6 +7227,40 @@ lia_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴�
 		}
 	}
 }
+##
+lia_kor_regent_corruption_passive = {
+	#일단 매달 녹봉지급.
+	set_global_variable = {	#지급할 돈
+		name = lia_global_var_pocket_money_payment
+		value = lia_val_regent_monthly_allowance
+	}
+	random_scope_character = {
+		limit = {
+			is_heir = yes
+		}
+		if = {	#계좌개설
+			limit = {
+				NOT = { has_variable = lia_var_personal_account }
+			}
+			set_variable = {
+				name = lia_var_personal_account
+				value = 100000
+			}
+		}
+		change_variable = {	#송금
+			name = lia_var_personal_account
+			add = global_var:lia_global_var_pocket_money_payment
+		}
+	}
+	post_notification = lia_message_regent_monthly_allowance
+	change_global_variable = {	#리버스
+		name = lia_global_var_pocket_money_payment
+		multiply = -1
+	}
+	add_treasury = global_var:lia_global_var_pocket_money_payment	#지출할 돈
+	#이하 패시브 효과 체크.
+	
+}
 ####
 lia_effect_missionary_spawn = {	#선교사 스폰
 	random_list = {
@@ -7563,3 +7597,653 @@ lia_effect_cal_catholic_modi_mult = {
 		multiplier = var:lia_var_catholic_percent_final
 	}
 }
+
+################
+
+## 조약 실험(24.08.09) ##
+
+#다음과 같이 사용.
+#lia_effect_treaty_relation_set = {
+#	LIA_NATION_1 = scope:lia_nation_me
+#	LIA_NATION_2 = scope:lia_nation_they
+#	LIA_EQUALITY_1 = -3	(가급적 LIA_EQUALITY_2와 절댓값을 동일시시킬것.)
+#	LIA_EQUALITY_2 = 3
+#}
+
+# LIA_NATION_1 : 국가. 대체로 자국.
+# LIA_NATION_2 : 국가. 대체로 상대.
+# LIA_EQUALITY_1 : 불평등도 ( LIA_NATION_1에 얼마나 유리한지. -3 ~ +3 )
+# LIA_EQUALITY_2 : 불평등도 ( LIA_NATION_2에 얼마나 유리한지. -3 ~ +3 )
+
+#일단은 간략화된 뼈대만 사용, 추후 조약 세부사항에 대한 정보까지 넣는것을 고려 해봐
+#제안사항: 어쩌면 조약관계 하나마다 고유의 코드를 부여한 변수리스트를 만들면 괜찮을지도 몰라.
+#예컨데 지금처럼 간략화 구조에선 단지 조약의 불평등도만 담고있던 'lia_var_list_treaty_$LIA_EQUALITY_1$' name의 LIA_EQUALITY_1 파라미터를 한 국가스코프에 대응되는 고유 코드로써 만드는거지. 반복문을 통해서. 그럼 슬롯이 최대 1천개니까 여유로워!
+#그리고 그렇게 만들어진 'lia_var_list_treaty_$LIA_NATION_ARRAY$'(가칭) 리스트에 add_to_variable_list로 scope:상대국 과.. var:조약등급, var:특약(치외법권이나 관세등급 뭐 그런거..)하여간 그냥 생각만 해봐! 
+
+##조약 체결-간단
+lia_effect_treaty_relation_set_simp = {
+	# Parameters
+	$LIA_NATION_1$ = {
+		save_scope_as = lia_treaty_nation_1
+	}
+	$LIA_NATION_2$ = {
+		save_scope_as = lia_treaty_nation_2
+	}
+
+	# 수교국을 대상으로 다시 발동될경우, 기존 조약 관계 말소.
+	scope:lia_treaty_nation_1 = {
+		if = {
+			limit = {
+				lia_trigger_nation_is_signed_with = {
+					LIA_NATION_OTHER = scope:lia_treaty_nation_2
+				}
+			}
+			set_variable = {
+				name = lia_var_equality_num
+				value = -3
+			}
+			while = {
+				limit = {
+					var:lia_var_equality_num <= 3
+				}
+				lia_effect_treaty_relation_clear = {
+					LIA_EQUALITY_NUM = var:lia_var_equality_num
+					LIA_NATION_CLEAR = scope:lia_treaty_nation_2
+				}
+				change_variable = {
+					name = lia_var_equality_num
+					add = 1
+				}
+			}
+			remove_variable = lia_var_equality_num
+		}
+	}
+	scope:lia_treaty_nation_2 = {
+		if = {
+			limit = {
+				lia_trigger_nation_is_signed_with = {
+					LIA_NATION_OTHER = scope:lia_treaty_nation_1
+				}
+			}
+			set_variable = {
+				name = lia_var_equality_num
+				value = -3
+			}
+			while = {
+				limit = {
+					var:lia_var_equality_num <= 3
+				}
+				lia_effect_treaty_relation_clear = {
+					LIA_EQUALITY_NUM = var:lia_var_equality_num
+					LIA_NATION_CLEAR = scope:lia_treaty_nation_1
+				}
+				change_variable = {
+					name = lia_var_equality_num
+					add = 1
+				}
+			}
+			remove_variable = lia_var_equality_num
+		}
+	}
+
+	# 조약 체결/갱신
+	scope:lia_treaty_nation_1 = {
+		add_to_variable_list = {
+			name = lia_var_list_treaty_$LIA_EQUALITY_1$
+			target = scope:lia_treaty_nation_2
+		}
+	}
+	scope:lia_treaty_nation_2 = {
+		add_to_variable_list = {
+			name = lia_var_list_treaty_$LIA_EQUALITY_2$
+			target = scope:lia_treaty_nation_1
+		}
+	}
+}
+#기존 조약 데이터 청소-간단
+lia_effect_treaty_relation_clear_simp = {
+	remove_list_variable = {
+		name = lia_var_list_treaty_$LIA_EQUALITY_NUM$
+		target = $LIA_NATION_CLEAR$
+	}
+}
+
+######################
+
+##조약 체결-완전
+
+#다음과 같이 사용.
+#lia_effect_treaty_relation_set_full = {
+#	LIA_NATION_1 = scope:lia_nation_me
+#	LIA_NATION_2 = scope:lia_nation_they
+#	LIA_TREATY_YEAR = 1999
+#	LIA_TREATY_COD1 = 02
+#	LIA_TREATY_COD2 = 00
+#	LIA_TREATY_COD3 = 01
+#	LIA_TREATY_COD4 = 01
+#	LIA_TREATY_GAIN = 00
+#}
+
+#	LIA_NATION_1 : 국가. 대체로 자국.
+#	LIA_NATION_2 : 국가. 대체로 상대.
+#	LIA_TREATY_YEAR :	체결 년도. 대체로 현재 년도.
+#	LIA_TREATY_COD1 : 관세혜택
+#	LIA_TREATY_COD2 : 내륙상업
+#	LIA_TREATY_COD3 : 종교자유
+#	LIA_TREATY_COD4 : 치외법권
+#	LIA_TREATY_GAIN : 내가 수혜국인지.
+lia_effect_treaty_relation_set_full = {
+	# Parameters
+	$LIA_NATION_1$ = {
+		save_scope_as = lia_treaty_nation_1
+	}
+	$LIA_NATION_2$ = {
+		save_scope_as = lia_treaty_nation_2
+	}
+	set_global_variable = {	#저장될 데이터코드값
+		name = lia_global_var_treaty_datacode
+		#value = $LIA_TREATY_YEAR$$LIA_TREATY_COD1$$LIA_TREATY_COD2$$LIA_TREATY_COD3$$LIA_TREATY_COD4$$LIA_TREATY_GAIN$
+		value = $LIA_TREATY_YEAR$
+		# ex) 19990200010100 >> LIA_NATION_1과 LIA_NATION_2국간의 조약. 1999년 체결, 관세주권 없음, 내륙 상업활동 불허, 신앙의 자유 허가, 치외법권 혜택, LIA_NATION_1이 피착취국.
+		# 이 전역변수 자체는 조약 체결 과정에서 일종의 '도장' 역할을 함. 실질적으로 'lia_var_list_full_treaty_$LIA_TREATY_NUM$' 리스트에 저장되는 데이터코드값은 각 국가의 시점으로 작업 종료후, 변수로써가 아닌 오직 값으로써만 존재할것.
+	}
+	change_global_variable = {
+		name = lia_global_var_treaty_datacode
+		multiply = 10000000000
+	}
+	change_global_variable = {
+		name = lia_global_var_treaty_datacode
+		add = $LIA_TREATY_COD1$$LIA_TREATY_COD2$$LIA_TREATY_COD3$$LIA_TREATY_COD4$$LIA_TREATY_GAIN$	#이거좀쩌는듯
+	}
+	# 수교국을 대상으로 다시 발동될경우, 기존 조약 관계 말소.
+	# 이 코드는 더이상 필요 없기 때문에 폐기함. 이전에 조약관계가 있음이 확인될 시 즉시 그자리에서 교체하는것으로 이펙트를 갈음하였음.
+	# 자세하 사항은 lia_effect_treaty_nation_1_numbering_full = {}의 첫번째 조건문 트리거 부분을 참고.
+	#scope:lia_treaty_nation_1 = {}
+	#scope:lia_treaty_nation_2 = {}
+
+	# 조약 체결/갱신
+	scope:lia_treaty_nation_1 = {
+		#조약 고유번호. 조약의 내용을 담고있는 정보 코드(global_var:lia_global_var_treaty_datacode)와는 달리 조약의 이름표 역할을 함. 전세계 통합 0부터 999까지의 슬롯에 배정 가능.
+		set_global_variable = {
+			name = lia_global_var_treaty_num
+			value = 1
+		}
+		#자리 있는지 체크.
+		while = {
+			limit = {
+				#브레이크가 없다면?
+				NOT = { has_global_variable = lia_global_var_treaty_break }
+			}
+		#lia_effect_treaty_num_puzzle_comp = {
+		#	LIA_NUM_1N = 2
+		#}
+			lia_effect_treaty_num_puzzle_3n = {	#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람.
+				LIA_PUZZLE = 0
+			}
+			#아래 'lia_effect_treaty_num_puzzle_comp' 최종조립 이펙트 참고 바람!
+			#lia_effect_treaty_nation_1_numbering_full = {	#아래 '조약비준:1번 국가-완전' 이펙트 참고 바람.
+			#	LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999
+			#}
+		}
+		#lia_effect_treaty_num_puzzle_3n = yes
+		#반복문 종료. 번호표 및 브레이크 폐기.
+		#remove_variable = lia_global_var_treaty_num	확정된 고유번호는 LIA_NATION_2로 승계.
+		remove_global_variable = lia_global_var_treaty_break
+	}
+	if = {	#상대국에도 동일 내용의 조약 비준.
+		limit = {
+			$LIA_TREATY_GAIN$ = 00
+		}
+		change_global_variable = {
+			name = lia_global_var_treaty_datacode
+			add = 1
+		}
+		scope:lia_treaty_nation_2 = {
+			lia_effect_treaty_num_puzzle_3n = yes	#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp
+			#lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
+			#	LIA_TREATY_NUM = global_var:lia_global_var_treaty_num	#받아온 고유식별번호로 즉시 조약 비준.
+			#}
+		}
+	}
+	else = {	#단, 수혜국 여부 코드는 뒤집어서.
+		change_global_variable = {
+			name = lia_global_var_treaty_datacode
+			add = -1
+		}
+		scope:lia_treaty_nation_2 = {
+			lia_effect_treaty_num_puzzle_3n = yes	#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp'
+			#lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
+			#	LIA_TREATY_NUM = global_var:lia_global_var_treaty_num	#받아온 고유식별번호로 즉시 조약 비준.
+			#}
+		}
+	}
+}
+lia_effect_treaty_num_puzzle_3n = {	#LIA_TREATY_NUM 조립하기~
+	$LIA_PUZZLE$ = {}	#의미없음.
+	set_global_variable = {
+		name = lia_global_var_temp_3n	#백의자리 구하기~
+		value = lia_val_temp_3n	#LIA_EAFP_values.txt 참고 바람!
+	}
+	#
+	set_global_variable = {
+		name = lia_global_var_temp_2n	#십의자리 구하기~
+		value = lia_val_temp_2n	#LIA_EAFP_values.txt 참고 바람!
+	}
+	#
+	set_global_variable = {
+		name = lia_global_var_temp_1n	#일의자리 구하기~
+		value = lia_val_temp_1n	#LIA_EAFP_values.txt 참고 바람!
+	}
+	if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 0
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 0
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 1
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 1
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 2
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 2
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 3
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 3
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 4
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 4
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 5
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 5
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 6
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 6
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 7
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 7
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_3n = 8
+		}
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 8
+		}
+	}
+	else = {
+		lia_effect_treaty_num_puzzle_2n = {
+			LIA_NUM_3N = 9
+		}
+	}
+}
+lia_effect_treaty_num_puzzle_2n = {
+	$LIA_NUM_3N$ = {}
+	if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 0
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 0
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 1
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 1
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 2
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 2
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 3
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 3
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 4
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 4
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 5
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 5
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 6
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 6
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 7
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 7
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_2n = 8
+		}
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 8
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else = {
+		lia_effect_treaty_num_puzzle_1n = {
+			LIA_NUM_2N = 9
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+}
+lia_effect_treaty_num_puzzle_1n = {
+	#$LIA_NUM_2N$ = {}
+	if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 0
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 0
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 1
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 1
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 2
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 2
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 3
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 3
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 4
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 4
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 5
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 5
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 6
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 6
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 7
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 7
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else_if = {
+		limit = {
+			global_var:lia_global_var_temp_1n = 8
+		}
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 8
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+	else = {
+		lia_effect_treaty_num_puzzle_comp = {
+			LIA_NUM_1N = 9
+			LIA_NUM_2N = $LIA_NUM_2N$
+			LIA_NUM_3N = $LIA_NUM_3N$
+		}
+	}
+}
+lia_effect_treaty_num_puzzle_comp = {	#최종조립!
+	#분기점
+	if = {	#LIA_NATION_1일경우
+		limit = {
+			THIS = scope:lia_treaty_nation_1
+		}
+		lia_effect_treaty_nation_1_numbering_full = {	#아래 '조약비준:1번 국가-완전' 이펙트 참고 바람.
+			LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999
+			#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999
+			#LIA_TREATY_NUM = 1	#000~999
+		}
+	}
+	else = {	#LIA_NATION_2일경우
+		lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
+			LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
+			#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
+		}
+	}
+}
+
+#조약비준:1번 국가-완전
+#$LIA_TREATY_NUM$ : 조약 고유 번호. 조약의 내용을 담고있는 정보 코드(global_var:lia_global_var_treaty_datacode)와는 달리 조약의 이름표 역할을 함. 전세계 통합 0부터 999까지의 슬롯에 배정 가능.
+lia_effect_treaty_nation_1_numbering_full = {
+	if = {
+		limit = {
+			#global_var:lia_global_var_treaty_num 번 자리를 쓸 수 있는지 체크.
+			OR = {
+				NOT = { has_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$ }	#$LIA_TREATY_NUM$번 고유번호가 아직 발급된적이 없거나,
+				AND = {	#$LIA_TREATY_NUM$번 고유번호가 발급되었지만, 모종의 이유로 데이터가 오염,누락,결핍되어 파기가 필요해 그 자리에 새로 덮어쓸 수 있다면?
+					has_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+					variable_list_size = {
+						name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+						value != 2	#원래 상대국 정보가 담긴 country 하나와 조약의 세부내역이 담긴 value 값까지 총 두개만 있어야대!
+					}
+				}
+				#AND = {	#혹은?
+				#	has_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#번호도 발급되었고,
+				#	variable_list_size = {
+				#		name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+				#		value = 2	#데이터도 멀쩡하지만?
+				#	}
+				#	any_in_list = {
+				#		variable = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+				#		THIS = scope:lia_treaty_nation_2	#좌측은 value취급을 받고, 우측은 당연히 country야. 미스매치를 해결할 방법을 생각해봐
+				#	}
+				#}
+			}
+		}
+		if = {
+			limit = {
+				global_var:lia_global_var_treaty_num <= 999	#슬롯 여유 있는지 체크.
+			}
+			clear_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#망가진 슬롯이 있다면 청소!
+			add_to_variable_list = {	#고유식별번호 발급!
+				name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+				target = scope:lia_treaty_nation_2	#상대국의 정보(타입: country)
+			}
+			add_to_variable_list = {
+				name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+				target = global_var:lia_global_var_treaty_datacode	#조약의 세부사항을 나타내는 데이터코드(타입: value)
+			}
+			#브레이크 = yes
+			set_global_variable = lia_global_var_treaty_break
+			#로컬출력용 라벨링
+			if = {
+				limit = {
+					OR = {
+						scope:lia_treaty_nation_1 = ROOT	#내가 당사자면???
+						scope:lia_treaty_nation_2 = ROOT
+					}
+				}
+				set_global_variable = {	#국가정보 1
+					name = lia_global_var_treaty_$LIA_TREATY_NUM$_nation_a
+					value = scope:lia_treaty_nation_1
+				}
+				set_global_variable = {	#국가정보 2
+					name = lia_global_var_treaty_$LIA_TREATY_NUM$_nation_b
+					value = scope:lia_treaty_nation_2
+				}
+				set_global_variable = {	#체결/개정년도
+					name = lia_global_var_treaty_$LIA_TREATY_NUM$_year
+					value = ROOT.year
+					#value = 1999
+				}
+				ROOT = {
+					post_notification = lia_message_treaty_success_001
+				}
+			}
+		}
+		else = {
+			#슬롯 포화로 진행 불가 알림 반환.
+			#브레이크 = yes
+			set_global_variable = lia_global_var_treaty_break
+			ROOT = {
+				post_notification = lia_message_treaty_fail_error_001
+			}
+		}
+	}
+	else = {
+		#고유번호 +1
+		change_global_variable = {
+			name = lia_global_var_treaty_num
+			add = 1
+		}
+		if = {
+			limit = {
+				global_var:lia_global_var_treaty_num >= 777
+			}
+			#탈출
+			set_global_variable = lia_global_var_treaty_break
+			ROOT = {
+				post_notification = lia_message_treaty_fail_error_001
+			}
+		}
+	}
+}
+#조약비준:2번 국가-완전
+#$LIA_TREATY_NUM$ : 조약 고유 번호. 조약의 내용을 담고있는 정보 코드(global_var:lia_global_var_treaty_datacode)와는 달리 조약의 이름표 역할을 함. 전세계 통합 0부터 999까지의 슬롯에 배정 가능.
+lia_effect_treaty_nation_2_numbering_full = {
+	clear_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#망가진 슬롯이 있다면 청소!
+	add_to_variable_list = {	#고유식별번호 발급!
+		name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+		target = scope:lia_treaty_nation_1	#상대국의 정보(타입: country)
+	}
+	add_to_variable_list = {
+		name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+		target = global_var:lia_global_var_treaty_datacode	#조약의 세부사항을 나타내는 데이터코드(타입: value)
+	}
+}
+#기존 조약 데이터 청소-완전
+lia_effect_treaty_relation_clear_full = {
+	remove_list_variable = {
+		name = lia_var_list_treaty_$LIA_EQUALITY_NUM$
+		target = $LIA_NATION_CLEAR$
+	}
+}
+
+#이게되네↓
+
+#lia_effect_var_parameter_test = {
+#	set_variable = {
+#		name = lia_var_$LIA_PARA_NUM$
+#		value = $LIA_PARA_NUM$00
+#	}
+#}
