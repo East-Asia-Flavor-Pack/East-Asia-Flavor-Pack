@@ -1948,60 +1948,63 @@ eafp_kor_mainline.171 = {	#외교문서 열람
 	flavor = eafp_kor_mainline.171.mf
 	desc = {
 		triggered_desc = {
-			desc = coup.2.d2
+			desc = mainline.171.d1
 			trigger = {
-				NOT = {
-					scope:coup_desired_law = {
-						OR = {
-							type = law_type:law_presidential_republic
-							type = law_type:law_parliamentary_republic
-							type = law_type:law_theocracy
-							type = law_type:law_council_republic
-						}
-					}
-				}
-				NOT = { has_law = law_type:law_monarchy }
-				scope:coup_ig = {
-					law_stance = {
-						law = law_type:law_monarchy
-						value >= approve
-					}
-				}
+				has_variable = lia_var_treaty_data_all_1
 			}
 		}
 		triggered_desc = {
-			desc = coup.2.d
+			desc = mainline.171.d2
 			trigger = {
-				scope:coup_desired_law = {
-					type = law_type:law_autocracy
-				}
+				has_variable = lia_var_treaty_data_all_2
 			}
 		}
 		triggered_desc = {
-			desc = coup.2.d3
+			desc = mainline.171.d3
 			trigger = {
-				scope:coup_desired_law = {
-					OR = {
-						type = law_type:law_parliamentary_republic
-						type = law_type:law_presidential_republic
-					}
-				}
+				has_variable = lia_var_treaty_data_all_3
 			}
 		}
 		triggered_desc = {
-			desc = coup.2.d4
+			desc = mainline.171.d4
 			trigger = {
-				scope:coup_desired_law = {
-					type = law_type:law_council_republic
-				}
+				has_variable = lia_var_treaty_data_all_4
 			}
 		}
 		triggered_desc = {
-			desc = coup.2.d5
+			desc = mainline.171.d5
 			trigger = {
-				scope:coup_desired_law = {
-					type = law_type:law_theocracy
-				}
+				has_variable = lia_var_treaty_data_all_5
+			}
+		}
+		triggered_desc = {
+			desc = mainline.171.d6
+			trigger = {
+				has_variable = lia_var_treaty_data_all_6
+			}
+		}
+		triggered_desc = {
+			desc = mainline.171.d7
+			trigger = {
+				has_variable = lia_var_treaty_data_all_7
+			}
+		}
+		triggered_desc = {
+			desc = mainline.171.d8
+			trigger = {
+				has_variable = lia_var_treaty_data_all_8
+			}
+		}
+		triggered_desc = {
+			desc = mainline.171.d9
+			trigger = {
+				has_variable = lia_var_treaty_data_all_9
+			}
+		}
+		triggered_desc = {
+			desc = mainline.171.d10
+			trigger = {
+				has_variable = lia_var_treaty_data_all_10
 			}
 		}
 	}
@@ -2021,46 +2024,54 @@ eafp_kor_mainline.171 = {	#외교문서 열람
 	#}
 	
 	immediate = {
+		set_global_variable = lia_global_var_treaty_read_pass
 		set_global_variable = {
-			name = lia_global_var_year
-			value = year
+			name = lia_global_var_treaty_num
+			value = 1
 		}
+		ordered_country = {
+			limit = {
+				exists = THIS
+				lia_trigger_treaty_check_simple = {
+					LIA_NATION_OTHER = ROOT
+				}
+			}
+			order_by = country_rank
+			min = 0
+			max = 10
+			check_range_bounds = no
+			#데이터 스캔.
+			while = {
+				limit = {
+					NOT = { has_variable = lia_var_treaty_break }
+				}
+				lia_effect_treaty_num_puzzle_3n = {	#LIA_eafp_effects.txt의 'lia_effect_treaty_num_puzzle_comp' 참고 바람.
+					LIA_PUZZLE = 0
+				}
+			}
+			remove_variable = lia_var_treaty_break	#쓸데없는것 지우고,
+			set_global_variable = {	#번호도 초기화 시켜서 다음번 ordered_country로 갑시다!
+				name = lia_global_var_treaty_num
+				value = 1
+			}
+		}
+		#데이터코드 원심분리기 투입
+		lia_effect_treaty_data_centrifugation = yes
+		remove_global_variable = lia_global_var_treaty_read_pass
 	}
 
 	option = {
 		name = eafp_kor_mainline.171.oa
+		trigger = {
+			has_variable = lia_var_treaty_data_all_11
+		}
+		#default_option = yes
+	}
+	
+	option = {
+		name = eafp_kor_mainline.171.oz
 		default_option = yes
-		every_scope_character = {
-			limit = {
-				has_role = agitator
-				has_ideology = ideology:ideology_eafp_missionary
-				NOT = { has_modifier = lia_modi_missionary_stealth }
-			}
-			kill_character = yes
-		}
-		custom_tooltip = {
-			text = lia_eafp_catholic_purge_0_tt
-			every_scope_state = {
-				limit = {
-					is_incorporated = yes
-				}
-				kill_population_percent_in_state = {
-					percent = 0.10
-					religion = rel:catholic
-				}
-			}
-			every_scope_state = {
-				every_scope_pop = {
-					limit = {
-						has_pop_religion = catholic
-					}
-					change_pop_religion = {
-						target = rel:confucian
-						value = 0.40
-					}
-				}
-			} 
-		}
+		lia_effect_treaty_data_sterilization = yes
 	}
 }
 ##200번~299번 - 국토 개혁(속칭 삼정) 관련 이벤트
@@ -2146,6 +2157,28 @@ eafp_kor_mainline.250 = {	#테슷트
 #369까지 - 힘의공유 저널에서 점화하는 역사 이벤트 영역
 
 #399까지 - 힘의공유 저널에서 점화하는 임의 이벤트 영역
+
+#399까지 - 힘의공유 저널에서 점화하는 임의 이벤트 영역
+
+#999번 - 스크립트용 히든이벤트
+eafp_kor_mainline.999 = {	#히든이벤트
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		remove_variable = lia_var_random_dice
+		random_list = {
+			2 = { set_variable = { name = lia_var_random_dice value = 1 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 2 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 3 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 4 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 5 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 6 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 7 } }
+			2 = { set_variable = { name = lia_var_random_dice value = 8 } }
+		}
+	}
+}
 
 ####1500번대는 경복궁 중건 관련 이벤트
 eafp_kor_mainline.1500 = {	#시작해볼까?

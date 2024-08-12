@@ -7799,7 +7799,7 @@ lia_effect_treaty_relation_set_full = {
 			add = 1
 		}
 		scope:lia_treaty_nation_2 = {
-			lia_effect_treaty_num_puzzle_3n = yes	#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp
+			lia_effect_treaty_num_puzzle_3n = { LIA_PUZZLE = 0 }#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp
 			#lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
 			#	LIA_TREATY_NUM = global_var:lia_global_var_treaty_num	#받아온 고유식별번호로 즉시 조약 비준.
 			#}
@@ -7811,7 +7811,7 @@ lia_effect_treaty_relation_set_full = {
 			add = -1
 		}
 		scope:lia_treaty_nation_2 = {
-			lia_effect_treaty_num_puzzle_3n = yes	#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp'
+			lia_effect_treaty_num_puzzle_3n = { LIA_PUZZLE = 0 }#아래 'lia_effect_treaty_num_puzzle_3n' 참고 바람. 분기점은 'lia_effect_treaty_num_puzzle_comp'
 			#lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
 			#	LIA_TREATY_NUM = global_var:lia_global_var_treaty_num	#받아온 고유식별번호로 즉시 조약 비준.
 			#}
@@ -8104,20 +8104,250 @@ lia_effect_treaty_num_puzzle_1n = {
 }
 lia_effect_treaty_num_puzzle_comp = {	#최종조립!
 	#분기점
-	if = {	#LIA_NATION_1일경우
+	if = {
 		limit = {
-			THIS = scope:lia_treaty_nation_1
+			NOT = { has_global_variable = lia_global_var_treaty_read_pass }
 		}
-		lia_effect_treaty_nation_1_numbering_full = {	#아래 '조약비준:1번 국가-완전' 이펙트 참고 바람.
-			LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999
-			#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999
-			#LIA_TREATY_NUM = 1	#000~999
+		if = {	#LIA_NATION_1일경우
+			limit = {
+				THIS = scope:lia_treaty_nation_1
+			}
+			lia_effect_treaty_nation_1_numbering_full = {	#아래 '조약비준:1번 국가-완전' 이펙트 참고 바람.
+				LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999
+				#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999
+				#LIA_TREATY_NUM = 1	#000~999
+			}
+		}
+		else = {	#LIA_NATION_2일경우
+			lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
+				LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
+				#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
+			}
 		}
 	}
-	else = {	#LIA_NATION_2일경우
-		lia_effect_treaty_nation_2_numbering_full = {	#아래 '조약비준:2번 국가-완전' 이펙트 참고 바람.
-			LIA_TREATY_NUM = $LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
-			#LIA_TREATY_NUM = 00$LIA_NUM_1N$	#000~999. #받아온 고유식별번호로 즉시 조약 비준.
+	else = {	#데이터 읽기 시도.
+		if = {
+			limit = {
+				is_target_in_variable_list = { name = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$ target = ROOT }	#이 번호의 조약이 ROOT와의 조약이라면?
+			}
+			#데이터를 읽어준다.
+			ROOT = { 
+				ordered_in_list = {
+					variable = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$
+					position = 0	#0번 데이터는 항상 조약의 데이터코드.
+					ROOT = {
+						if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_1 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_1
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_2 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_2
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_3 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_3
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_4 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_4
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_5 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_5
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_6 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_6
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_7 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_7
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_8 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_8
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_9 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_9
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_10 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_10
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_11 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_11
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else = {
+							post_notification = lia_message_treaty_fail_error_002
+						}
+					}
+				}
+				ordered_in_list = {
+					variable = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$
+					position = 1	#1번 데이터는 항상 조약의 상대국 정보.
+					ROOT = {
+						if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_1 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_1
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_2 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_2
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_3 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_3
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_4 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_4
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_5 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_5
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_6 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_6
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_7 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_7
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_8 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_8
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_9 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_9
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_10 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_10
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else = {
+							#post_notification = lia_message_treaty_fail_error_002
+						}
+					}
+				}
+			}
+			set_variable = lia_var_treaty_break	#목적을 달성하였으니, 반복문 탈출!
+		}
+		else = {	#아니라면?
+			#다음 번호를 확인해본다.
+			change_global_variable = {
+				name = lia_global_var_treaty_num
+				add = 1
+			}
 		}
 	}
 }
@@ -8132,9 +8362,18 @@ lia_effect_treaty_nation_1_numbering_full = {
 				NOT = { has_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$ }	#$LIA_TREATY_NUM$번 고유번호가 아직 발급된적이 없거나,
 				AND = {	#$LIA_TREATY_NUM$번 고유번호가 발급되었지만, 모종의 이유로 데이터가 오염,누락,결핍되어 파기가 필요해 그 자리에 새로 덮어쓸 수 있다면?
 					has_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$
-					variable_list_size = {
-						name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
-						value != 2	#원래 상대국 정보가 담긴 country 하나와 조약의 세부내역이 담긴 value 값까지 총 두개만 있어야대!
+					OR = {
+						variable_list_size = {	#필수 데이터가 갖춰지지 않고 있거나,
+							name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+							value != 2	#원래 상대국 정보가 담긴 country 하나와 조약의 세부내역이 담긴 value 값까지 총 두개만 있어야대!
+						}
+						#혹은?
+						is_target_in_variable_list = {
+							name = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#이 번호의 조약에?
+							#position = 1	#품고있는 상대국에 대한 정보가????????????
+							#exists != THIS	#그 나라가 현재는 존재하지 아니하다고 한다면?
+							target = scope:lia_treaty_nation_2	#지금 협상상대국에 대한 정보가 기록되어 있다면?
+						}
 					}
 				}
 				#AND = {	#혹은?
@@ -8144,9 +8383,10 @@ lia_effect_treaty_nation_1_numbering_full = {
 				#		value = 2	#데이터도 멀쩡하지만?
 				#	}
 				#	any_in_list = {
-				#		variable = lia_var_list_full_treaty_$LIA_TREATY_NUM$
-				#		THIS = scope:lia_treaty_nation_2	#좌측은 value취급을 받고, 우측은 당연히 country야. 미스매치를 해결할 방법을 생각해봐
-				#	}
+				#		variable = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#이 번호의 조약이?
+				#		position = 1	#품고있는 상대국에 대한 정보가????????????
+				#		THIS = scope:lia_treaty_nation_2	#지금 협상상대국이라면?????????
+				#	}	#그럼~ 이 슬롯을 써도 조아!
 				#}
 			}
 		}
@@ -8155,13 +8395,15 @@ lia_effect_treaty_nation_1_numbering_full = {
 				global_var:lia_global_var_treaty_num <= 999	#슬롯 여유 있는지 체크.
 			}
 			clear_variable_list = lia_var_list_full_treaty_$LIA_TREATY_NUM$	#망가진 슬롯이 있다면 청소!
-			add_to_variable_list = {	#고유식별번호 발급!
-				name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
-				target = scope:lia_treaty_nation_2	#상대국의 정보(타입: country)
-			}
 			add_to_variable_list = {
 				name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
 				target = global_var:lia_global_var_treaty_datacode	#조약의 세부사항을 나타내는 데이터코드(타입: value)
+			}
+			#잠시주목!!!!! 위아래를 보다시피 언제나 첫번째로 기록되는 정보는 조약 데이터 코드고, 그 뒤에 상대 국가 정보가 기입댄다!!!
+			#말인즉, ordered_in_list를 사용하여 position = 을 0으로 두냐 1(혹은 그 이상, 다자조약 시스템 실험을 위한 메모.)로 두냐에 따라 데이터코드 값을 따올것인지 국가를 따올것인지 선택할수 있어!
+			add_to_variable_list = {	#고유식별번호 발급!
+				name = lia_var_list_full_treaty_$LIA_TREATY_NUM$
+				target = scope:lia_treaty_nation_2	#상대국의 정보(타입: country)
 			}
 			#브레이크 = yes
 			set_global_variable = lia_global_var_treaty_break
@@ -8170,7 +8412,7 @@ lia_effect_treaty_nation_1_numbering_full = {
 				limit = {
 					OR = {
 						scope:lia_treaty_nation_1 = ROOT	#내가 당사자면???
-						scope:lia_treaty_nation_2 = ROOT
+						scope:lia_treaty_nation_2 = ROOT	#아니흠잠간만...가만잇어바...어자피조약은전세계공통고유번호를받잖아...그럼굳이내가당사자일경우로한정지을필요가잇나??? 게다가 글로벌변수인데?
 					}
 				}
 				set_global_variable = {	#국가정보 1
@@ -8239,6 +8481,423 @@ lia_effect_treaty_relation_clear_full = {
 	}
 }
 
+##목록화
+#추출한 데이터코드 원심분리
+lia_effect_treaty_data_centrifugation = {
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_1
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_1
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_1
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_1
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_1
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_1
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_2
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_2
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_2
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_2
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_2
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_2
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_3
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_3
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_3
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_3
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_3
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_3
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_4
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_4
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_4
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_4
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_4
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_4
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_5
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_5
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_5
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_5
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_5
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_5
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_5
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_5
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_6
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_6
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_6
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_6
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_6
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_6
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_6
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_6
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_7
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_7
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_7
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_7
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_7
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_7
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_7
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_7
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_8
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_8
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_8
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_8
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_8
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_8
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_8
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_8
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_9
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_9
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_9
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_9
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_9
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_9
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_9
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_9
+			value = lia_val_data_gain
+		}
+	}
+	if = {
+		limit = {
+			has_variable = lia_var_treaty_data_all_10
+		}
+		set_variable = {
+			name = lia_var_treaty_data_value 
+			value = var:lia_var_treaty_data_all_10
+		}
+		set_variable = {
+			name = lia_var_treaty_data_year_10
+			value = lia_val_data_year
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod1_10
+			value = lia_val_data_cod1
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod2_10
+			value = lia_val_data_cod2
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod3_10
+			value = lia_val_data_cod3
+		}
+		set_variable = {
+			name = lia_var_treaty_data_cod4_10
+			value = lia_val_data_cod4
+		}
+		set_variable = {
+			name = lia_var_treaty_data_gain_10
+			value = lia_val_data_gain
+		}
+	}
+}
+#살균소독
+lia_effect_treaty_data_sterilization = {
+	remove_variable = lia_var_treaty_data_all_1
+	remove_variable = lia_var_treaty_data_year_1
+	remove_variable = lia_var_treaty_data_cod1_1
+	remove_variable = lia_var_treaty_data_cod2_1
+	remove_variable = lia_var_treaty_data_cod3_1
+	remove_variable = lia_var_treaty_data_cod4_1
+	remove_variable = lia_var_treaty_data_gain_1
+	remove_variable = lia_var_treaty_data_nation_1
+	remove_variable = lia_var_treaty_data_all_2
+	remove_variable = lia_var_treaty_data_year_2
+	remove_variable = lia_var_treaty_data_cod1_2
+	remove_variable = lia_var_treaty_data_cod2_2
+	remove_variable = lia_var_treaty_data_cod3_2
+	remove_variable = lia_var_treaty_data_cod4_2
+	remove_variable = lia_var_treaty_data_gain_2
+	remove_variable = lia_var_treaty_data_nation_2
+	remove_variable = lia_var_treaty_data_all_3
+	remove_variable = lia_var_treaty_data_year_3
+	remove_variable = lia_var_treaty_data_cod1_3
+	remove_variable = lia_var_treaty_data_cod2_3
+	remove_variable = lia_var_treaty_data_cod3_3
+	remove_variable = lia_var_treaty_data_cod4_3
+	remove_variable = lia_var_treaty_data_gain_3
+	remove_variable = lia_var_treaty_data_nation_3
+	remove_variable = lia_var_treaty_data_all_4
+	remove_variable = lia_var_treaty_data_year_4
+	remove_variable = lia_var_treaty_data_cod1_4
+	remove_variable = lia_var_treaty_data_cod2_4
+	remove_variable = lia_var_treaty_data_cod3_4
+	remove_variable = lia_var_treaty_data_cod4_4
+	remove_variable = lia_var_treaty_data_gain_4
+	remove_variable = lia_var_treaty_data_nation_4
+	remove_variable = lia_var_treaty_data_all_5
+	remove_variable = lia_var_treaty_data_year_5
+	remove_variable = lia_var_treaty_data_cod1_5
+	remove_variable = lia_var_treaty_data_cod2_5
+	remove_variable = lia_var_treaty_data_cod3_5
+	remove_variable = lia_var_treaty_data_cod4_5
+	remove_variable = lia_var_treaty_data_gain_5
+	remove_variable = lia_var_treaty_data_nation_5
+	remove_variable = lia_var_treaty_data_all_6
+	remove_variable = lia_var_treaty_data_year_6
+	remove_variable = lia_var_treaty_data_cod1_6
+	remove_variable = lia_var_treaty_data_cod2_6
+	remove_variable = lia_var_treaty_data_cod3_6
+	remove_variable = lia_var_treaty_data_cod4_6
+	remove_variable = lia_var_treaty_data_gain_6
+	remove_variable = lia_var_treaty_data_nation_6
+	remove_variable = lia_var_treaty_data_all_7
+	remove_variable = lia_var_treaty_data_year_7
+	remove_variable = lia_var_treaty_data_cod1_7
+	remove_variable = lia_var_treaty_data_cod2_7
+	remove_variable = lia_var_treaty_data_cod3_7
+	remove_variable = lia_var_treaty_data_cod4_7
+	remove_variable = lia_var_treaty_data_gain_7
+	remove_variable = lia_var_treaty_data_nation_7
+	remove_variable = lia_var_treaty_data_all_8
+	remove_variable = lia_var_treaty_data_year_8
+	remove_variable = lia_var_treaty_data_cod1_8
+	remove_variable = lia_var_treaty_data_cod2_8
+	remove_variable = lia_var_treaty_data_cod3_8
+	remove_variable = lia_var_treaty_data_cod4_8
+	remove_variable = lia_var_treaty_data_gain_8
+	remove_variable = lia_var_treaty_data_nation_8
+	remove_variable = lia_var_treaty_data_all_9
+	remove_variable = lia_var_treaty_data_year_9
+	remove_variable = lia_var_treaty_data_cod1_9
+	remove_variable = lia_var_treaty_data_cod2_9
+	remove_variable = lia_var_treaty_data_cod3_9
+	remove_variable = lia_var_treaty_data_cod4_9
+	remove_variable = lia_var_treaty_data_gain_9
+	remove_variable = lia_var_treaty_data_nation_9
+	remove_variable = lia_var_treaty_data_all_10
+	remove_variable = lia_var_treaty_data_year_10
+	remove_variable = lia_var_treaty_data_cod1_10
+	remove_variable = lia_var_treaty_data_cod2_10
+	remove_variable = lia_var_treaty_data_cod3_10
+	remove_variable = lia_var_treaty_data_cod4_10
+	remove_variable = lia_var_treaty_data_gain_10
+	remove_variable = lia_var_treaty_data_nation_10
+}
 #이게되네↓
 
 #lia_effect_var_parameter_test = {
