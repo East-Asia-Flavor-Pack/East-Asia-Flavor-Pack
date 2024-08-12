@@ -1,0 +1,94 @@
+﻿raise_likin_tax_rate_button = {
+	name = "raise_likin_tax_rate_button"
+	desc = "raise_likin_tax_rate_button_desc"
+	visible = {
+		always = yes
+	}
+	possible = {
+		var:likin_level_var < 5
+	}
+	effect = {
+		custom_tooltip = {
+			text = raise_likin_tax_rate_button_desc
+			change_variable = {
+				name = likin_level_var
+				add = 1
+			}
+			set_variables_taxes_modifiers_for_likin = yes
+		}
+	}
+	ai_chance = {
+		base = 0
+		modifier = {
+			trigger = {
+				weekly_net_fixed_income < {
+					value = var:likin_tax_income_modifier_multiplier
+					multiply = -1
+				}
+			}
+			add = 40
+		}
+	}
+}
+
+decrease_likin_tax_rate_button = {
+	name = "decrease_likin_tax_rate_button"
+	desc = "decrease_likin_tax_rate_button_desc"
+	visible = {
+		var:likin_level_var > 1
+	}
+	effect = {
+		custom_tooltip = {
+			text = decrease_likin_tax_rate_button_desc
+			change_variable = {
+				name = likin_level_var
+				subtract = 1
+			}
+			set_variables_taxes_modifiers_for_likin = yes
+		}
+	}
+	ai_chance = {
+		base = 0
+		modifier = {
+			trigger = {
+				weekly_net_fixed_income > 0
+			}
+			add = 20
+		}
+		modifier = {
+			trigger = {
+				weekly_net_fixed_income > 10000
+			}
+			add = 20
+		}
+	}
+}
+
+abolish_likin_button = {
+	name = "abolish_likin_button"
+	desc = "abolish_likin_button_desc"
+	visible = {
+		var:likin_level_var = 1
+	}
+	effect = {
+		custom_tooltip = {
+			text = abolish_likin_button_desc
+			set_variable = { # 폐지
+				name = likin_level_var
+				value = 0
+			}
+		}
+	}
+	ai_chance = {
+		base = 0
+		modifier = {
+			trigger = {
+				weekly_net_fixed_income > {
+					value = var:likin_tax_income_modifier_multiplier
+					multiply = 3
+				}
+			}
+			add = 20
+		}
+	}
+}

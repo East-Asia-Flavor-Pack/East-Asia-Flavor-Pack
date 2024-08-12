@@ -1,0 +1,40 @@
+﻿je_likin = {
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+
+	group = je_group_historical_content
+
+	scripted_button = raise_likin_tax_rate_button
+	scripted_button = decrease_likin_tax_rate_button
+	scripted_button = abolish_likin_button
+
+	immediate = {
+		set_variable = {
+			name = likin_level_var
+			value = 1
+		}
+		set_variables_taxes_modifiers_for_likin = yes
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			set_variables_taxes_modifiers_for_likin = yes
+		}
+	}
+
+	fail = {
+		OR = {
+			NOT = { has_law = law_type:law_land_based_taxation }
+			custom_tooltip = {
+				text = likin_abolished
+				var:likin_level_var = 0
+			}
+		}
+	}
+	on_fail = {
+		clear_je_likin_stuffs = yes
+	}
+
+	weight = 100
+
+	status_desc = je_likin_status
+}
