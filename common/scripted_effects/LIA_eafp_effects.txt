@@ -8107,6 +8107,7 @@ lia_effect_treaty_num_puzzle_comp = {	#최종조립!
 	if = {
 		limit = {
 			NOT = { has_global_variable = lia_global_var_treaty_read_pass }
+			NOT = { has_global_variable = lia_global_var_treaty_violate_pass }
 		}
 		if = {	#LIA_NATION_1일경우
 			limit = {
@@ -8125,7 +8126,11 @@ lia_effect_treaty_num_puzzle_comp = {	#최종조립!
 			}
 		}
 	}
-	else = {	#데이터 읽기 시도.
+	else_if = {	#데이터 읽기 시도 - 기록 열람용.
+		limit = {
+			has_global_variable = lia_global_var_treaty_read_pass
+			NOT = { has_global_variable = lia_global_var_treaty_violate_pass }
+		}
 		if = {
 			limit = {
 				is_target_in_variable_list = { name = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$ target = ROOT }	#이 번호의 조약이 ROOT와의 조약이라면?
@@ -8331,6 +8336,69 @@ lia_effect_treaty_num_puzzle_comp = {	#최종조립!
 							}
 							set_variable = {
 								name = lia_var_treaty_data_nation_10
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_11 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_11
+								value = PREV	#컨츄리 통으로 가져오기!
+							}
+						}
+						else = {
+							#post_notification = lia_message_treaty_fail_error_002
+						}
+					}
+				}
+			}
+			set_variable = lia_var_treaty_break	#목적을 달성하였으니, 반복문 탈출!
+		}
+		else = {	#아니라면?
+			#다음 번호를 확인해본다.
+			change_global_variable = {
+				name = lia_global_var_treaty_num
+				add = 1
+			}
+		}
+	}
+	else = {	#데이터 읽기 시도 - 위반 체크용.
+		if = {
+			limit = {
+				is_target_in_variable_list = { name = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$ target = ROOT }	#이 번호의 조약이 ROOT와의 조약이라면?
+			}
+			#데이터를 읽어준다.
+			ROOT = { 
+				ordered_in_list = {
+					variable = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$
+					position = 0	#0번 데이터는 항상 조약의 데이터코드.
+					ROOT = {
+						if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_all_1 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_all_1
+								value = PREV	#데이터코드 통으로 가져오기!
+							}
+						}
+						else = {
+							post_notification = lia_message_treaty_fail_error_002
+						}
+					}
+				}
+				ordered_in_list = {
+					variable = lia_var_list_full_treaty_$LIA_NUM_3N$$LIA_NUM_2N$$LIA_NUM_1N$
+					position = 1	#1번 데이터는 항상 조약의 상대국 정보.
+					ROOT = {
+						if = {
+							limit = {
+								NOT = { has_variable = lia_var_treaty_data_nation_1 }
+							}
+							set_variable = {
+								name = lia_var_treaty_data_nation_1
 								value = PREV	#컨츄리 통으로 가져오기!
 							}
 						}
@@ -8897,6 +8965,46 @@ lia_effect_treaty_data_sterilization = {
 	remove_variable = lia_var_treaty_data_cod4_10
 	remove_variable = lia_var_treaty_data_gain_10
 	remove_variable = lia_var_treaty_data_nation_10
+	remove_variable = lia_var_treaty_data_all_11
+	remove_variable = lia_var_treaty_data_nation_11
+}
+
+#조약 위반여부 체크 및 패널티 부과
+#이거 아직 작업중이야!!!!!!!!!!!!!! 저널에서 점화하는 부분은 일단 주석처리해놨어!!! (24.08.13)
+lia_effect_check_violate_treaty = {
+	set_global_variable = lia_global_var_treaty_violate_pass
+	set_global_variable = {
+		name = lia_global_var_treaty_num
+		value = 1
+	}
+	every_country = {
+		limit = {
+			exists = THIS
+			THIS != ROOT
+			lia_trigger_treaty_check_simple = {
+				LIA_NATION_OTHER = ROOT
+			}
+		}
+		#데이터 스캔.
+		while = {
+			limit = {
+				NOT = { has_variable = lia_var_treaty_break }
+			}
+			lia_effect_treaty_num_puzzle_3n = {	#LIA_eafp_effects.txt의 'lia_effect_treaty_num_puzzle_comp' 참고 바람.
+				LIA_PUZZLE = 0
+			}
+		}
+		remove_variable = lia_var_treaty_break	#쓸데없는것 지우고,
+		set_global_variable = {	#번호도 초기화 시켜서 다음번 country로 갑시다!
+			name = lia_global_var_treaty_num
+			value = 1
+		}
+		ROOT = {
+			
+			post_notification = lia_message_treaty_violated
+		}
+	}
+	remove_global_variable = lia_global_var_treaty_violate_pass
 }
 #이게되네↓
 
