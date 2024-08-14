@@ -573,20 +573,74 @@ lia_eafp_scripted_button_treaty_list = {
 	possible = {
 		custom_tooltip = {
 			text = lia_eafp_scripted_button_treaty_list_tt
-			any_country = {
-				THIS != ROOT
-				lia_trigger_treaty_check_simple = {
-					LIA_NATION_OTHER = ROOT
+			OR = {
+				any_country = {
+					THIS != ROOT
+					lia_trigger_treaty_check_simple = {
+						LIA_NATION_OTHER = ROOT
+					}
 				}
+				has_variable = lia_var_read_treaty_list
 			}
 		}
 	}
 
 	effect = {
-		trigger_event = {
-			id = eafp_kor_mainline.171
+		#trigger_event = {
+		#	id = eafp_kor_mainline.171
+		#}
+		if = {
+			limit = {
+				NOT = { has_variable = lia_var_read_treaty_list }
+			}
+			#스캔!
+			set_global_variable = lia_global_var_treaty_read_pass
+			set_global_variable = {
+				name = lia_global_var_treaty_num
+				value = 1
+			}
+			ordered_country = {
+				limit = {
+					exists = THIS
+					lia_trigger_treaty_check_simple = {
+						LIA_NATION_OTHER = ROOT
+					}
+				}
+				order_by = { # reverse order
+					value = 999
+					subtract = global_country_ranking
+				}
+				#order_by = global_country_ranking
+				#position = 0
+				min = 0
+				max = 300
+				check_range_bounds = no
+				#데이터 스캔.
+				while = {
+					limit = {
+						NOT = { has_variable = lia_var_treaty_break }
+					}
+					lia_effect_treaty_num_puzzle_3n = {	#LIA_eafp_effects.txt의 'lia_effect_treaty_num_puzzle_comp' 참고 바람.
+						LIA_PUZZLE = 0
+					}
+				}
+				remove_variable = lia_var_treaty_break	#쓸데없는것 지우고,
+				set_global_variable = {	#번호도 초기화 시켜서 다음번 ordered_country로 갑시다!
+					name = lia_global_var_treaty_num
+					value = 1
+				}
+			}
+			#데이터코드 원심분리기 투입
+			#lia_effect_treaty_data_centrifugation = yes
+			remove_global_variable = lia_global_var_treaty_read_pass
+			#목록 ON
+			add_treasury = 1999
+			set_variable = lia_var_read_treaty_list
 		}
-		add_treasury = 1999
+		else = {
+			remove_variable = lia_var_read_treaty_list
+			lia_effect_treaty_data_sterilization = yes
+		}
 	}
 }
 #조약 실험
@@ -625,8 +679,8 @@ lia_eafp_scripted_button_treaty_test = {
 				LIA_NATION_2 = THIS
 				LIA_TREATY_YEAR = year
 				LIA_TREATY_COD1 = 01
-				LIA_TREATY_COD2 = 00
-				LIA_TREATY_COD3 = 01
+				LIA_TREATY_COD2 = 01
+				LIA_TREATY_COD3 = 00
 				LIA_TREATY_COD4 = 01
 				LIA_TREATY_GAIN = 00
 			}
