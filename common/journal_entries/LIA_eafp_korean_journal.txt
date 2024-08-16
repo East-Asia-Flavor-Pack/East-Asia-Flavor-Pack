@@ -399,6 +399,13 @@ je_lia_korean_land_problem = {
 		effect = {
 			#개선 진행도 자연증가
 			lia_land_problem_expup = yes
+			#AI 조율
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				lia_land_problem_expup_ai = yes
+			}
 			#모디파이어 업데이트
 			lia_land_problem_add_modifier = yes
 			remove_modifier = lia_modi_land_problem_mil_country
@@ -655,6 +662,16 @@ je_lia_korean_regent = {
 	}
 	on_monthly_pulse = {
 		effect = {
+			#AI 조정
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				change_global_variable = {
+					name = lia_global_var_je_regent
+					add = -0.5
+				}
+			}
 			#권력공유 타입별 매달 관계도 자연감소량
 			lia_kor_regent_attitude_roll = yes
 			#힘의균형 레벨별 조건부 패시브 효과 체크
@@ -930,10 +947,17 @@ je_lia_korean_seowon = {
 		##서원 철폐 글로벌 변수가 없을 것 도 조건에 넣어두자.
 		country_has_primary_culture = cu:korean
 		NOT = { has_global_variable = lia_kor_seowon_complete }
-		any_scope_state = {
-			any_scope_building = {
-				is_building_type = building_manor_house
-				NOT = { has_active_production_method = pm_eafp_seowon }
+		OR = {
+			any_scope_state = {
+				any_scope_building = {
+					is_building_type = building_manor_house
+					NOT = { has_active_production_method = pm_eafp_seowon }
+				}
+			}
+			has_global_variable = lia_global_var_sam_all_clear
+			any_scope_character = {
+				is_heir = yes
+				has_variable = is_daewongun_eafp
 			}
 		}
 	}

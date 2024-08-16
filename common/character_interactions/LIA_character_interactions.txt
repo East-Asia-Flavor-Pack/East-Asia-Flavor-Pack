@@ -48,56 +48,6 @@ lia_interaction_test = {	#테스트
 			}
 			add_treasury = prev.var:lia_var_personal_account
 		}
-		#this.interest_group = {
-		#	save_scope_as = relevant_ig
-		#}
-		#owner = {
-		#	save_scope_as = exiling_country_scope
-		#}
-		#if = {
-		#	limit = {
-		#		has_role = politician
-		#	}
-		#	owner = {
-		#		scope:relevant_ig = {
-		#			add_modifier = {
-		#				name = modifier_exiled_leader
-		#				months = normal_modifier_time
-		#				is_decaying = yes
-		#			}
-		#		}
-		#	}
-		#}
-		#if = {
-		#	limit = {
-		#		owner = { has_journal_entry = je_caudillo }
-		#		interest_group = {
-		#			is_interest_group_type = ig_armed_forces
-		#		}
-		#	}
-		#	if = {
-		#		limit = {
-		#			interest_group = {
-		#				leader = {
-		#					this = ROOT
-		#				}
-		#			}
-		#		}
-		#		owner = {
-		#			custom_tooltip = {
-		#				text = lose_large_caudillo_points
-		#				change_variable = {
-		#					name = caudillo_var
-		#					add = -200
-		#				}
-		#			}
-		#		}
-		#	}
-		#}
-		#custom_tooltip = {
-		#	text = lia_interaction_buy_favor_tt
-		#	#exile_character_with_martyrdom = yes
-		#}
 	}
 
 	#cooldown = { months = 6 }
@@ -240,10 +190,45 @@ lia_interaction_give_money = {	#내탕금늘려주기
 			lia_effect_option_gain_attitude = {
 				LIA_ATTITUDE = 1
 			}
+			add_treasury = lia_val_increase_purse_cost	#내가 낼 돈
+			set_global_variable = {	#송금할 돈
+				name = lia_global_var_pocket_money_payment
+				value = lia_val_increase_purse_cost
+			}
+			change_global_variable = {	#민간투자금으로 갈 10%
+				name = lia_global_var_pocket_money_payment
+				multiply = -0.1
+			}
+			hidden_effect = {	#툴팁 지저분하니까
+				add_investment_pool = global_var:lia_global_var_pocket_money_payment	#송금
+			}
+		}
+		this = {
+			if = {	#계좌개설
+				limit = {
+					NOT = { has_variable = lia_var_personal_account }
+				}
+				set_variable = {
+					name = lia_var_personal_account
+					value = 100000
+				}
+			}
+			change_global_variable = {	#개인자금으로 갈 90%
+				name = lia_global_var_pocket_money_payment
+				multiply = 9
+			}
+			change_variable = {	#송금
+				name = lia_var_personal_account
+				add = global_var:lia_global_var_pocket_money_payment
+			}
+		}
+		custom_tooltip = {
+			text = lia_interaction_buy_favor_tt
+			#이펙트 = yes
 		}
 	}
 
-	cooldown = { months = 3 }
+	cooldown = { months = 12 }
 	show_confirmation_box = yes
 
 	ai_chance = {
@@ -337,7 +322,7 @@ lia_interaction_praise = {	#명예 높여주기
 			ruler = {
 				age >= 16
 			}
-			scaled_debt < 0.75
+			#scaled_debt < 0.75
 		}
 		OR = {
 			interest_group = {
@@ -351,12 +336,22 @@ lia_interaction_praise = {	#명예 높여주기
 	effect = {
 		scope:actor ?= {
 			lia_effect_option_gain_attitude = {
-				LIA_ATTITUDE = 1
+				LIA_ATTITUDE = 2
+			}
+			add_modifier = {
+				name = lia_modi_interaction_praise_cost
+				months = 6
+			}
+		}
+		this = {
+			add_modifier = {
+				name = lia_modi_interaction_praise
+				months = 6
 			}
 		}
 	}
 
-	cooldown = { months = 3 }
+	cooldown = { months = 6 }
 	show_confirmation_box = yes
 
 	ai_chance = {
@@ -391,26 +386,34 @@ lia_interaction_reinstate = {	#계파 사면
 			ruler = {
 				age >= 16
 			}
-			scaled_debt < 0.75
+			#scaled_debt < 0.75
 		}
-		OR = {
-			interest_group = {
-				is_in_government = yes
-				is_insurrectionary = no
-				#is_marginal = yes
-			}
+		interest_group = {
+			ig_approval < -2
 		}
 	}
 
 	effect = {
 		scope:actor ?= {
-			lia_effect_option_gain_attitude = {
-				LIA_ATTITUDE = 1
+			lia_effect_option_gain_balance = {
+				LIA_BALANCE = 99
+			}
+		}
+		interest_group = {
+			add_modifier = {
+				name = lia_modi_interaction_reinstate
+				months = 12
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = lia_modi_interaction_reinstate
+				months = 12
+				#is_decaying = yes
 			}
 		}
 	}
 
-	cooldown = { months = 3 }
+	cooldown = { months = 12 }
 	show_confirmation_box = yes
 
 	ai_chance = {
@@ -443,9 +446,9 @@ lia_interaction_give_governor = {	#관찰사직 제수
 	possible = {
 		scope:actor ?= {
 			ruler = {
-				age >= 16
+				#age >= 16
 			}
-			scaled_debt < 0.75
+			#scaled_debt < 0.75
 		}
 		OR = {
 			interest_group = {
@@ -454,12 +457,66 @@ lia_interaction_give_governor = {	#관찰사직 제수
 				#is_marginal = yes
 			}
 		}
+		custom_tooltip = {
+			text = lia_interaction_give_governor_condition_tt
+			OR = {
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_SEOUL
+						NOT = { has_modifier = lia_modi_interaction_governor_gg }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_SEOUL
+						NOT = { has_modifier = lia_modi_interaction_governor_gw }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_YANGHO
+						NOT = { has_modifier = lia_modi_interaction_governor_cc }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_YANGHO
+						NOT = { has_modifier = lia_modi_interaction_governor_jl }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_BUSAN
+						NOT = { has_modifier = lia_modi_interaction_governor_gs }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_PYONGYANG
+						NOT = { has_modifier = lia_modi_interaction_governor_pa }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_PYONGYANG
+						NOT = { has_modifier = lia_modi_interaction_governor_hh }
+					}
+				}
+				scope:actor ?= {
+					any_scope_state = {
+						state_region = s:STATE_SARIWON
+						NOT = { has_modifier = lia_modi_interaction_governor_hg }
+					}
+				}
+			}
+		}
 	}
 
 	effect = {
 		scope:actor ?= {
-			lia_effect_option_gain_attitude = {
-				LIA_ATTITUDE = 1
+			custom_tooltip = {
+				text = lia_interaction_give_governor_event_tt
+				trigger_event = eafp_kor_mainline.370
 			}
 		}
 	}
@@ -499,7 +556,7 @@ lia_interaction_reconciliation = {	#정치적 거래
 			ruler = {
 				age >= 16
 			}
-			scaled_debt < 0.75
+			#scaled_debt < 0.75
 		}
 		OR = {
 			interest_group = {
@@ -512,13 +569,16 @@ lia_interaction_reconciliation = {	#정치적 거래
 
 	effect = {
 		scope:actor ?= {
+			lia_effect_option_gain_balance = {
+				LIA_BALANCE = 15
+			}
 			lia_effect_option_gain_attitude = {
 				LIA_ATTITUDE = 1
 			}
 		}
 	}
 
-	cooldown = { months = 3 }
+	#cooldown = { months = 3 }
 	show_confirmation_box = yes
 
 	ai_chance = {
@@ -538,6 +598,7 @@ lia_interaction_helpme_plz = {	#돈좀
 	potential = {
 		owner = scope:actor
 		is_heir = yes
+		has_variable = lia_var_personal_account
 		scope:actor ?= {
 			has_journal_entry = je_lia_korean_regent
 			has_variable = lia_var_regent_type
@@ -553,7 +614,7 @@ lia_interaction_helpme_plz = {	#돈좀
 			ruler = {
 				age >= 16
 			}
-			scaled_debt < 0.75
+			#scaled_debt < 0.75
 		}
 		OR = {
 			interest_group = {
@@ -565,9 +626,129 @@ lia_interaction_helpme_plz = {	#돈좀
 	}
 
 	effect = {
+		this = {
+			change_variable = {	#송금
+				name = lia_var_personal_account
+				divide = 2
+			}
+		}
 		scope:actor ?= {
-			lia_effect_option_gain_attitude = {
-				LIA_ATTITUDE = 1
+			add_treasury = lia_val_helpme_plz_money	#내가 기부받을 돈
+			#set_global_variable = {	#송금할 돈
+			#	name = lia_global_var_pocket_money_payment
+			#	value = lia_val_buy_favor_cost
+			#}
+			if = {
+				limit = {
+					lia_val_helpme_plz_money < 50000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 5
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 100000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 10
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 200000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 20
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 300000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 30
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 400000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 40
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 500000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 50
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 650000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 60
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 800000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 70
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 950000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 80
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 1100000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 90
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 1300000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 100
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 1500000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 110
+				}
+			}
+			else_if = {
+				limit = {
+					lia_val_helpme_plz_money < 2000000
+				}
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 125
+				}
+			}
+			else = {
+				lia_effect_option_gain_balance = {
+					LIA_BALANCE = 150
+				}
+			}
+			custom_tooltip = {
+				text = lia_interaction_helpme_plz_tt
 			}
 		}
 	}
