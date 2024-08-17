@@ -1,0 +1,579 @@
+types cabinets {
+	type cabinet = flowcontainer {
+		direction = vertical
+		flowcontainer = {
+			margin_bottom = 70
+			
+			using = entry_bg_fancy
+
+			widget = {
+				allow_outside = yes
+				button_icon_reset = {
+					size = { 25 25 }
+					position = { 20 45 }
+					onclick = "[GetVariableSystem.Toggle( 'cabinet_character_toggle' )]"
+				}
+			}
+			container = {
+				visible = "[IsDataModelEmpty(GetGlobalList('neagak_deasin_character_list'))]"
+				default_header_clean_faded = {
+					size = { 540 40 }
+					parentanchor = hcenter
+					blockoverride "text" {
+						text = "#v 영의대신#!"
+					}
+				}
+				textbox = {
+					text = "공석"
+					position = { 0 50}
+					align = center
+					fontsize = 30
+					size = { 540 230 }
+				}
+			}
+			container = {
+				datacontext = "[GetPlayer.MakeScope.Var('who_neagak_deasin').GetCharacter]"
+				visible = "[Not(IsDataModelEmpty(GetGlobalList('neagak_deasin_character_list')))]"
+				default_header_clean_faded = {
+					size = { 540 40 }
+					parentanchor = hcenter
+					blockoverride "text" {
+						text = "#v 영의대신#!"
+					}
+				}
+				character_portrait_base_no_mask = {
+					position = { 120 240 }
+					blockoverride "portrait_size" {
+						size = { 200 220 }
+					}
+					blockoverride "portrait_texture" {
+						portrait_texture = "[Character.GetAnimatedPortrait('environment_standard', 'camera_body', 'idle', GetPortraitRenderSize(PdxGuiWidget.Self))]"
+					}
+					blockoverride "portrait_icons" {}
+					blockoverride "show_hat" {}
+				}
+				default_header_clean_faded = {
+					size = { 160 40 }
+					position = { 40 40 }
+					parentanchor = bottom
+					blockoverride "text" {
+						text = "[Character.GetFullName]"
+					}
+				}
+				vertical_divider_stronger_full = {
+					parentanchor = hcenter
+					position = { -20 50 }
+					alpha = 2
+				}
+				flowcontainer = {
+					parentanchor = right|vcenter
+					position = { -20 42 }
+					margin_left = 5
+					margin_bottom = 7
+					margin_top = 7
+					direction = vertical
+					minimumsize = { 250 -1 }
+
+					background =  {
+						using = entry_bg_fancy_dark
+						alpha = 0.3
+					}
+
+					### INTEREST GROUP
+					character_interest_group_entry = {
+						visible = "[Not( Character.IsInExilePool )]"
+						datacontext = "[Character.AccessInterestGroup]"
+					}
+
+					character_interest_group_entry = {
+						visible = "[Character.IsInExilePool]"
+						datacontext = "[Character.AccessInterestGroup]"
+					}
+
+					### 세력
+					character_stats_entry = {
+
+						blockoverride "icon_texture" {
+							texture = "gfx/interface/backgrounds/round_button_bg.dds"
+							icon = {
+								parentanchor = center
+								size = { 32 32 }
+								texture = "gfx/interface/population/pop_culture.dds"
+							}
+						}
+						blockoverride "double_entry_label" {
+							text = "세력"
+						}
+						blockoverride "double_entry_value" {
+							text = "CHARACTER_CLAN"
+						}
+						blockoverride "single_text_entry" {}
+					}
+
+					### IDEOLOGY
+					character_stats_entry = {
+						datacontext = "[Character.GetIdeology]"
+
+						tooltipwidget = {
+							FancyTooltip_Ideology = {}
+						}
+
+						blockoverride "icon_texture" {
+							texture = "[Ideology.GetTexture]"
+						}
+						blockoverride "double_entry_label" {
+							text = "IDEOLOGY_CONCEPT"
+						}
+						blockoverride "double_entry_value" {
+							text = "CHARACTER_IDEOLOGY"
+						}
+						blockoverride "single_text_entry" {}
+					}
+
+					
+
+					#POPULARITY
+					character_stats_entry = {
+
+						tooltip = "POPULARITY_BREAKDOWN"
+
+						blockoverride "animation" {
+							name = commander_panel_show
+							on_finish = "[PdxGuiTriggerAllAnimations('character_panel_stat')]"
+						}
+
+						blockoverride "icon_texture" {
+							texture = "gfx/interface/icons/generic_icons/popularity.dds"
+						}
+
+						blockoverride "double_entry_label" {
+							text = "POPULARITY"
+						}
+						blockoverride "double_entry_value" {
+							text = "CHARACTER_POPULARITY"
+						}
+						blockoverride "single_text_entry" {}
+					}	
+
+					### AGE
+					character_stats_entry = {
+						### This is to not overcrowd the panel when the character is both a General and an Agitator
+						visible = "[Not(And(Character.IsAgitator, Character.IsGeneral))]"
+						tooltip = "CHARACTER_AGE_TOOLTIP"
+
+						blockoverride "icon_texture" {
+							texture = "gfx/interface/icons/generic_icons/age.dds"
+						}
+						blockoverride "double_entry_label" {
+							text = "AGE"
+						}
+						blockoverride "double_entry_value" {
+							text = "CHARACTER_AGE"
+						}
+						blockoverride "single_text_entry" {}
+
+						blockoverride "divider" {
+							divider_clean = {
+								visible = "[Character.IsAgitator]"
+								parentanchor = bottom|hcenter
+								position = { 0 -2 }
+							}
+						}
+					}
+				}
+			}	
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 내부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'ijo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'ijo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'ijo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'ijo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 외부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'tongri' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'tongri' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'tongri' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'tongri' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 탁지부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'hojo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'hojo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'hojo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'hojo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 원수부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'byeongjo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'byeongjo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'byeongjo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'byeongjo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 법부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'hyeongjo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'hyeongjo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'hyeongjo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'hyeongjo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 학부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'yejo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'yejo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'yejo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'yejo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 농상공부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'gongjo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'gongjo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'gongjo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'gongjo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			section_header_button = {
+				blockoverride "layout" {
+						position = { 110 0 }
+						size = { 540 38 }
+					}
+
+				blockoverride "left_text" {
+					text = "#V 경부#!"
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'podo' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'podo' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'podo' )]" 
+				}
+
+				background = {
+					using = filter_section_header_active_bg
+				}
+			}
+
+			container = {
+				spacing = 10 
+				using = default_list_position
+				textbox = {
+					visible = "[GetVariableSystem.Exists( 'podo' )]" 
+					using = pop_browser_filter_section
+
+					spacing = 10
+					text = " "
+					multiline = yes
+					align = center|nobaseline
+					size = { 540 300 }
+
+					background = {
+						using = entry_bg_simple
+					}
+				}
+			}
+		}
+	}
+}
