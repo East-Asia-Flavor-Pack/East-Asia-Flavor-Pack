@@ -113,3 +113,119 @@
 		}
 	}
 }
+
+default_popup =  {
+	visible = "[GetVariableSystem.Exists( 'cabinet_character_toggle_deasin_1' )]"
+	name = "figure_select_deasin_1"
+		
+	blockoverride "window_header_name" {
+		raw_text = "인물 모집"
+	}
+
+	blockoverride "entire_scrollarea" 
+	{
+		widget = {
+			using = default_list_position
+			direction = vertical
+			allow_outside = yes
+			ignoreinvisible = yes
+			size = { 800 500 }
+			widget = {
+				
+				layoutpolicy_horizontal = expanding
+				layoutpolicy_vertical = expanding
+				using = entry_bg_fancy
+				allow_outside = yes
+				ignoreinvisible = yes
+				scrollarea = {
+					layoutpolicy_horizontal = expanding
+					layoutpolicy_vertical = expanding
+					scrollbarpolicy_horizontal = always_off
+					
+					scrollbar_vertical = {
+						using = vertical_scrollbar		
+					}
+					size = { 800 500 }
+					scrollwidget = {
+						dynamicgridbox = {
+							datamodel = "[GetGlobalList('cabinet_character_list')]"
+							item = {
+								widget = {
+									background = entry_bg_simple
+									size = { 1500 100 }
+									allow_outside = yes
+									ignoreinvisible = yes
+									character_portrait_small = {
+										datacontext = "[Scope.GetCharacter]"
+										position = { 9 20 }
+										blockoverride "show_hat" {}
+										blockoverride "highlight" {}
+									}
+									textbox = {
+										layoutpolicy_horizontal = growing
+										size = { 10 30 }
+										position = { 80 15 }
+										raw_text = "[Scope.GetCharacter.GetFullName]"
+										default_format = "#title"
+										fontsize = 25
+										align = nobaseline
+										elide = center
+									}
+									textbox = {
+										layoutpolicy_horizontal = growing
+										size = { 10 30 }
+										position = { 80 65 }
+										text = "CHARACTER_AGE_X" 
+										default_format = "#title"
+										fontsize = 18
+										align = nobaseline
+										elide = center
+									}
+									textbox = {
+										layoutpolicy_horizontal = growing
+										size = { 10 30 }
+										position = { 210 65 }
+										text = "CHARACTER_IG_INTL" 
+										default_format = "#title"
+										fontsize = 18
+										align = nobaseline
+										elide = center
+									}
+									button = {
+										using = default_button_action
+										allow_outside = yes
+										size = { 100 45 }
+										position = { -110 13 }
+										text = "character_invite"
+										datacontext = "[GetScriptedGui('assign_deasin_1')]"
+										onclick = "[GetVariableSystem.Clear('cabinet_character_toggle_deasin_1')]"
+										onclick = "[ScriptedGui.Execute( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope('character', Scope.GetCharacter.MakeScope).End )]"
+										enabled = "[ScriptedGui.IsValid( GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope('character', Scope.GetCharacter.MakeScope).End )]]"
+										using = tooltip_below
+										parentanchor = hcenter
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	blockoverride "fixed_bottom" {
+		flowcontainer = {
+			parentanchor = hcenter
+			direction = horizontal
+			margin_top = 20
+			spacing = 20
+
+			button = {
+				using = default_button
+				using = close_button_sound
+				size = { 250 42 }
+				text = "Close"
+				onclick = "[GetVariableSystem.Clear( 'cabinet_character_toggle_deasin_1' )]"
+			}
+		}
+	}
+}
