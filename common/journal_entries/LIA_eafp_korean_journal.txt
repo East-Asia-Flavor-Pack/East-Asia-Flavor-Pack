@@ -114,7 +114,7 @@ je_lia_korean_kings_health = {
 
 	#progressbar = yes
 
-	weight = 1000
+	weight = 3000
 	
 	should_be_pinned_by_default = yes
 }
@@ -622,6 +622,19 @@ je_lia_korean_regent = {
 
 	on_weekly_pulse = {
 		effect = {
+			#후계자 슬롯이 비어있다면?
+			if = {
+				limit = {
+					any_scope_character = {
+						is_heir = no
+						count = all
+					}
+				}
+				set_variable = {
+					name = lia_var_regent_type
+					value = 0
+				}
+			}
 			#사익추구 활동 굴림
 			if = {
 				limit = {
@@ -718,6 +731,15 @@ je_lia_korean_regent = {
 					}
 				}
 			}
+			if = {	#헌종 왕권 강화책 뽑기
+				limit = {
+					ruler = {
+						has_variable = is_yihwan_eafp
+						age >= 16
+					}
+				}
+				lia_kor_regent_authority_event_roll = yes
+			}
 		}
 	}
 
@@ -793,52 +815,6 @@ je_lia_korean_confu = {
 		#}
 		custom_tooltip = je_lia_korean_land_problem_complete_cond_tt
 	}
-
-	#status_desc = {
-	#	first_valid = {
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_5
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 125
-	#				root.var:lia_var_je_regent < 150
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_4
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 100
-	#				root.var:lia_var_je_regent < 125
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_3
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 75
-	#				root.var:lia_var_je_regent < 100
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_2
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 50
-	#				root.var:lia_var_je_regent < 75
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_1
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 25
-	#				root.var:lia_var_je_regent < 50
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_0
-	#			trigger = {
-	#				root.var:lia_var_je_regent < 25
-	#			}
-	#		}
-	#	}
-	#}
 
 	on_monthly_pulse = {
 		####역사관련 이벤트 점화
@@ -933,7 +909,14 @@ je_lia_korean_seowon = {
 	icon = "gfx/interface/icons/lia_icons/lia_con.png"
 
 	group = je_group_historical_content
-
+	
+	scripted_progress_bar = eafp_progress_bar_seowon_power
+	scripted_progress_bar = eafp_progress_bar_seowon_abolish
+	
+	modifiers_while_active = {
+		lia_modi_seowon_problem_base
+	}
+	
 	is_shown_when_inactive = {
 		country_has_primary_culture = cu:korean
 		any_scope_state = {
@@ -957,7 +940,7 @@ je_lia_korean_seowon = {
 			has_global_variable = lia_global_var_sam_all_clear
 			any_scope_character = {
 				is_heir = yes
-				has_variable = is_daewongun_eafp
+				has_trait = kor_i_am_your_father
 			}
 		}
 	}
@@ -1006,27 +989,6 @@ je_lia_korean_seowon = {
 
 	#status_desc = {
 	#	first_valid = {
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_5
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 125
-	#				root.var:lia_var_je_regent < 150
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_4
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 100
-	#				root.var:lia_var_je_regent < 125
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_lia_korean_regent_balance_3
-	#			trigger = {
-	#				root.var:lia_var_je_regent >= 75
-	#				root.var:lia_var_je_regent < 100
-	#			}
-	#		}
 	#		triggered_desc = {
 	#			desc = je_lia_korean_regent_balance_2
 	#			trigger = {
@@ -1096,7 +1058,13 @@ je_rlg_seoul_gyeongbokgung_poor = {
 	#}
     
 	complete = {
-		has_journal_entry = je_rlg_seoul_1
+		OR = {
+			has_global_variable = lia_global_var_sam_all_clear
+			any_scope_character = {
+				is_heir = yes
+				has_trait = kor_i_am_your_father
+			}
+		}
 	}
 
 	on_complete = {
@@ -1107,6 +1075,7 @@ je_rlg_seoul_gyeongbokgung_poor = {
 		add_journal_entry = {
 			type = je_rlg_seoul_gyeongbokgung_rebuild
 		}
+		add_technology_researched = eafp_tech_palace
 	}
 
 	should_be_pinned_by_default = no
@@ -1120,8 +1089,9 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	complete = {
 		exists = c:KOR
 		this = c:KOR
-		owns_entire_state_region = STATE_LIA_SEOUL	##수정요함
-		s:STATE_LIA_SEOUL = {
+		#owns_entire_state_region = STATE_LIA_SEOUL	##수정요함
+		owns_entire_state_region = STATE_SEOUL
+		s:STATE_SEOUL = {
 			region_state:KOR = {
 				any_scope_building = {
 					is_building_type = building_gyeongbokgung_poor
@@ -1143,13 +1113,13 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 		}
 		set_variable = lia_var_rlg_wonnap_possible
 		trigger_event = {
-			id = lia_event_rlg.1500
+			id = eafp_kor_mainline.1500
 		}
 	}
 
 	on_complete = {
 		trigger_event = {
-			id = lia_event_rlg.1510
+			id = eafp_kor_mainline.1510
 		}
 		random_scope_state = {
 			limit = {
@@ -1162,16 +1132,25 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	on_weekly_pulse = {
 		random_events = {
 			100 = 0
-			10 = lia_event_rlg.1504	#화재
-			10 = lia_event_rlg.1507	#상소
+			10 = eafp_kor_mainline.1504	#화재
+			10 = eafp_kor_mainline.1507	#상소
 		}
-        effect = {
+		effect = {
 			if = {
 				limit = {
 					var:lia_var_rlg_gyeongbokgung_rebuild >= 500
 				}
 				trigger_event = {
-					id = lia_event_rlg.1504
+					id = eafp_kor_mainline.1504
+				}
+			}
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				change_variable = {
+					name = lia_var_rlg_gyeongbokgung_rebuild
+					add = 2
 				}
 			}
 		}
