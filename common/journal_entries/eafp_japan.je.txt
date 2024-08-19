@@ -1,0 +1,1775 @@
+# ID명, 변수명은 기본적으로 일본어 음차합니다.
+# weight = 12000 최중요저널 10000 중요저널 8000 일반 5000 별 의미없음
+
+japan_tutorial_je = {#튜토리얼 저널
+    icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+    group = je_group_tutorial
+
+    is_shown_when_inactive = { #튜토리얼이 스킵 되면 튜토리얼 저널을 감춥니다.
+        NOT = { has_variable = japan_tutorial_skip_var }
+        NOT = { has_variable = meiji_var }
+        c:JAP = THIS
+    }
+
+    possible = {
+        c:JAP = THIS
+    }
+
+    immediate = {
+        set_variable = { #튜토리얼 기간 변수를 설정합니다.
+            name = japan_tutorial_var
+            value = 0
+        }
+    }
+
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+    }
+
+    on_complete = { set_variable = japan_tutorial_skip_var }
+
+    scripted_button = japan_tutorial_button
+
+    on_weekly_pulse = {
+        effect = {
+            change_variable = {
+                name = japan_tutorial_var
+                add = 12
+            }
+        }
+    }
+
+    current_value = {
+		value = root.var:japan_tutorial_var
+	}	
+
+	goal_add_value = { # 6개월간 튜토리얼 저널을 유지합니다.
+		value = 60
+	}
+
+    transferable = yes
+
+    progressbar = yes
+
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+
+japan_sonnoha_je = {
+    icon = "gfx\interface\icons\alert_icons\revolution.dds"
+
+    group = je_group_historical_content
+
+    immediate = {
+        set_variable = {
+            name = sonnoha_var_first
+        }
+        set_variable = {
+            name = daimyo_desc_var
+        }
+        set_variable = {
+            name = sonnoha_var #존황파 변수
+            value = 0
+        }
+    }
+    progress_desc = {
+		first_valid = {
+			triggered_desc = { 
+				desc = daimyo_desc
+				trigger = {
+					has_variable = daimyo_desc_var
+				}
+			}
+            triggered_desc = { 
+				desc = no_daimyo_desc
+				trigger = {
+					NOT = { has_variable = daimyo_desc_var }
+				}
+			}
+        }
+    }
+    status_desc = {
+		first_valid = {
+			triggered_desc = { 
+				desc = status_sonnoha_start
+				trigger = {
+					var:sonnoha_var <= 35
+				}
+			}
+            triggered_desc = { 
+				desc = status_sonnoha_low
+				trigger = {
+					var:sonnoha_var > 35
+                    var:sonnoha_var <= 70
+				}
+			}
+            triggered_desc = { 
+				desc = status_sonnoha_medium
+				trigger = {
+					var:sonnoha_var > 70
+                    var:sonnoha_var <= 105
+				}
+			}
+            triggered_desc = { 
+				desc = status_sonnoha_high
+				trigger = {
+					var:sonnoha_var > 105
+                    var:sonnoha_var <= 130
+				}
+			}
+            triggered_desc = { 
+				desc = status_sonnoha_very_high
+				trigger = {
+					var:sonnoha_var > 130
+                    var:sonnoha_var <= 150
+				}
+			}
+            triggered_desc = { 
+				desc = status_sonnoha_senso
+				trigger = {
+					var:sonnoha_var > 150
+				}
+			}
+        }
+    }
+
+    complete = { 
+        OR = {
+            AND = {
+                exists = c:NIP
+                has_war_with = c:NIP 
+            }
+                
+            scope:journal_entry = {
+                is_goal_complete = yes
+            }
+        }
+    }
+
+    on_complete = { 
+        if = {
+            limit = { 
+                NOT = { 
+                    exists = c:NIP
+                    has_war_with = c:NIP
+                }
+            }
+            create_diplomatic_play = {
+                target_country = c:NIP
+                type = dp_annex_war
+                escalation = 80
+                add_war_goal = { holder = c:NIP target_country = c:JAP type = annex_country }
+            }
+            hidden_effect = {     
+              change_infamy = -200
+            }
+        }
+        custom_tooltip = {
+            text = boshin_war_je_add_tt
+            add_journal_entry = {
+                type = japan_boshin_war_je
+            }
+        }
+    }
+
+    fail = {
+        game_date >= 1846.01.01
+        custom_tooltip = {
+            text = japan_sonnoha_je_fail_tt
+            has_variable = bakufu_kaikaku_complete_var
+        }
+    }
+
+    on_fail = {
+        trigger_event = {
+            id = eafp_japan.666 #임시
+        }
+    }
+    current_value = {
+		value = root.var:sonnoha_var
+	}	
+
+    goal_add_value = {
+		value = 200
+	}
+
+    on_monthly_pulse = {
+		effect = {
+			jono_total = yes
+            han_modifier_kyushu = yes
+            han_modifier_tohoku = yes
+            han_modifier_shikoku = yes
+            han_modifier_chugoku = yes
+            han_modifier_chubu = yes
+            han_modifier_kansai = yes 
+            han_modifier_kanto = yes 
+		}
+	}
+
+
+    progressbar = yes
+
+    
+    transferable = yes
+
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+
+japan_bakufu_kaikaku_je = {
+     icon = "gfx\interface\icons\objectives\egalitarian_society.dds"
+
+    group = je_group_historical_content
+
+    scripted_button = japan_kaikakuha_button
+    scripted_button = japan_hoshuha_button
+    scripted_button = japan_hitotsubashiha_button
+    scripted_button = japan_nankiha_button
+    scripted_button = japan_bakufu_kaikaku_button
+    scripted_button = japan_hitotsubashiha_phase_1_button
+    scripted_button = japan_hitotsubashiha_phase_2_button
+    scripted_button = japan_hitotsubashiha_phase_3_button
+    
+    status_desc = {
+		first_valid = {
+			triggered_desc = { 
+				desc = hitotsubashiha_winning
+				trigger = {
+                    has_variable = yoshinobu_start
+					bakufu_hitotsubashiha_hiritsu > 50
+				}
+			}
+            triggered_desc = { 
+				desc = nankiha_winning
+				trigger = {
+                    has_variable = yoshinobu_start
+					bakufu_nankiha_hiritsu >= 50
+				}
+			}
+            triggered_desc = { 
+				desc = non_text
+				trigger = {
+					not = { has_variable = yoshinobu_start }
+				}
+			}
+        }
+    }
+
+    progress_desc = {
+		first_valid = {
+			triggered_desc = { 
+				desc = kaikaku_phase_0
+				trigger = {
+                    OR = {
+                        has_variable = is_nankiha
+                        has_variable = is_hitotsubashiha
+                    }
+					OR = {
+                        AND = {
+                            var:nankiha_var >= 100
+                            var:nankiha_var < 300
+                        }
+                        AND = {
+                            var:hitotsubashiha_var >= 100
+                            var:hitotsubashiha_var < 300
+                        }
+                    }
+				}
+			}
+            triggered_desc = { 
+				desc = kaikaku_phase_1
+				trigger = {
+                    OR = {
+                        has_variable = is_nankiha
+                        has_variable = is_hitotsubashiha
+                    }
+					OR = {
+                        AND = {
+                            var:nankiha_var >= 300
+                            var:nankiha_var < 500
+                        }
+                        AND = {
+                            var:hitotsubashiha_var >= 300
+                            var:hitotsubashiha_var < 500
+                        }
+                    }
+				}
+			}
+            triggered_desc = { 
+				desc = kaikaku_phase_2
+				trigger = {
+                    OR = {
+                        has_variable = is_nankiha
+                        has_variable = is_hitotsubashiha
+                    }
+					OR = {
+                        AND = {
+                            var:nankiha_var >= 500
+                            var:nankiha_var < 750
+                        }
+                        AND = {
+                            var:hitotsubashiha_var >= 500
+                            var:hitotsubashiha_var < 750
+                        }
+                    }
+				}
+			}
+            triggered_desc = { 
+				desc = kaikaku_phase_3
+				trigger = {
+                    OR = {
+                        has_variable = is_nankiha
+                        has_variable = is_hitotsubashiha
+                    }
+					OR = {
+                        var:nankiha_var >= 750
+                        var:hitotsubashiha_var >= 750
+                    }
+				}
+			}
+            triggered_desc = { 
+				desc = non_text
+				trigger = {
+                    NOT = {
+                        OR = {
+                            has_variable = is_nankiha
+                            has_variable = is_hitotsubashiha
+                        }
+                    }
+				}
+			}
+        }
+    }
+
+    immediate = {
+        ruler = {
+            add_modifier = {
+                name = popular_autocrat
+            }
+        }
+        set_variable = { 
+            name = hitotsubashiha_var #개혁파 변수
+            value = 5
+        }
+        set_variable = { 
+            name = nankiha_var #보수파
+            value = 80
+        }
+        weekly_pulse_nankiha_progress = yes
+        weekly_pulse_hitotsubashiha_progress = yes
+    }
+
+    complete = { 
+        OR = {
+            custom_tooltip = {
+                text = bakufu_kaikaku_je_complete_1_tt
+                has_variable = no_boshin_war_var
+            }
+            custom_tooltip = {
+                text = bakufu_kaikaku_je_complete_2_tt
+                has_variable = boshin_war_bakufu_win_var
+            }
+        }
+        custom_tooltip = {
+            text = bakufu_kaikaku_zaisei_clear
+            has_variable = bakufu_kaikaku_zaisei_complete_var
+        }
+        custom_tooltip = {
+            text = bakufu_kaikaku_kaikoku_clear
+            has_variable = bakufu_kaikaku_kaikoku_complete_var
+        }
+        custom_tooltip = {
+            text = bakufu_kaikaku_guntai_clear
+            has_variable = bakufu_kaikaku_guntai_complete_var
+        }
+        custom_tooltip = {
+            text = bakufu_kaikaku_naibu_clear
+            has_variable = bakufu_kaikaku_naibu_complete_var
+        }
+        custom_tooltip = {
+            text = bakufu_kaikaku_bakuhan_clear
+            has_variable = bakufu_kaikaku_bakuhan_complete_var
+        }
+    }
+
+    on_complete = { 
+        if = {
+            limit = { has_variable = is_nankiha }
+            trigger_event = { id = eafp_japan.666 }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            trigger_event = { id = eafp_japan.666 }
+        }
+        else = {
+            custom_tooltip = {
+                text = unknown_tt
+            }
+        }
+    }
+
+    on_monthly_pulse = {
+        effect = {
+           change_variable = { name = hitotsubashiha_var add = var:hitotsubashiha_progress_next } 
+           change_variable = { name = nankiha_var add = var:nankiha_progress_next } 
+        }
+    }
+
+    on_weekly_pulse = {
+        effect = {
+            if = { 
+                limit = { not = { has_variable = yoshinobu_start }}
+                weekly_pulse_nankiha_progress = yes
+                weekly_pulse_hitotsubashiha_progress = yes
+            }
+            else_if = {
+                limit = { has_variable = yoshinobu_start }
+                weekly_pulse_nankiha_progress_second = yes
+                weekly_pulse_hitotsubashiha_progress_second = yes
+            }
+        }
+    }
+
+    weight = 12000
+
+    should_be_pinned_by_default = yes
+}
+
+japan_bakufu_kaikoku_je = {
+    icon = "gfx\interface\icons\goods_icons\man_o_wars.dds"
+
+    group = je_group_historical_content
+
+    complete = { 
+        OR = {
+            custom_tooltip = {
+                text = treaty_with_powers
+                has_variable = complete_treaty_with_powers_var
+            }
+            AND = {
+                NOT = {
+                    has_law = law_type:law_isolationism
+                    has_law = law_type:law_traditionalism
+                    has_law = law_type:law_closed_borders
+                }
+            }
+        }
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_kaikoku_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_dip
+        add_modifier = {
+            name = bakufu_kaikoku_complete
+            months = 60
+        }
+    }
+
+    weight = 10000
+}
+
+japan_bakufu_guntai_je = {
+    icon = "gfx\interface\icons\war_goals\conquer_state.dds"
+
+    group = je_group_historical_content
+
+    complete = { 
+        army_size >= 100
+        navy_size >= 10
+        has_technology_researched = napoleonic_warfare
+        OR = {
+			NOT = {
+                any_scope_building = {
+                    is_building_type = building_barracks				
+                    OR = {
+                        building_has_goods_shortage = yes
+                        has_active_production_method = pm_no_organization
+                    }
+                }
+			}
+            NOT = {
+                any_military_formation = {
+                    filter = {
+                        is_army = yes
+                    }
+                    any_combat_unit = {
+                        has_unit_type = unit_type:combat_unit_type_irregular_infantry
+                    }
+                    percent >= 0.25
+                }
+			}
+		}
+        any_scope_building = { 
+            is_building_type = building_arms_industry
+            OR = {
+                has_active_production_method = pm_rifles
+                has_active_production_method = pm_repeaters
+                has_active_production_method = pm_bolt_action_rifles
+            }
+            level >= 5
+            occupancy >= 0.75
+        }
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_kaikoku_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_mil
+        add_modifier = {
+            name = bakufu_guntai_complete
+            months = 60
+        }
+        add_modifier = {
+            name = bakufu_guntai_complete_2
+            months = 36
+        }
+    }
+
+    weight = 10000
+}
+
+japan_bakufu_bakuhan_je = {
+    icon = "gfx\interface\icons\war_goals\conquer_state.dds"
+
+    group = je_group_historical_content
+
+    complete = { 
+        OR = {
+            custom_tooltip = {
+                text = kanto_chusei_tt
+                kanto_chusei_value < 8
+            }
+            custom_tooltip = {
+                text = kansai_chusei_tt
+                kansai_chusei_value < 10
+            }
+            custom_tooltip = {
+                text = tohoku_chusei_tt
+                tohoku_chusei_value < 20
+            }
+            custom_tooltip = {
+                text = chubu_chusei_tt
+                chubu_chusei_value < 20
+            }
+            custom_tooltip = {
+                text = chugoku_chusei_tt
+                chugoku_chusei_value < 40
+            }
+            custom_tooltip = {
+                text = shikoku_chusei_tt
+                chugoku_chusei_value < 40
+            }
+            custom_tooltip = {
+                text = kyushu_chusei_tt
+                chugoku_chusei_value < 40
+            }
+            owns_entire_state_region = STATE_KANTO
+            owns_entire_state_region = STATE_KANSAI
+            owns_entire_state_region = STATE_TOHOKU
+            owns_entire_state_region = STATE_HOKKAIDO
+            owns_entire_state_region = STATE_CHUBU
+            owns_entire_state_region = STATE_CHUGOKU
+            owns_entire_state_region = STATE_SHIKOKU
+            owns_entire_state_region = STATE_KYUSHU
+            is_at_war = no
+        }
+        custom_tooltip = {
+            text = boshin_war_start
+            has_variable = boshin_war_var
+        }
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_bakuhan_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_bakuhan
+    }
+
+    weight = 10000
+}
+
+japan_bakufu_guntai_je = {
+    icon = "gfx\interface\icons\war_goals\conquer_state.dds"
+
+    group = je_group_historical_content
+
+    complete = { 
+        army_size >= 100
+        navy_size >= 10
+        has_technology_researched = napoleonic_warfare
+        NOR = {
+			any_scope_building = {
+				is_building_type = building_barracks				
+				OR = {
+					building_has_goods_shortage = yes
+					has_active_production_method = pm_no_organization
+				}
+			}
+			any_military_formation = {
+				filter = {
+					is_army = yes
+				}
+				any_combat_unit = {
+					has_unit_type = unit_type:combat_unit_type_irregular_infantry
+				}
+				percent >= 0.25
+			}
+		}
+        any_scope_building = { 
+            is_building_type = building_arms_industry
+            OR = {
+                has_active_production_method = pm_rifles
+                has_active_production_method = pm_repeaters
+                has_active_production_method = pm_bolt_action_rifles
+            }
+            level >= 5
+            occupancy >= 0.75
+        }
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_guntai_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_mil
+        add_modifier = {
+            name = bakufu_guntai_complete
+            months = 60
+        }
+        add_modifier = {
+            name = bakufu_guntai_complete_2
+            months = 36
+        }
+    }
+
+    weight = 10000
+
+}
+
+japan_bakufu_naibu_je = {
+    icon = "gfx\interface\icons\pops_icons\bureaucrats.dds"
+
+    group = je_group_historical_content
+
+    immediate = {
+		set_variable = {
+			name = shogunate_var
+			value = 0
+		}
+	}
+
+    complete = { 
+        scope:journal_entry = { is_goal_complete = yes }
+        ig:ig_landowners = {
+			is_in_government = yes
+		}
+        government_legitimacy >= 80
+        bureaucracy >= 0
+        any_scope_building = {
+			is_building_type = building_university
+			occupancy > 0.9
+			level >= 5
+		}
+        literacy_rate >= 0.25
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_naibu_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_adm
+        add_modifier = {
+            name = bakufu_naibu_complete
+            months = 60
+        }
+    }
+
+    on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					ig:ig_landowners = {
+						is_in_government = yes
+					}
+					has_insurrectionary_interest_groups = no
+					is_at_war = no
+				}
+				change_variable = {
+					name = shogunate_var
+					add = 1
+				}
+			}
+		}
+	}
+
+    current_value = {
+		value = root.var:shogunate_var
+	}
+
+	goal_add_value = {
+		value = 120
+	}
+
+    weight = 10000
+
+    
+}
+
+japan_bakufu_zaisei_je = {
+    icon = "gfx\interface\icons\event_icons\event_industry.dds"
+
+    group = je_group_historical_content
+
+    complete = { 
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+        average_sol >= 10
+        gold_reserves > 0
+        s:STATE_KANTO.region_state:JAP = {
+			filter = {
+				is_incorporated = yes
+			}
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 8
+			}
+		}
+    }
+
+    on_complete = { 
+        custom_tooltip = {
+            text = complete_kaikaku
+            set_variable = bakufu_kaikaku_zaisei_complete_var
+        }
+        if = {
+            limit = { has_variable = is_nankiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = nankiha_var
+                    add = 100
+                }
+            }
+        }
+        else_if = {
+            limit = { has_variable = is_hitotsubashiha }
+            custom_tooltip = {
+                text = bakufu_point_increase
+                change_variable = {
+                    name = hitotsubashiha_var
+                    add = 100
+                }
+            }
+        }
+        else = {
+            custom_tooltip = {
+                text = hahatsu_unknown
+            }
+        }
+        remove_modifier = bakufu_corruption_fin
+        add_modifier = {
+            name = bakufu_zaisei_complete
+            months = 60
+        }
+    }
+
+    current_value = {
+		value = root.gdp
+	}
+
+	goal_add_value = {
+		value = root.gdp
+		multiply = 0.5
+	}
+
+    progressbar = yes
+    weight = 10000
+
+}
+
+
+japan_hokkaido_je = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+
+    scripted_button = japan_hokkaido_button
+
+    immediate = {
+    }
+
+    complete = {
+        s:STATE_HOKKAIDO.region_state:JAP = {
+            state_population >= 200000
+        }
+    }
+
+    on_complete = {
+        trigger_event = {
+            id = eafp_japan.1000
+        }
+        custom_tooltip = {
+            text = hokkaido_complete_tt
+            set_variable = hokkaido_name_var
+        }
+    }
+
+    timeout = 7000
+
+    weight = 8000
+
+}
+
+
+je_parliament_japan = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+
+    scripted_button = japan_pariament_1_button
+    scripted_button = japan_pariament_2_button
+    scripted_button = japan_pariament_3_button
+    immediate = {
+        set_variable = {
+            name = syugiin_dai
+            value = 1
+        }
+        set_variable = {
+            name = party1_seat_var
+            value = 130
+        }
+        set_variable = {
+            name = party2_seat_var
+            value = 79
+        }
+        set_variable = {
+            name = party3_seat_var
+            value = 41
+        }
+        set_variable = {
+            name = party4_seat_var
+            value = 5
+        }
+        set_variable = {
+            name = party5_seat_var
+            value = 0
+        }
+        set_variable = {
+            name = no_party_seat_var
+            value = 45
+        }
+        seat_effect = yes
+    }
+    complete = {
+        always = no
+    }
+}
+
+je_overview_japan = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    complete = {
+        always = no
+    }
+    on_weekly_pulse = {
+        effect = {
+            every_character = {
+                limit = { has_variable = gov_level_var }
+                if = {
+                    limit = { has_trait = level_1 }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 1
+                    }
+                }
+                if = {
+                    limit = { has_trait = level_2 }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 2
+                    }
+                }
+                if = {
+                    limit = { has_trait = level_3 }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 3
+                    }
+                }
+                if = {
+                    limit = { has_trait = level_4 }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 4
+                    }
+                }
+                if = {
+                    limit = { has_trait = level_5 }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 5
+                    }
+                }
+                if = {
+                    limit = { 
+                        age >= 25
+                        age <= 40
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        add = 1
+                    }
+                }
+            }
+           every_character = {
+                limit = { has_variable = gov_level_var }
+                if = {
+                    limit = { var:level_var = 0 var:gov_level_var >= 16 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 16
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 1 var:gov_level_var >= 17 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 17
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 2 var:gov_level_var >= 18 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 18
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 3 var:gov_level_var >= 19 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 19
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 4 var:gov_level_var >= 20 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 20
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 5 var:gov_level_var >= 21 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 21
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 6 var:gov_level_var >= 23 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 23
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 7 var:gov_level_var >= 24 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 24
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 8 var:gov_level_var >= 26 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 26
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 9 var:gov_level_var >= 29 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 29
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 10 var:gov_level_var >= 31 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 31
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 11 var:gov_level_var >= 35 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 35
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 12 var:gov_level_var >= 38 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 38
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 13 var:gov_level_var >= 44 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 44
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 14 var:gov_level_var >= 51 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 51
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 15 var:gov_level_var >= 60 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 60
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 16 var:gov_level_var >= 73 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 73
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 17 var:gov_level_var >= 95 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 95
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 18 var:gov_level_var >= 133 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 133
+                    }
+                }
+                else_if = {
+                    limit = { var:level_var = 19 var:gov_level_var >= 227 }
+                    change_variable = {
+                        name = level_var
+                        add = 1
+                    }
+                    change_variable = {
+                        name = gov_level_var 
+                        subtract = 227
+                    }
+                }
+           }
+           
+        }
+    }
+
+    weight = 20000
+
+    should_be_pinned_by_default = yes
+}
+
+
+
+#막부 
+
+japan_boshin_war_je = {
+
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+
+    complete = {
+        owns_entire_state_region = STATE_KYUSHU
+        owns_entire_state_region = STATE_KANSAI
+        owns_entire_state_region = STATE_CHUGOKU
+        owns_entire_state_region = STATE_SHIKOKU
+        owns_entire_state_region = STATE_CHUBU
+        owns_entire_state_region = STATE_KANTO
+        NOT = { exists = c:NIP }
+        
+    }
+
+    timeout = 666
+
+    on_weekly_pulse = {
+        effect = {
+           if = {
+                limit = { 
+                    ruler = { has_template = eafp_tokugawa_yoshinobu }
+                    c:NIP.army_size >= { value = root.army_size multiply = 0.75 }
+                }
+                trigger_event = { id = boshin_war.9 }
+            }
+        }
+    }
+
+    weight = 20000
+
+    should_be_pinned_by_default = yes
+}
+
+
+#도막파
+
+je_tobaku_boshin_war = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    scripted_button = japan_tobaku_1_button
+    scripted_button = japan_tobaku_2_button
+    scripted_button = japan_tobaku_3_button
+    scripted_button = japan_tobaku_4_button
+    scripted_button = japan_tobaku_5_button
+
+    complete = {
+        owns_entire_state_region = STATE_KYUSHU
+        owns_entire_state_region = STATE_KANSAI
+        owns_entire_state_region = STATE_CHUGOKU
+        owns_entire_state_region = STATE_SHIKOKU
+        owns_entire_state_region = STATE_CHUBU
+        owns_entire_state_region = STATE_KANTO
+        custom_tooltip = { 
+            text = sento_tt
+            OR = {
+                has_variable = sento_tokyo
+                has_variable = sento_shinai
+            }
+        }
+    }
+
+    on_complete = {
+        trigger_event = {
+            id = new_meiji.1
+        }
+        change_tag = JAP
+        if = { 
+            limit = { has_variable = sento_tokyo }
+            set_capital = STATE_KANTO
+        }
+        if = { 
+            limit = { has_variable = sento_shinai }
+            set_capital = STATE_KANSAI
+        }
+        set_variable = meiji_var
+    }
+
+    weight = 20000
+
+    should_be_pinned_by_default = yes
+}
+
+
+je_meiji_ishin = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    immediate = {
+		set_variable = {
+			name = meiji_ishin_var
+			value = 0
+		}
+	}
+
+    complete = {
+        is_country_type = recognized
+        country_rank >= rank_value:major_power
+        custom_tooltip = {
+            text = kenpo_ready_tt
+            has_variable = meiji_kenpo
+        }
+        custom_tooltip = {
+            text = meiji_ishin_clear_tt
+            root.var:meiji_ishin_var = 4
+        }
+    }
+
+    on_complete = {
+        custom_tooltip = {
+            text = dainippon_teikoku_tt
+            set_global_variable = meiji_ishin_clear_var
+        }
+    }
+
+    on_monthly_pulse = {
+		effect = {
+            random_list = {
+                150 = { }
+                1 = { 
+                    trigger_event = { id = new_meiji.4 days = { 5 140 } } #남북조 정윤론 논쟁
+                }
+            }
+		}
+	}
+
+    weight = 20000
+
+    should_be_pinned_by_default = yes
+}
+
+
+je_meiji_politics = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    
+     
+    immediate = {
+        set_variable = {
+			name = meiji_ishin_politics_var
+			value = 0
+		}
+	}
+
+    complete = {
+        custom_tooltip = {
+            text = meiji_ishin_politics_clear_tt
+            root.var:meiji_ishin_politics_var = 4
+        }
+        has_revolution = no
+    }
+
+    on_complete = { #모디파이어 넣어야함
+		change_variable = {
+			name = meiji_ishin_var
+			add = 1
+		}
+    }
+
+    weight = 18000
+
+}
+
+je_meiji_diplomacy_1 = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    immediate = {
+        set_variable = {
+			name = meiji_ishin_diplomacy_var
+			value = 0
+		}
+	}
+
+    complete = {
+        custom_tooltip = {
+            text = meiji_ishin_diplomacy_clear_tt
+            root.var:meiji_ishin_diplomacy_var >= 5
+        }
+        army_size >= 100
+        navy_size >= 20
+    }
+
+    on_complete = { #이벤트 넣어야함
+		change_variable = {
+			name = meiji_ishin_var
+			add = 1
+		}
+        set_country_type = recognized
+    }
+
+    weight = 18000
+}
+
+je_meiji_diplomacy_2 = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    immediate = {
+		set_variable = {
+			name = jap_recognition_progress_var
+			value = 0
+		}
+	}
+
+    complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+        NOT = { has_law = law_type:law_land_based_taxation }
+		NOT = { has_law = law_type:law_serfdom }
+        NOT = { has_law = law_type:law_isolationism }
+        NOT = { has_law = law_type:law_traditionalism }
+		NOT = { has_law = law_type:law_closed_borders }
+		any_country = {
+			country_rank >= rank_value:great_power
+			relations:root >= relations_threshold:friendly
+		}
+	}
+
+    on_complete = { #이벤트 넣어야함
+		change_variable = {
+			name = meiji_ishin_var
+			add = 1
+		}
+        set_country_type = recognized
+    }
+
+    on_monthly_pulse = {
+		effect = {
+			# Wargoal enforced scores are handled in the on_wargoal_enforced on_action
+			# Advance Conditions
+			if = {
+				limit = {
+					# Your GDP per Capita is relatively high
+					gdp_per_capita_ranking <= 20
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = 1
+				}
+			}
+			if = {
+				limit = {
+					# Your Standard of Living is relatively high
+					sol_ranking <= 20
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = 1
+				}
+			}			
+			if = {
+				limit = {
+					# Country has voting rights
+					country_has_voting_franchise = yes
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = 1
+				}
+			}
+			if = {
+				limit = {
+					# Literacy rating is high-isch
+					literacy_rate >= 0.6
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = 1
+				}
+			}
+			# Deplete Conditions
+			if = {
+				limit = {
+					# Slavery is legal
+					NOT = {
+						has_law = law_type:law_slavery_banned
+					}
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# Serfdom is legal
+					has_law = law_type:law_serfdom
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# Traditional economic system
+					has_law = law_type:law_traditionalism
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# 'Draconic' law
+					has_law = law_type:law_outlawed_dissent
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# Literacy rating is low
+					literacy_rate <= 0.4
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# Your GDP per Capita is relatively low
+					gdp_per_capita_ranking >= 50
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			if = {
+				limit = {
+					# Your Standard of Living is relatively low
+					sol_ranking >= 50
+				}
+				change_variable = {
+					name = jap_recognition_progress_var
+					add = -1
+				}
+			}
+			clamp_variable = { name = jap_recognition_progress_var max = 200 min = 0 }
+		}
+	}
+
+	current_value = {
+		value = root.var:jap_recognition_progress_var
+	}
+
+	goal_add_value = {
+		value = 200
+	}
+
+	progressbar = yes
+    
+    weight = 18000
+}
+
+je_meiji_economy_2 = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    immediate = {
+        set_variable = {
+			name = meiji_ishin_economy_2_var
+			value = 0
+		}
+	}
+
+    complete = {
+        scope:journal_entry = {
+			is_goal_complete = yes
+		}
+        custom_tooltip = {
+            text = meiji_ishin_economy_2_clear_tt
+            root.var:meiji_ishin_economy_2_var = 5
+        }
+        in_default = no
+		any_scope_state = {
+			filter = {
+				is_incorporated = yes
+			}
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 10
+			}
+			has_building = building_railway
+			percent > 0.6
+		}
+    }
+
+    on_complete = { #이벤트 넣어야함
+		change_variable = {
+			name = meiji_ishin_var
+			add = 1
+		}
+    }
+
+    current_value = {
+		value = root.gdp
+	}
+
+	goal_add_value = {
+		value = root.gdp
+		multiply = 1
+	}
+
+	progressbar = yes
+
+    weight = 18000
+
+}
+
+je_meiji_society = {
+    icon = "gfx\interface\icons\ig_icons\armed_forces.dds"
+
+    group = je_group_historical_content
+   
+    immediate = {
+        set_variable = {
+			name = meiji_ishin_society_var
+			value = 0
+		}
+	}
+
+    complete = {
+        custom_tooltip = {
+            text = meiji_ishin_society_clear_tt
+            root.var:meiji_ishin_society_var = 10
+        }
+		institution_investment_level = {
+			institution = institution_schools
+			value >= 3
+		}
+    }
+
+    on_complete = { #이벤트 넣어야함
+		change_variable = {
+			name = meiji_ishin_var
+			add = 1
+		}
+    }
+
+    on_monthly_pulse = {
+		effect = {
+            random_events = {
+                100 = 0
+                5 = meiji_society.1 #태양력
+                5 = meiji_society.2 #평민 이름 개정
+                5 = meiji_society.3 #도량형 도입
+            }
+		}
+	}
+
+
+    weight = 18000
+
+}
