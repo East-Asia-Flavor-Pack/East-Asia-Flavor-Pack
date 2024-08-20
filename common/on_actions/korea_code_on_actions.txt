@@ -1,0 +1,316 @@
+﻿korea_on_yearly_pulse_country = {
+	effect = {
+		#if = {
+		#	limit = {
+		#		exists = c:KOR
+		#		this = c:KOR
+		#		year = 1839
+		#		has_law = law_type:law_state_religion
+		#	}
+		#	trigger_event = { id = jpf_joseon.1 days = 43 } # 기해박해
+		#}
+		#if = {
+		#	limit = {
+		#		exists = c:KOR
+		#		this = c:KOR
+		#		year  = 1846
+		#		has_law = law_type:law_state_religion
+		#	}
+		#	trigger_event = { id = jpf_joseon.6 days = 185 } # 병오박해
+		#}
+	}
+}
+
+korea_on_character_death = {	#24.07.17 추가
+	effect = {
+		##군주
+		if = {
+			limit = {	#헌종
+				has_variable = is_yihwan_eafp
+				is_ruler = yes
+			}
+			owner = { 
+				trigger_event = eafp_kor_mainline.100	#으앙주금
+				create_character = {
+					# Cheoljong of Joseon
+					first_name = "Byeon"	#[Character.GetCustom('lia_kings_name_cheoljong')]
+					last_name = "Yi"
+					historical = yes
+					# 나중에 이벤트로 생성
+					ruler = yes
+					birth_date = 1831.7.25
+					dna = dna_king_cheoljong
+					interest_group = ig_rural_folk
+					ideology = ideology_traditionalist
+					traits = {
+						reserved
+						political_appointee
+					}
+					on_created = {
+						set_variable = {
+							name = is_yibyeon_eafp
+						}
+						add_modifier = {
+							name = lia_modi_kings_health_good
+							months = -1
+						}
+					}
+				}
+				trigger_event = { id = eafp_kor_mainline.101 days = 7 }	#철종 즉위
+			}
+		}
+		##
+		if = {
+			limit = { has_variable = is_sunwon_eafp }	#순원왕후
+			owner = { 
+				trigger_event = eafp_kor_mainline.105	#으앙주금
+			}
+			if = {
+				limit = { is_heir = yes }	#사망시점에 권력공유자였다면?
+				owner = {
+					create_character = {
+						# 신정왕후
+						first_name = "HyoYuBi"
+						last_name = "HouseJo"
+						historical = yes
+						heir = yes
+						female = yes
+						birth_date = 1809.1.9
+						interest_group = ig_landowners
+						ideology = ideology_traditionalist
+						traits = {
+							cautious
+							kor_grand_empress_dowager
+						}
+						on_created = {
+							set_variable = {
+								name = is_sinjeong_eafp
+							}
+							set_variable = {	#개인계좌
+								name = lia_var_personal_account
+								value = 150000
+							}
+							add_modifier = {
+								name = lia_modi_jossi_good
+							}
+						}
+					}
+					trigger_event = eafp_kor_mainline.106	#
+				}
+			}
+		}
+		if = {
+			limit = { has_variable = is_yugun_eafp }	#김유근
+			if = {
+				limit = { was_exiled = no }	#자연사 시점에 유배중이 아니라면?
+				owner = {
+					create_character = {
+						# 김좌근. 김조순의 삼남. 김유근 사망 후 양반 리더 이어받게 할 예정. 24.07.19 추가.
+						first_name = "JuaGun"
+						last_name = "Kim"
+						historical = yes
+						#heir = yes
+						birth_date = 1797.5.15
+						ig_leader = yes
+						interest_group = ig_landowners
+						ideology = ideology_traditionalist
+						traits = {
+							expert_political_operator
+							ambitious
+							meticulous
+						}
+						on_created = {
+							set_variable = {
+								name = is_juagun_eafp
+							}
+							add_modifier = {
+								name = lia_modi_kmsii_good
+							}
+							set_variable = {	#개인계좌
+								name = lia_var_personal_account
+								value = 150000
+							}
+						}
+					}
+				}
+			}
+		}
+		if = {
+			limit = { has_variable = is_jiyeon_eafp }	#이지연
+			if = {
+				limit = { was_exiled = no }	#자연사 시점에 유배중이 아니라면?
+				owner = {
+					create_character = {
+						# 조인영
+						first_name = In-young
+						last_name = Jo
+						historical = yes
+						birth_date = 1782.5.23 # Only birth year known
+						ig_leader = yes
+						interest_group = ig_landowners
+						ideology = ideology_traditionalist
+						traits = {
+							experienced_political_operator
+							cruel
+						}
+						on_created = {
+							set_variable = {
+								name = is_inyoung_eafp
+							}
+							add_modifier = {
+								name = lia_modi_jossi_good
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+korea_on_government_reformed = {
+	effect = {
+		if = {
+			limit = {
+				has_journal_entry = je_lia_korean_regent
+			}
+			lia_effect_option_gain_stress = {
+				LIA_STRESS = 5
+			}
+			post_notification = lia_message_regent_government_reformed
+		}
+	}
+}
+korea_on_mobilized_army = {
+	effect = {
+		if = {
+			limit = {
+				owner = {
+					has_journal_entry = je_lia_korean_regent
+					global_var:lia_global_var_je_regent >= 200
+				}
+			}
+			owner = {
+				lia_effect_option_gain_stress = {
+					LIA_STRESS = 5
+				}
+				post_notification = lia_message_regent_mobilized_army
+			}
+		}
+	}
+}
+korea_on_diplo_play_start = {
+	effect = {
+		if = {
+			limit = {
+				initiator = {
+					has_journal_entry = je_lia_korean_regent
+					global_var:lia_global_var_je_regent >= 300
+				}
+			}
+			initiator = {
+				lia_effect_option_gain_stress = {
+					LIA_STRESS = 10
+				}
+				post_notification = lia_message_regent_diplo_play_start
+			}
+		}
+	}
+}
+
+korea_on_revolution_start = {
+	effect = {
+		scope:target ?= {
+			if = {
+				limit = {
+					c:KOR ?= PREV
+					has_law = law_type:law_monarchy
+				}
+				ordered_interest_group = {
+					limit = {
+						is_in_government = yes
+					}
+					order_by = ig_clout
+					save_scope_as = lia_revolt_kings_ig
+				}
+				if = {
+					limit = {
+						scope:lia_revolt_kings_ig = {
+							OR = {
+								is_interest_group_type = ig_landowners
+								is_interest_group_type = ig_devout
+							}
+						}
+						PREV = {
+							ruler = {
+								has_variable = is_yihwan_eafp
+							}
+							any_scope_character = {
+								NOT = { has_variable = is_yihui_eafp }
+								count = all
+							}
+						}
+					}
+					create_character = {	#익평군 이희 추대
+						first_name = "Hui"
+						last_name = "Yi"
+						historical = yes
+						ruler = yes
+						birth_date = 1824.10.16
+						interest_group = scope:lia_revolt_kings_ig
+						on_created = {
+							add_random_trait = skill
+							set_variable = {
+								name = is_yihui_eafp
+							}
+							add_modifier = {
+								name = lia_modi_revolt_king
+								months = 12
+								is_decaying = yes
+							}
+							add_modifier = {
+								name = lia_modi_kings_health_bad
+								months = -1
+							}
+							set_variable = is_kor_revolt_king_eafp
+						}
+					}
+					PREV = {
+						set_variable = lia_var_yihui_unavailable
+					}
+				}
+				else = {
+					create_character = {	#이씨 추대
+						last_name = "Yi"
+						ruler = yes
+						age = { 10 32 }
+						interest_group = scope:lia_revolt_kings_ig
+						on_created = {
+							add_random_trait = skill
+							add_modifier = {
+								name = lia_modi_revolt_king
+								months = 60
+								is_decaying = yes
+							}
+							set_variable = is_kor_revolt_king_eafp
+						}
+					}
+				}
+			}
+		}
+		#
+		
+	}
+}
+korea_on_civil_war_won = {
+	effect = {
+		if = {
+			limit = {
+				ruler = {
+					has_variable = is_kor_revolt_king_eafp
+				}
+			}
+			trigger_event = { id = eafp_kor_mainline.371 days = 1 }	#딜레이를 줘야 제대로 됨
+		}
+	}
+}

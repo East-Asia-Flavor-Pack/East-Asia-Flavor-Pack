@@ -1,0 +1,287 @@
+namespace = exiles_more_events
+
+####바닐라 호응 없는 대의 이벤트
+# Agitator has no domestic support and sullenly goes into self-exile
+exiles_more_events.3 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = exiles_more_events.3.t
+	desc = exiles_more_events.3.d
+	flavor = exiles_more_events.3.f
+
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:the_loneliest_little_agitator
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		any_scope_character = {
+			has_role = agitator
+			character_supports_political_movement = yes
+			political_movement ?= {
+				political_movement_support < 15
+			}
+			NOT = { has_ideology = ideology:ideology_eafp_missionary }	#조건 추가됨.
+		}
+	} 
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				has_role = agitator
+				character_supports_political_movement = yes
+				political_movement ?= {
+					political_movement_support < 15
+				}
+			}
+			save_scope_as = the_loneliest_little_agitator
+			interest_group = {
+				save_scope_as = the_loneliest_little_agitator_ig
+			}
+		}
+	}
+
+	cancellation_trigger = {
+		OR = {
+			NOT = {
+				exists = scope:the_loneliest_little_agitator
+			}
+			scope:the_loneliest_little_agitator ?= {
+				is_character_alive = no
+			}
+		}
+	}
+
+	option = {
+		name = exiles_more_events.3.a
+		default_option = yes
+
+		scope:the_loneliest_little_agitator = {
+			exile_character = yes
+		}
+	}
+
+	option = { # Perhaps it's time for a little study and reflection?
+		name = exiles_more_events.3.b
+		highlighted_option = yes
+
+		trigger = {
+			scope:the_loneliest_little_agitator = {
+				has_trait = erudite
+			}
+		}
+
+		scope:the_loneliest_little_agitator = {
+			add_modifier = {
+				name = inspired_by_studies
+				months = normal_modifier_time
+			}
+		}
+	}
+
+	option = { # time for something radical
+		name = exiles_more_events.3.c
+		highlighted_option = yes
+
+		trigger = {
+			scope:the_loneliest_little_agitator = {
+				not = { has_trait = cautious }
+				character_supports_political_movement = yes
+			}
+		}
+
+		random_list = {
+			1 = {
+				scope:the_loneliest_little_agitator = {
+					political_movement ?= {
+						add_modifier = {
+							name = radical_new_approach
+							months = normal_modifier_time
+						}
+					}
+				}
+			}
+			1 = {
+				scope:the_loneliest_little_agitator = {
+					political_movement ?= {
+						add_modifier = {
+							name = failed_relaunch
+							months = normal_modifier_time
+						}
+					}
+				}
+			}
+			1 = {
+				scope:the_loneliest_little_agitator = {
+					political_movement ?= {
+						add_modifier = {
+							name = all_worked_up
+							months = normal_modifier_time
+						}
+					}
+				}
+			}
+		}
+	}
+
+	option = { # There's no need for anything drastic like exile!
+		name = exiles_more_events.3.dd
+		highlighted_option = yes
+
+		trigger = {
+			scope:the_loneliest_little_agitator = {
+				has_trait = cautious
+				character_supports_political_movement = yes
+			}
+		}
+
+		scope:the_loneliest_little_agitator = {
+			political_movement ?= {
+				add_modifier = {
+					name = deliberate_deliberations
+					months = normal_modifier_time
+				}
+			}
+		}
+	}
+}
+
+###################
+
+###################
+
+namespace = yeet_agitator_events
+
+####바닐라 불모의 대지 이벤트
+# Infertile Grounds - Agitator is unpopular and cannot agitate
+yeet_agitator_events.1 = {
+	type = country_event
+	placement = root
+	event_image = {
+		video = "unspecific_automobile"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	title = yeet_agitator_events.1.t
+	desc = yeet_agitator_events.1.d
+	flavor = yeet_agitator_events.1.f
+
+	duration = 3
+
+	trigger = {
+		any_interest_group = {
+			any_scope_character = {
+				has_role = agitator
+				can_agitate = root
+				popularity <= 0
+				NOT = { has_variable = temp_event_target_in_use }
+				NOT = { has_ideology = ideology:ideology_eafp_missionary }	#조건 추가됨.
+			}
+		}
+	}
+
+	cancellation_trigger = {
+		OR = {
+			NOT = {
+				exists = scope:yeeted_agitator_scope_1
+			}
+			scope:yeeted_agitator_scope_1 = {
+				is_character_alive = no
+			}
+		}
+	}
+
+	immediate = {
+		random_interest_group = {
+			limit = {
+				any_scope_character = {
+					has_role = agitator
+					can_agitate = root
+					popularity <= 0
+					NOT = { has_variable = temp_event_target_in_use }
+				}
+			}
+			random_scope_character = {
+				limit = {
+					has_role = agitator
+					can_agitate = root
+					popularity <= 0			
+					NOT = { has_variable = temp_event_target_in_use }	
+				}
+				save_scope_as = yeeted_agitator_scope_1
+				set_variable = { name = temp_event_target_in_use }
+			}
+			save_scope_as = yeeted_agitator_ig_scope_1
+		}
+	}
+
+	option = {
+		name = yeet_agitator_events.1.a
+		default_option = yes
+		custom_tooltip = {
+			text = yeet_agitator_events.1.tt_1
+			scope:yeeted_agitator_scope_1 = {
+				hidden_effect = {
+					remove_variable = temp_event_target_in_use
+				}
+				kill_character = {
+					hidden = yes
+				}
+			}
+		}
+		scope:yeeted_agitator_ig_scope_1 = {
+			add_modifier = {
+				name = embittered_writings_modifier
+				months = normal_modifier_time
+			}
+		}
+	}
+	option = {
+		name = yeet_agitator_events.1.b
+		scope:yeeted_agitator_scope_1 = {
+			hidden_effect = {
+				remove_variable = temp_event_target_in_use
+			}
+			exile_character = yes
+		}
+		scope:yeeted_agitator_ig_scope_1 = {
+			add_modifier = {
+				name = agitator_exiled_modifier
+				months = normal_modifier_time
+			}
+		}
+	}
+	option = {
+		name = yeet_agitator_events.1.c
+		highlighted_option = yes
+		trigger = {
+			scope:yeeted_agitator_scope_1 = {
+				popularity >= -10
+			}
+		}
+		scope:yeeted_agitator_scope_1 = {
+			add_modifier = {
+				name = yellow_press_adovacte_modifier
+			}
+			hidden_effect = {
+				remove_variable = temp_event_target_in_use
+			}
+		}
+		add_modifier = {
+			name = newspaper_campaign_modifier
+			months = normal_modifier_time
+			multiplier = money_amount_multiplier_small
+		}
+	}
+}

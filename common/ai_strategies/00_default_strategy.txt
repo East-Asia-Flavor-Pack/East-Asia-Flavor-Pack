@@ -1680,8 +1680,6 @@ ai_strategy_default = {
 
 		if = { #Carving up China
 			limit = {
-				country_rank >= rank_value:great_power
-				exists = c:CHI
 				should_carve_up_china = yes
 				scope:target_state = {
 					OR = {
@@ -3534,7 +3532,7 @@ ai_strategy_default = {
 			limit = { 
 				has_journal_entry = je_sick_man_army
 			}
-			min = 100
+			min = 125
 		}
 
 		max = 1000
@@ -5228,6 +5226,18 @@ ai_strategy_default = {
 				}
 				multiply = 0.0	
 			}
+			
+			# Don't protect large isolationist powers
+			if = {
+				limit = { 
+					scope:target_country = {
+						has_law = law_type:law_isolationism
+						gdp >= 5000000		
+					}
+				}
+
+				multiply = 0
+			}			
 		}		
 		antagonize = {
 			value = 0
@@ -5349,7 +5359,7 @@ ai_strategy_default = {
 				limit = {
 					has_game_rule = low_ai_aggression
 				}
-				multiply = 1.5 # Yes, this is actually intended to be an increase - it's to partially compensate for lowered conquer/dominate desires
+				multiply = 1.25 # Yes, this is actually intended to be an increase - it's to partially compensate for lowered conquer/dominate desires
 			}				
 			
 			if = {
@@ -5457,18 +5467,6 @@ ai_strategy_default = {
 						has_friendly_diplomatic_pact = { TARGET = scope:target_country } 			
 					}				
 				}
-				multiply = 0
-			}
-			
-			# Don't protect large isolationist powers
-			if = {
-				limit = { 			
-					NAND = {
-						has_law = law_type:law_isolationism
-						gdp >= 5000000		
-					}	
-				}
-
 				multiply = 0
 			}
 		}
@@ -5678,14 +5676,14 @@ ai_strategy_default = {
 				limit = {
 					has_game_rule = high_ai_aggression
 				}
-				multiply = 1.5
+				multiply = 1.25
 			}
 			
 			if = {
 				limit = {
 					has_game_rule = low_ai_aggression
 				}
-				multiply = 0.5
+				multiply = 0.75
 			}		
 			
 			# AI implications for Power Blocs: 'conquer' secret goal is more likely towards the country from another Bloc
@@ -5914,14 +5912,14 @@ ai_strategy_default = {
 				limit = {
 					has_game_rule = high_ai_aggression
 				}
-				multiply = 1.5
+				multiply = 1.25
 			}
 			
 			if = {
 				limit = {
 					has_game_rule = low_ai_aggression
 				}
-				multiply = 0.5
+				multiply = 0.75
 			}
 			
 			# Shouldn't usually upset diplomatic pacts unless they're bankrupt or infamous
@@ -6180,7 +6178,7 @@ ai_strategy_default = {
 							OR = {
 								region = sr:region_north_india
 								region = sr:region_south_india
-								region = sr:region_himalayas
+								state_region = s:STATE_HIMALAYAS
 								state_region = s:STATE_BURMA
 								state_region = s:STATE_KACHIN
 								state_region = s:STATE_SHAN_STATES
