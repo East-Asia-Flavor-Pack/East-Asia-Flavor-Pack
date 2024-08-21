@@ -1,0 +1,41 @@
+﻿torching_of_the_summer_palace_decision = {
+	is_shown = {
+		exists = c:CHI
+		NOT = { THIS = c:CHI }
+		has_war_with = c:CHI
+		s:STATE_BEIJING.region_state:CHI = { exists = yes }
+		country_rank > c:CHI.country_rank
+		is_country_type = recognized
+		NOT = { has_global_variable = old_summer_palace_destroyed }
+	}
+
+	possible = {
+		s:STATE_BEIJING.region_state:CHI.controller = THIS
+	}
+
+	when_taken = {
+		hidden_effect = {
+			random_scope_war = {
+				limit = {
+					is_war_participant = c:CHI
+				}
+				save_scope_as = war_scope
+			}
+			set_global_variable = old_summer_palace_destroyed
+		}
+		scope:war_scope = {
+			add_war_war_support = {
+				target = c:CHI
+				value = -30
+			}
+		}
+		change_infamy = 5
+		hidden_effect = {
+			c:CHI = { trigger_event = chi_flavor.4 }
+		}
+	}
+
+	ai_chance = {
+		base = 100		
+	}
+}

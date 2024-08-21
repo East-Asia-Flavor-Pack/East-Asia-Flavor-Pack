@@ -1,0 +1,234 @@
+﻿je_donghak_countdown = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = {
+			name = donghak_progress_var
+			value = 0
+		}
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		has_law = law_type:law_tenant_farmers
+	}
+
+	on_complete = {
+		custom_tooltip = {
+			text = donghak_complete_tt
+			trigger_event = { id = donghak_events.5 } #동학사태의 해결
+		}
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = donghak_civil_war
+		has_variable = donghak_civil_war
+      }
+	  }
+
+	on_fail = {
+		custom_tooltip = {
+			text = donghak_will_happen_tt
+			trigger_event = { id = donghak_je_events.1 }
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					has_law = law_type:law_tenant_farmers
+				}
+				change_variable = {
+					name = donghak_progress_var
+					add = 1
+				}
+			}
+		}
+		random_events = {
+			# 동학농민운동 이벤트
+			100 = 0
+			20 = donghak_events.1 # 북접
+			20 = donghak_events.3 # 남접
+		}
+	}
+	on_yearly_pulse = {
+		random_events = {
+			20 = donghak_events.2 # 보은집회
+			20 = donghak_events.6 # 전장혁사망
+			20 = donghak_events.7 # 고부민란
+			60 = donghak_events.8 # 백산봉기
+		}
+	}
+
+	current_value = {
+		value = root.var:donghak_progress_var
+	}
+
+	goal_add_value = {
+		value = 60
+	}
+
+	progressbar = yes
+
+	weight = 100
+
+	should_be_pinned_by_default = yes
+}
+
+je_donghak_war = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+			owns_entire_state_region = STATE_YANGHO
+			owns_entire_state_region = STATE_BUSAN
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_SARIWON
+			owns_entire_state_region = STATE_PYONGYANG
+	}
+
+	on_complete = {
+		trigger_event = { id = donghak_je_events.2 }
+		if = {
+			limit = { 
+				has_variable = abc_will_spawn_var
+			}
+			
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			donghak_je_events.4
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+}
+
+je_donghak_war_2 = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+			owns_entire_state_region = STATE_YANGHO
+			owns_entire_state_region = STATE_BUSAN
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_SARIWON
+			owns_entire_state_region = STATE_PYONGYANG
+	}
+
+	on_complete = {
+		trigger_event = { id = donghak_je_events.2 }
+		if = {
+			limit = { 
+				has_variable = abc_will_spawn_var
+			}
+			
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			donghak_je_events.4
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+}
+
+je_donghak_reconstruction = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+		income > 9000
+	}
+
+	on_complete = {
+		trigger_event = { id = donghak_je_events.3 }
+	}
+
+	timeout = 4380
+
+	should_be_pinned_by_default = no
+
+	on_timeout = {
+		trigger_event = { id = donghak_je_events.3 }
+	}
+}
+
+je_donghak_equality = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+			NOT = { has_law = law_type:law_serfdom_ }
+	}
+
+	on_complete = {
+		trigger_event = { id = donghak_je_events.5 }
+	}
+
+
+	timeout = 4380
+
+	
+}
+
+je_donghak_gun = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = { 
+			name = donghak_gun_progress_var
+			value = 0
+		}
+	}
+    complete = {
+		scope:journal_entry = {
+		is_goal_complete = yes
+		}
+		
+	}
+	
+	on_complete = {
+		trigger_event = { id = donghak_je_events.6 }
+	}
+	 
+
+on_monthly_pulse = {
+		effect = {
+			change_variable = {
+					name = donghak_gun_progress_var
+					add = 1
+				}
+		}
+	}
+
+	current_value = {
+		value = root.var:donghak_gun_progress_var
+	}
+
+	goal_add_value = {
+	      value = 60
+	}
+
+	progressbar = yes
+
+}
+

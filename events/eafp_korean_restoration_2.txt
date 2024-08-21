@@ -1,0 +1,709 @@
+﻿namespace = korean_restoration_2
+
+korean_restoration_2.1 = {
+type = country_event
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.1.t
+	desc = korean_restoration_2.1.d
+	flavor = korean_restoration_2.1.f
+
+
+    	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:korean_restoration_2_ruler
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	trigger = {
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = korean_restoration_2_ruler
+		}
+		add_journal_entry = {
+			type = je_korean_restoration_second
+		}
+	}
+
+	option = { 
+		name = korean_restoration_2.1.a
+		default_option = yes
+		add_journal_entry = {
+				type = je_korean_restoration_economy
+			}
+		add_journal_entry = {
+				type = je_korean_restoration_military
+			}
+		add_journal_entry = {
+				type = je_korean_restoration_politics
+			}
+        add_journal_entry = {
+				type = je_korean_restoration_education
+			}
+	}
+
+
+    
+}
+
+
+korean_restoration_2.2 = { #개혁 성공
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/future.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.2.t
+	desc = korean_restoration_2.2.d
+	flavor = korean_restoration_2.2.f
+
+	duration = 5
+                
+     trigger = {
+     }
+
+	 immediate = {
+       
+		}
+
+     option = { 
+		
+		name = korean_restoration_2.2.a
+		 add_modifier = {
+			name = kr2_complete_md
+			months = 50
+		 }
+         default_option = yes
+                         trigger_event = { id = korean_empire.3 days = 30}
+		 add_journal_entry = {
+				type = je_korean_empire 
+			}
+         add_journal_entry = {
+				type = je_korean_restoration_third
+			}
+                     
+     }
+
+ }
+
+korean_restoration_2.3 = { #최후의 반발
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/champi.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.3.t
+	desc = korean_restoration_2.3.d
+	flavor = korean_restoration_2.3.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_1 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_1
+		}
+		}
+
+     option = { #양반을 진압하라
+         default_option = yes
+		 ig:ig_landowners = {
+		 add_modifier = {
+			name = kr_1_md1
+			months = 50
+		 }
+		 }
+		name = korean_restoration_2.3.a
+              
+     }
+     option = {#양반을 놔두자
+        name = korean_restoration_2.3.b
+		 ig:ig_landowners = {
+		 add_modifier = {
+			name = kr_1_md2
+			months = 50
+		 }
+		 }
+     }
+
+ }
+
+
+korean_restoration_2.4 = { #동학농민운동의 발생
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/jumo.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.4.t
+	desc = korean_restoration_2.4.d
+	flavor = korean_restoration_2.4.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = donghak_start }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = donghak_start
+		}
+		}
+
+     option = { #동학 농민운동 시작
+         default_option = yes
+		name = korean_restoration_2.4.a
+		trigger = { 
+			    has_law = law_type:law_serfdom
+		}
+         add_journal_entry = {
+				type = je_donghak_countdown
+			}    
+     }
+
+	  option = {
+		name = korean_restoration_2.4.b
+		set_variable = donghak_complete
+		trigger = {
+			NOT = { has_law = law_type:law_serfdom }
+		}
+		
+	  }
+ }
+
+
+korean_restoration_2.5 = { #산업화 개발
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_trains.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.5.t
+	desc = korean_restoration_2.5.d
+	flavor = korean_restoration_2.5.f
+
+	duration = 5
+                
+     trigger = {
+		any_scope_state = {
+					has_building = building_railway
+					percent > 0.7
+				}
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_2 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_2
+		}
+		}
+
+     option = { # 
+         default_option = yes
+		 add_modifier = {
+			name = kr_2_md1
+			months = 50
+		 }
+		name = korean_restoration_2.5.a
+              
+     }
+
+ }
+
+ korean_restoration_2.6 = { #산업화 개발2
+	type = country_event
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_trains.bk2"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.6.t
+	desc = korean_restoration_2.6.d
+	flavor = korean_restoration_2.6.f
+
+	duration = 5
+                
+     trigger = {
+		any_scope_state = {
+		any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 4
+				}
+				}
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_3 }
+
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_3
+		}
+		}
+
+     option = { # 
+         default_option = yes
+		 add_modifier = {
+			name = kr_3_md1
+			months = 50
+		 }
+		name = korean_restoration_2.6.a
+    }
+ }
+
+
+ korean_restoration_2.7 = { # 군제 개혁 완료
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/champi3.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.7.t
+	desc = korean_restoration_2.7.d
+	flavor = korean_restoration_2.7.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_4}
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_4
+		}
+		}
+
+     option = { # 
+         default_option = yes
+		name = korean_restoration_2.7.a
+		add_modifier = {
+			name = kr_4_md1
+			months = 50
+		 }
+              
+     }
+     option = {#
+        name = korean_restoration_2.7.b
+		add_modifier = {
+			name = kr_4_md2
+			months = 50
+		 }
+     }
+ }
+
+korean_restoration_2.8 = { # 신식군대 도입
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/champi2.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.8.t
+	desc = korean_restoration_2.8.d
+	flavor = korean_restoration_2.8.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_5}
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_5
+		}
+		}
+
+     option = { # 군사 버프 + 비용증가
+         default_option = yes
+		name = korean_restoration_2.8.a
+		add_modifier = {
+			name = kr_5_md1
+			months = 50
+		 }
+              
+     }
+     option = {# 중립
+        name = korean_restoration_2.8.b
+		add_modifier = {
+			name = kr_5_md2
+			months = 50
+		 }
+     }
+     option = {#임오군란 트리거 + 비용 감소
+        name = korean_restoration_2.8.c
+		add_modifier = {
+			name = kr_5_md3
+			months = 50
+		 }
+        set_variable = {
+            name = imogunran
+        }
+     }
+ }
+
+
+korean_restoration_2.9 = { # 임오군란
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/champi3.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.9.t
+	desc = korean_restoration_2.9.d
+	flavor = korean_restoration_2.9.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_6}
+      has_variable = imogunran
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_6
+		}
+		}
+
+     option = { # 진압
+         default_option = yes
+		 add_modifier = {
+			name = kr_6_md1
+			months = 50
+		 }
+		name = korean_restoration_2.9.a
+              
+     }
+     option = {# 해결
+	 add_modifier = {
+			name = kr_6_md2
+			months = 50
+		 }
+        name = korean_restoration_2.9.b
+     }
+ }
+
+
+ korean_restoration_2.10 = { # 상소
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/seeking.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.10.t
+	desc = korean_restoration_2.10.d
+	flavor = korean_restoration_2.10.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_7 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_7
+		}
+		}
+
+     option = { # 받아들인다
+	 ig:ig_landowners = {
+	 add_modifier = {
+			name = kr_7_md1
+			months = 50
+		 }
+                        }
+         default_option = yes
+		name = korean_restoration_2.10.a
+      }
+     
+     option = {# 무시한다
+	 ig:ig_landowners = {
+	 add_modifier = {
+			name = kr_7_md2
+			months = 50
+		 }
+		 }
+        name = korean_restoration_2.10.b
+     }
+ }
+
+  korean_restoration_2.11 = { # 정치이벤트 2
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/seeking.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.11.t
+	desc = korean_restoration_2.11.d
+	flavor = korean_restoration_2.11.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_8 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_8
+		}
+		}
+
+     option = { # 
+         default_option = yes
+		 ig:ig_rural_folk = {
+		 add_modifier = {
+			name = kr_8_md1
+			months = 50
+		 }
+		 }
+		name = korean_restoration_2.11.a
+              
+     }
+     option = {#
+	  ig:ig_rural_folk = {
+	 add_modifier = {
+			name = kr_8_md2
+			months = 50
+		 }
+		 }
+        name = korean_restoration_2.11.b
+     }
+ }
+
+ korean_restoration_2.12 = { # 서원 철폐
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.12.t
+	desc = korean_restoration_2.12.d
+	flavor = korean_restoration_2.12.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_9 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_9
+		}
+		}
+
+     option = { # 철폐한다
+         default_option = yes
+		 add_modifier = {
+			name = kr_9_md1
+			months = 50
+		 }
+		name = korean_restoration_2.12.a
+              
+     }
+     option = {# 부분적으로 남긴다
+	 add_modifier = {
+			name = kr_9_md2
+			months = 50
+		 }
+        name = korean_restoration_2.12.b
+     }
+ }
+
+
+ korean_restoration_2.13 = { # 교육이벤트
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/sijang.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.13.t
+	desc = korean_restoration_2.13.d
+	flavor = korean_restoration_2.13.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_10 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_10
+		}
+		}
+
+     option = { # 영국
+         default_option = yes
+		 if = {
+			limit = { exists = c:GBR }
+			change_relations = {
+				country = c:GBR
+				value = 50
+			}
+		}
+		name = korean_restoration_2.13.a
+              
+     }
+     option = {# 프랑스
+	 if = {
+			limit = { exists = c:FRA }
+			change_relations = {
+				country = c:FRA
+				value = 50
+			}
+		}
+        name = korean_restoration_2.13.b
+     }
+ }
+
+ korean_restoration_2.14 = { # 교육이벤트2
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/city.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = korean_restoration_2.14.t
+	desc = korean_restoration_2.14.d
+	flavor = korean_restoration_2.14.f
+
+	duration = 5
+                
+     trigger = {
+        exists = c:KOR
+		c:KOR = ROOT
+      NOT = { has_variable = kr2_11 }
+     }
+
+	 immediate = {
+        set_variable = {
+			name = kr2_11
+		}
+		}
+
+     option = { # 받아들인다
+         default_option = yes
+		 add_modifier = {
+			name = kr_11_md1
+			months = 36
+		 }
+		name = korean_restoration_2.14.a
+              
+     }
+     option = {# 무시한다
+	 add_modifier = {
+			name = kr_11_md2
+			months = 36
+		 }
+        name = korean_restoration_2.14.b
+     }
+ }

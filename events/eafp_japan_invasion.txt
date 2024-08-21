@@ -1,0 +1,326 @@
+﻿namespace = japan_invasion
+
+japan_invasion.1 { #의견 수렴 완료
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.1.t
+	desc = japan_invasion.1.d
+	flavor = japan_invasion.1.f
+
+	duration = 3
+
+	immediate = { }
+
+	option = { #시작
+		name = japan_invasion.1.a
+		default_option = yes
+		add_journal_entry = {
+			type = je_japan_invasion_second
+		}
+	}
+}
+
+
+japan_invasion.2 = { #??호 사건 - 개혁 이벤트중에 배 이름 정할 수 있게 할 예정
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.2.t
+	desc = japan_invasion.2.d
+	flavor = japan_invasion.2.f
+
+	trigger = {
+		NOT = { has_variable = japan_invasion_1 }
+	}
+
+	immediate = {
+		set_variable = japan_invasion_1
+	}
+	
+	option = { #응사
+		name = japan_invasion.2.a
+		default_option = yes
+		set_global_variable = ji_global_1
+		every_country = { 
+			limit = {
+				this = c:JAP
+			}
+			trigger_event = {
+				id = japan_invasion.3
+				days = 3
+			}
+		}
+	}
+	option = { #물러난다
+		name = japan_invasion.2.b
+	}
+}
+
+japan_invasion.3 = { #일본측 이벤트
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.3.t
+	desc = japan_invasion.3.d
+	flavor = japan_invasion.3.f
+
+	trigger = {
+		exists = c:JAP
+		this = c:JAP
+		has_global_variable = ji_global_1
+	}
+
+	option = { #물러선다
+		name = japan_invasion.3.a
+		default_option = yes
+		set_global_variable = ji_global_2
+		every_country = { 
+				limit = {
+					this = c:KOR
+				}
+				trigger_event = {
+					id = japan_invasion.5
+					days = 3
+				}
+			}
+		ai_chance = { base = 100 }
+	}
+
+	option = { #외교전
+		name = japan_invasion.3.b
+		set_global_variable = ji_global_3
+		every_country = { 
+			limit = {
+				this = c:KOR
+			}
+			trigger_event = {
+				id = japan_invasion.4
+				days = 3
+			}
+		}
+		create_diplomatic_play = {
+			target_country = c:KOR
+			type = dp_humiliation
+			add_war_goal = {
+				holder = c:KOR
+				type = take_treaty_port
+				target_country = c:JAP
+			}
+		}
+		ai_chance = { base = 0 }
+	}
+}
+
+japan_invasion.4 = { #일본의 거부 한국측 이벤트
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.4.t
+	desc = japan_invasion.4.d
+	flavor = japan_invasion.4.f
+
+
+	trigger = {
+		exists = c:KOR
+		this = c:KOR
+		has_global_variable = ji_global_3
+	}
+
+	option = { #전쟁 준비
+		name = japan_invasion.3.a
+		default_option = yes
+	}
+}
+
+japan_invasion.5 = { #일본의 항복 한국측 이벤트
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka_2.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.5.t
+	desc = japan_invasion.5.d
+	flavor = japan_invasion.5.f
+
+
+	trigger = {
+		exists = c:KOR
+		this = c:KOR
+		has_global_variable = ji_global_2
+	}
+
+	option = { #시즈오카 조약
+		name = japan_invasion.5.a
+		default_option = yes
+		set_global_variable = shizuoka_treaty
+		every_country = { 
+			limit = {
+				this = c:JAP
+			}
+			trigger_event = {
+				id = japan_invasion.6
+				days = 3
+			}	
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = japan_invasion.7
+				years = 2
+			}
+		}
+	}
+}
+
+
+japan_invasion.6 = { #시즈오카 조약 일본측 이벤트
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/shizuoka_2.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.6.t
+	desc = japan_invasion.6.d
+	flavor = japan_invasion.6.f
+
+
+	trigger = {
+		exists = c:JAP
+		this = c:JAP
+		has_global_variable = shizuoka_treaty
+	}
+
+	option = { 
+		name = japan_invasion.6.a
+		default_option = yes
+	}
+}
+
+
+japan_invasion.7 = { #한?전쟁
+
+  	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/han_war.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.7.t
+	desc = japan_invasion.7.d
+	flavor = japan_invasion.7.f
+
+	immediate = {
+		random_country = {
+			limit = {
+				country_rank = rank_value:great_power
+				has_interest_marker_in_region = region_japan
+				NOT = { THIS = c:KOR }
+			}
+			save_scope_as = country_123
+		}
+	}
+
+	option = { 
+		name = japan_invasion.7.a
+		set_variable = ji_1
+		create_diplomatic_play = {
+			target_country = scope:country_123
+			type = dp_japan_invasion
+		}
+		hidden_effect = {
+			trigger_event = { id = japan_invasion.8 days = 1600 }
+		}
+	}
+  
+
+	option = { 
+		name = japan_invasion.7.b
+		default_option = yes
+	}
+}
+
+
+
+japan_invasion.8 = { #한?전쟁 승리
+	type = country_event
+
+	event_image = {
+		texture = "gfx/event_pictures/han_war.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	#on_opened_soundeffect = "event:/SFX/Events/asia/confucianism_shinto" 
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	title = japan_invasion.8.t
+	desc = japan_invasion.8.d
+	flavor = japan_invasion.8.f
+
+	trigger = {
+	}
+
+	option = { 
+		name = japan_invasion.8.a
+		default_option = yes
+		create_diplomatic_pact = {
+			country = c:JAP
+			type = puppet
+		}
+		set_variable = ji_global_4 
+	}
+}

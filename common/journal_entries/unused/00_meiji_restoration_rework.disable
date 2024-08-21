@@ -1,0 +1,320 @@
+﻿je_kurofune = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		exists = c:JAP
+		c:JAP = ROOT
+		NOT = { 
+			OR ={ 
+				has_law = law_type:law_free_trade
+				has_law = law_type:law_mercantilism
+			}
+		}
+		NOT = { has_global_variable = kurofune_complete }
+	}
+
+	possible = {
+		game_date > 1853.07.07
+	}
+
+	complete = {
+		has_law = law_type:law_free_trade
+	}
+
+	on_complete = {
+		set_global_variable = kurofune_complete
+	}
+
+	timeout = 220
+
+	should_be_pinned_by_default = yes
+
+	on_timeout = {
+		trigger_event = { id = kurofune.10 }
+		set_global_variable = kurofune_complete
+	}
+	weight = 100
+}
+
+
+#Emperor's decision about treaty
+je_kurofune2 = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	complete = {
+		game_date > 1858.07.29
+	}
+
+	on_complete = {
+		trigger_event = { id = kurofune.20 }
+	}
+
+	should_be_pinned_by_default = yes
+
+	weight = 100
+}
+
+je_sakurada = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	complete = {
+		ig:ig_landowners = {
+			ig_approval < -9
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = kurofune.40 }
+	}
+
+	timeout = 3650
+
+	should_be_pinned_by_default = yes
+
+	on_timeout = {
+	    ig:ig_landowners = {
+	        add_modifier = {
+	            name = satisfied_bakufu
+	            months = 12
+	        }
+		}
+	}
+
+	should_be_pinned_by_default = yes
+
+	progressbar = yes
+	weight = 100
+}
+
+je_boshin_war_nip = {
+	is_shown_when_inactive = {
+		exists = c:NIP
+		c:NIP = ROOT
+		NOT = { has_global_variable = meiji_rework_complete }
+	}
+
+	possible = {
+		has_technology_researched = mass_communication
+	}
+
+	complete = {
+		any_scope_state = {
+
+			state_region = {
+				is_homeland = cu:japanese
+			}
+			count >= 4
+		}
+		has_technology_researched = nationalism
+	}
+
+	
+	on_complete = {
+		set_global_variable = boshin_war
+		trigger_event = { id = kurofune.53}
+	}
+
+	weight = 10000
+
+}
+
+je_boshin_war_jap = {
+	is_shown_when_inactive = {
+		exists = c:JAP
+		c:JAP = ROOT
+		NOT = { has_global_variable = meiji_rework_complete }
+	}
+
+	possible = {
+		has_technology_researched = mass_communication
+	}
+
+	complete = {
+		any_scope_state = {
+
+			state_region = {
+				is_homeland = cu:japanese
+			}
+			count >= 5
+		}
+		has_technology_researched = nationalism
+	}
+
+	
+	on_complete = {
+		set_global_variable = boshin_war
+		trigger_event = { id = kurofune.50}
+	}
+
+	weight = 10000
+
+}
+
+je_meiji_formation = {
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		exists = c:NIP
+		c:NIP = ROOT
+
+		NOT = { has_global_variable = meiji_rework_complete }
+	}
+
+	possible = {
+		has_technology_researched = mass_communication
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			400 = 0
+			10 = jap_relation.40
+			10 = jap_relation.30
+			50 = kurofune.55
+		}
+	}
+
+	complete = {
+		has_technology_researched = nationalism
+		owns_entire_state_region = STATE_KANTO
+		NOT = { exists = c:JAP}
+	}
+
+	on_complete = {
+		trigger_event = { id = kurofune.100  }
+		set_global_variable = meiji_rework_complete
+	}
+
+	should_be_pinned_by_default = yes
+	weight = 100
+}
+
+je_bakufu_formation = {
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		exists = c:JAP
+		c:JAP = ROOT
+		NOT = { has_global_variable = meiji_rework_complete }
+	}
+
+
+	possible = {
+		has_technology_researched = mass_communication
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			400 = 0
+			25 = jap_relation.11
+			15 = jap_relation.10
+			5 = jap_relation.20
+			50 = kurofune.54
+		}
+	}
+
+	complete = {
+		has_technology_researched = nationalism
+		NOT = { exists = c:NIP}
+	}
+
+	on_complete = {
+		trigger_event = { id = kurofune.101 }
+		set_global_variable = meiji_rework_complete
+	}
+
+	weight = 100
+}
+
+
+je_support_meiji_bakufu = {
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		is_subject_type = subject_type_daimyo
+		NOT = { has_global_variable = meiji_rework_complete }
+		exists = c:JAP
+		exists = c:NIP
+		NOT = { c:JAP = ROOT }
+		NOT = { c:NIP = ROOT }
+	}
+
+	possible = {
+		has_technology_researched = mass_communication
+	}
+
+	immediate = {
+		trigger_event = { id = kurofune.45 }
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = jap_relation.50
+			10 = jap_relation.51
+		}
+	}
+
+	complete = {
+		c:JAP = {relations:root > 95}
+	}
+
+	on_complete = {
+		c:JAP = { trigger_event = { id = kurofune.41 } }
+		trigger_event = { id = kurofune.43 }
+	}
+
+	fail = { exists = c:NIP c:NIP = {relations:root > 95} }
+
+	on_fail = { 
+		c:NIP = { trigger_event = { id = kurofune.42 } } 
+		trigger_event = { id = kurofune.44 }
+	}
+
+	weight = 100
+}
+
+je_defend_jap = {
+	
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	is_shown_when_inactive = {
+		NOT = { has_global_variable = meiji_rework_complete }
+		country_has_primary_culture = cu:japanese
+		NOT ={ 
+			OR = {
+				AND = { exists = c:JAP c:JAP = ROOT }
+				AND = { exists = c:NIP c:NIP = ROOT }
+				AND = { exists = c:RYU c:RYU = ROOT }
+			} 
+		}
+
+		OR = {
+			NOT ={ exists = c:NIP }
+			c:NIP = { is_subject_type = subject_type_vassal }
+			AND = {is_subject=yes NOT={is_subject_of= c:JAP}}
+		}		
+	}
+
+	possible = {
+	}
+
+	timeout = 90
+
+	should_be_pinned_by_default = yes
+
+	on_timeout = {
+		trigger_event = { id = kurofune.102 }
+	}
+
+	invalid = { 
+		OR = {
+			has_global_variable = meiji_rework_complete
+			has_global_variable = boshin_war
+		}
+	}
+
+	weight = 100
+}

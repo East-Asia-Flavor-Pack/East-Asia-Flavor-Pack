@@ -1,0 +1,131 @@
+﻿je_manchus_and_han = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = {
+			name = empire_of_chimera_var
+			value = 4
+		}
+		add_modifier = {
+			name = empire_of_chimera
+			multiplier = var:empire_of_chimera_var
+		}
+	}
+
+	invalid = {
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
+		}
+	}
+
+	on_invalid = {
+		hidden_effect = {
+			if = {
+				limit = { has_variable = empire_of_chimera_var }
+				remove_variable = empire_of_chimera_var
+			}
+		}
+		if = {
+			limit = { has_modifier = empire_of_chimera }
+			remove_modifier = empire_of_chimera
+		}
+	}
+
+	complete = {
+		NOT = { has_law = law_type:law_racial_segregation }
+	}
+
+	on_complete = {
+		hidden_effect = {
+			if = {
+				limit = { has_variable = empire_of_chimera_var }
+				remove_variable = empire_of_chimera_var
+			}
+		}
+		if = {
+			limit = { has_modifier = empire_of_chimera }
+			remove_modifier = empire_of_chimera
+		}
+	}
+	
+	on_yearly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					has_technology_researched = nationalism
+					NOT = { has_variable = manhan1 }
+				}
+				set_variable = manhan1
+				trigger_event = {
+					id = manchus_and_han_events.1
+					months = { 0 12 }
+				}
+			}
+			if = {
+				limit = {
+					has_technology_researched = pan-nationalism
+					NOT = { has_variable = manhan2 }
+				}
+				set_variable = manhan2
+				trigger_event = {
+					id = manchus_and_han_events.2
+					months = { 12 60 }
+				}
+			}
+			if = {
+				limit = { has_variable = manhan1 }
+				random_list = {
+					40 = {}
+					5 = {
+						modifier = {
+							if = {
+								limit = { cu:han = { culture_is_discriminated_in = ROOT } }
+								multiply = 2
+							}
+						}
+						modifier = {
+							if = {
+								limit = { has_variable = manhan2 }
+								multiply = 2
+							}
+						}
+						modifier = {
+							if = {
+								limit = { has_law = law_type:law_landed_voting }
+								multiply = 0.9
+							}
+						}
+						modifier = {
+							if = {
+								limit = { has_law = law_type:law_census_voting }
+								multiply = 0.8
+							}
+						}
+						modifier = {
+							if = {
+								limit = { has_law = law_type:law_wealth_voting }
+								multiply = 0.7
+							}
+						}
+						modifier = {
+							if = {
+								limit = { has_law = law_type:law_universal_suffrage }
+								multiply = 0.6
+							}
+						}
+						trigger_event = {
+							id = manchus_and_han_events.3
+							months = { 0 12 }
+						}
+					}
+				}
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = no
+}

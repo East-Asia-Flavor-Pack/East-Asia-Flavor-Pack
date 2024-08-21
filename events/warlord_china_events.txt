@@ -1,0 +1,1427 @@
+﻿namespace = warlord_china_events
+
+warlord_china_events.1 = { # (도시 이름) 봉기
+	type = country_event
+	placement = scope:revolt_state
+
+	title = warlord_china_events.1.t
+	desc = warlord_china_events.1.d
+	flavor = warlord_china_events.1.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		create_character = {
+			culture = cu:han
+			interest_group = ig_landowners
+			save_scope_as = governor
+			age = { 40 60 } 
+			on_created = {
+				place_character_in_void = 10000
+				set_character_busy_and_immortal = yes
+			}
+		}
+		add_journal_entry = { type = je_xinhai_revolution }
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					region = sr:region_north_china
+					region = sr:region_south_china
+				}
+				NOT = { THIS = c:CHI.capital }
+			}
+			order_by = radical_fraction
+			save_scope_as = revolt_state
+		}
+		create_country = {
+			tag = KMT
+			origin = this
+			state = scope:revolt_state
+			on_created = {
+				
+			}
+		}
+		random_diplomatic_play = {
+			limit = {
+				initiator = c:KMT
+				target = c:CHI
+			}
+			add_escalation = 40
+			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
+			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
+		}
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = long_modifier_time
+			is_decaying = yes
+		}
+		add_modifier = {
+			name = xinhai_revolution_shock_of_the_revolution
+			months = 13
+			is_decaying = yes
+		}
+		# 군부 지도자를 권위주의로
+		ig:ig_armed_forces = {
+			leader = {
+				set_ideology = ideology:ideology_authoritarian
+				set_variable = YSK_var
+				set_character_busy_and_immortal = yes
+			}
+		}
+		trigger_event = {
+			id = warlord_china_events.2
+			days = 15
+			popup = yes
+		}
+	}
+
+			# 쑨원을 지도자로
+			if = {
+				limit = {
+					NOR = {
+						any_character = {
+							has_template = chi_sun_character_template
+						}
+						any_character_in_exile_pool = {
+							has_template = chi_sun_character_template
+						}
+					}
+				}
+				create_character = {
+					template = chi_sun_character_template
+					on_created = {
+						set_character_as_ruler = yes
+						add_character_role = politician
+						set_variable = sun_yat_sen_var
+						set_global_variable = sun_yat_sen_spawn
+						set_character_busy_and_immortal = yes
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					any_character = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character = {
+					limit = {
+						owner = c:CHI
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+					set_character_busy_and_immortal = yes
+				}
+			}	
+			else_if = {
+				limit = {
+					any_character_in_exile_pool = {
+						has_template = chi_sun_character_template
+					}
+				}
+				random_character_in_exile_pool = {
+					limit = {
+						has_template = chi_sun_character_template
+					}
+					transfer_character = c:KMT
+					set_character_as_ruler = yes
+					add_character_role = politician
+					set_character_busy_and_immortal = yes
+				}
+			}
+
+			# 각종 변동치
+			every_interest_group = {
+				limit = {
+					OR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_armed_forces
+						is_interest_group_type = ig_rural_folk
+						is_interest_group_type = ig_devout
+					}
+				}
+				add_modifier = {
+					name = xinhai_revolution_ig_modifier
+					months = long_modifier_time
+				}
+			}
+			add_modifier = {
+				name = xinhai_revolution_army_modifier
+				months = normal_modifier_time
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = xinhai_revolution_army_modifier_short
+				months = 13
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = xinhai_revolution_land_socialization_modifier
+				months = long_modifier_time
+				is_decaying = yes
+			}
+
+			# 신해 혁명 외교 행동
+			create_diplomatic_play = {
+				name = xinhai_revolution
+				target_country = c:CHI
+				type = dp_revolution
+			}
+			hidden_effect = {
+				change_infamy = -500
+			}
+			add_journal_entry = { type = je_xinhai_revolution_kmt }
+		}
+		else = {
+			# 쑨원 Mk.2
+			create_character = {
+				age = { 30 50 }
+				religion = rel:protestant
+				ideology = ideology_republican_leader
+				interest_group = ig_intelligentsia
+				ruler = yes
+				ig_leader = yes
+				traits = {
+					ambitious
+					persistent
+					inspirational_orator
+				}
+				on_created = {
+					add_character_role = politician
+					set_character_busy_and_immortal = yes
+				}
+			}
+			add_escalation = 80
+			add_diplomatic_play_war_support = { target = c:KMT value = 100 }
+			add_diplomatic_play_war_support = { target = c:CHI value = 100 }
+		}
+		add_modifier = {
+			name = xinhai_revolution_republican_propaganda
+			months = long_modifier_time
+			is_decaying = yes
+		}
+		add_modifier = {
+			name = xinhai_revolution_shock_of_the_revolution
+			months = 13
+			is_decaying = yes
+		}
+	}
+
+	option = {
+		name = warlord_china_events.1.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.2 = { # 혁명 전파
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.2.t
+	desc = warlord_china_events.2.d
+	flavor = warlord_china_events.2.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 4
+			c:KMT = {		
+				ordered_neighbouring_state = {
+					limit = {
+						owner = c:CHI
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+						}
+						NOT = { THIS = c:CHI.capital }
+					}
+					order_by = radical_fraction
+					set_state_owner = c:KMT
+					set_state_type = incorporated
+				}
+			}
+		}
+	}
+
+	option = {
+		name = warlord_china_events.2.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.3 = { # 더 혁명 전파
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.3.t
+	desc = warlord_china_events.3.d
+	flavor = warlord_china_events.3.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		while = {
+			count = 4
+			c:KMT = {		
+				ordered_neighbouring_state = {
+					limit = {
+						owner = c:CHI
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+						}
+						NOT = { THIS = c:CHI.capital }
+					}
+					order_by = radical_fraction
+					set_state_owner = c:KMT
+					set_state_type = incorporated
+				}
+			}
+		}
+	}
+
+	option = {
+		name = warlord_china_events.3.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.4 = { # 몽골 위구르 종속국 탈주
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.4.t
+	desc = warlord_china_events.4.d
+	flavor = warlord_china_events.4.f
+
+	duration = 3
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	trigger = {
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		every_subject_or_below = {
+			if = {
+				limit = { is_subject_type = subject_type_military_headquarters_china }
+				warlord_setup_effect = yes
+			}
+			make_independent = yes
+		}
+		if = {
+			limit = { exists = c:MGL }
+			s:STATE_HINGGAN = { add_claim = c:MGL }
+			s:STATE_ALXA = { add_claim = c:MGL }
+		}
+		if = {
+			limit = { exists = s:STATE_TUVA.region_state:MGL }
+			create_country = {
+				tag = TUV
+				origin = this
+				state = s:STATE_TUVA.region_state:MGL
+	
+				on_created = {
+					warlord_setup_effect = yes
+				}
+			}
+			c:TUV = { save_scope_as = scope_TUV }
+		}
+	}
+
+	option = {
+		name = warlord_china_events.4.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
+	type = country_event
+	placement = root
+
+	title = warlord_china_events.5.t
+	desc = warlord_china_events.5.d
+	flavor = warlord_china_events.5.f
+
+	duration = 1
+
+	event_image = {
+		texture = "gfx/event_pictures/china/coronation.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+
+	option = { # 항복
+		name = warlord_china_events.5.a
+		
+		default_option = yes
+
+		custom_tooltip = {
+			text = warlord_china_events.5.tta
+			activate_law = law_type:law_presidential_republic
+			trigger_event = { id = boxer_rebellion_events.4 days = 0 popup = yes }
+			random_character = {
+				limit = {
+					is_character_alive = yes
+					has_variable = sun_yat_sen_var
+				}
+				transfer_character = c:CHI
+				set_character_as_ruler = yes
+				add_character_role = politician
+			}
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = { # 만주로 몽진
+		name = warlord_china_events.5.b
+
+		trigger = {
+			exists = c:MCH
+			c:MCH = {
+				is_subject_of = c:CHI
+				is_subject_type = subject_type_military_headquarters_china
+			}
+			c:MCH = {
+				any_scope_state = {
+					has_modifier = manchurian_containment
+				}
+			}
+		}
+		
+		custom_tooltip = {
+			text = warlord_china_events.5.ttb
+			set_variable = imperial_family_exiled
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = { # 결사 항전
+		name = warlord_china_events.5.c
+		
+		default_option = yes
+
+		ai_chance = {
+			base = 0
+		}
+	}
+
+	after = {
+		if = {
+			limit = { any_character = { has_variable = YSK_var } }
+			random_character = {
+				limit = { has_variable = YSK_var }
+				save_scope_as = new_ruler
+				set_character_busy_and_immortal = no
+				set_character_as_ruler = yes
+			}
+		}
+		else = {
+			create_character = {
+				culture = cu:han
+				ig_leader = yes
+				interest_group = ig_armed_forces
+				ideology = ideology_authoritarian
+				traits = {
+					ambitious
+					persistent
+				}
+				on_created = {
+					save_scope_as = new_ruler
+					set_character_as_ruler = yes
+				}
+			}
+			annex = c:MCH
+		}
+		if = {
+			limit = { has_variable = imperial_family_exiled }
+			every_scope_state = {
+				limit = { NOT = { state_region = { is_homeland = cu:manchu } } }
+				set_state_owner = c:KMT
+			}
+		}
+	}
+}
+
+warlord_china_events.100 = { #Split china up into warlord states
+	type = country_event
+	placement = root
+	duration = 3
+
+	title = warlord_china_events.100.t
+	desc = warlord_china_events.100.d
+	flavor = warlord_china_events.100.f
+
+	event_image = {
+		video = "unspecific_armored_train"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	trigger = {
+		exists = c:CHI
+		this = c:CHI
+		NOT = { has_global_variable = china_shatters }
+	}
+
+	immediate = {
+		set_global_variable = china_shatters
+		
+		set_variable = chinese_central_government
+
+		if = {
+			limit = { exists = s:STATE_HUNAN.region_state:CHI }
+			create_country = { #Hunan
+				tag = HNA
+				origin = this
+				state = s:STATE_HUNAN.region_state:CHI
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:HNA = { save_scope_as = scope_HNA }
+		}
+		if = {
+			limit = { exists = s:STATE_GUANGXI.region_state:CHI }
+			create_country = { #Guangxi
+				tag = GNG
+				origin = this
+				state = s:STATE_GUANGXI.region_state:CHI
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:GNG = { save_scope_as = scope_GNG }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:CHI }
+			create_country = { #Anhui Clique
+				tag = AHU
+				origin = this
+				state = s:STATE_SOUTHERN_ANHUI.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:AHU = { save_scope_as = scope_AHU }
+		}
+
+		if = {
+			limit = { exists = s:STATE_ZHILI.region_state:CHI }
+			create_country = { #Zhili Clique
+				tag = ZHI
+				origin = this
+				state = s:STATE_ZHILI.region_state:CHI
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:ZHI = { save_scope_as = scope_ZHI }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
+			create_country = { #Fengtian Clique
+				tag = MCH
+				origin = this
+				state = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:MCH = { save_scope_as = scope_MCH }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SHANXI.region_state:CHI }
+			create_country = {  #Shanxi
+				tag = SHN
+				origin = this
+				state = s:STATE_SHANXI.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:SHN = { save_scope_as = scope_SHN }
+		}
+
+		if = {
+			limit = { exists = s:STATE_TIANSHAN.region_state:CHI }
+			create_country = {  #Xinjiang Clique
+				tag = XIN
+				origin = this
+				state = s:STATE_TIANSHAN.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:XIN = { save_scope_as = scope_XIN }
+		}
+
+		if = {
+			limit = { exists = s:STATE_YUNNAN.region_state:CHI }
+			create_country = {  #Yunnan
+				tag = YUN
+				origin = this
+				state = s:STATE_YUNNAN.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:YUN = { save_scope_as = scope_YUN }
+		}
+
+		if = {
+			limit = { exists = s:STATE_GUIZHOU.region_state:CHI }
+			create_country = { #Guizhou
+				tag = GUI
+				origin = this
+				state = s:STATE_GUIZHOU.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:GUI = { save_scope_as = scope_GUI }
+		}
+
+		if = {
+			limit = { exists = s:STATE_GUANGDONG.region_state:CHI }
+			create_country = { #Guangdong
+				tag = YUE
+				origin = this
+				state = s:STATE_GUANGDONG.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:YUE = { save_scope_as = scope_YUE }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SICHUAN.region_state:CHI }
+			create_country = {
+				tag = SIH
+				origin = this
+				state = s:STATE_SICHUAN.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:SIH = { save_scope_as = scope_SIH }
+		}
+
+		if = {
+			limit = { exists = s:STATE_SHANDONG.region_state:CHI }
+			create_country = {
+				tag = SHA
+				origin = this
+				state = s:STATE_SHANDONG.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+				}
+			}
+			c:SHA = { save_scope_as = scope_SHA }
+		}
+
+		if = {
+			limit = { exists = s:STATE_NINGXIA.region_state:CHI }
+			create_country = {
+				tag = XIB
+				origin = this
+				state = s:STATE_NINGXIA.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+					set_variable = warlord_state
+					random_list = {
+						4 = {
+
+						}
+						1 = {
+							set_strategy = ai_strategy_unify_china
+						}
+					}
+				}
+			}
+			c:XIB = { save_scope_as = scope_XIB }
+		}
+
+		#if = {
+		#	limit = { exists = s:STATE_ULIASTAI.region_state:CHI }
+		#	create_country = {
+		#		tag = MGL
+		#		origin = this
+		#		state = s:STATE_ULIASTAI.region_state:CHI
+
+		#		on_created = {
+		#			warlord_setup_effect = yes
+		#			random_state = {
+		#				limit = {
+		#					state_region = s:STATE_URGA
+		#					c:CHI ?= owner
+		#				}
+		#				set_state_owner = c:MGL
+		#			}
+		#		}
+		#	}
+		#	c:MGL = { save_scope_as = scope_MGL }
+		#}
+
+		#if = {
+		#	limit = { exists = s:STATE_TUVA.region_state:CHI }
+		#	create_country = {
+		#		tag = TUV
+		#		origin = this
+		#		state = s:STATE_TUVA.region_state:CHI
+
+		#		on_created = {
+		#			warlord_setup_effect = yes
+		#		}
+		#	}
+		#	c:TUV = { save_scope_as = scope_TUV }
+		#}
+
+		if = {
+			limit = { exists = s:STATE_ALTAI.region_state:CHI }
+			create_country = {
+				tag = ALI
+				origin = this
+				state = s:STATE_ALTAI.region_state:CHI
+
+				on_created = {
+					warlord_setup_effect = yes
+				}
+			}
+			c:ALI = { save_scope_as = scope_ALI }
+		}
+
+		every_subject_or_below = {
+			make_independent = yes
+		}
+
+		random_country = {
+			limit = {
+				has_variable = warlord_state
+				NOR = {
+					has_variable = var_warlord_two
+					has_variable = var_warlord_three
+					has_variable = var_warlord_four 
+				}
+			}
+			save_scope_as = scope_random_warlord_one
+			set_variable = var_warlord_one
+		}
+
+		random_country = {
+			limit = {
+				has_variable = warlord_state
+				NOR = {
+					has_variable = var_warlord_one
+					has_variable = var_warlord_three
+					has_variable = var_warlord_four
+				}
+			}
+			save_scope_as = scope_random_warlord_two
+			set_variable = var_warlord_two
+		}
+
+		random_country = {
+			limit = {
+				has_variable = warlord_state
+				NOR = {
+					has_variable = var_warlord_one
+					has_variable = var_warlord_two
+					has_variable = var_warlord_four
+				}
+			}
+			save_scope_as = scope_random_warlord_three
+			set_variable = var_warlord_three
+		}
+
+		random_country = {
+			limit = {
+				has_variable = warlord_state
+				NOR = {
+					has_variable = var_warlord_one
+					has_variable = var_warlord_two
+					has_variable = var_warlord_three
+				}
+			}
+			save_scope_as = scope_random_warlord_four
+			set_variable = var_warlord_four
+		}
+	}
+
+	option = {
+		name = warlord_china_events.100.ab
+		trigger = {
+			exists = scope:scope_random_warlord_one
+			is_player = yes
+		}
+		custom_tooltip = warlord_china_implosion_tt
+		while = {
+			limit = {
+				any_scope_state = {
+					is_capital = no
+					any_neighbouring_state = {
+						owner = { has_variable = warlord_state }
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_variable = warlord_state
+					any_neighbouring_state = {
+						is_capital = no
+						owner = ROOT
+					}
+				}
+				save_scope_as = warlord_scope
+				ROOT = {
+					random_scope_state = {
+						limit = {
+							is_capital = no
+							any_neighbouring_state = {
+								scope:warlord_scope ?= owner
+							}
+						}
+						set_state_owner = scope:warlord_scope
+					}
+				}
+			}
+		}
+		change_tag = BEI
+		set_global_variable = { name = chinese_central_government value = c:BEI }
+		play_as = scope:scope_random_warlord_one
+	}
+
+	option = {
+		name = warlord_china_events.100.b
+		trigger = {
+			exists = scope:scope_random_warlord_two
+			is_player = yes
+		}
+		custom_tooltip = warlord_china_implosion_tt
+		while = {
+			limit = {
+				any_scope_state = {
+					is_capital = no
+					any_neighbouring_state = {
+						owner = { has_variable = warlord_state }
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_variable = warlord_state
+					any_neighbouring_state = {
+						is_capital = no
+						owner = ROOT
+					}
+				}
+				save_scope_as = warlord_scope
+				ROOT = {
+					random_scope_state = {
+						limit = {
+							is_capital = no
+							any_neighbouring_state = {
+								scope:warlord_scope ?= owner
+							}
+						}
+						set_state_owner = scope:warlord_scope
+					}
+				}
+			}
+		}
+		change_tag = BEI
+		set_global_variable = { name = chinese_central_government value = c:BEI }
+		play_as = scope:scope_random_warlord_two
+	}
+
+	option = {
+		name = warlord_china_events.100.c
+		trigger = {
+			exists = scope:scope_random_warlord_three
+			is_player = yes
+		}
+		custom_tooltip = warlord_china_implosion_tt
+		while = {
+			limit = {
+				any_scope_state = {
+					is_capital = no
+					any_neighbouring_state = {
+						owner = { has_variable = warlord_state }
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_variable = warlord_state
+					any_neighbouring_state = {
+						is_capital = no
+						owner = ROOT
+					}
+				}
+				save_scope_as = warlord_scope
+				ROOT = {
+					random_scope_state = {
+						limit = {
+							is_capital = no
+							any_neighbouring_state = {
+								scope:warlord_scope ?= owner
+							}
+						}
+						set_state_owner = scope:warlord_scope
+					}
+				}
+			}
+		}
+		change_tag = BEI
+		set_global_variable = { name = chinese_central_government value = c:BEI }
+		play_as = scope:scope_random_warlord_three
+	}
+
+	option = {
+		name = warlord_china_events.100.aa
+		trigger = {
+			exists = scope:scope_random_warlord_four
+			is_player = yes
+		}
+		custom_tooltip = warlord_china_implosion_tt
+		while = {
+			limit = {
+				any_scope_state = {
+					is_capital = no
+					any_neighbouring_state = {
+						owner = { has_variable = warlord_state }
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_variable = warlord_state
+					any_neighbouring_state = {
+						is_capital = no
+						owner = ROOT
+					}
+				}
+				save_scope_as = warlord_scope
+				ROOT = {
+					random_scope_state = {
+						limit = {
+							is_capital = no
+							any_neighbouring_state = {
+								scope:warlord_scope ?= owner
+							}
+						}
+						set_state_owner = scope:warlord_scope
+					}
+				}
+			}
+		}
+		change_tag = BEI
+		set_global_variable = { name = chinese_central_government value = c:BEI }
+		play_as = scope:scope_random_warlord_four
+	}
+
+	option = {
+		default_option = yes
+		name = warlord_china_events.100.a
+		custom_tooltip = warlord_china_implosion_tt
+		while = {
+			limit = {
+				any_scope_state = {
+					is_capital = no
+					any_neighbouring_state = {
+						owner = { has_variable = warlord_state }
+					}
+				}
+			}
+			every_country = {
+				limit = {
+					has_variable = warlord_state
+					any_neighbouring_state = {
+						is_capital = no
+						owner = ROOT
+					}
+				}
+				save_scope_as = warlord_scope
+				ROOT = {
+					random_scope_state = {
+						limit = {
+							is_capital = no
+							any_neighbouring_state = {
+								scope:warlord_scope ?= owner
+							}
+						}
+						set_state_owner = scope:warlord_scope
+					}
+				}
+			}
+		}
+		change_tag = BEI
+		set_global_variable = { name = chinese_central_government value = c:BEI }
+	}
+}
+
+warlord_china_events.101 = { #Chinese Reunification
+	type = country_event
+	placement = root
+	duration = 3
+
+	title = warlord_china_events.101.t
+	desc = warlord_china_events.101.d
+	flavor = warlord_china_events.101.f
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		# Triggered by JE
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = warlord_china_events.101.a
+		add_loyalists = {
+			value = large_radicals
+		}
+		every_state_region = {
+			limit = {
+				NOT = {
+					any_scope_state = {
+						owner = root
+					}
+				}
+				OR = {
+					is_homeland = cu:han
+					is_homeland = cu:manchu
+					is_homeland = cu:tibetan
+					is_homeland = cu:uighur
+					is_homeland = cu:tuvan
+					is_homeland = cu:mongol
+				}
+			}
+			add_claim = ROOT
+		}
+	}
+
+	option = {
+		name = warlord_china_events.101.b
+		add_loyalists = {
+			value = large_radicals
+		}
+		add_modifier = {
+			name = modifier_end_of_warlord_period
+			months = normal_modifier_time
+		}
+	}
+}
+
+warlord_china_events.200 = { #Fragile Unity Victory
+	type = country_event
+	placement = root
+	duration = 3
+
+	title = warlord_china_events.200.t
+	desc = warlord_china_events.200.d
+	flavor = warlord_china_events.200.f
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		# Triggered by JE
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = warlord_china_events.200.a
+		add_modifier = {
+			name = modifier_century_of_triumph_politics
+			months = long_modifier_time
+		}
+		add_loyalists = {
+			value = large_radicals
+		}
+	}
+
+	option = {
+		name = warlord_china_events.200.b
+		add_modifier = {
+			name = modifier_century_of_triumph_technology
+			months = long_modifier_time
+		}
+		add_loyalists = {
+			value = large_radicals
+		}
+	}
+}
+
+
+
+warlord_china_events.110 = { #Prisoner Killing
+	type = country_event
+	placement = root
+	duration = 3
+
+	title = warlord_china_events.110.t
+	desc = warlord_china_events.110.d
+	flavor = warlord_china_events.110.f
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	trigger = {
+		any_scope_character = {
+			is_ruler = yes
+
+			has_trait = cruel
+
+		}
+		has_government_type = gov_warlord_state
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				is_ruler = yes
+
+				has_trait = cruel
+			}
+			save_scope_as = prisoner_killing_warlord
+		}
+
+	}
+
+	option = {
+		default_option = yes
+		name = warlord_china_events.110.a
+		capital = {
+			add_radicals_in_state = {
+				value = 0.5
+			}
+		}
+
+	}
+
+	option = {
+		default_option = yes
+		name = warlord_china_events.110.b
+		add_modifier = {
+			name = modifier_prisoner_murder_covered_up
+			months = normal_modifier_time
+		}
+
+	}
+}
+
+
+
+
+# Yan Xishan Thought
+warlord_china_events.301 = {
+	type = country_event
+	placement = root
+	duration = 3
+
+	title = warlord_china_events.301.t
+	desc = warlord_china_events.301.d
+	flavor = warlord_china_events.301.f
+
+
+
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:yan_xishan_thinker
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	trigger = {
+		has_government_type = gov_warlord_state
+		has_law = law_type:law_autocracy
+		has_technology_researched = mass_propaganda
+		NOT = {
+			ruler = {
+				interest_group = {
+					OR = {
+						has_modifier = yan_xishan_thought_mod
+						has_modifier = failed_yan_xishan_thought_mod
+					}
+				}
+			}
+		}
+		NOT = {
+			has_modifier = warlord_legitimacy
+		}
+	}
+	immediate = {
+		ruler = {
+			save_scope_as = yan_xishan_thinker
+			interest_group = {
+				save_scope_as = yan_xishan_ig
+			}
+		}
+	}
+	option = {
+		name = warlord_china_events.301.a
+		default_option = yes
+		random_list = {
+			50 = {
+				modifier = {
+					if = {
+						limit = {
+							any_scope_state = {
+								is_production_method_active = {
+									building_type = building_university
+									production_method = pm_philosophy_department
+								}
+							}
+						}
+					}
+					add = 25
+				}
+				modifier = {
+					if = {
+						limit = {
+							government_legitimacy = 75
+						}
+					}
+					add = 25
+				}
+				root = {
+					add_modifier = {
+						name = yan_xishan_thought_mod
+					}
+				}
+			}
+			50 = {
+				modifier = {
+					if = {
+						limit = {
+							government_legitimacy = 50
+						}
+					}
+					add = 25
+				}
+				root = {
+					add_modifier = {
+						name = failed_yan_xishan_thought_mod
+						months = normal_modifier_time
+					}
+				}
+			}
+		}
+	}
+	option = {
+		name = warlord_china_events.301.b
+		add_modifier = {
+			name = warlord_legitimacy
+			months = normal_modifier_time
+		}
+	}
+}

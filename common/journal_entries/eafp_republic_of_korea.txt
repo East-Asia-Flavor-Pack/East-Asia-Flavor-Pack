@@ -1,0 +1,177 @@
+﻿je_republic_of_korea_first = {
+  
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	group = je_group_historical_content
+
+	complete = {
+		ig:ig_intelligentsia = {
+			is_powerful = yes
+			is_in_government = yes
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = republic_of_korea.1
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = republic_of_korea.2
+			10 = republic_of_korea.3
+		}
+	}
+
+	timeout = 1825
+
+	on_timeout = {
+		trigger_event = {
+			id = republic_of_korea.4
+		}
+		
+	}
+
+	weight = 10000
+}
+
+je_republic_of_korea_second = {
+   icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+   group = je_group_historical_content
+
+   complete = {
+		NOT = { has_law = law_type:law_autocracy }
+        NOT = { has_law = law_type:law_oligarchy }
+        literacy_rate > 0.5
+		root.average_sol > 17
+	}
+  
+on_complete = {
+        trigger_event = {
+            id = republic_of_korea.5
+        }
+    }
+
+ fail = {
+	has_technology_researched = democracy
+    has_law = law_type:law_autocracy
+    ig:ig_landowners = {
+			is_powerful = yes
+			is_in_government = yes
+		}
+	ig:ig_intelligentsia = {
+			is_in_government = no
+    		AND = {
+	    		ig_approval < -1
+	    	}
+		}
+ }
+
+ on_fail = {
+    trigger_event = {
+            id = republic_of_korea.6 days = 3
+        }
+        if = {
+			limit = { exists = c:XYZ }
+			}
+    create_country = {
+				tag = XYZ
+				origin = this
+				state = s:STATE_YANGHO.region_state:KOR
+                state = s:STATE_SARIWON.region_state:KOR
+                state = s:STATE_BUSAN.region_state:KOR
+			on_created = { 
+				activate_law = law_type:law_presidential_republic
+				activate_law = law_type:law_census_voting
+				 ig:ig_intelligentsia = {
+                        add_ruling_interest_group = yes
+                    }
+			}
+		}
+		c:XYZ = {
+			save_scope_as = rok_scope
+		}
+ }
+
+}
+
+je_daehan_war = {
+   icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+   group = je_group_historical_content
+
+   complete = {
+			owns_entire_state_region = STATE_YANGHO
+			owns_entire_state_region = STATE_BUSAN
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_SARIWON
+			owns_entire_state_region = STATE_PYONGYANG
+	}
+
+ on_complete = { 
+	trigger_event = { id = republic_of_korea.7 }
+	set_variable = republic_of_korea_var
+	change_tag = KOR
+ }
+
+}
+
+je_spearhead_of_democracy_jp ={ 
+     icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	 group = je_group_historical_content
+
+	 possible = {
+	c:JAP = {
+		NOT = { has_law = law_type:law_parliamentary_republic }
+		NOT = { has_law = law_type:law_presidential_republic }
+		NOT = { has_law = law_type:law_council_republic }
+	}
+}
+   
+   complete = {
+	army_size > c:JAP.army_size
+	navy_size > c:JAP.navy_size
+	C:JAP = {
+     		relations:root <= relations_threshold:cold
+		}
+   }
+
+   on_complete ={
+	trigger_event = { id = republic_of_korea.8 }
+   }
+
+
+}
+
+ 
+je_spearhead_of_democracy_cn ={ 
+     icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	
+	 group = je_group_historical_content
+
+	 possible = {
+	c:CHI = {
+		NOT = { has_law = law_type:law_parliamentary_republic }
+		NOT = { has_law = law_type:law_presidential_republic }
+		NOT = { has_law = law_type:law_council_republic }
+	}
+}
+   
+   complete = {
+	gdp > c:CHI.gdp
+	navy_size > c:CHI.navy_size
+	C:CHI = {
+     		relations:root <= relations_threshold:cold
+		}
+   }
+
+   on_complete ={
+	trigger_event = { id = republic_of_korea.9 }
+   }
+
+
+}

@@ -1,0 +1,54 @@
+﻿je_reconstruct_summer_palace = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = {
+			name = summer_palace_reconstruction_var
+			value = 0
+		}
+	}
+
+	complete = {
+		scope:journal_entry = { is_goal_complete = yes }
+	}
+
+	on_complete = {
+		trigger_event = dowager_cixi_events.12
+	}
+
+	fail = {
+		OR = {
+			NOT = { exists = s:STATE_BEIJING.region_state:CHI }
+			NOT = { s:STATE_BEIJING.region_state:CHI.controller = c:CHI }
+			NOT = { c:CHI.capital = s:STATE_BEIJING.region_state:CHI }
+			NOT = { has_journal_entry = je_dowager_cixi }
+		}
+	}
+
+	on_fail = {
+		trigger_event = dowager_cixi_events.13
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			change_variable = {
+				name = summer_palace_reconstruction_var
+				add = 1
+			}
+		}
+	}
+
+	current_value = {
+		value = root.var:summer_palace_reconstruction_var
+	}
+
+	goal_add_value = {
+		add = 120
+	}
+
+	progressbar = yes
+
+	weight = 10
+}
