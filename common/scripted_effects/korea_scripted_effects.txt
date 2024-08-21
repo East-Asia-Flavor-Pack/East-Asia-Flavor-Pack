@@ -1,0 +1,176 @@
+divied_enlightenment_variables = {
+
+	#온건개화파
+	set_variable = { name = moderate_progress_from_characters value = 0 } 
+	set_variable = { name = moderate_progress_from_igs value = 0 } 
+	set_variable = { name = moderate_progress_from_farms value = 0 }
+	set_variable = { name = moderate_progress_from_effects value = 0 } 
+	
+	#급진개화파
+	set_variable = { name = radical_progress_from_characters value = 0 } 
+	set_variable = { name = radical_progress_from_igs value = 0 }
+	set_variable = { name = radical_progress_from_factories value = 0 } 
+	set_variable = { name = radical_progress_from_effects value = 0 }
+
+    set_variable = { name = ig_weight value = 0 }
+}
+
+kor_weekly_pulse_moderate_progress = { 
+	set_variable = { name = moderate_progress_from_characters value = 0 } 
+	set_variable = { name = moderate_progress_from_igs value = 0 }
+	set_variable = { name = moderate_progress_from_farms value = 0 }
+
+	#캐릭터로부터
+	every_scope_character = {
+		limit = {
+			OR = {
+				has_ideology = ideology:ideology_moderate
+				has_ideology = ideology:ideology_authoritarian
+				has_ideology = ideology:ideology_traditionalist
+			}
+		}
+		ROOT = {
+			change_variable = { name =  moderate_progress_from_characters add = prev.popularity } 
+		}
+	}
+	change_variable = { name =  moderate_progress_from_characters divide = 100 } 
+	every_interest_group = {
+		limit = {
+			leader = {
+				OR = {
+					has_ideology = ideology:ideology_moderate
+					has_ideology = ideology:ideology_authoritarian
+					has_ideology = ideology:ideology_traditionalist
+				}
+			}
+		}
+		ROOT = {														
+			set_variable = { name = ig_weight value = prev.ig_clout } 	
+		}
+		if = {
+			limit = {
+				is_in_government = yes
+			}
+			ROOT = {
+				change_variable = { name = ig_weight multiply = 2 }		
+			}
+		}
+		ROOT = {
+			change_variable = { name = moderate_progress_from_igs add = var:ig_weight }	
+		}
+	}
+	every_scope_building = { 
+		limit = {
+			OR = {
+				is_building_group = bg_plantations
+				is_building_group = bg_agriculture
+			}
+			occupancy >= 0.5
+		}
+		ROOT = {
+			change_variable = { name = moderate_progress_from_farms add = prev.level }
+		}
+	}
+	change_variable = { name = moderate_progress_from_farms divide = 100 } 
+}
+
+kor_weekly_pulse_radical_progress = { 
+	set_variable = { name = radical_progress_from_characters value = 0 } 
+	set_variable = { name = radical_progress_from_igs value = 0 }
+	set_variable = { name = radical_progress_from_factories value = 0 }
+
+	#캐릭터로부터
+	every_scope_character = {
+		limit = {
+			OR = {
+				has_ideology = ideology:ideology_orleanist
+				has_ideology = ideology:ideology_legitimist
+				has_ideology = ideology:ideology_atheist
+				has_ideology = ideology:ideology_republican_leader
+				has_ideology = ideology:ideology_radical
+				has_ideology = ideology:ideology_social_democrat
+				has_ideology = ideology:ideology_communist
+				has_ideology = ideology:ideology_vanguardist
+				has_ideology = ideology:ideology_anarchist
+				has_ideology = ideology:ideology_humanitarian
+				has_ideology = ideology:ideology_humanitarian_royalist
+			}
+		}
+		ROOT = {
+			change_variable = { name = radical_progress_from_characters add = prev.popularity } 
+		}
+	}
+	change_variable = { name = radical_progress_from_characters divide = 100 } 
+	every_interest_group = {
+		limit = {
+			leader = {
+				OR = {
+					has_ideology = ideology:ideology_orleanist
+					has_ideology = ideology:ideology_legitimist
+					has_ideology = ideology:ideology_atheist
+					has_ideology = ideology:ideology_republican_leader
+					has_ideology = ideology:ideology_radical
+					has_ideology = ideology:ideology_social_democrat
+					has_ideology = ideology:ideology_communist
+					has_ideology = ideology:ideology_vanguardist
+					has_ideology = ideology:ideology_anarchist
+					has_ideology = ideology:ideology_humanitarian
+					has_ideology = ideology:ideology_humanitarian_royalist
+				}
+			}
+		}
+		ROOT = {														
+			set_variable = { name = ig_weight value = prev.ig_clout } 	
+		}
+		if = {
+			limit = {
+				is_in_government = yes
+			}
+			ROOT = {
+				change_variable = { name = ig_weight multiply = 2 }		
+			}
+		}
+		ROOT = {
+			change_variable = { name = radical_progress_from_igs add = var:ig_weight }	
+		}
+	}
+	every_scope_building = { 
+		limit = {
+			is_building_group = bg_manufacturing
+			occupancy >= 0.5
+		}
+		ROOT = {
+			change_variable = { name = radical_progress_from_factories add = prev.level }
+		}
+	}
+	change_variable = { name = radical_progress_from_factories divide = 100 } 
+}
+
+cabinet_character_effect = {
+	clear_global_variable_list = cabinet_character_list
+	while = {
+		count = 10
+		create_character = {
+			culture = cu:korean
+			on_created = {
+				set_variable = char_var
+				random_list = {
+					4 = {
+						set_variable = clan_a
+					}
+					4 = {
+						set_variable = clan_b
+					}
+					1 = {
+
+					}
+				}
+				place_character_in_void = 1200
+				add_to_global_variable_list = {
+					name = cabinet_character_list
+					target = prev
+				}
+			}
+		}
+	}
+}
