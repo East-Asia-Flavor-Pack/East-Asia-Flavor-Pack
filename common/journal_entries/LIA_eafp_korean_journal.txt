@@ -103,7 +103,49 @@ je_lia_korean_kings_health = {
 			#}
 		}
 	}
-
+	on_monthly_pulse = {
+		effect = {
+			##역사적 이벤트
+			if = {	#일식 - 49년
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k900 }
+					game_date >= 1849.1.23
+				}
+				trigger_event = eafp_kor_mainline.900
+				set_global_variable = eafp_check_evt_k900
+			}
+			if = {	#일식 - 63년
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k901 }
+					game_date >= 1863.4.18
+				}
+				trigger_event = eafp_kor_mainline.901
+				set_global_variable = eafp_check_evt_k901
+			}
+			#
+			if = {	#헌종 건강악화1
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k006 }
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 280
+					}
+				}
+				trigger_event = eafp_kor_mainline.6
+				set_global_variable = eafp_check_evt_k006
+			}
+			if = {	#헌종 건강악화2
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k007 }
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 290
+					}
+				}
+				trigger_event = eafp_kor_mainline.7
+				set_global_variable = eafp_check_evt_k007
+			}
+		}
+	}
+	
 	#current_value = {
 	#	value = root.var:lia_var_je_kings_health
 	#}
@@ -414,6 +456,22 @@ je_lia_korean_land_problem = {
 				months = -1
 				multiplier = lia_val_total_mil_modi_mult
 			}
+			##역사적 이벤트
+			if = {	#대왕대비의 꾸짖음
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					game_date > 1837.3.1
+					has_variable = lia_var_regent_type
+					var:lia_var_regent_type = 1
+					has_journal_entry = je_lia_korean_regent
+					global_var:lia_global_var_je_regent >= 100
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
 		}
 		#hidden_effect = {
 		#	lia_land_problem_add_modifier = yes
@@ -464,6 +522,10 @@ je_lia_korean_regent = {
 	}
 	
 	scripted_button = lia_eafp_scripted_button_regent_balance
+	
+	modifiers_while_active = {
+		lia_modi_monarchy_power
+	}
 	
 	complete = {	#상황따라 유동적
 		#always = no
@@ -695,6 +757,38 @@ je_lia_korean_regent = {
 					var:lia_var_regent_type <= 3
 				}
 				lia_kor_regent_corruption_passive = yes
+			}
+			##역사적 이벤트
+			if = {	#수렴청정 거두기 - 여기서는 15살에 거두는것으로 설정.
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k105 }
+					game_date > 1841.1.1
+					ruler = {
+						age >= 15
+					}
+					has_variable = lia_var_regent_type
+					var:lia_var_regent_type = 1
+					has_journal_entry = je_lia_korean_regent
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.105
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k105
+			}
+			if = {	#민진용의 역모 - 1844
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k321 }
+					game_date > 1844.8.1
+					ruler = {
+						has_variable = is_yihwan_eafp
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.321
+					days = { 1 15 }
+				}
+				set_global_variable = eafp_check_evt_k321
 			}
 			##이하 역사 이벤트용 히든 이펙트
 			if = {
