@@ -612,7 +612,7 @@ Create a bidirectional truce between two countries
 create_bidirectional_truce = {  
 	tcountry = country scope/tag  
 	months = integer  
-}  
+}
 **Supported Scopes**: country  
 
 ## create_building
