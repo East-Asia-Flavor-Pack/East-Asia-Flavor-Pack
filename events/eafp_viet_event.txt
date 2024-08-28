@@ -1,0 +1,185 @@
+namespace = viet_event
+
+# - gfx/event_pictures/vietnam.dds -
+# This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported, 2.5 Generic, 2.0 Generic and 1.0 Generic license.
+# Attribution: User: Bgabel at wikivoyage shared
+# You are free:
+# to share – to copy, distribute and transmit the work
+# to remix – to adapt the work
+# Under the following conditions:
+# attribution – You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+# share alike – If you remix, transform, or build upon the material, you must distribute your contributions under the same or compatible license as the original.
+# This image is modified
+
+viet_event.1 = { #대남 선포
+	type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/vietnam.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 7
+	
+	title = viet_event.1.t
+	desc = viet_event.1.d
+	flavor = viet_event.1.f
+
+	trigger = {
+
+	}
+
+
+	option = { #대남으로 변경
+		default_option = yes
+		name = viet_event.1.a
+		set_variable = dai_nam_declared
+		custom_tooltip = viet_event.1.a_tt
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = { #국호 유지
+		name = viet_event.1.b
+		ai_chance = {
+			base = 0
+		}
+	}
+}
+
+
+viet_event.2 = { #캄보디아 정책 변경
+	type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/vietnam.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	title = viet_event.2.t
+	desc = viet_event.2.d
+	flavor = viet_event.2.f
+
+	immediate = {
+		set_variable = viet_event_2_seen
+	}
+
+	trigger = {
+
+	}
+
+
+	option = { #기존 정책 유지
+		default_option = yes
+		name = viet_event.2.a
+		custom_tooltip = viet_event.2.a_tt
+		ai_chance = {
+			base = 70
+		}
+	}
+
+	option = { #유화책 제시
+		name = viet_event.2.b
+		custom_tooltip = {
+			text = viet_event.2.b_tt
+			set_variable = viet_event_2_b_selected
+		}
+		add_loyalists = {
+			value = 0.15
+			culture = cu:khmer
+		}
+		ai_chance = {
+			base = 20
+		}
+	}
+
+	option = { #공존
+		name = viet_event.2.c
+		custom_tooltip = {
+			text = viet_event.2.c_tt
+			set_variable = viet_event_2_c_selected
+		}
+		add_radicals = {
+			value = 0.05
+			culture = cu:vietnamese
+		}
+		ai_chance = {
+			base = 10
+		}
+	}
+}
+
+viet_event.3 = { # 캄보디아 독립
+	type = country_event
+	event_image = {
+		texture = "gfx/event_pictures/vietnam.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	duration = 5
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	title = viet_event.3.t
+	desc = viet_event.3.d
+	flavor = viet_event.3.f
+
+	option = { #
+		default_option = yes
+		name = viet_event.3.a
+		custom_tooltip = {
+			text = viet_event.3.a_tt
+			if = {
+				limit = {
+					NOT = { exists = c:CAM }
+				}
+				create_country = {
+					tag = CAM
+					origin = this
+					state = s:STATE_CAMBODIA.region_state:DAI
+				}
+				create_bidirectional_truce = {  
+					country = c:CAM
+					months = 60
+				}
+				change_relations = {
+					country = c:CAM
+					value = -30
+				}
+			}
+			if = {
+				limit = {
+					exists = c:CAM
+				}
+				create_country = {
+					tag = KAM
+					origin = this
+					state = s:STATE_CAMBODIA.region_state:DAI
+				}
+				create_bidirectional_truce = {  
+					country = c:KAM
+					months = 60
+				}
+				change_relations = {
+					country = c:KAM
+					value = -30
+				}
+			}
+		}
+		add_radicals = {
+			value = 0.1
+			culture = cu:vietnamese
+		}
+		add_radicals = {
+			value = 0.2
+			culture = cu:khmer
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
