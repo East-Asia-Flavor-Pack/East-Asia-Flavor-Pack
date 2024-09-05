@@ -1,0 +1,218 @@
+namespace = hokkaido
+
+hokkaido.1 = { # 홋카이도 개척 완료
+	type = country_event
+	placement = s:STATE_HOKKAIDO.region_state:JAP
+
+	title = hokkaido.1.t
+	desc = hokkaido.1.d
+	flavor = hokkaido.1.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {}
+
+	trigger = {}
+	
+	option = {
+		default_option = yes
+		name = hokkaido.1.a
+	}
+}
+
+hokkaido.2 = { # 축성 부지 확보
+	type = country_event
+	placement = s:STATE_HOKKAIDO.region_state:JAP
+
+	title = hokkaido.2.t
+	desc = hokkaido.2.d
+	flavor = hokkaido.2.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {}
+
+	trigger = {}
+	
+	option = { # 후쿠야마칸 개축
+		default_option = yes
+		name = hokkaido.2.a
+		save_scope_value_as = {
+			name = hokkaido2
+			value = 1
+		}
+		trigger_event = { id = hokkaido.3 }
+	}
+
+	option = { # 새로 축성
+		default_option = yes
+		name = hokkaido.2.b
+		save_scope_value_as = {
+			name = hokkaido2
+			value = 2
+		}
+		trigger_event = { id = hokkaido.3 }
+	}
+}
+
+hokkaido.3 = { # 축성 부지 확보
+	type = country_event
+	placement = s:STATE_HOKKAIDO.region_state:JAP
+
+	title = hokkaido.3.t
+	desc = hokkaido.3.d
+	flavor = hokkaido.3.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {}
+
+	trigger = {}
+	
+	option = { # 비용 대기
+		default_option = yes
+		name = hokkaido.3.a
+		if = {
+			limit = { scope:hokkaido2 = 1 }
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_construction_han_modifier
+					months = normal_modifier_time
+				}
+			}
+			add_modifier = {
+				name = fukuyama_castle_construction_bakufu_modifier
+				months = normal_modifier_time
+			}
+		}
+		else = {
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_construction_han_modifier
+					months = normal_modifier_time
+					multiplier = 2
+				}
+			}
+			add_modifier = {
+				name = fukuyama_castle_construction_bakufu_modifier
+				months = normal_modifier_time
+				multiplier = 2
+			}
+		}
+		trigger_event = { id = hokkaido.3 }
+	}
+
+	option = { # 알아서 하라 해
+		default_option = yes
+		name = hokkaido.3.b
+		if = {
+			limit = { scope:hokkaido2 = 1 }
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_construction_han_modifier
+					months = normal_modifier_time
+					multiplier = 2
+				}
+			}
+		}
+		else = {
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_construction_han_modifier
+					months = normal_modifier_time
+					multiplier = 4
+				}
+			}
+			if = {
+				limit = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+				custom_tooltip = {
+					text = hokkaido.3.ttb2
+					je:je_bakuhantaisei_TOHOKU = {
+						add_progress = {
+							name = bakuhantaisei_TOHOKU_loyalty_progress_bar
+							value = -10
+						}
+					}
+				}
+			}
+		}
+	}
+
+	after = {
+		trigger_event = {
+			id = hokkaido.4
+			months = normal_modifier_time
+		}
+	}
+}
+
+hokkaido.4 = { # 마츠마에 성의 완공
+	type = country_event
+	placement = s:STATE_HOKKAIDO.region_state:JAP
+
+	title = hokkaido.4.t
+	desc = hokkaido.4.d
+	flavor = hokkaido.4.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {}
+
+	trigger = {}
+	
+	option = {
+		default_option = yes
+		name = hokkaido.4.a
+		if = {
+			limit = { scope:hokkaido2 = 1 }
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_modifier
+					months = very_long_modifier_time
+				}
+			}
+		}
+		else = {
+			s:STATE_HOKKAIDO.region_state:JAP = {
+				add_modifier = {
+					name = fukuyama_castle_modifier
+					months = very_long_modifier_time
+					multiplier = 2
+				}
+			}
+		}
+	}
+}
+
