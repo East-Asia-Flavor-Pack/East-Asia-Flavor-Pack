@@ -472,6 +472,17 @@ je_lia_korean_land_problem = {
 				}
 				set_global_variable = eafp_check_evt_k200
 			}
+			if = {	#혜성 - 철종5년, 임술봉기 저널 스타트
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k201 }
+					game_date > 1854.4.1
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.201
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k201
+			}
 		}
 		#hidden_effect = {
 		#	lia_land_problem_add_modifier = yes
@@ -488,11 +499,222 @@ je_lia_korean_land_problem = {
 
 	#progressbar = yes
 
-	weight = 1000
+	weight = 2000
 	
 	should_be_pinned_by_default = yes
 }
+##임술농민봉기 - 철종5년에 준비
+je_lia_korean_imsul_uprising = {
+	icon = "gfx/interface/icons/pops_icons/peasants.dds"
 
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = {
+			name = lia_var_je_imsul_uprising
+			value = 0
+		}
+		set_variable = {
+			name = lia_var_je_imsul_total_land_level
+			value = lia_val_total_land_level
+		}
+		##각5개주 현황 변수
+		if = {
+			limit = {
+				NOT = { has_global_variable = lia_kor_landlvl_yangho_adm }
+			}
+			#set_global_variable = {
+			#	name = lia_kor_landlvl_yangho_adm
+			#	value = 1
+			#}
+		}
+	}
+
+	complete = {	#중기적 개혁
+		#always = no
+		custom_tooltip = {
+			text = je_lia_korean_imsul_uprising_complete_cond_tt
+			lia_val_total_land_level >= 50
+		}
+	}
+
+	on_complete = {
+		custom_tooltip = {
+			text = je_lia_korean_land_problem_complete_cond_tt
+		}
+	}
+	
+	fail = {	#삼정문제 미해결과 급사
+		always = no
+		#custom_tooltip = {
+		#	text = je_lia_korean_land_problem_failure_cond_tt
+		#	always = no
+		#}
+	}
+
+	on_fail = { # 추가
+		custom_tooltip = {
+			text = je_lia_korean_imsul_uprising_fail_tt
+		}
+	}
+	
+	modifiers_while_active = {
+		#fra_republican_unrest
+	}
+	
+	progress_desc = {
+		first_valid = {
+			desc = je_lia_korean_imsul_uprising_pgdesc
+		}
+	}
+	
+	on_weekly_pulse = {
+		effect = {
+			#전국 합산 개선진행도 체크
+			set_variable = {
+				name = lia_var_je_imsul_total_land_level
+				value = lia_val_total_land_level
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			#개선 진행도 자연증가
+			#lia_land_problem_expup = yes
+			#AI 조율
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				lia_land_problem_expup_ai = yes
+			}
+			##역사적 이벤트
+			if = {	#재정구멍
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					var:lia_var_je_imsul_uprising >= 175
+					has_variable = lia_var_regent_type
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
+			if = {	#억울함 호소
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					var:lia_var_je_imsul_uprising >= 200
+					has_variable = lia_var_regent_type
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
+			if = {	#목사 교체 - 월 33%확률, 최대 10번 반복
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					var:lia_var_je_imsul_uprising >= 200
+					has_variable = lia_var_regent_type
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
+			if = {	#도결 책정
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					var:lia_var_je_imsul_uprising >= 250
+					has_variable = lia_var_regent_type
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
+			if = {	#비밀스런 움직임
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k200 }
+					var:lia_var_je_imsul_uprising >= 275
+					has_variable = lia_var_regent_type
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.200
+					days = { 1 90 }
+				}
+				set_global_variable = eafp_check_evt_k200
+			}
+			#혜성
+			if = {	#혜성 - 철종9년, 봉기 진행바 가속
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k202 }
+					game_date > 1858.9.1
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.202
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k202
+			}
+			if = {	#혜성 - 철종11년, 봉기 진행바 가속
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k203 }
+					game_date > 1860.6.1
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.203
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k203
+			}
+			if = {	#혜성 - 철종12년, 봉기 진행바 가속
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k204 }
+					game_date > 1861.6.25
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.204
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k204
+			}
+			if = {	#혜성 - 철종13년, 봉기 진행바 가속
+				limit = {
+					NOT = { has_global_variable = eafp_check_evt_k205 }
+					game_date > 1862.8.1
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.205
+					days = { 1 7 }
+				}
+				set_global_variable = eafp_check_evt_k205
+			}
+		}
+		#hidden_effect = {
+		#	lia_land_problem_add_modifier = yes
+		#}
+	}
+
+	current_value = {
+		value = root.var:lia_var_je_imsul_uprising
+	}
+
+	goal_add_value = {
+		value = 300
+	}
+
+	progressbar = yes
+
+	weight = 1999
+	
+	should_be_pinned_by_default = yes
+}
 ##섭정
 je_lia_korean_regent = {
 	icon = "gfx/interface/icons/law_icons/multicultural.dds"
@@ -1129,6 +1351,8 @@ je_lia_korean_seowon = {
 	
 	should_be_pinned_by_default = yes
 }
+##
+
 ##경복궁 중건
 ####경복궁 중건 관련 저널들
 je_rlg_seoul_gyeongbokgung_poor = {
