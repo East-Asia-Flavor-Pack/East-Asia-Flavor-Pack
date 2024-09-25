@@ -1,0 +1,291 @@
+add_hitotsubashiha_var = {
+	change_variable = {
+		name = hitotsubashiha_var
+		add = $VALUE$
+	}
+	je:je_bakufu_kaikaku = {
+		add_progress = {
+			name = bakufu_kaikaku_progress_bar
+			value = {
+				value = ROOT.var:hitotsubashiha_var
+				divide = {
+					value = ROOT.var:hitotsubashiha_var
+					add = ROOT.var:nankiha_var
+				}
+				subtract = "scripted_bar_progress(bakufu_kaikaku_progress_bar)"
+			}
+		}
+	}
+}
+
+add_nankiha_var = {
+	change_variable = {
+		name = nankiha_var
+		add = $VALUE$
+	}
+	je:je_bakufu_kaikaku = {
+		add_progress = {
+			name = bakufu_kaikaku_progress_bar
+			value = {
+				value = ROOT.var:hitotsubashiha_var
+				divide = {
+					value = ROOT.var:hitotsubashiha_var
+					add = ROOT.var:nankiha_var
+				}
+				subtract = "scripted_bar_progress(bakufu_kaikaku_progress_bar)"
+			}
+		}
+	}
+}
+
+add_hitotsubashiha_support = {
+	je:je_bakufu_kaikaku = {
+		add_progress = {
+			name = bakufu_kaikaku_hitotsubashiha_approval_progress_bar
+			value = $VALUE$
+		}
+	}
+}
+
+add_nankiha_support = {
+	je:je_bakufu_kaikaku = {
+		add_progress = {
+			name = bakufu_kaikaku_nankiha_approval_progress_bar
+			value = $VALUE$
+		}
+	}
+}
+
+
+
+####################################################################################
+
+weekly_pulse_hitotsubashiha_progress = { 
+	set_variable = { name = hitotsubashiha_progress_from_button value = 0 }
+	set_variable = { name = hitotsubashiha_progress_from_igs value = 0 }
+	set_variable = { name = hitotsubashiha_progress_from_building value = 0 }
+	
+	# From igs
+	set_variable = {
+		name = hitotsubashiha_progress_from_igs
+		value = {
+			value = ig:ig_intelligentsia.ig_clout
+			divide = 2
+			if = {
+				limit = { ig:ig_intelligentsia = { is_in_government = yes } }
+				multiply = 6
+			}
+		}
+	}
+	# From buildings
+	every_scope_building = { 
+		limit = {
+			is_building_type = building_university
+			occupancy >= 0.5
+		}
+		ROOT = {
+			change_variable = { name = hitotsubashiha_progress_from_building add = prev.level }
+		}
+	}
+	change_variable = { name = hitotsubashiha_progress_from_building divide = 100 } 
+	# From buttons
+	if = {
+		limit = {
+			has_variable = supporting_hitotsubashiha_var
+		}
+		change_variable = { name = hitotsubashiha_progress_from_button add = 0.1 } 
+	}
+
+	set_variable = { name = hitotsubashiha_progress_next value = 0 }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_igs }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_building }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_button }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_effects }
+}
+
+weekly_pulse_nankiha_progress = { 
+	set_variable = { name = nankiha_progress_from_button value = 0 }
+	set_variable = { name = nankiha_progress_from_igs value = 0 }
+	set_variable = { name = nankiha_progress_from_character value = 0 }
+
+	# From igs
+	set_variable = {
+		name = nankiha_progress_from_igs
+		value = {
+			value = ig:ig_petty_bourgeoisie.ig_clout
+			if = {
+				limit = { ig:ig_petty_bourgeoisie = { is_in_government = yes } }
+				multiply = 5
+			}
+		}
+	}
+	# From characters
+	if = {
+		limit = { ruler = { has_template = jap_ienari_tokugawa_template } }
+		change_variable = {
+			name = nankiha_progress_from_character
+			add = ruler.popularity
+		}
+	}
+	change_variable = { name = nankiha_progress_from_character divide = 50 }
+	# From buttons
+	if = {
+		limit = {
+			has_variable = nankiha_button_var
+		}
+		change_variable = { name = nankiha_progress_from_button add = 0.1 } 
+	}
+	
+	set_variable = { name = nankiha_progress_next value = 0 }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_igs }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_character }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_button }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_effects }
+}
+
+weekly_pulse_hitotsubashiha_progress_second = { 
+	set_variable = { name = hitotsubashiha_progress_from_button value = 0 }
+	set_variable = { name = hitotsubashiha_progress_from_daimyo value = 0 }
+	set_variable = { name = hitotsubashiha_progress_from_university value = 0 }
+	set_variable = { name = hitotsubashiha_progress_next value = 0 }
+	
+	every_scope_building = { 
+		limit = {
+			is_building_type = building_university
+			occupancy >= 0.5
+		}
+		ROOT = {
+			change_variable = { name = hitotsubashiha_progress_from_university add = prev.level }
+		}
+	}
+	change_variable = { name = hitotsubashiha_progress_from_university divide = 100 } 
+
+	change_variable = { name = hitotsubashiha_progress_from_daimyo add = 400 } 
+	change_variable = { name = hitotsubashiha_progress_from_daimyo divide = 400 } 
+	
+	if = {
+		limit = {
+			has_variable = supporting_hitotsubashiha_var
+		}
+		change_variable = { name = hitotsubashiha_progress_from_button add = 0.3 } 
+	}
+
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_daimyo }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_university }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_button }
+	change_variable = { name = hitotsubashiha_progress_next add = var:hitotsubashiha_progress_from_effects }
+}
+
+weekly_pulse_nankiha_progress_second = { 
+	set_variable = { name = nankiha_progress_from_button value = 0 }
+	set_variable = { name = nankiha_progress_from_daimyo value = 0 }
+	set_variable = { name = nankiha_progress_from_military value = 0 }
+	set_variable = { name = nankiha_progress_next value = 0 }
+	
+	every_scope_building = { 
+		limit = {
+			is_building_group = bg_military
+			occupancy >= 0.5
+		}
+		ROOT = {
+			change_variable = { name = nankiha_progress_from_military add = prev.level }
+		}
+	}
+	change_variable = { name = nankiha_progress_from_military divide = 200 } 
+
+	change_variable = { name = nankiha_progress_from_daimyo add = 400 } 
+	change_variable = { name = nankiha_progress_from_daimyo divide = 400 } 
+	
+	if = {
+		limit = {
+			has_variable = supporting_nankiha_var
+		}
+		change_variable = { name = nankiha_progress_from_button add = 0.1 } 
+	}
+
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_daimyo }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_military }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_button }
+	change_variable = { name = nankiha_progress_next add = var:nankiha_progress_from_effects }
+}
+
+clear_habatsu = {
+	remove_variable = nankiha_progress_next
+	remove_variable = nankiha_progress_from_character
+	remove_variable = nankiha_progress_from_button
+	remove_variable = nankiha_progress_from_effects
+	remove_variable = nankiha_progress_from_igs
+	remove_variable = nankiha_progress_from_daimyo
+	remove_variable = nankiha_progress_from_military
+	remove_variable = hitotsubashiha_progress_next 
+	remove_variable = hitotsubashiha_progress_from_igs
+	remove_variable = hitotsubashiha_progress_from_building
+	remove_variable = hitotsubashiha_progress_from_university
+	remove_variable = hitotsubashiha_progress_from_daimyo
+	remove_variable = hitotsubashiha_progress_from_button
+	remove_variable = hitotsubashiha_progress_from_effect
+	remove_variable = orleanist_progress_from_effects 
+}
+
+
+tobaku_tokuritsu_first = {
+	clear_global_variable_list = tobaku_list
+	set_global_variable = tobaku_start_var
+	trigger_event = {
+		id = boshin_war.1 # 대충 반란 함
+	}
+}
+
+
+tobaku_tokuritsu_second = {
+	trigger_event = { id = boshin_war.2 } # 대충 반란 함
+}
+
+
+
+tobaku_tokuritsu_third = {
+
+	trigger_event = { id = boshin_war.3 } # 대충 반란 함
+}
+
+tobaku_kuni_0 = {
+	random_in_global_list = {
+		variable = tobaku_list
+		change_tag = NIP
+	}
+}
+
+tobaku_kuni = {
+	
+	c:NIP = {
+		remove_list_global_variable = {
+			name = tobaku_list
+			target = this	
+		}
+	}
+	every_in_global_list = {
+		variable = tobaku_list
+		limit = {
+			not = { c:NIP = this }
+		}
+		c:NIP = {
+			annex = prev
+		}
+	}
+	c:NIP = {
+		add_technology_researched = napoleonic_warfare
+		add_technology_researched = general_staff
+	}
+}
+
+tobaku_kuni_2 = {
+	c:NIP = {
+		remove_variable = tobaku_han_var 
+	}
+}
+
+
+
+japan_create_character = {
+	create_character = { template = eafp_shimazu_nariakira on_created = { set_variable = figure_var place_character_in_void = 1200 } }
+}

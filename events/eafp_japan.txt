@@ -14,9 +14,23 @@ namespace = eafp_japan
 
 #####################################
 
-eafp_japan.101 = { # 막번체제 초기화용
+eafp_japan.1 = { # 막번체제 초기화용
 	type = country_event
-	hidden = yes
+	placement = root
+
+	title = eafp_japan.1.t
+	desc = eafp_japan.1.d
+	flavor = eafp_japan.1.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
 
 	immediate = {
 		je:je_bakuhantaisei_TOHOKU = {
@@ -61,13 +75,18 @@ eafp_japan.101 = { # 막번체제 초기화용
 			set_bar_progress = { value = bakuhantaisei_SHIKOKU_goryo_progress_bar_initial_value name = bakuhantaisei_SHIKOKU_goryo_progress_bar }
 		}
 
+		# je_bakuhantaisei_TOHOKU
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_TOHOKU_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_TOHOKU_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_TOHOKU_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_TOHOKU_independency_progress_bar_initial_value
+					value = bakuhantaisei_TOHOKU_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -80,42 +99,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_TOHOKU_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_TOHOKU_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_TOHOKU_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_TOHOKU_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_TOHOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_TOHOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_TOHOKU_modifier
 					multiplier = {
-						value = bakuhantaisei_TOHOKU_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_TOHOKU_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_TOHOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_TOHOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_TOHOKU_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_TOHOKU_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_TOHOKU_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_KANTO
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_KANTO_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_KANTO_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_KANTO_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_KANTO_independency_progress_bar_initial_value
+					value = bakuhantaisei_KANTO_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -128,42 +159,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_KANTO_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_KANTO_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_KANTO_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_KANTO_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KANTO_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KANTO_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_KANTO_modifier
 					multiplier = {
-						value = bakuhantaisei_KANTO_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_KANTO_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KANTO_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KANTO_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_KANTO_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_KANTO_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_KANTO_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_CHUBU
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_CHUBU_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_CHUBU_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_CHUBU_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_CHUBU_independency_progress_bar_initial_value
+					value = bakuhantaisei_CHUBU_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -176,42 +219,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_CHUBU_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_CHUBU_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_CHUBU_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_CHUBU_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_CHUBU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_CHUBU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_CHUBU_modifier
 					multiplier = {
-						value = bakuhantaisei_CHUBU_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_CHUBU_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_CHUBU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_CHUBU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_CHUBU_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_CHUBU_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_CHUBU_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_KANSAI
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_KANSAI_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_KANSAI_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_KANSAI_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_KANSAI_independency_progress_bar_initial_value
+					value = bakuhantaisei_KANSAI_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -224,42 +279,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_KANSAI_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_KANSAI_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_KANSAI_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_KANSAI_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KANSAI_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KANSAI_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_KANSAI_modifier
 					multiplier = {
-						value = bakuhantaisei_KANSAI_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_KANSAI_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KANSAI_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KANSAI_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_KANSAI_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_KANSAI_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_KANSAI_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_KYUSHU
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_KYUSHU_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_KYUSHU_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_KYUSHU_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_KYUSHU_independency_progress_bar_initial_value
+					value = bakuhantaisei_KYUSHU_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -272,42 +339,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_KYUSHU_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_KYUSHU_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_KYUSHU_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_KYUSHU_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KYUSHU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KYUSHU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_KYUSHU_modifier
 					multiplier = {
-						value = bakuhantaisei_KYUSHU_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_KYUSHU_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_KYUSHU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_KYUSHU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_KYUSHU_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_KYUSHU_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_KYUSHU_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_CHUGOKU
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_CHUGOKU_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_CHUGOKU_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_CHUGOKU_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_CHUGOKU_independency_progress_bar_initial_value
+					value = bakuhantaisei_CHUGOKU_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -320,42 +399,54 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_CHUGOKU_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_CHUGOKU_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_CHUGOKU_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_CHUGOKU_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_CHUGOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_CHUGOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_CHUGOKU_modifier
 					multiplier = {
-						value = bakuhantaisei_CHUGOKU_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_CHUGOKU_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_CHUGOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_CHUGOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_CHUGOKU_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_CHUGOKU_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_CHUGOKU_independency_progress_bar_value
+						divide = 50
 					}
 				}
 			}
 		}
 
+		# je_bakuhantaisei_SHIKOKU
 		set_variable = {
 			name = bakuhantaisei_tax_collection_lose_SHIKOKU_var # 몇%의 세금 걷지 못하는지 계산
 			value = {
 				value = 1
-				subtract = bakuhantaisei_SHIKOKU_goryo_progress_bar_initial_value # 막부 직할령에선 완전히 걷음
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_SHIKOKU_goryo_progress_bar_value
+					divide = 100
+				}
 				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
-					value = bakuhantaisei_SHIKOKU_independency_progress_bar_initial_value
+					value = bakuhantaisei_SHIKOKU_independency_progress_bar_value
+					divide = 100
 				}
 			}
 		}
@@ -368,37 +459,174 @@ eafp_japan.101 = { # 막번체제 초기화용
 			}
 			add_modifier = {
 				name = bakuhantaisei_han_independency_modifier
-				multiplier = bakuhantaisei_SHIKOKU_independency_progress_bar_initial_value
+				multiplier = {
+					value = ROOT.bakuhantaisei_SHIKOKU_independency_progress_bar_value
+					divide = 100
+				}
 			}
 		}
 		if = {
-			limit = { bakuhantaisei_SHIKOKU_independency_progress_bar_initial_value >= 0.5 }
+			limit = { bakuhantaisei_SHIKOKU_independency_progress_bar_value >= 50 }
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_SHIKOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_SHIKOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_positive_SHIKOKU_modifier
 					multiplier = {
-						value = bakuhantaisei_SHIKOKU_independency_progress_bar_initial_value
-						subtract = 0.5
-						divide = 0.5
+						value = ROOT.bakuhantaisei_SHIKOKU_independency_progress_bar_value
+						subtract = 50
+						divide = 50
 					}
 				}
 			}
 		}
 		else = {
 			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_SHIKOKU_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_SHIKOKU_modifier
 				add_modifier = {
 					name = bakuhantaisei_daimyo_approval_negative_SHIKOKU_modifier
 					multiplier = {
-						value = 0.5
-						subtract = bakuhantaisei_SHIKOKU_independency_progress_bar_initial_value
-						divide = 0.5
+						value = 50
+						subtract = ROOT.bakuhantaisei_SHIKOKU_independency_progress_bar_value
+						divide = 50
 					}
 				}
+			}
+		}
+
+		add_journal_entry = {
+			type = je_bakuhantaisei
+		}
+	}
+
+	option = {
+		default_option = yes
+		name = eafp_japan.1.a
+		show_as_tooltip = {
+			add_journal_entry = {
+				type = je_bakuhantaisei
 			}
 		}
 	}
 }
 
+
+
+
+eafp_japan.2001 = {  # 모리슨 호
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2001.t
+	desc = eafp_japan.2001.d
+	flavor = eafp_japan.2001.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		trigger_event = {
+			id = eafp_japan.2003
+			months = 12
+		}
+	}
+
+	trigger = {
+	}
+	
+	option = {
+		name = eafp_japan.2001.a
+
+		default_option = yes
+
+	}
+}
+
+eafp_japan.2002 = { # 양위
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2002.t
+	desc = eafp_japan.2002.d
+	flavor = eafp_japan.2002.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		heir = {
+			save_scope_as = ieyoshi_character
+		}
+		add_journal_entry = {
+			type = je_bakufu_kaikaku
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		default_option = yes
+		name = eafp_japan.2002.a
+		scope:ieyoshi_character = {
+			set_character_as_ruler = yes
+		}
+		show_as_tooltip = {
+			add_journal_entry = {
+				type = je_bakufu_kaikaku
+			}
+		}
+	}
+}
+
+eafp_japan.2003 = {  # 모리슨 호
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2003.t
+	desc = eafp_japan.2003.d
+	flavor = eafp_japan.2003.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+	}
+
+	trigger = {
+	}
+	
+	option = {
+		name = eafp_japan.2003.a
+
+		default_option = yes
+		
+		add_hitotsubashiha_var = { VALUE = 10 }
+
+		add_hitotsubashiha_support = { VALUE = -10 }
+	}
+}
 
 ## 900 ~ 연도 트리거
 
@@ -417,11 +645,6 @@ eafp_japan.900 = { # 1836 이벤트 트리거
 			id = eafp_japan.3000
 			days = 2
 		}
-		
-		trigger_event = { #학문에 대한 열정
-			id = eafp_japan.1002
-			months = { 3 10 }
-		}
 	}
 }
 
@@ -435,14 +658,6 @@ eafp_japan.901 = { # 1837 이벤트 트리거
 		trigger_event = {
 			id = eafp_japan.902
 			years = 1
-		}
-		trigger_event = { #오시오 헤이하치로의 제안
-			id = eafp_japan.2001
-			months = 3
-		}
-		trigger_event = { #모리슨호 사건
-			id = eafp_japan.4001
-			months = 8
 		}
 		trigger_event = { #이에요시 취임
 			id = eafp_japan.2004
@@ -718,102 +933,6 @@ eafp_japan.917 = { # 1853 이벤트 트리거
 
 
 
-
-
-eafp_japan.3000 = { #막부 위기
-	type = country_event
-	placement = root
-
-	title = eafp_japan.3000.t
-	desc = eafp_japan.3000.d
-	flavor = eafp_japan.3000.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	 event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		set_religion_jap = yes
-	}
-
-	trigger = {}
-	
-	option = {
-		default_option = yes
-		name = eafp_japan.3000.a
-		add_journal_entry = {
-			type = japan_sonnoha_je
-		}
-	}
-}
-
-eafp_japan.3900 = { #현재 안건
-	type = country_event
-	placement = root
-
-	title = eafp_japan.3900.t
-	desc = eafp_japan.3900.d
-	flavor = eafp_japan.3900.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	 event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-
-	is_popup = yes 
-
-	duration = 1
-	
-	immediate = {}
-
-	trigger = {}
-	
-	option = {
-		name = eafp_japan.3900.1
-		trigger = {
-			game_date < 1836.12.31
-			not = { has_variable = 3900_1_var }
-		}
-		trigger_event = {
-			id = eafp_japan.3901
-		}
-	}
-	option = {
-		name = eafp_japan.3900.2
-		trigger = {
-			game_date < 1836.12.31
-			not = { has_variable = 3900_2_var }
-		}
-		trigger_event = {
-			id = eafp_japan.3902
-		}
-	}
-	option = {
-		name = eafp_japan.3900.3
-		trigger = {
-			game_date < 1836.12.31
-			not = { has_variable = 3900_3_var }
-		}
-		trigger_event = {
-			id = eafp_japan.3903
-		}
-	}
-	option = {
-		name = eafp_japan.3900.exit
-		remove_variable = daimyo_interaction_var
-	}
-}
-
 	
 
 
@@ -856,47 +975,7 @@ eafp_japan.666 = { #임시
 }
 
 
-eafp_japan.2004 = { #양위
-	type = country_event
-	placement = root
 
-	title = eafp_japan.2004.t
-	desc = eafp_japan.2004.d
-	flavor = eafp_japan.2004.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	 event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		heir = {
-			save_scope_as = ieyoshi_character
-		}
-	}
-
-	trigger = {}
-	
-	option = {
-		default_option = yes
-		name = eafp_japan.2004.a
-		scope:ieyoshi_character = {
-			set_character_as_ruler = yes
-		}
-		change_kaikakuha_var_effect = { AMOUNT = 4 }
-		change_hoshuha_var_effect = { AMOUNT = -3 }
-	}
-	option = {
-		name = eafp_japan.2004.b
-		change_kaikakuha_var_effect = { AMOUNT = -5 }
-		change_hoshuha_var_effect = { AMOUNT = 4 }
-	}
-}
 
 
 eafp_japan.9998 = { 
@@ -990,14 +1069,15 @@ eafp_japan.9999 = {
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = { has_variable = yoshinobu_start }
 	
 	option = {
 		default_option = yes
 		name = eafp_japan.9999.a
 		trigger = {
-			has_variable = yoshinobu_start
-			bakufu_hitotsubashiha_hiritsu > 50
+			je:je_bakufu_kaikaku = {
+				"scripted_bar_progress(bakufu_kaikaku_progress_bar)" > 0.5
+			}
 		}
 		remove_variable = yoshinobu_start
 		set_variable = is_hitotsubashiha
@@ -1014,8 +1094,9 @@ eafp_japan.9999 = {
 	option = {
 		name = eafp_japan.9999.b
 		trigger = {
-			has_variable = yoshinobu_start
-			bakufu_nankiha_hiritsu >= 50
+			je:je_bakufu_kaikaku = {
+				"scripted_bar_progress(bakufu_kaikaku_progress_bar)" <= 0.5
+			}
 		}
 		remove_variable = yoshinobu_start
 		set_variable = is_nankiha
