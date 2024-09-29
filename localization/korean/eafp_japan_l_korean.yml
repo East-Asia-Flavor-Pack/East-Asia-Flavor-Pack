@@ -235,8 +235,6 @@ Close:0 "닫기"
 
 ##### 모디파이어 #####
 
-nomin_genzei:0 "농민 감세"
-
 bakufu_corruption_mil:0 "후진적인 군대"
 bakufu_corruption_adm:0 "낡은 행정 체계"
 bakufu_corruption_dip:0 "쇄국"
@@ -637,6 +635,8 @@ test_decision:테스트
 je_bakuhantaisei: "막번체제"
 je_bakuhantaisei_desc: "수백년을 이어져온 도쿠가와의 통치도 균열을 보이고 있다. 뭐라도 하지 않으면 거대한 파도가 막부를 덮칠 것이다."
 
+bakuhantaisei_bakufu_authority_progress_bar_name: "막부의 권위"
+bakuhantaisei_bakufu_authority_progress_bar_desc: "막부의 권위: #v [JournalEntry.GetCurrentBarProgress(ScriptedProgressBar.Self)|%]#! ([JournalEntry.GetCurrentBarValue(ScriptedProgressBar.Self)|1]/4000)"
 bakuhantaisei_bakufu_authority_progress_bar_base: "자연적인 감쇠"
 bakuhantaisei_bakufu_authority_progress_bar_from_character: "쇼군의 [concept_popularity]"
 bakuhantaisei_bakufu_authority_progress_bar_from_TOHOKU: "도호쿠의 충성도"
@@ -759,6 +759,14 @@ bakuhantaisei_progress_from_STATE_loyalty: "해당 주의 충성도"
 bakuhantaisei_progress_from_STATE_gdp: "해당 주의 경제 규모"
 bakuhantaisei_progress_from_STATE_tax_capacity_usage: "해당 주의 [concept_tax_capacity] 사용량"
 
+EAFP_ADD_BAKUHANTAISEI_BAKUFU_AUTHORITY_EFFECT_POSITIVE: "#bold 막부의 권위#!가 #v $VALUE|1b$#!만큼 #bold 증가#!함"
+EAFP_ADD_BAKUHANTAISEI_BAKUFU_AUTHORITY_EFFECT_NEGATIVE: "#bold 막부의 권위#!가 #v $VALUE|1b$#!만큼 #bold 감소#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_LOYALTY_EFFECT_POSITIVE: "#bold [TARGET.GetName]의 충성도#!가 #v $VALUE|1b$%#!만큼 #bold 증가#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_LOYALTY_EFFECT_NEGATIVE: "#bold [TARGET.GetName]의 충성도#!가 #v $VALUE|1b$%#!만큼 #bold 감소#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_INDEPENDENCY_EFFECT_POSITIVE: "#bold [TARGET_STATE.GetName]의 자율성#!이 #v $VALUE|1b$%#!만큼 #bold 증가#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_INDEPENDENCY_EFFECT_NEGATIVE: "#bold [TARGET_STATE.GetName]의 자율성#!이 #v $VALUE|1b$%#!만큼 #bold 감소#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_GORYO_EFFECT_POSITIVE: "#bold [TARGET.GetName]의 막부 직할령#!이 #v $VALUE|1b$%#!만큼 #bold 증가#!함"
+EAFP_ADD_BAKUHANTAISEI_STATE_GORYO_EFFECT_NEGATIVE: "#bold [TARGET.GetName]의 막부 직할령#!이 #v $VALUE|1b$%#!만큼 #bold 감소#!함"
 
 expand_goryo_TOHOKU_modifier: "막부 직할령 확대: 도호쿠"
 expand_goryo_KANTO_modifier: "막부 직할령 확대: 간토"
@@ -820,7 +828,7 @@ forced_tokorogae_button_tt2: "해당 주에서 충성도가 #variable 15%#! 감�
 # 텐포 대기근
 
 je_tenpo_famine: "텐포 대기근"
-je_tenpo_famine_desc: "[ROOT.GetCountry.GetCustom('sukuigoya_level_loc')]"
+je_tenpo_famine_status: "[ROOT.GetCountry.GetCustom('sukuigoya_level_loc')]"
 je_tenpo_famine_reason: "텐포 4년에 시작된 기근은 홍수와 한파, 그리고 흉작으로 인해 전국적으로 심각한 기아 상황을 초래했다. 이 기근에 잘 대처하지 못한다면 막부에 대한 불만이 가중될 수 있다."
 je_tenpo_famine_complete: "#bold 텐포 대기근#!의 진행도가 #bold 100%#!에 도달함"
 
@@ -843,6 +851,7 @@ reduce_sukuigoya_button: "구호소 축소"
 reduce_sukuigoya_button_desc: "TODO"
 
 modifier_crop_failure_tenpo: "텐포 대기근"
+modifier_sukuigoya_for_tenpo: "구호소"
 
 tenpo_famine.1.t: "텐포 대기근의 절정"
 tenpo_famine.1.d: "2년 전부터 시작된 기근이 이제 절정에 다다랐다. 손을 쓰지 않는다면 그 여파가 들불처럼 번져나갈 것이다."
@@ -862,7 +871,7 @@ tenpo_famine.3.a: "TODO"
 tenpo_famine.3.ta: "도호쿠의 소작농이 홋카이도로 이주합니다."
 great_migration_to_hokkaido_modifier: "대이주"
 
-tenpo_famine.4.t: "(주 이름)에서의 소동" # 반복
+tenpo_famine.4.t: "[SCOPE.sState('revolt_state').GetName]에서의 소동" # 반복
 tenpo_famine.4.d: "TODO"
 tenpo_famine.4.f: "TODO"
 tenpo_famine.4.a: "TODO"
@@ -894,7 +903,8 @@ reduce_nidome2_button_tt2: "해당 주에서 충성도가 #variable 10%#! 감소
 tenpo_famine.99.t: "대기근의 끝"
 tenpo_famine.99.d: "올해 작황이 좋아짐에 따라 대기근이 막을 내렸다."
 tenpo_famine.99.f: "TODO"
-tenpo_famine.99.a: ""
+tenpo_famine.99.a: "TODO"
+nomin_kyusai_modifier: "농민 구제"
 
 # 홋카이도 이벤트 
 
@@ -1015,7 +1025,7 @@ je_bakufu_kaikaku: "막부 개혁"
 je_bakufu_kaikaku_reason: "[ROOT.GetCountry.GetCustom('je_bakufu_kaikaku_reason_loc')]"
 je_bakufu_kaikaku_goal: "개혁을 완수함"
 
-bakufu_kaikaku_progress_bar_name: "막부 개혁"
+bakufu_kaikaku_progress_bar_name: "파벌의 영향력\n$TOOLTIP_DELIMITER$\n[ROOT.GetCountry.GetCustom('hitotsubashiha_loc')]의 영향력: [ROOT.GetCountry.MakeScope.Var('hitotsubashiha_var').GetValue|0v]\n[ROOT.GetCountry.GetCustom('nankiha_loc')]의 영향력: [ROOT.GetCountry.MakeScope.Var('nankiha_var').GetValue|0v]"
 bakufu_kaikaku_progress_bar_nankiha_desc: "[ROOT.GetCountry.MakeScope.Var('nankiha_var').GetValue|0v]"
 bakufu_kaikaku_progress_bar_hitotsubashiha_desc: "[ROOT.GetCountry.MakeScope.Var('hitotsubashiha_var').GetValue|0v]"
 bakufu_kaikaku_progress_bar_balance: "대충 밸런스 todo"
@@ -1057,11 +1067,11 @@ nankiha: "난키파"
 
 kaikaku_reason_first:0 "수백년의 정체 끝에, 이제 막부의 체제는 너무 낡았습니다. 몇번이고 노력을 거듭해서 개혁을 이루어내야합니다.\n\n #V 막부 내 보수파 영향력 #! : [GetPlayer.MakeScope.ScriptValue('bakufu_nankiha_hiritsu')|0v]\n #V 막부 내 개혁파 영향력 #! : [GetPlayer.MakeScope.ScriptValue('bakufu_hitotsubashiha_hiritsu')|0v]"
 
-kaikaku_reason_second:0 "막부의 후계자 문제에 대한 싸움이 치열합니다.\n #green #BOLD 히토츠바시파#!#!는 요시노부를 장래의 후계자로 삼고 싶어합니다.\n#gold 요시노부#!는 유능하여 개혁을 빠르게 진행할 수 있지만 #V #BOLD 위기 상황에서 어떤 행동을 취할지#!#! 알 수 없습니다.\n #yellow #BOLD 난키파#!#!는 막부의 적통인 이에사다를 지원하고 있습니다.\n#gold 이에사다#!의 능력은 비록 부족하지만 #V #BOLD 높은 정통성으로 안정적인 국정 운영을 할 수 있을것#!#!으로 기대하고 있습니다.\n\n#V 막부 내 난키파 영향력 #! : [GetPlayer.MakeScope.ScriptValue('bakufu_nankiha_hiritsu')|0v]\n#V 막부 내 히토츠바시파 영향력 #! : [GetPlayer.MakeScope.ScriptValue('bakufu_hitotsubashiha_hiritsu')|0v] \n\n 현재 쇼군이 죽기 전, 현재 세력 구도에 따라 후계자가 결정될 것입니다."
+kaikaku_reason_second:0 "막부의 후계자 문제에 대한 싸움이 치열합니다.\n #green #BOLD 히토츠바시파#!#!는 요시노부를 장래의 후계자로 삼고 싶어합니다.\n#gold 요시노부#!는 유능하여 개혁을 빠르게 진행할 수 있지만 #V #BOLD 위기 상황에서 어떤 행동을 취할지#!#! 알 수 없습니다.\n #yellow #BOLD 난키파#!#!는 막부의 적통인 이에사다를 지원하고 있습니다.\n#gold 이에사다#!의 능력은 비록 부족하지만 #V #BOLD 높은 정통성으로 안정적인 국정 운영을 할 수 있을것#!#!으로 기대하고 있습니다.\n\n현재 쇼군이 죽기 전, 현재 세력 구도에 따라 후계자가 결정될 것입니다."
 
-kaikaku_reason_nanki:0 "난키파가 승리하였습니다.\n하지만 아직 요시노부는 살아있고, 언제 다시 복귀할 지 모릅니다.\n 현재 막부의 권위는 다음과 같습니다 : [ROOT.GetCountry.MakeScope.Var('nankiha_var').GetValue|0v]"
+kaikaku_reason_nanki:0 "난키파가 승리하였습니다.\n하지만 아직 요시노부는 살아있고, 언제 다시 복귀할 지 모릅니다."
 
-kaikaku_reason_hitotsubashi:0 "쇼군은 #gold 요시노부#!로 결정되었습니다.\n현재 막부의 권위는 다음과 같습니다 : [ROOT.GetCountry.MakeScope.Var('hitotsubashiha_var').GetValue|0v]"
+kaikaku_reason_hitotsubashi:0 "쇼군은 #gold 요시노부#!로 결정되었습니다."
 
 
 non_text:0 ""
@@ -1153,15 +1163,43 @@ eafp_japan.666.t:0 "임시"
 #### 이벤트 0000번대 ####
 
 eafp_japan.1.t: "흔들리는 막부의 권위"
-eafp_japan.1.d: "세키가하라 전투 이후 수백년간 일본을 통치해온 도쿠가와막부의 권위가 흔들리고 있다."
-eafp_japan.1.f: "현재 막부의 권위는 무너져가고 있다. 이 전통적인 권력은 과거의 영광에 얽매여있을뿐, 어떤 혁신이나 개혁도 하려 하지 않고 있다. 점점 사회는 혼란과 불안에 가득차있을 뿐이다. 백성들은 이전의 안정과 조화를 그리워하고 있다.\n이제는 새로운 길을 모색해야할 시기가 오고있다."
+eafp_japan.1.d: "세키가하라 전투 이후 수백년간 일본을 통치해온 막부의 권위가 흔들리고 있다."
+eafp_japan.1.f: "현재 막부의 권위는 무너져 가고 있다. 이 전통적인 권력은 과거의 영광에 얽매여 있을 뿐, 어떤 혁신이나 개혁도 하려 하지 않고 있다. 점점 사회는 혼란과 불안에 가득 차있을 뿐이다. 백성들은 이전의 안정과 조화를 그리워하고 있다.\n이제는 새로운 길을 모색해야할 시기가 오고 있다."
 eafp_japan.1.a: "잘 알겠다."
 
 #### 이벤트 1000번대 ####
 
+eafp_japan.1001.t: "밀무역 적발" # 1836년 12월 23일
+eafp_japan.1001.d: "하마다 번이 조선과의 밀무역을 하다 적발되었다."
+eafp_japan.1001.f: "TODO"
+eafp_japan.1001.a: "엄중히 처벌하여 경각심을 심어주어라."
+eafp_japan.1001.b: "하마다 번의 재정을 고려하여 사면하고 경고를 주어라."
+eafp_japan.1001.c: "이번 기회에 이득을 취해야 겠군."
 
+eafp_japan.1002.t: "밀무역 적발" # 1840년 11월
+eafp_japan.1002.d: "나카오카 번이 밀무역을 하다 적발되었다."
+eafp_japan.1002.f: "TODO"
+eafp_japan.1002.a: "엄중히 처벌하여 경각심을 심어주어라."
+eafp_japan.1002.b: "번의 재정을 고려하여 사면하고 경고를 주어라."
+eafp_japan.1002.c: "이번 기회에 이득을 취해야 겠군."
+
+eafp_japan.1003.t: "계승 문제" # 반복 이벤트
+eafp_japan.1003.d: "[SCOPE.sState('scope_state').GetName]의 번에서 번주 자리의 계승을 놓고 가신단 사이에 다툼이 벌어졌다."
+eafp_japan.1003.f: "TODO" # 정실 태생 개혁파 vs 측실 태생 보수파
+eafp_japan.1003.a: "개입하지 않는다."
+eafp_japan.1003.b: "현 당주의 은거를 촉구하라." # 보수파 승
+eafp_japan.1003.c: "습격을 벌인 자들을 붙잡아라." # 개혁파 승
+
+eafp_japan.1004.t: "번정 개혁 논란" # 번정 개혁 논란
+eafp_japan.1004.d: "[SCOPE.sState('scope_state').GetName]의 번에서 번정을 두고 개혁파와 보수파가 치열하게 대립하고 있다."
+eafp_japan.1004.f: "TODO" # 개혁파의 보수파 암살 사건 등
+eafp_japan.1004.a: "개입하지 않는다."
+eafp_japan.1004.b: "주동자의 목을 잘라라." # 보수파 승
+eafp_japan.1004.c: "TODO" # 개혁파 승
 
 #가쿠슈인 이벤트 체인 1006~1009
+
+
 eafp_japan.1006.t:0 "학문에 대한 열정"
 eafp_japan.1006.d:0 "닌코 천황이 선황의 뜻을 이어받아 교육의 꿈을 이루고자 한다."
 eafp_japan.1006.f:0 ""조정에서 새로운 교육기관을 마련하겠다는 의지를 내비쳤습니다. 고대 조정에서는 대학료라는 것이 존재하여, 고코묘 천황을 비롯한 많은 선황들이 그 학제를 다시 일으키려고 하였으나 재정문제로 번번히 실패하였습니다. 닌코 천황 폐하께서 새로운 교육기관을 기획하고 있으며, 기획이 완료되면 다시 알리겠다고 하였습니다.""
@@ -1341,6 +1379,11 @@ eafp_japan.2003.t: "모리슨호 사건"
 eafp_japan.2003.d: "우라가 앞바다에 나타나 포격을 맞은 흑선 모리슨 호가 사실 일본 표류민을 보호하고 있었다. 이에 이국선타불령에 대한 비판이 거세게 일어났다."
 eafp_japan.2003.f: "'그런데 영국은 일본과 적대국이 아닌데도 불구하고, 표류민을 연민하여 인도적으로 보냈다고 주장하는 자들을 아무런 이유 없이 쫓아낸다면, 일본은 백성을 아끼지 않는 불인한 국가로 여겨질 것이다. 만약 그런 불인불의를 분개하여 일본 근해에 영국의 속령 섬들이 많이 위치하고, 계속해서 배가 통과하게 된다면, 나중에 해상에서의 위협이 될 것이고, 해운의 장애가 될 수도 있다.\n\n따라서 자연히 국가의 큰 재해로 이어질 수 있을 것이다. 만약 그런 일이 없더라도, 쫓아낸다면 일본은 이치를 알지 못하는 나라로 여겨지고, 불의의 국가라는 악명을 얻을 것이다. 이로 인해 제기될 수 있는 다양한 문제들은 생각할 수도 없으며, 어쩌면 국가가 쇠약해질 위험도 있다. 또한 이는 국력을 손상시킬 수도 있을 것이다.'" # 戊戌夢物語
 eafp_japan.2003.a: "TODO"
+
+eafp_japan.2004.t: "오고쇼의 서거"
+eafp_japan.2004.d: "오고쇼로 물러났던 도쿠가와 이에나리가 숨을 거두며, [SCOPE.sCharacter('ieyoshi_character').GetFullName](이)가 자신의 정치를 할 수 있게 되었다."
+eafp_japan.2004.f: "TODO"
+eafp_japan.2004.a: "TODO"
 
 eafp_japan.2006.t:0 "일엽지추"
 eafp_japan.2006.d:0 "막부가 히토츠바시가의 도쿠가와 요시노부를 후계자로 지명했다."

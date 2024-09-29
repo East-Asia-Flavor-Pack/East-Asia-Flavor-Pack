@@ -19,9 +19,7 @@ tenpo_famine.1 = { # 텐포 대기근의 절정
 	duration = 3
 	
 	immediate = {
-		add_journal_entry = {
-			type = je_tenpo_famine
-		}
+		
 	}
 
 	trigger = {}
@@ -202,13 +200,13 @@ tenpo_famine.4 = { # (주 이름)에서의 소동
 		random_scope_state = {
 			limit = {
 				OR = {
-					region = s:STATE_TOHOKU
-					region = s:STATE_KANTO
-					region = s:STATE_CHUBU
-					region = s:STATE_KANSAI
-					region = s:STATE_KYUSHU
-					region = s:STATE_CHUGOKU
-					region = s:STATE_SHIKOKU
+					state_region = s:STATE_TOHOKU
+					state_region = s:STATE_KANTO
+					state_region = s:STATE_CHUBU
+					state_region = s:STATE_KANSAI
+					state_region = s:STATE_KYUSHU
+					state_region = s:STATE_CHUGOKU
+					state_region = s:STATE_SHIKOKU
 				}
 			}
 			save_scope_as = revolt_state
@@ -351,6 +349,70 @@ tenpo_famine.6 = { # 오시오는 살아있는가?
 					name = oshio_aftermath_modifier
 					months = 60
 				}
+			}
+		}
+
+		ai_chance = {
+			base = 50
+		}
+	}
+}
+
+tenpo_famine.99 = { # 대기근의 끝
+	type = country_event
+	placement = root
+
+	title = tenpo_famine.99.t
+	desc = tenpo_famine.99.d
+	flavor = tenpo_famine.99.f
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+	
+	immediate = {
+		if = {
+			limit = { has_modifier = modifier_sukuigoya_for_tenpo }
+			remove_modifier = modifier_sukuigoya_for_tenpo
+		}
+		if = {
+			limit = { has_variable = sukuigoya_for_tenpo }
+			remove_variable = sukuigoya_for_tenpo
+		}
+		save_scope_value_as = {
+			name = sukuigoya_accumulation
+			value = {
+				value = var:sukuigoya_for_tenpo_accumulation
+				divide = 44
+			}
+		}
+		remove_variable = sukuigoya_for_tenpo_accumulation
+		add_modifier = {
+			name = nomin_kyusai_modifier
+			multiplier = scope:sukuigoya_accumulation
+			months = long_modifier_time
+			is_decaying = yes
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		name = tenpo_famine.99.a
+		default_option = yes
+
+		show_as_tooltip = {
+			add_modifier = {
+				name = nomin_kyusai_modifier
+				multiplier = scope:sukuigoya_accumulation
+				months = long_modifier_time
+				is_decaying = yes
 			}
 		}
 
