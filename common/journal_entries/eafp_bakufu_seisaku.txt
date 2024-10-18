@@ -95,20 +95,60 @@ je_bakufu_seisaku_agechirei = {
 		je:je_bakuhantaisei_KANTO = {
 			save_scope_value_as = {
 				name = kanto_goryo
-				value = "scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)"
+				value = {
+					value = "scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)"
+					min = bakuhantaisei_KANTO_goryo_progress_bar_initial_value
+				}
 			}
 		}
 		je:je_bakuhantaisei_KANSAI = {
 			save_scope_value_as = {
 				name = kansai_goryo
-				value = "scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)"
+				value = {
+					value = "scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)"
+					min = bakuhantaisei_KANSAI_goryo_progress_bar_initial_value
+				}
 			}
+			
 		}
-		# 초기값보다 작으면 초기값 쓰도록 조정 TODO
 	}
 
 	on_monthly_pulse = {
-
+		effect = {
+			if = {
+				limit = {
+					je:je_bakuhantaisei_KANTO = {
+						"scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)" >= {
+							value = scope:kanto_goryo
+							multiply = 1.2
+							max = 80
+						}
+					}
+					je:je_bakuhantaisei_KANSAI = {
+						"scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)" >= {
+							value = scope:kansai_goryo
+							multiply = 1.2
+							max = 80
+						}
+					}
+				}
+				change_variable = {
+					name = je_bakufu_seisaku_agechirei_var
+					add = 1
+				}
+			}
+			else = {
+				change_variable = {
+					name = je_bakufu_seisaku_agechirei_var
+					add = -1
+				}
+			}
+			clamp_variable = {
+				name = je_bakufu_seisaku_agechirei_var
+				max = 480
+				min = 0
+			}
+		}
 	}
 
 	is_progressing = {
@@ -128,8 +168,10 @@ je_bakufu_seisaku_agechirei = {
 		}
 	}
 
-	complete = { 
-		
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
 	}
 
 	on_complete = {
