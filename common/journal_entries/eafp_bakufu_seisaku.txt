@@ -10,10 +10,6 @@ je_bakufu_seisaku_new_currency = {
 		bakufu_seisaku_new_currency_modifier
 	}
 
-	on_weekly_pulse = {
-
-	}
-
 	complete = { 
 		country_has_building_type_levels = {
 			target = bt:building_gold_mine
@@ -43,29 +39,20 @@ je_bakufu_seisaku_hitogaeshinoho = {
 
 	immediate = {
 		save_scope_value_as = {
-			name = kanto_urbanization
-			value = s:STATE_KANTO.region_state:JAP.total_urbanization
+			name = kanto_urbanization_goal
+			value = {
+				value = s:STATE_KANTO.region_state:JAP.total_urbanization
+				divide = 1.5
+			}
 		}
 		# 초기값보다 작으면 초기값쓰도록 조정 TODO
 	}
 
-	on_monthly_pulse = {
-
-	}
-
-	is_progressing = {
-		s:STATE_KANTO.region_state:JAP.total_urbanization < {
-			value = scope:kanto_urbanization
-			divide = 1.5
-		}
-	}
-
-	complete = { 
-		
+	complete = {
+		s:STATE_KANTO.region_state:JAP.total_urbanization < scope:kanto_urbanization_goal
 	}
 
 	on_complete = {
-		remove_variable = je_bakufu_seisaku_agechirei_var
 		trigger_event = eafp_japan.2211
 	}
 
@@ -74,7 +61,7 @@ je_bakufu_seisaku_hitogaeshinoho = {
 	}
 
 	on_invalid = {
-		remove_variable = je_bakufu_seisaku_agechirei_var
+		
 	}
 
 	timeout = 3650
@@ -229,13 +216,28 @@ je_bakufu_seisaku_kokishukusei = {
 			name = je_bakufu_seisaku_kokishukusei_var
 			value = 0
 		}
+		set_variable = {
+			name = radical_loyalist_0p2
+			value = {
+				value = ROOT.radical_fraction
+				subtract = ROOT.loyalist_fraction
+				subtract = 0.2
+			}
+		}
 	}
 
 	on_monthly_pulse = {
 		effect = {
 			if = {
 				limit = {
-					
+					0.2 >= {
+						value = ROOT.radical_fraction
+						subtract = ROOT.loyalist_fraction
+					}
+					var:radical_loyalist_0p2 >= {
+						value = ROOT.radical_fraction
+						subtract = ROOT.loyalist_fraction
+					}
 				}
 				change_variable = {
 					name = je_bakufu_seisaku_kokishukusei_var
@@ -261,6 +263,10 @@ je_bakufu_seisaku_kokishukusei = {
 			value = ROOT.radical_fraction
 			subtract = ROOT.loyalist_fraction
 		}
+		var:radical_loyalist_0p2 >= {
+			value = ROOT.radical_fraction
+			subtract = ROOT.loyalist_fraction
+		}
 	}
 
 	complete = {
@@ -271,6 +277,7 @@ je_bakufu_seisaku_kokishukusei = {
 
 	on_complete = {
 		remove_variable = je_bakufu_seisaku_kokishukusei_var
+		remove_variable = radical_loyalist_0p2
 		trigger_event = eafp_japan.2221
 	}
 
@@ -280,6 +287,7 @@ je_bakufu_seisaku_kokishukusei = {
 
 	on_invalid = {
 		remove_variable = je_bakufu_seisaku_kokishukusei_var
+		remove_variable = radical_loyalist_0p2
 	}
 
 	timeout = 3650
