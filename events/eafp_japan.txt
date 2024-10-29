@@ -943,6 +943,15 @@ eafp_japan.2002 = { # 양위
 		scope:ieyoshi_character = {
 			set_character_as_ruler = yes
 		}
+		hidden_effect = {
+			create_character = {
+				template = eafp_jap_tokugawa_iesada_template
+				heir = yes
+				on_created = {
+					set_character_busy_and_immortal = yes
+				}
+			}
+		}
 		show_as_tooltip = {
 			add_journal_entry = {
 				type = je_bakufu_kaikaku
@@ -1036,13 +1045,24 @@ eafp_japan.2004 = { # 오고쇼의 서거
 	}
 }
 
-eafp_japan.2005 = { # 이에사다 즉위
+eafp_japan.2005 = { # 이에사다 즉위 용 히든 이벤트
+	type = country_event
+	hidden = yes
+
+	immediate = {
+		ruler = {
+			kill_character = yes
+		}
+	}
+}
+
+eafp_japan.2006 = { # 이에사다 즉위
 	type = country_event
 	placement = root
 
-	title = eafp_japan.2005.t
-	desc = eafp_japan.2005.d
-	flavor = eafp_japan.2005.f
+	title = eafp_japan.2006.t
+	desc = eafp_japan.2006.d
+	flavor = eafp_japan.2006.f
 
 	gui_window = event_window_1char_tabloid
 	
@@ -1054,20 +1074,16 @@ eafp_japan.2005 = { # 이에사다 즉위
 
 	duration = 3
 
-	cooldown = { months = stupidly_long_modifier_time }
-
 	trigger = {
 		#Fired by on_action
 	}
 
 	immediate = {
-		ruler = {
-			save_scope_as = iesada_scope
-		}
+		
 	}
 
 	option = {
-		name = eafp_japan.2005.a
+		name = eafp_japan.2006.a
 		default_option = yes
 		show_as_tooltip = {
 			scope:iesada_scope = {
@@ -1077,13 +1093,13 @@ eafp_japan.2005 = { # 이에사다 즉위
 	}
 }
 
-eafp_japan.2006 = {	# 아편전쟁 패배 소식
+eafp_japan.2007 = {	# 아편전쟁 패배 소식
 	type = country_event
 	placement = ROOT
 
-	title = eafp_japan.2006.t
-	desc = eafp_japan.2006.d
-	flavor = eafp_japan.2006.f
+	title = eafp_japan.2007.t
+	desc = eafp_japan.2007.d
+	flavor = eafp_japan.2007.f
 
 	duration = 3
 
@@ -1103,7 +1119,7 @@ eafp_japan.2006 = {	# 아편전쟁 패배 소식
 	}
 
 	option = {
-		name = eafp_japan.2006.a
+		name = eafp_japan.2007.a
 		
 		default_option = yes
 
@@ -1123,7 +1139,7 @@ eafp_japan.2006 = {	# 아편전쟁 패배 소식
 
 # 히토츠바시 vs 난키
 
-eafp_japan.2101 = { # 일엽지추
+eafp_japan.2101 = { # 일엽지추 1853년 1월 1일
 	type = country_event
 	placement = root
 
@@ -1135,7 +1151,53 @@ eafp_japan.2101 = { # 일엽지추
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		ruler = {
+			save_scope_as = ieyoshi_character
+		}
+		heir = {
+			save_scope_as = iesada_character
+		}
+		hitotsubashiha_vs_nankiha_start_effect = yes
+		trigger_event = {
+			id = eafp_japan.2102
+			years = 5
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		name = eafp_japan.2101.a
+		default_option = yes
+		custom_description = {
+			text = hitotsubashiha_vs_nankiha_start_effect.tt
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+eafp_japan.2102 = { # 후계자 결정 1858년 1월 1일
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2102.t
+	desc = eafp_japan.2102.d
+	flavor = eafp_japan.2102.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -1154,10 +1216,34 @@ eafp_japan.2101 = { # 일엽지추
 	trigger = {}
 	
 	option = {
+		name = eafp_japan.2102.a
+		custom_tooltip = {
+			text = eafp_japan.2102.tta
+			set_variable = shogun_support_hitotsubashiha
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+
+	option = {
+		name = eafp_japan.2102.b
 		default_option = yes
-		name = eafp_japan.2004.a
-		custom_description = {
-			text = hitotsubashiha_vs_nankiha_start_effect.tt
+		custom_tooltip = {
+			text = eafp_japan.2102.ttb
+			set_variable = shogun_support_nankiha
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+eafp_japan.2103 = {
+	hidden = yes
+	immediate = {
+		ruler = {
+			kill_character = yes
 		}
 	}
 }

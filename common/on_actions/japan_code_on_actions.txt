@@ -13,7 +13,7 @@
 	}
 }
 
-japan_on_new_ruler = {
+japan_on_character_death = {
 	effect = {
 		if = {
 			limit = {
@@ -27,20 +27,75 @@ japan_on_new_ruler = {
 				limit = {
 					has_journal_entry = je_bakuhantaisei # 임시 TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
 				}
+				# 이에요시의 즉위는 이벤트로 직접
 				if = { # 이에사다의 즉위
 					limit = {
-						has_template = eafp_jap_tokugawa_iesada_template
+						has_template = eafp_jap_tokugawa_ieyoshi_template
 					}
+					save_scope_as = ieyoshi_scope
 					owner = {
-						trigger_event = { id = eafp_japan.2005 popup = yes }
+						if = {
+							limit = {
+								NOT = { heir ?= { has_template = eafp_jap_tokugawa_iesada_template } }
+							}
+							every_scope_character = {
+								limit = { has_template = eafp_jap_tokugawa_iesada_template }
+								kill_character = { hidden = yes }
+							}
+							create_character = {
+								template = eafp_jap_tokugawa_iesada_template
+								heir = yes
+								on_created = { set_character_busy_and_immortal = yes }
+							}
+						}
+						heir = { save_scope_as = iesada_scope }
+						trigger_event = { id = eafp_japan.2006 popup = yes }
 					}
 				}
 				else_if = {
-					limit = {
-						has_template = RUS_tsarevich_nicholas_alexandrovich
+					limit = { # 이에사다 이후 이에모치 또는 요시노부
+						has_template = eafp_jap_tokugawa_iesada_template
 					}
+					save_scope_as = iesada_scope
 					owner = {
-						trigger_event = { id = russia_monarchy.3 popup = yes }
+						if = {
+							limit = { var:nankiha_var >= var:hitotsubashiha_var }
+							if = {
+								limit = {
+									NOT = { heir ?= { has_template = eafp_jap_tokugawa_iemochi_template } }
+								}
+								every_scope_character = {
+									limit = { has_template = eafp_jap_tokugawa_iemochi_template }
+									kill_character = { hidden = yes }
+								}
+								create_character = {
+									template = eafp_jap_tokugawa_iemochi_template
+									heir = yes
+									on_created = { set_character_busy_and_immortal = yes }
+								}
+							}
+							heir = { save_scope_as = iemochi_scope }
+							trigger_event = { id = eafp_japan.2104 popup = yes }
+						}
+						else = {
+							if = {
+								limit = {
+									NOT = { heir ?= { has_template = eafp_jap_tokugawa_yoshinobu_template } }
+								}
+								every_scope_character = {
+									limit = { has_template = eafp_jap_tokugawa_yoshinobu_template }
+									kill_character = { hidden = yes }
+								}
+								create_character = {
+									template = eafp_jap_tokugawa_yoshinobu_template
+									heir = yes
+									on_created = { set_character_busy_and_immortal = yes }
+								}
+							}
+							heir = { save_scope_as = yoshinobu_scope }
+							trigger_event = { id = eafp_japan.2105 popup = yes }
+						}
+						
 					}
 				}
 			}
