@@ -518,15 +518,19 @@ je_lia_korean_imsul_uprising = {
 			name = lia_var_je_imsul_total_land_level
 			value = lia_val_total_land_level
 		}
-		##각5개주 현황 변수
-		if = {
+		##대상 주 선정
+		ordered_scope_state = {
 			limit = {
-				NOT = { has_global_variable = lia_kor_landlvl_yangho_adm }
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
 			}
-			#set_global_variable = {
-			#	name = lia_kor_landlvl_yangho_adm
-			#	value = 1
-			#}
+			order_by = lia_val_imsul_uprising_risk
+			save_scope_as = lia_imsul_rising_target_state
 		}
 	}
 
@@ -575,6 +579,21 @@ je_lia_korean_imsul_uprising = {
 				name = lia_var_je_imsul_total_land_level
 				value = lia_val_total_land_level
 			}
+			#대상 주 갱신
+			#clear_saved_scope = lia_imsul_rising_target_state
+			ordered_scope_state = {
+				limit = {
+					OR = {
+						state_region = s:STATE_SEOUL
+						state_region = s:STATE_YANGHO
+						state_region = s:STATE_BUSAN
+						state_region = s:STATE_PYONGYANG
+						state_region = s:STATE_SARIWON
+					}
+				}
+				order_by = lia_val_imsul_uprising_risk
+				save_scope_as = lia_imsul_rising_target_state
+			}
 		}
 	}
 
@@ -587,68 +606,68 @@ je_lia_korean_imsul_uprising = {
 				limit = {
 					is_ai = yes
 				}
-				lia_land_problem_expup_ai = yes
+				#lia_land_problem_expup_ai = yes
 			}
 			##역사적 이벤트
 			if = {	#재정구멍
 				limit = {
-					NOT = { has_global_variable = eafp_check_evt_k200 }
+					NOT = { has_global_variable = eafp_check_evt_k206 }
 					var:lia_var_je_imsul_uprising >= 175
 					has_variable = lia_var_regent_type
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
+					id = eafp_kor_mainline.206
 					days = { 1 90 }
 				}
-				set_global_variable = eafp_check_evt_k200
+				set_global_variable = eafp_check_evt_k206
 			}
 			if = {	#억울함 호소
 				limit = {
-					NOT = { has_global_variable = eafp_check_evt_k200 }
+					NOT = { has_global_variable = eafp_check_evt_k207 }
 					var:lia_var_je_imsul_uprising >= 200
 					has_variable = lia_var_regent_type
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
+					id = eafp_kor_mainline.207
 					days = { 1 90 }
 				}
-				set_global_variable = eafp_check_evt_k200
+				set_global_variable = eafp_check_evt_k207
 			}
 			if = {	#목사 교체 - 월 33%확률, 최대 10번 반복
 				limit = {
-					NOT = { has_global_variable = eafp_check_evt_k200 }
+					NOT = { has_global_variable = eafp_check_evt_k208 }
 					var:lia_var_je_imsul_uprising >= 200
 					has_variable = lia_var_regent_type
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
+					id = eafp_kor_mainline.208
 					days = { 1 90 }
 				}
-				set_global_variable = eafp_check_evt_k200
+				set_global_variable = eafp_check_evt_k208
 			}
 			if = {	#도결 책정
 				limit = {
-					NOT = { has_global_variable = eafp_check_evt_k200 }
+					NOT = { has_global_variable = eafp_check_evt_k209 }
 					var:lia_var_je_imsul_uprising >= 250
 					has_variable = lia_var_regent_type
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
+					id = eafp_kor_mainline.209
 					days = { 1 90 }
 				}
-				set_global_variable = eafp_check_evt_k200
+				set_global_variable = eafp_check_evt_k209
 			}
 			if = {	#비밀스런 움직임
 				limit = {
-					NOT = { has_global_variable = eafp_check_evt_k200 }
+					NOT = { has_global_variable = eafp_check_evt_k210 }
 					var:lia_var_je_imsul_uprising >= 275
 					has_variable = lia_var_regent_type
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
+					id = eafp_kor_mainline.210
 					days = { 1 90 }
 				}
-				set_global_variable = eafp_check_evt_k200
+				set_global_variable = eafp_check_evt_k210
 			}
 			#혜성
 			if = {	#혜성 - 철종9년, 봉기 진행바 가속

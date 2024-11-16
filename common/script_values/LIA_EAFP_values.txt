@@ -14,19 +14,6 @@ lia_val_test = {
 				}
 			}
 		}
-		#divide = {
-		#	every_scope_state = {
-		#		if = {
-		#			limit = {
-		#				OR = {
-		#					state_region = s:STATE_SEOUL
-		#					#state_region = s:STATE_LIA_SEOUL
-		#				}
-		#			}
-		#			add = this.state_population
-		#		}
-		#	}
-		#}
 		multiply = 1	#군수품 계수
 	}
 }
@@ -1816,6 +1803,70 @@ lia_val_total_land_level = {
 	add = global_var:lia_kor_landlvl_yeongnam_mil
 	add = global_var:lia_kor_landlvl_yangseo_mil
 	add = global_var:lia_kor_landlvl_gwanbuk_mil
+}
+
+##이벤트용 수치
+#임술농민봉기 지역 선정용
+lia_val_imsul_uprising_pop = {
+	value = {
+		add = state_population
+		if = {
+			limit = {
+				state_region = s:STATE_BUSAN
+				has_global_variable = eafp_check_evt_k206
+			}
+			add = 1000000
+		}
+	}
+}
+
+lia_val_imsul_uprising_risk = {
+	value = {
+		if = {
+			limit = {
+				state_region = s:STATE_SEOUL
+			}
+			add = global_var:lia_kor_landlvl_seoul_civ
+			add = global_var:lia_kor_landlvl_seoul_adm
+			add = global_var:lia_kor_landlvl_seoul_mil
+		}
+		if = {
+			limit = {
+				state_region = s:STATE_YANGHO
+			}
+			add = global_var:lia_kor_landlvl_yangho_civ
+			add = global_var:lia_kor_landlvl_yangho_adm
+			add = global_var:lia_kor_landlvl_yangho_mil
+		}
+		if = {
+			limit = {
+				state_region = s:STATE_BUSAN
+			}
+			add = global_var:lia_kor_landlvl_yeongnam_civ
+			add = global_var:lia_kor_landlvl_yeongnam_adm
+			add = global_var:lia_kor_landlvl_yeongnam_mil
+		}
+		if = {
+			limit = {
+				state_region = s:STATE_PYONGYANG
+			}
+			add = global_var:lia_kor_landlvl_yangseo_civ
+			add = global_var:lia_kor_landlvl_yangseo_adm
+			add = global_var:lia_kor_landlvl_yangseo_mil
+		}
+		if = {
+			limit = {
+				state_region = s:STATE_SARIWON
+			}
+			add = global_var:lia_kor_landlvl_gwanbuk_civ
+			add = global_var:lia_kor_landlvl_gwanbuk_adm
+			add = global_var:lia_kor_landlvl_gwanbuk_mil
+		}
+		multiply = -10000000
+		divide = lia_val_imsul_uprising_pop
+		add = 10
+		#multiply = -1
+	}
 }
 
 #활동중인 선교사 수
