@@ -10,53 +10,23 @@
 			limit = {
 				limit = { has_journal_entry = je_bakufu_kaikaku }
 			}
-			je:je_bakufu_kaikaku = {
-				add = {
-					#desc = bakufu_kaikaku_progress_bar_balance
-					value = {
-						value = ROOT.var:hitotsubashiha_var
-						divide = {
-							value = ROOT.var:hitotsubashiha_var
-							add = ROOT.var:nankiha_var
-						}
-						subtract = "scripted_bar_progress(bakufu_kaikaku_progress_bar)"
-					}
-				}
-
+			je:je_bakufu_kaikaku = { # 실제 계산은 scripted effect로
 				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
 				add = {
 					desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
-					value = 0
+					value = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
+				}
+				add = {
+					value = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
+					multiply = -1
 				}
 				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
 				add = {
 					desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
-					value = {
-						value = ig:ig_intelligentsia.ig_clout
-						divide = 2
-						if = {
-							limit = { ig:ig_intelligentsia = { is_in_government = yes } }
-							multiply = 6
-						}
-					}
+					value = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
 				}
 				add = {
-					value = {
-						value = ig:ig_intelligentsia.ig_clout
-						divide = -2
-						if = {
-							limit = { ig:ig_intelligentsia = { is_in_government = yes } }
-							multiply = 6
-						}
-					}
-				}
-				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_building
-				add = {
-					desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_building
-					value = bakufu_kaikaku_progress_bar_hitotsubashiha_from_building_value
-				}
-				add = {
-					value = bakufu_kaikaku_progress_bar_hitotsubashiha_from_building_value
+					value = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
 					multiply = -1
 				}
 				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_button
@@ -72,60 +42,30 @@
 						value = -0.1
 					}
 				}
-				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_effect
+				# bakufu_kaikaku_progress_bar_hitotsubashiha_from_modifier
 				add = {
-					desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_effect
+					desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_modifier
 					value = 0
 				}
 
 				# bakufu_kaikaku_progress_bar_nankiha_from_character
-				if = {
-					limit = { ruler = { has_template = jap_ienari_tokugawa_template } }
-					add = {
-						desc = bakufu_kaikaku_progress_bar_nankiha_from_character
-						value = {
-							value = ruler.popularity
-							divide = 50
-						}
-					}
-					add = {
-						value = {
-							value = ruler.popularity
-							divide = -50
-						}
-					}
+				add = {
+					desc = bakufu_kaikaku_progress_bar_nankiha_from_character
+					value = var:bakufu_kaikaku_progress_bar_nankiha_from_character
+				}
+				add = {
+					value = var:bakufu_kaikaku_progress_bar_nankiha_from_character
+					multiply = -1
 				}
 				# bakufu_kaikaku_progress_bar_nankiha_from_igs
 				add = {
 					desc = bakufu_kaikaku_progress_bar_nankiha_from_igs
-					value = {
-						value = ig:ig_petty_bourgeoisie.ig_clout
-						divide = 2
-						if = {
-							limit = { ig:ig_intelligentsia = { is_in_government = yes } }
-							multiply = 6
-						}
-					}
+					value = var:bakufu_kaikaku_progress_bar_nankiha_from_igs
 				}
 				add = {
-					value = {
-						value = ig:ig_petty_bourgeoisie.ig_clout
-						divide = -2
-						if = {
-							limit = { ig:ig_intelligentsia = { is_in_government = yes } }
-							multiply = 6
-						}
-					}
+					value = var:bakufu_kaikaku_progress_bar_nankiha_from_igs
+					multiply = -1
 				}
-				# bakufu_kaikaku_progress_bar_nankiha_from_building
-				#add = {
-				#	desc = bakufu_kaikaku_progress_bar_nankiha_from_building
-				#	value = bakufu_kaikaku_progress_bar_nankiha_from_building_value
-				#}
-				#add = {
-				#	value = bakufu_kaikaku_progress_bar_nankiha_from_building_value
-				#	multiply = -1
-				#}
 				# bakufu_kaikaku_progress_bar_nankiha_from_button
 				if = {
 					limit = {
@@ -139,10 +79,21 @@
 						value = -0.1
 					}
 				}
-				# bakufu_kaikaku_progress_bar_nankiha_from_effect
+				# bakufu_kaikaku_progress_bar_nankiha_from_modifier
 				add = {
-					desc = bakufu_kaikaku_progress_bar_nankiha_from_effect
+					desc = bakufu_kaikaku_progress_bar_nankiha_from_modifier
 					value = 0
+				}
+
+				add = { # 밸런스
+					value = {
+						value = ROOT.var:hitotsubashiha_var
+						divide = {
+							value = ROOT.var:hitotsubashiha_var
+							add = ROOT.var:nankiha_var
+						}
+						subtract = "scripted_bar_progress(bakufu_kaikaku_progress_bar)"
+					}
 				}
 			}
 		}
@@ -166,7 +117,24 @@ bakufu_kaikaku_nankiha_approval_progress_bar = {
 			}
 			je:je_bakufu_kaikaku = {
 				add = {
-					
+					if = {
+						limit = {
+							has_variable = supporting_hitotsubashiha_var
+						}
+						add = {
+							desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_button
+							value = -0.1
+						}
+					}
+					if = {
+						limit = {
+							has_variable = supporting_nankiha_var
+						}
+						add = {
+							desc = bakufu_kaikaku_progress_bar_nankiha_from_button
+							value = 0.1
+						}
+					}
 				}
 			}
 		}
@@ -190,7 +158,24 @@ bakufu_kaikaku_hitotsubashiha_approval_progress_bar = {
 			}
 			je:je_bakufu_kaikaku = {
 				add = {
-					
+					if = {
+						limit = {
+							has_variable = supporting_hitotsubashiha_var
+						}
+						add = {
+							desc = bakufu_kaikaku_progress_bar_hitotsubashiha_from_button
+							value = 0.1
+						}
+					}
+					if = {
+						limit = {
+							has_variable = supporting_nankiha_var
+						}
+						add = {
+							desc = bakufu_kaikaku_progress_bar_nankiha_from_button
+							value = -0.1
+						}
+					}
 				}
 			}
 		}

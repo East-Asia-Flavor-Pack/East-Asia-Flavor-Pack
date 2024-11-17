@@ -1,0 +1,209 @@
+# COPY-PASTED FOR NOW
+@panel_width_minus_40 = 500
+@panel_width_minus_30 = 510
+@panel_width_minus_20 = 520	
+@panel_width_minus_10 = 530			# used to be 450
+@panel_width = 540  				# used to be 460
+@panel_width_half = 270				# used to be 230
+@panel_width_plus_10 = 550  		# used to be 470
+@panel_width_plus_14 = 554			# used to be 474
+@panel_width_plus_14_half = 277		# used to be 237
+@panel_width_plus_20 = 560			# used to be 480
+@panel_width_plus_30 = 570			# used to be 490
+@panel_width_plus_70 = 610			# used to be 530
+
+types eafp_council_of_elders {
+	type eafp_council_of_elders = container {
+		
+		using = sidepanel_plus_sidebar_size
+		layoutpolicy_vertical = expanding
+		alwaystransparent = no
+		using = clickthrough_blocker
+		layer = layer_ingame_menu
+
+		flowcontainer = {
+			using = default_list_position
+			direction = vertical
+			minimumsize = { @panel_width_minus_20 -1 }
+			maximumsize = { @panel_width_minus_20 -1 }
+			margin = { 0 16 }
+			spacing = 10
+			
+			container = { # 대로
+				flowcontainer = {
+					margin = { 0 0 }
+					parentanchor = vcenter
+					spacing = 5
+					direction = vertical
+					section_header_button = {
+						blockoverride "layout" {
+							parentanchor = hcenter
+							size = { @panel_width_minus_40 38 }
+						}
+		
+						blockoverride "left_text" {
+							raw_text = "#v 대로#!"
+						}
+		
+						blockoverride "onclick" {
+							onclick = "[GetVariableSystem.Toggle( 'eafp_tairo' )]"
+						}
+	
+						blockoverride "onclick_showmore" {
+							visible = "[Not(GetVariableSystem.Exists( 'eafp_tairo' ))]"
+						}
+		
+						blockoverride "onclick_showless" {
+							visible = "[GetVariableSystem.Exists( 'eafp_tairo' )]"
+						}
+					}
+
+					container = {
+						visible = "[GetVariableSystem.Exists( 'eafp_tairo' )]"
+						parentanchor = hcenter
+						widget = {
+							visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet)]"
+							using = entry_bg_fancy
+							size = { 480 240 }
+							empty_state_dynamic_width = {
+								parentanchor = center
+								autoresize = yes
+								text = "VACANCIES"
+							}
+						}
+						widget = {
+							visible = "[JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet]"
+							using = entry_bg_fancy
+							size = { 480 240 }
+							container = {
+								datacontext = "[JournalEntry.GetCountry.MakeScope.Var('tairo_var').GetCharacter]"
+								parentanchor = center
+								eafp_council_of_elders_item = { }
+							}
+						}
+					}
+				}
+			}
+
+			container = { # 노중
+				flowcontainer = {
+					margin = { 0 0 }
+					spacing = 5
+					direction = vertical
+					parentanchor = vcenter
+					section_header_button = {
+						blockoverride "layout" {
+							parentanchor = hcenter
+							size = { @panel_width_minus_40 38 }
+						}
+		
+						blockoverride "left_text" {
+							raw_text = "#v 노중#!"
+						}
+		
+						blockoverride "onclick" {
+							onclick = "[GetVariableSystem.Toggle( 'eafp_roju' )]"
+						}
+	
+						blockoverride "onclick_showmore" {
+							visible = "[Not(GetVariableSystem.Exists( 'eafp_roju' ))]"
+						}
+		
+						blockoverride "onclick_showless" {
+							visible = "[GetVariableSystem.Exists( 'eafp_roju' )]"
+						}
+					}
+					container = {
+						visible = "[GetVariableSystem.Exists( 'eafp_roju' )]"
+						parentanchor = hcenter
+						widget = {
+							visible = "[IsDataModelEmpty(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist'))]"
+							using = entry_bg_fancy
+							size = { 480 240 }
+							empty_state_dynamic_width = {
+								parentanchor = center
+								autoresize = yes
+								text = "VACANCIES"
+							}
+						}
+						flowcontainer = {
+							visible = "[Not(IsDataModelEmpty(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist')))]"
+							datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('roju_varlist')]"
+							spacing = 5
+							direction = vertical
+							item = {
+								widget = {
+									using = entry_bg_fancy
+									size = { 480 240 }
+									eafp_council_of_elders_item = {
+										datacontext = "[Scope.GetCharacter]"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	type eafp_council_of_elders_item = hbox {
+		margin = { 0 0 }
+		
+		flowcontainer = {
+			direction = vertical
+			character_portrait_large = {
+				parentanchor = hcenter
+				blockoverride "show_hat" {}
+				blockoverride "highlight" {}
+			}
+			default_header_clean_faded = {
+				parentanchor = hcenter
+				size = { 200 40 }
+				blockoverride "text" {
+					text = "[Character.GetFullName]"
+				}
+			}
+		}
+		vertical_divider = { }
+		flowcontainer = {
+			direction = vertical
+			minimumsize = { 240 -1 }
+			margin = { 0 10 }
+			
+			background =  {
+				using = entry_bg_fancy_dark
+				alpha = 0.3
+			}
+			
+			### IDEOLOGY
+			character_stats_entry = {
+				datacontext = "[Character.GetIdeology]"
+
+				tooltipwidget = {
+					FancyTooltip_Ideology = {}
+				}
+
+				blockoverride "icon_texture" {
+					texture = "[Ideology.GetTexture]"
+				}
+				blockoverride "double_entry_label" {
+					text = "IDEOLOGY_CONCEPT"
+				}
+				blockoverride "double_entry_value" {
+					text = "CHARACTER_IDEOLOGY"
+				}
+				blockoverride "single_text_entry" {}
+			}
+		
+			textbox = {
+				multiline = yes
+				size = { 260 40 }
+				parentanchor = hcenter
+				align = center|nobaseline
+				text = "insert_text"
+			}
+		}
+	}
+}

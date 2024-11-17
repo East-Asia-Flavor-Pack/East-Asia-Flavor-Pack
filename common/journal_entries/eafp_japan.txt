@@ -75,30 +75,32 @@ je_bakuhantaisei = {
 	}
 
 	fail = {
-		"scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0
+		scope:journal_entry = {
+			"scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0
+		}
 	}
 
 	on_fail = {
 		# TODO
-		if = {
-			limit = { 
-				NOT = { 
-					exists = c:NIP
-					has_war_with = c:NIP
-				}
-			}
-			create_diplomatic_play = {
-				target_country = c:NIP
-				type = dp_annex_war
-				escalation = 80
-				add_war_goal = { holder = c:NIP target_country = c:JAP type = annex_country }
-			}
-			hidden_effect = {	 
-			  change_infamy = -200
-			}
-		}
 		custom_tooltip = {
 			text = boshin_war_je_add_tt
+			if = {
+				limit = { 
+					NAND = { 
+						exists = c:NIP
+						has_war_with = c:NIP
+					}
+				}
+				#create_diplomatic_play = {
+				#	target_country = c:NIP
+				#	type = dp_annex_war
+				#	escalation = 80
+				#	add_war_goal = { holder = c:NIP target_country = c:JAP type = annex_country }
+				#}
+				hidden_effect = {	 
+					change_infamy = -200
+				}
+			}
 			add_journal_entry = {
 				type = japan_boshin_war_je
 			}
@@ -528,122 +530,16 @@ je_bakufu_kaikaku = {
 	scripted_button = japan_hitotsubashiha_phase_3_button
 	
 	status_desc = {
-		first_valid = {
-			triggered_desc = { 
-				desc = hitotsubashiha_winning
-				trigger = {
-					has_variable = yoshinobu_start
-					var:hitotsubashiha_var >= 50
-				}
-			}
-			triggered_desc = { 
-				desc = nankiha_winning
-				trigger = {
-					has_variable = yoshinobu_start
-					var:nankiha_var >= 50
-				}
-			}
-			triggered_desc = { 
-				desc = non_text
-				trigger = {
-					not = { has_variable = yoshinobu_start }
-				}
-			}
-		}
+		
 	}
 
 	progress_desc = {
 		first_valid = {
-			triggered_desc = { 
-				desc = kaikaku_phase_0
-				trigger = {
-					OR = {
-						has_variable = is_nankiha
-						has_variable = is_hitotsubashiha
-					}
-					OR = {
-						AND = {
-							#var:nankiha_var >= 100
-							#var:nankiha_var < 300
-						}
-						AND = {
-							#var:hitotsubashiha_var >= 100
-							#var:hitotsubashiha_var < 300
-						}
-					}
-				}
-			}
-			triggered_desc = { 
-				desc = kaikaku_phase_1
-				trigger = {
-					OR = {
-						has_variable = is_nankiha
-						has_variable = is_hitotsubashiha
-					}
-					OR = {
-						AND = {
-							#var:nankiha_var >= 300
-							#var:nankiha_var < 500
-						}
-						AND = {
-							#var:hitotsubashiha_var >= 300
-							#var:hitotsubashiha_var < 500
-						}
-					}
-				}
-			}
-			triggered_desc = { 
-				desc = kaikaku_phase_2
-				trigger = {
-					OR = {
-						has_variable = is_nankiha
-						has_variable = is_hitotsubashiha
-					}
-					OR = {
-						AND = {
-							#var:nankiha_var >= 500
-							#var:nankiha_var < 750
-						}
-						AND = {
-							#var:hitotsubashiha_var >= 500
-							#var:hitotsubashiha_var < 750
-						}
-					}
-				}
-			}
-			triggered_desc = { 
-				desc = kaikaku_phase_3
-				trigger = {
-					OR = {
-						has_variable = is_nankiha
-						has_variable = is_hitotsubashiha
-					}
-					OR = {
-						#var:nankiha_var >= 750
-						#var:hitotsubashiha_var >= 750
-					}
-				}
-			}
-			triggered_desc = { 
-				desc = non_text
-				trigger = {
-					NOT = {
-						OR = {
-							has_variable = is_nankiha
-							has_variable = is_hitotsubashiha
-						}
-					}
-				}
-			}
+			
 		}
 	}
 
 	immediate = {
-		ruler = {
-			add_modifier = {
-				name = popular_autocrat
-			}
-		}
 		set_variable = { 
 			name = hitotsubashiha_var # 개혁파 변수
 			value = 10
@@ -652,8 +548,7 @@ je_bakufu_kaikaku = {
 			name = nankiha_var # 보수파 변수
 			value = 90
 		}
-		weekly_pulse_nankiha_progress = yes
-		weekly_pulse_hitotsubashiha_progress = yes
+		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 	}
 
 	
@@ -709,23 +604,14 @@ je_bakufu_kaikaku = {
 
 	on_monthly_pulse = {
 		effect = {
-		   change_variable = { name = hitotsubashiha_var add = var:hitotsubashiha_progress_next } 
-		   change_variable = { name = nankiha_var add = var:nankiha_progress_next } 
+			change_variable = { name = hitotsubashiha_var add = var:hitotsubashiha_progress_next } 
+			change_variable = { name = nankiha_var add = var:nankiha_progress_next } 
 		}
 	}
 
 	on_weekly_pulse = {
 		effect = {
-			if = { 
-				limit = { not = { has_variable = yoshinobu_start }}
-				weekly_pulse_nankiha_progress = yes
-				weekly_pulse_hitotsubashiha_progress = yes
-			}
-			else_if = {
-				limit = { has_variable = yoshinobu_start }
-				weekly_pulse_nankiha_progress_second = yes
-				weekly_pulse_hitotsubashiha_progress_second = yes
-			}
+			weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 		}
 	}
 
@@ -1192,51 +1078,6 @@ japan_bakufu_zaisei_je = {
 	progressbar = yes
 	weight = 10000
 
-}
-
-
-je_parliament_japan = {
-	icon = "gfx/interface/icons/ig_icons/armed_forces.dds"
-
-	group = je_group_historical_content
-
-	scripted_button = japan_pariament_1_button
-	scripted_button = japan_pariament_2_button
-	scripted_button = japan_pariament_3_button
-	immediate = {
-		set_variable = {
-			name = syugiin_dai
-			value = 1
-		}
-		set_variable = {
-			name = party1_seat_var
-			value = 130
-		}
-		set_variable = {
-			name = party2_seat_var
-			value = 79
-		}
-		set_variable = {
-			name = party3_seat_var
-			value = 41
-		}
-		set_variable = {
-			name = party4_seat_var
-			value = 5
-		}
-		set_variable = {
-			name = party5_seat_var
-			value = 0
-		}
-		set_variable = {
-			name = no_party_seat_var
-			value = 45
-		}
-		seat_effect = yes
-	}
-	complete = {
-		always = no
-	}
 }
 
 #막부 
