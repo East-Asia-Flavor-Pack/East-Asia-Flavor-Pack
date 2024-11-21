@@ -99,7 +99,7 @@ gg_korea.2 = { # Donghak Rebellion
 	}
 }
 
-gg_korea.3 = { # Choe Je-u
+gg_korea.3 = { # Choe Je-u 이건 바닐라 on_action에 얽혀있는 거라 안 건드는 게 나을듯.
 	type = country_event
 
 	placement = scope:choi_je_woo_state
@@ -160,35 +160,43 @@ gg_korea.3 = { # Choe Je-u
 		set_global_variable = choi_je_woo_spawn
 	}
 
-	option = {
-		name = gg_korea.3.a
-		default_option = yes
-		scope:choi_je_woo_scope = {
-			add_modifier = {
-				name = modifier_donghak_founder
-				months = very_long_modifier_time
-			}
-		}
-		scope:choi_je_woo_state = {
-			add_radicals_in_state = {
-				value = small_radicals
-				pop_type = peasants
-			}
-		}
-	}
+	#option = {
+	#	name = gg_korea.3.a
+	#	default_option = yes
+	#	scope:choi_je_woo_scope = {
+	#		add_modifier = {
+	#			name = modifier_donghak_founder
+	#			months = very_long_modifier_time
+	#		}
+	#	}
+	#	scope:choi_je_woo_state = {
+	#		add_radicals_in_state = {
+	#			value = small_radicals
+	#			pop_type = peasants
+	#		}
+	#	}
+	#}
 
 	option = {
 		name = gg_korea.3.b
 		scope:choi_je_woo_scope = {
 			add_modifier = {
-				name = modifier_donghak_founder_hunted
+				name = modifier_donghak_founder # modifier_donghak_founder_hunted 수정
 				months = very_long_modifier_time
 			}
 		}
 		scope:choi_je_woo_state = {
 			add_radicals_in_state = {
-				value = medium_radicals
+				value = small_radicals # medium_radicals 수정
 				pop_type = peasants
+			}
+		}
+
+		# 추가
+		hidden_effect = {
+			trigger_event = {
+				id = gg_korea.101
+				days = { 15 30 }
 			}
 		}
 	}
@@ -823,242 +831,61 @@ gg_korea.9 = { # Sino-Japanese War - for China
 	}
 }
 
-namespace = korea_monarchy
 
-korea_monarchy.1 = { # Hwan Yi dies
+# 이 아래는 추가
+
+gg_korea.101 = { # gg_korea.3에서.
 	type = country_event
-	placement = ROOT
 
-	title = korea_monarchy.1.t
-	desc = korea_monarchy.1.d
-	flavor = korea_monarchy.1.f
+	placement = scope:choi_je_woo_state
 
 	gui_window = event_window_1char_tabloid
-
-	left_icon = scope:heonjong_scope
-
-	dlc = dlc010
+	left_icon = scope:choi_je_woo_scope
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	title = gg_korea.101.t
+	desc = gg_korea.101.d
+	flavor = gg_korea.101.f
 
 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	duration = 3
 
-	trigger = {
-		#NOT = {
-		#	has_variable = heonjong_event_var
-		#}
-		#has_dlc_feature = ep1_content
-		#c:KOR ?= this
-		#game_date >= 1845.1.1
-		#ruler = {
-		#	has_template = KOR_yi_hwan
-		#}
-		always = no #일단 비활성화!!
-	}
-
 	immediate = {
-		ruler = {
-			save_scope_as = heonjong_scope
-		}
-		set_variable = heonjong_event_var
+		
 	}
 
 	option = {
-		name = korea_monarchy.1.a
+		name = gg_korea.101.a
 		default_option = yes
-		ai_chance = {
-			base = 10
+		custom_tooltip = {
+			text = gg_korea.101.tta
+			set_variable = jeu_executed
 		}
-		scope:heonjong_scope = {
+		scope:choi_je_woo_scope = {
 			kill_character = yes
 		}
-	}
-
-	option = {
-		name = korea_monarchy.1.b
-		trigger = {
-			has_technology_researched = medical_degrees
-		}
-		ai_chance = {
-			base = 25
-		}
-		scope:heonjong_scope = {
-			random_list = {
-				75 = {
-					kill_character = yes
-				}
-				25 = {
-					custom_tooltip = {
-						text = heonjong_recovers_tt
-					}
-				}
-			}
-		}
-	}
-}
-
-korea_monarchy.2 = { # Gojong
-	type = country_event
-	placement = ROOT
-
-	title = korea_monarchy.2.t
-	desc = korea_monarchy.2.d
-	flavor = korea_monarchy.2.f
-
-	gui_window = event_window_1char_tabloid
-
-	left_icon = scope:cheoljong_scope
-
-	dlc = dlc010
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
-
-	duration = 3
-
-	trigger = {
-		NOT = {
-			has_variable = gojong_event_var
-		}
-		has_dlc_feature = ep1_content
-		c:KOR ?= this
-		game_date >= 1855.1.1
-		ruler = {
-			has_template = KOR_yi_byeon
-		}
-	}
-
-	immediate = {
-		ruler = {
-			save_scope_as = cheoljong_scope
-		}
-		heir ?= {
-			kill_character = yes
-		}
-		create_character = {
-			template = KOR_yi_myongbok
-			on_created = {
-				set_variable = gojong_var
-			}
-		}
-		random_scope_character = {
-			limit = {
-				has_variable = gojong_var
-			}
-			save_scope_as = gojong_scope
-		}
-		set_variable = gojong_event_var
-	}
-
-	option = {
-		name = korea_monarchy.2.a
-		default_option = yes
-		show_as_tooltip = {
-			create_character = {
-				template = KOR_yi_myongbok
-			}
-		}
-	}
-}
-
-korea_monarchy.3 = { # Queen Myeongseong
-	type = country_event
-	placement = ROOT
-
-	title = korea_monarchy.3.t
-	desc = korea_monarchy.3.d
-	flavor = korea_monarchy.3.f
-
-	gui_window = event_window_1char_tabloid
-
-	left_icon = scope:myeongseong_scope
-
-	dlc = dlc010
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
-
-	duration = 3
-
-	trigger = {
-		NOT = {
-			has_variable = myeongseong_event_var
-		}
-		has_dlc_feature = ep1_content
-		c:KOR ?= this
-		game_date >= 1873.1.1
-		ruler = {
-			has_template = KOR_yi_myongbok
-		}
-	}
-
-	immediate = {
-		ruler = {
-			save_scope_as = gojong_scope
-		}
-		create_character = {
-			template = KOR_empress_myeongseong
-			on_created = {
-				set_variable = myeongseong_var
-				place_character_in_void = 6
-			}
-		}
-		random_character_in_void = {
-			limit = {
-				has_variable = myeongseong_var
-			}
-			save_scope_as = myeongseong_scope
-		}
-		set_variable = myeongseong_event_var
-	}
-
-	option = {
-		name = korea_monarchy.3.a
-		default_option = yes
-		show_as_tooltip = {
-			create_character = {
-				template = KOR_empress_myeongseong
-			}
-		}
-		hidden_effect = {
-			random_character_in_void = {
-				limit = {
-					has_variable = myeongseong_var
-				}
-				free_character_from_void = yes
-				set_as_interest_group_leader = yes
-			}
-		}
-		if = {
-			limit = {
-				ig:ig_industrialists = {
-					is_in_government = no
-				}
-			}
-			ig:ig_industrialists = {
-				add_ruling_interest_group = yes
+		scope:choi_je_woo_state = {
+			add_radicals_in_state = {
+				value = small_radicals
+				pop_type = peasants
 			}
 		}
 	}
 
 	option = {
-		name = korea_monarchy.3.b
-		add_modifier = {
-			name = modifier_empress_myeongseong
-			months = very_long_modifier_time
+		name = gg_korea.101.b
+		custom_tooltip = {
+			text = gg_korea.101.ttb
+			set_variable = jeu_released 
 		}
-		hidden_effect = {
-			random_character_in_void = {
-				limit = {
-					has_variable = myeongseong_var
-				}
-				kill_character = {
-					hidden = yes
-				}
+		ig:ig_landowners = {
+			add_modifier = {
+				name = modifier_donghak_cult_presence
+				months = normal_modifier_time
+				is_decaying = yes
 			}
 		}
 	}
