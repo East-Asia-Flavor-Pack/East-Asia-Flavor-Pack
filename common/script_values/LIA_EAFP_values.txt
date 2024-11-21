@@ -166,163 +166,122 @@ lia_kor_sam_hwan_clear_count = {
 ##각 주별 매월 개선진행도 자연증가량 연산묶음
 #전체 주 공통계산요소-민
 lia_val_add_landexp_uni_cv = {
-	value = {
-		if = {
-			limit = {
-				tax_level = very_low
-			}
-			add = 3
+	if = {
+		limit = {
+			tax_level = very_low
 		}
-		if = {
-			limit = {
-				tax_level = low
-			}
-			add = 1.5
+		value = 3
+	}
+	if = {
+		limit = {
+			tax_level = low
 		}
-		if = {
-			limit = {
-				tax_level = medium
-			}
-			add = 0
+		value = 1.5
+	}
+	if = {
+		limit = {
+			tax_level = medium
 		}
-		if = {
-			limit = {
-				tax_level = high
-			}
-			add = -1.5
+		value = 0
+	}
+	if = {
+		limit = {
+			tax_level = high
 		}
-		if = {
-			limit = {
-				tax_level = very_high
-			}
-			add = -3
+		value = -1.5
+	}
+	if = {
+		limit = {
+			tax_level = very_high
 		}
+		value = -3
 	}
 }
 #전체 주 공통계산요소-군
 lia_val_add_landexp_uni_ml = {
-	value = {
-		if = {
-			limit = {
-				military_wage_level = very_low
-			}
-			add = -3
+	if = {
+		limit = {
+			military_wage_level = very_low
 		}
-		if = {
-			limit = {
-				military_wage_level = low
-			}
-			add = -1.5
+		value = -3
+	}
+	if = {
+		limit = {
+			military_wage_level = low
 		}
-		if = {
-			limit = {
-				military_wage_level = medium
-			}
-			add = 0
+		value = -1.5
+	}
+	if = {
+		limit = {
+			military_wage_level = medium
 		}
-		if = {
-			limit = {
-				military_wage_level = high
-			}
-			add = 1.5
+		value = 0
+	}
+	if = {
+		limit = {
+			military_wage_level = high
 		}
-		if = {
-			limit = {
-				military_wage_level = very_high
-			}
-			add = 3
+		value = 1.5
+	}
+	if = {
+		limit = {
+			military_wage_level = very_high
 		}
+		value = 3
 	}
 }
 #전체 주 공통계산요소-관
 lia_val_add_landexp_uni_ad = {
-	value = {
-		if = {
-			limit = {
-				government_wage_level = very_low
-			}
-			add = -3
+	if = {
+		limit = {
+			government_wage_level = very_low
 		}
-		if = {
-			limit = {
-				government_wage_level = low
-			}
-			add = -1.5
+		value = -3
+	}
+	if = {
+		limit = {
+			government_wage_level = low
 		}
-		if = {
-			limit = {
-				government_wage_level = medium
-			}
-			add = 0
+		value = -1.5
+	}
+	if = {
+		limit = {
+			government_wage_level = medium
 		}
-		if = {
-			limit = {
-				government_wage_level = high
-			}
-			add = 1.5
+		value = 0
+	}
+	if = {
+		limit = {
+			government_wage_level = high
 		}
-		if = {
-			limit = {
-				government_wage_level = very_high
-			}
-			add = 3
+		value = 1.5
+	}
+	if = {
+		limit = {
+			government_wage_level = very_high
 		}
+		value = 3
 	}
 }
 #개별 주 요소별 수치_sl_cv
 lia_val_add_landexp_agri_sl_cv = {	#농장건물렙
-	value = {
-		every_scope_state = {
-			if = {
-				limit = {
-					OR = {
-						state_region = s:STATE_SEOUL
-						#state_region = s:STATE_LIA_SEOUL
-					}
-				}
-				every_scope_building = {
-					limit = {
-						is_building_group = bg_agriculture
-						NOT = { is_building_group = bg_subsistence_agriculture }
-					}
-					add = level
-				}
+	value = 0
+	s:STATE_SEOUL.region_state:KOR = {
+		every_scope_building = {
+			limit = {
+				is_building_group = bg_agriculture
+				NOT = { is_building_group = bg_subsistence_agriculture }
 			}
+			add = level
 		}
-		add = -5	#농장5개부터 균형점
-		multiply = 0.1	#농장 계수
 	}
+	add = -5	#농장5개부터 균형점
+	multiply = 0.1	#농장 계수
 }
 lia_val_add_landexp_gdp_sl_cv = {	#주인당gdp
-	value = {
-		add = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_SEOUL
-							#state_region = s:STATE_LIA_SEOUL
-						}
-					}
-					add = this.gdp
-				}
-			}
-		}
-		divide = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_SEOUL
-							#state_region = s:STATE_LIA_SEOUL
-						}
-					}
-					add = this.state_population
-				}
-			}
-		}
-		multiply = 0.2	#gdp 계수
-	}
+	value = s:STATE_SEOUL.region_state:KOR.gdp
+	divide = s:STATE_SEOUL.region_state:KOR.state_population
+	multiply = 0.2	#gdp 계수
 }
 lia_val_add_landexp_poll_sl_cv = {	#주오염
 	value = 0
@@ -342,64 +301,23 @@ lia_val_add_landexp_poll_sl_cv = {	#주오염
 }
 #개별 주 요소별 수치_yh_cv
 lia_val_add_landexp_agri_yh_cv = {	#농장건물렙
-	value = {
-		every_scope_state = {
-			if = {
-				limit = {
-					OR = {
-						state_region = s:STATE_YANGHO
-						#state_region = s:STATE_LIA_DAEJEON
-						#state_region = s:STATE_LIA_GWANGJU
-						#state_region = s:STATE_LIA_JEJU
-					}
-				}
-				every_scope_building = {
-					limit = {
-						is_building_group = bg_agriculture
-						NOT = { is_building_group = bg_subsistence_agriculture }
-					}
-					add = level
-				}
+	value = 0
+	s:STATE_YANGHO.region_state:KOR = {
+		every_scope_building = {
+			limit = {
+				is_building_group = bg_agriculture
+				NOT = { is_building_group = bg_subsistence_agriculture }
 			}
+			add = level
 		}
-		add = -5	#농장5개부터 균형점
-		multiply = 0.1	#농장 계수
 	}
+	add = -5	#농장5개부터 균형점
+	multiply = 0.1	#농장 계수
 }
 lia_val_add_landexp_gdp_yh_cv = {	#주인당gdp
-	value = {
-		add = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_YANGHO
-							#state_region = s:STATE_LIA_DAEJEON
-							#state_region = s:STATE_LIA_GWANGJU
-							#state_region = s:STATE_LIA_JEJU
-						}
-					}
-					add = this.gdp
-				}
-			}
-		}
-		divide = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_YANGHO
-							#state_region = s:STATE_LIA_DAEJEON
-							#state_region = s:STATE_LIA_GWANGJU
-							#state_region = s:STATE_LIA_JEJU
-						}
-					}
-					add = this.state_population
-				}
-			}
-		}
-		multiply = 0.2	#gdp 계수
-	}
+	value = s:STATE_YANGHO.region_state:KOR.gdp
+	divide = s:STATE_YANGHO.region_state:KOR.state_population
+	multiply = 0.2	#gdp 계수
 }
 lia_val_add_landexp_poll_yh_cv = {	#주오염
 	value = 0
@@ -421,64 +339,23 @@ lia_val_add_landexp_poll_yh_cv = {	#주오염
 }
 #개별 주 요소별 수치_yn_cv
 lia_val_add_landexp_agri_yn_cv = {	#농장건물렙
-	value = {
-		every_scope_state = {
-			if = {
-				limit = {
-					OR = {
-						state_region = s:STATE_BUSAN
-						#state_region = s:STATE_LIA_BUSAN
-						#state_region = s:STATE_LIA_ULSAN
-						#state_region = s:STATE_LIA_DAEGU
-					}
-				}
-				every_scope_building = {
-					limit = {
-						is_building_group = bg_agriculture
-						NOT = { is_building_group = bg_subsistence_agriculture }
-					}
-					add = level
-				}
+	value = 0
+	s:STATE_BUSAN.region_state:KOR = {
+		every_scope_building = {
+			limit = {
+				is_building_group = bg_agriculture
+				NOT = { is_building_group = bg_subsistence_agriculture }
 			}
+			add = level
 		}
-		add = -5	#농장5개부터 균형점
-		multiply = 0.1	#농장 계수
 	}
+	add = -5	#농장5개부터 균형점
+	multiply = 0.1	#농장 계수
 }
 lia_val_add_landexp_gdp_yn_cv = {	#주인당gdp
-	value = {
-		add = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_BUSAN
-							#state_region = s:STATE_LIA_BUSAN
-							#state_region = s:STATE_LIA_ULSAN
-							#state_region = s:STATE_LIA_DAEGU
-						}
-					}
-					add = this.gdp
-				}
-			}
-		}
-		divide = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_BUSAN
-							#state_region = s:STATE_LIA_BUSAN
-							#state_region = s:STATE_LIA_ULSAN
-							#state_region = s:STATE_LIA_DAEGU
-						}
-					}
-					add = this.state_population
-				}
-			}
-		}
-		multiply = 0.2	#gdp 계수
-	}
+	value = s:STATE_BUSAN.region_state:KOR.gdp
+	divide = s:STATE_BUSAN.region_state:KOR.state_population
+	multiply = 0.2	#gdp 계수
 }
 lia_val_add_landexp_poll_yn_cv = {	#주오염
 	value = 0
@@ -500,67 +377,23 @@ lia_val_add_landexp_poll_yn_cv = {	#주오염
 }
 #개별 주 요소별 수치_ys_cv
 lia_val_add_landexp_agri_ys_cv = {	#농장건물렙
-	value = {
-		every_scope_state = {
-			if = {
-				limit = {
-					OR = {
-						state_region = s:STATE_PYONGYANG
-						#state_region = s:STATE_LIA_PYONGYANG
-						#state_region = s:STATE_LIA_KAESONG
-						#state_region = s:STATE_LIA_NAMPHO
-						#state_region = s:STATE_LIA_UIJU
-					}
-				}
-				every_scope_building = {
-					limit = {
-						is_building_group = bg_agriculture
-						NOT = { is_building_group = bg_subsistence_agriculture }
-					}
-					add = level
-				}
+	value = 0
+	s:STATE_PYONGYANG.region_state:KOR = {
+		every_scope_building = {
+			limit = {
+				is_building_group = bg_agriculture
+				NOT = { is_building_group = bg_subsistence_agriculture }
 			}
+			add = level
 		}
-		add = -5	#농장5개부터 균형점
-		multiply = 0.1	#농장 계수
 	}
+	add = -5	#농장5개부터 균형점
+	multiply = 0.1	#농장 계수
 }
 lia_val_add_landexp_gdp_ys_cv = {	#주인당gdp
-	value = {
-		add = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_PYONGYANG
-							#state_region = s:STATE_LIA_PYONGYANG
-							#state_region = s:STATE_LIA_KAESONG
-							#state_region = s:STATE_LIA_NAMPHO
-							#state_region = s:STATE_LIA_UIJU
-						}
-					}
-					add = this.gdp
-				}
-			}
-		}
-		divide = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_PYONGYANG
-							#state_region = s:STATE_LIA_PYONGYANG
-							#state_region = s:STATE_LIA_KAESONG
-							#state_region = s:STATE_LIA_NAMPHO
-							#state_region = s:STATE_LIA_UIJU
-						}
-					}
-					add = this.state_population
-				}
-			}
-		}
-		multiply = 0.2	#gdp 계수
-	}
+	value = s:STATE_PYONGYANG.region_state:KOR.gdp
+	divide = s:STATE_PYONGYANG.region_state:KOR.state_population
+	multiply = 0.2	#gdp 계수
 }
 lia_val_add_landexp_poll_ys_cv = {	#주오염
 	value = 0
@@ -583,61 +416,23 @@ lia_val_add_landexp_poll_ys_cv = {	#주오염
 }
 #개별 주 요소별 수치_gb_cv
 lia_val_add_landexp_agri_gb_cv = {	#농장건물렙
-	value = {
-		every_scope_state = {
-			if = {
-				limit = {
-					OR = {
-						state_region = s:STATE_SARIWON
-						#state_region = s:STATE_LIA_NAJIN
-						#state_region = s:STATE_LIA_WONSAN
-					}
-				}
-				every_scope_building = {
-					limit = {
-						is_building_group = bg_agriculture
-						NOT = { is_building_group = bg_subsistence_agriculture }
-					}
-					add = level
-				}
+	value = 0
+	s:STATE_SARIWON.region_state:KOR = {
+		every_scope_building = {
+			limit = {
+				is_building_group = bg_agriculture
+				NOT = { is_building_group = bg_subsistence_agriculture }
 			}
+			add = level
 		}
-		add = -5	#농장5개부터 균형점
-		multiply = 0.1	#농장 계수
 	}
+	add = -5	#농장5개부터 균형점
+	multiply = 0.1	#농장 계수
 }
 lia_val_add_landexp_gdp_gb_cv = {	#주인당gdp
-	value = {
-		add = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_SARIWON
-							#state_region = s:STATE_LIA_NAJIN
-							#state_region = s:STATE_LIA_WONSAN
-						}
-					}
-					add = this.gdp
-				}
-			}
-		}
-		divide = {
-			every_scope_state = {
-				if = {
-					limit = {
-						OR = {
-							state_region = s:STATE_SARIWON
-							#state_region = s:STATE_LIA_NAJIN
-							#state_region = s:STATE_LIA_WONSAN
-						}
-					}
-					add = this.state_population
-				}
-			}
-		}
-		multiply = 0.2	#gdp 계수
-	}
+	value = s:STATE_SARIWON.region_state:KOR.gdp
+	divide = s:STATE_SARIWON.region_state:KOR.state_population
+	multiply = 0.2	#gdp 계수
 }
 lia_val_add_landexp_poll_gb_cv = {	#주오염
 	value = 0
@@ -1996,29 +1791,29 @@ lia_val_embezzle_focus = {
 	multiply = 3000
 	add = 200000
 }
-# 1.00% of GDP + 25000, 사익추구 행동 - 소규모 횡령
+# 0.50% of GDP + 12500, 사익추구 행동 - 소규모 횡령
 lia_val_embezzle_s_cost = {
 	value = THIS.gdp
 	divide = 100000
 	round = yes
-	multiply = -1000
-	add = -25000
+	multiply = -500
+	add = -12500
 }
-# 1.50% of GDP + 50000, 사익추구 행동 - 중규모 횡령
+# 0.75% of GDP + 25000, 사익추구 행동 - 중규모 횡령
 lia_val_embezzle_m_cost = {
 	value = THIS.gdp
 	divide = 100000
 	round = yes
-	multiply = -1500
-	add = -50000
+	multiply = -750
+	add = -25000
 }
-# 2.00% of GDP + 100000, 사익추구 행동 - 대규모 횡령
+# 1.00% of GDP + 50000, 사익추구 행동 - 대규모 횡령
 lia_val_embezzle_l_cost = {
 	value = THIS.gdp
 	divide = 100000
 	round = yes
-	multiply = -2000
-	add = -100000
+	multiply = -1000
+	add = -50000
 }
 # 1.00% of GDP + 20000, 사익추구 행동 - 힘의균형 조정
 lia_val_pulling_balance_cost = {
