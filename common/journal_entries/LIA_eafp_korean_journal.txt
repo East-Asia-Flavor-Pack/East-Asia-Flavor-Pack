@@ -7,16 +7,12 @@ je_lia_korean_kings_health = {
 	group = je_group_historical_content
 
 	immediate = {
-		set_variable = {
-			name = lia_var_je_kings_health
-			value = 0
-		}
 	}
 	
 	scripted_progress_bar = eafp_progress_bar_kings_health
 	
 	scripted_button = lia_eafp_scripted_button_health_out
-	scripted_button = lia_eafp_scripted_button_health_in
+	#scripted_button = lia_eafp_scripted_button_health_in
 	
 	complete = {	#삼정문제 완화 후 후계지정뒤 사망
 		always = no
@@ -33,7 +29,7 @@ je_lia_korean_kings_health = {
 		custom_tooltip = {
 			text = je_lia_korean_kings_health_goal
 			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 300
+				"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 500
 			}
 		}
 		#scope:journal_entry = {
@@ -43,7 +39,7 @@ je_lia_korean_kings_health = {
 
 	on_fail = { # 추가
 		je:je_lia_korean_kings_health = {	#수치 초기화. 이것이 필요한지 아닌지는 실험해보지 않았음.
-			add_progress = { value = -300 name = eafp_progress_bar_kings_health }
+			add_progress = { value = -500 name = eafp_progress_bar_kings_health }
 		}
 		ruler = {
 			kill_character = yes
@@ -55,54 +51,52 @@ je_lia_korean_kings_health = {
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_death
 				trigger = {
-					root.var:lia_var_je_kings_health >= 285
+					je:je_lia_korean_kings_health = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 450
+					}
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_verylow
 				trigger = {
-					root.var:lia_var_je_kings_health >= 250
-					root.var:lia_var_je_kings_health < 285
+					je:je_lia_korean_kings_health = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 400
+					}
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_low
 				trigger = {
-					root.var:lia_var_je_kings_health >= 200
-					root.var:lia_var_je_kings_health < 250
+					je:je_lia_korean_kings_health = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 300
+					}
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_medium
 				trigger = {
-					root.var:lia_var_je_kings_health >= 80
-					root.var:lia_var_je_kings_health < 200
+					je:je_lia_korean_kings_health = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 200
+					}
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_high
 				trigger = {
-					root.var:lia_var_je_kings_health >= 30
-					root.var:lia_var_je_kings_health < 80
+					je:je_lia_korean_kings_health = {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 100
+					}
 				}
 			}
 			triggered_desc = {
 				desc = je_lia_korean_kings_health_veryhigh
 				trigger = {
-					root.var:lia_var_je_kings_health < 30
+					always = yes
 				}
 			}
 		}
 	}
 
-	on_weekly_pulse = {
-		effect = {
-			#change_variable = {
-			#		name = lia_var_je_kings_health
-			#		add = 0.5
-			#}
-		}
-	}
 	on_monthly_pulse = {
 		effect = {
 			##역사적 이벤트
@@ -127,7 +121,7 @@ je_lia_korean_kings_health = {
 				limit = {
 					NOT = { has_global_variable = eafp_check_evt_k006 }
 					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 280
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 450
 					}
 				}
 				trigger_event = eafp_kor_mainline.6
@@ -137,7 +131,7 @@ je_lia_korean_kings_health = {
 				limit = {
 					NOT = { has_global_variable = eafp_check_evt_k007 }
 					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 290
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 475
 					}
 				}
 				trigger_event = eafp_kor_mainline.7
@@ -145,16 +139,6 @@ je_lia_korean_kings_health = {
 			}
 		}
 	}
-	
-	#current_value = {
-	#	value = root.var:lia_var_je_kings_health
-	#}
-
-	#goal_add_value = {
-	#	  value = 300
-	#}
-
-	#progressbar = yes
 
 	weight = 3000
 	
@@ -402,17 +386,6 @@ je_lia_korean_land_problem = {
 		#}
 		#custom_tooltip = je_warlord_china_on_fail
 	}
-
-	#status_desc = {
-	#	first_valid = {
-	#		triggered_desc = {
-	#			desc = je_lia_korean_kings_health_death
-	#			trigger = {
-	#				root.var:lia_var_je_kings_health >= 575
-	#			}
-	#		}
-	#	}
-	#}
 	
 	scripted_button = lia_eafp_scripted_button_sam_jeon
 	scripted_button = lia_eafp_scripted_button_sam_gun
@@ -488,14 +461,6 @@ je_lia_korean_land_problem = {
 		#	lia_land_problem_add_modifier = yes
 		#}
 	}
-
-	#current_value = {
-	#	value = root.var:lia_var_je_kings_health
-	#}
-
-	#goal_add_value = {
-	#	  value = 600
-	#}
 
 	#progressbar = yes
 
@@ -1000,12 +965,12 @@ je_lia_korean_regent = {
 				lia_kor_regent_corruption_passive = yes
 			}
 			##역사적 이벤트
-			if = {	#수렴청정 거두기 - 여기서는 15살에 거두는것으로 설정.
+			if = {	#수렴청정 거두기
 				limit = {
 					NOT = { has_global_variable = eafp_check_evt_k105 }
 					game_date > 1841.1.1
 					ruler = {
-						age >= 15
+						age >= define:NCharacters|ADULT_AGE
 					}
 					has_variable = lia_var_regent_type
 					var:lia_var_regent_type = 1
