@@ -44,6 +44,17 @@ types eafp_council_of_elders {
 						blockoverride "left_text" {
 							raw_text = "#v 대로#!"
 						}
+
+						blockoverride "right_text" {
+							section_header_right_text = {
+								visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet)]"
+								text = "0/1"
+							}
+							section_header_right_text = {
+								visible = "[JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet]"
+								text = "1/1"
+							}
+						}
 		
 						blockoverride "onclick" {
 							onclick = "[GetVariableSystem.Toggle( 'eafp_tairo' )]"
@@ -64,7 +75,7 @@ types eafp_council_of_elders {
 						widget = {
 							visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet)]"
 							using = entry_bg_fancy
-							size = { 480 240 }
+							size = { 480 160 }
 							empty_state_dynamic_width = {
 								parentanchor = center
 								autoresize = yes
@@ -74,7 +85,7 @@ types eafp_council_of_elders {
 						widget = {
 							visible = "[JournalEntry.GetCountry.MakeScope.Var('tairo_var').IsSet]"
 							using = entry_bg_fancy
-							size = { 480 240 }
+							size = { 480 160 }
 							container = {
 								datacontext = "[JournalEntry.GetCountry.MakeScope.Var('tairo_var').GetCharacter]"
 								parentanchor = center
@@ -100,11 +111,17 @@ types eafp_council_of_elders {
 						blockoverride "left_text" {
 							raw_text = "#v 노중#!"
 						}
-		
+
+						blockoverride "right_text" {
+							section_header_right_text = {
+								text = "[GetDataModelSize(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist'))]/5"
+							}
+						}
+
 						blockoverride "onclick" {
 							onclick = "[GetVariableSystem.Toggle( 'eafp_roju' )]"
 						}
-	
+						
 						blockoverride "onclick_showmore" {
 							visible = "[Not(GetVariableSystem.Exists( 'eafp_roju' ))]"
 						}
@@ -116,16 +133,6 @@ types eafp_council_of_elders {
 					container = {
 						visible = "[GetVariableSystem.Exists( 'eafp_roju' )]"
 						parentanchor = hcenter
-						widget = {
-							visible = "[IsDataModelEmpty(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist'))]"
-							using = entry_bg_fancy
-							size = { 480 240 }
-							empty_state_dynamic_width = {
-								parentanchor = center
-								autoresize = yes
-								text = "VACANCIES"
-							}
-						}
 						flowcontainer = {
 							visible = "[Not(IsDataModelEmpty(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist')))]"
 							datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('roju_varlist')]"
@@ -134,11 +141,22 @@ types eafp_council_of_elders {
 							item = {
 								widget = {
 									using = entry_bg_fancy
-									size = { 480 240 }
+									size = { 480 160 }
 									eafp_council_of_elders_item = {
 										datacontext = "[Scope.GetCharacter]"
 									}
 								}
+							}
+						}
+						widget = {
+							#visible = "[LessThan_int32( GetDataModelSize(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist')), '(int32)5' )]"
+							visible = "[IsDataModelEmpty(JournalEntry.GetCountry.MakeScope.GetList('roju_varlist'))]"
+							using = entry_bg_fancy
+							size = { 480 160 }
+							empty_state_dynamic_width = {
+								parentanchor = center
+								autoresize = yes
+								text = "VACANCIES"
 							}
 						}
 					}
