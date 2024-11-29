@@ -34,22 +34,6 @@ hitotsubashiha_vs_nankiha_start_effect = {
 	}
 }
 
-add_hitotsubashiha_var = {
-	change_variable = {
-		name = hitotsubashiha_var
-		add = $VALUE$
-	}
-	bakufu_kaikaku_progress_bar_calc = yes
-}
-
-add_nankiha_var = {
-	change_variable = {
-		name = nankiha_var
-		add = $VALUE$
-	}
-	bakufu_kaikaku_progress_bar_calc = yes
-}
-
 bakufu_kaikaku_progress_bar_calc = {
 	je:je_bakufu_kaikaku = {
 		add_progress = {
@@ -66,12 +50,40 @@ bakufu_kaikaku_progress_bar_calc = {
 	}
 }
 
+add_hitotsubashiha_var = {
+	change_variable = {
+		name = hitotsubashiha_var
+		add = $VALUE$
+	}
+	bakufu_kaikaku_progress_bar_calc = yes
+	custom_description = {
+		text = add_hitotsubashiha_var
+		value = $VALUE$
+	}
+}
+
+add_nankiha_var = {
+	change_variable = {
+		name = nankiha_var
+		add = $VALUE$
+	}
+	bakufu_kaikaku_progress_bar_calc = yes
+	custom_description = {
+		text = add_nankiha_var
+		value = $VALUE$
+	}
+}
+
 add_hitotsubashiha_support = {
 	je:je_bakufu_kaikaku = {
 		add_progress = {
 			name = bakufu_kaikaku_hitotsubashiha_approval_progress_bar
 			value = $VALUE$
 		}
+	}
+	custom_description = {
+		text = add_hitotsubashiha_support
+		value = $VALUE$
 	}
 }
 
@@ -82,9 +94,21 @@ add_nankiha_support = {
 			value = $VALUE$
 		}
 	}
+	custom_description = {
+		text = add_nankiha_support
+		value = $VALUE$
+	}
 }
 
 weekly_pulse_bakufu_kaikaku_progress_bar_faction = { 
+	set_variable = {
+		name = hitotsubashiha_var_monthly_add
+		value = 0
+	}
+	set_variable = {
+		name = nankiha_var_monthly_add
+		value = 0
+	}
 	# 인물에 따른 파벌 변수 변화
 	set_variable = {
 		name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
@@ -118,11 +142,11 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character multiply = 0.1 } # 수치조정 TODO
 	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_character multiply = 0.1 } # 수치조정 TODO
 	change_variable = {
-		name = hitotsubashiha_var
+		name = hitotsubashiha_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
 	}
 	change_variable = {
-		name = nankiha_var
+		name = nankiha_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_nankiha_from_character
 	}
 
@@ -171,11 +195,11 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs multiply = 1 } # 수치조정 TODO
 	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_igs multiply = 1 } # 수치조정 TODO
 	change_variable = {
-		name = hitotsubashiha_var
+		name = hitotsubashiha_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
 	}
 	change_variable = {
-		name = nankiha_var
+		name = nankiha_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_nankiha_from_igs
 	}
 
@@ -185,7 +209,7 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 			has_variable = supporting_hitotsubashiha_var
 		}
 		change_variable = {
-			name = hitotsubashiha_var
+			name = hitotsubashiha_var_monthly_add
 			add = 0.1
 		}
 	}
@@ -194,14 +218,20 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 			has_variable = supporting_nankiha_var
 		}
 		change_variable = {
-			name = nankiha_var
+			name = nankiha_var_monthly_add
 			add = 0.1
 		}
 	}
 
-	# 변동치 파트는 나중에 넣기 TODO
-
-	bakufu_kaikaku_progress_bar_calc = yes
+	# 변동치
+	change_variable = {
+		name = hitotsubashiha_var_monthly_add
+		add = modifier:country_hitotsubashiha_var_monthly_add
+	}
+	change_variable = {
+		name = nankiha_var_monthly_add
+		add = modifier:country_nankiha_var_monthly_add
+	}
 }
 
 # 막번체제
@@ -270,6 +300,10 @@ je_bakuhantaisei_STATE_weekly_pulse = {
 add_bakuhantaisei_bakufu_authority = {
 	je:je_bakuhantaisei = {
 		add_progress = { value = $VALUE$ name = bakuhantaisei_bakufu_authority_progress_bar }
+	}
+	custom_description = {
+		text = add_bakuhantaisei_bakufu_authority 
+		value = $VALUE$
 	}
 }
 add_bakuhantaisei_state_loyalty = {
