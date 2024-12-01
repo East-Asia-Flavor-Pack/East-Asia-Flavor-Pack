@@ -89,17 +89,131 @@ eafp_japan.1 = { # 막번체제 초기화용
 	}
 
 	option = {
-		default_option = yes
 		name = eafp_japan.1.a
+		default_option = yes
 		show_as_tooltip = {
 			add_journal_entry = {
 				type = je_bakuhantaisei
 			}
 		}
+		ai_chance = {
+			base = 100
+		}
 	}
 }
 
+eafp_japan.3 = { # 노중 임명용 이벤트
+	type = country_event
+	placement = root
 
+	title = eafp_japan.3.t
+	desc = eafp_japan.3.d
+	flavor = eafp_japan.3.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+
+	immediate = {
+		set_variable = recruiting_bakufu_politicians
+		ordered_in_list = {
+			variable = roju_offer_varlist
+			position = 0
+			save_scope_as = scope1
+		}
+		ordered_in_list = {
+			variable = roju_offer_varlist
+			position = 0
+			save_scope_as = scope2
+		}
+		ordered_in_list = {
+			variable = roju_offer_varlist
+			position = 0
+			save_scope_as = scope3
+		}
+	}
+
+	option = {
+		name = eafp_japan.3.a
+		create_character = {
+			noble = yes
+			age = { 40 65 }
+			ideology = scope:scope1
+			interest_group = ig_landowners
+			on_created = {
+				set_character_busy_and_immortal = yes
+				c:JAP = {
+					add_to_variable_list = { name = roju_varlist target = PREV }
+				}
+			}
+		}
+		c:JAP = {
+			remove_list_variable = {
+				variable = recruiting_bakufu_politicians
+				target = scope:scope1
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.3.b
+		create_character = {
+			noble = yes
+			age = { 40 65 }
+			ideology = scope:scope2
+			interest_group = ig_landowners
+			on_created = {
+				set_character_busy_and_immortal = yes
+				c:JAP = {
+					add_to_variable_list = { name = roju_varlist target = PREV }
+				}
+			}
+		}
+		c:JAP = {
+			remove_list_variable = {
+				variable = recruiting_bakufu_politicians
+				target = scope:scope2
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.3.c
+		create_character = {
+			noble = yes
+			age = { 40 65 }
+			ideology = scope:scope3
+			interest_group = ig_landowners
+			on_created = {
+				set_character_busy_and_immortal = yes
+				c:JAP = {
+					add_to_variable_list = { name = roju_varlist target = PREV }
+				}
+			}
+		}
+		c:JAP = {
+			remove_list_variable = {
+				variable = recruiting_bakufu_politicians
+				target = scope:scope3
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.3.z
+		default_option = yes
+	}
+
+	after = {
+		remove_variable = recruiting_bakufu_politicians
+	}
+}
 
 eafp_japan.1001 = { # 밀무역 적발
 	type = country_event
@@ -113,7 +227,7 @@ eafp_japan.1001 = { # 밀무역 적발
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -187,7 +301,7 @@ eafp_japan.1002 = { # 밀무역 적발
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -277,7 +391,7 @@ eafp_japan.1003 = { # 계승 문제
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -355,7 +469,7 @@ eafp_japan.1004 = { # 번정 개혁 논란
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -433,7 +547,7 @@ eafp_japan.1005 = { # 밀무역 적발
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -508,7 +622,7 @@ eafp_japan.1006 = { # 위조화폐 제조
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "votp_prison"
 	}
 	
@@ -681,6 +795,61 @@ eafp_japan.1009 = { # 고도칸 개설
 	}
 }
 
+eafp_japan.1010 = { # (고메이) 천황의 즉위
+	type = country_event
+	placement = ROOT
+
+	title = eafp_japan.1010.t
+	desc = eafp_japan.1010.d
+	flavor = eafp_japan.1010.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		if = {
+			limit = { ruler = { has_template = eafp_jap_ninko_template } }
+			ruler = { save_scope_as = ninko_scope }
+			heir = { save_scope_as = komei_scope }
+			scope:komei_scope = {
+				set_character_as_ruler = yes
+			}
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		name = eafp_japan.1010.a
+		default_option = yes
+
+		trigger = {
+			exists = scope:ninko_scope
+		}
+		show_as_tooltip = {
+			scope:komei_scope = {
+				set_character_as_ruler = yes
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.1010.a
+		default_option = yes
+
+		trigger = {
+			NOT = { exists = scope:ninko_scope }
+		}
+	}
+}
+
 
 
 
@@ -732,7 +901,7 @@ eafp_japan.2002 = { # 양위
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -784,7 +953,7 @@ eafp_japan.2003 = { # 모리슨 호
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -804,7 +973,7 @@ eafp_japan.2003 = { # 모리슨 호
 		add_hitotsubashiha_var = {
 			VALUE = 10
 		}
-		add_hitotsubashiha_support = {
+		add_hitotsubashiha_approval = {
 			VALUE = -10
 		}
 	}
@@ -822,7 +991,7 @@ eafp_japan.2004 = { # 오고쇼의 서거
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2162,7 +2331,7 @@ eafp_japan.4000 = { #개항 알림
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2195,7 +2364,7 @@ boshin_war.1 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2224,7 +2393,7 @@ boshin_war.2 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2253,7 +2422,7 @@ boshin_war.3 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2343,7 +2512,7 @@ boshin_war.4 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2374,7 +2543,7 @@ boshin_war.5 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2403,7 +2572,7 @@ boshin_war.6 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2432,7 +2601,7 @@ boshin_war.7 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2464,7 +2633,7 @@ boshin_war.8 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2498,7 +2667,7 @@ boshin_war.9 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2534,7 +2703,7 @@ boshin_war.10 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2778,7 +2947,7 @@ new_meiji.2 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2816,7 +2985,7 @@ new_meiji.3 = {
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	 event_image = { 
+	event_image = { 
 		video = "asia_confucianism_shinto"
 	}
 	
@@ -2839,13 +3008,13 @@ new_meiji.3 = {
 			limit = {
 				not = { has_law = law_type:law_laissez_faire }
 			} 
-		   activate_law = law_type:law_interventionism
+		activate_law = law_type:law_interventionism
 		}
 		if = {
 			limit = {
 				has_law = law_type:law_serfdom
 			} 
-		   activate_law = law_type:law_tenant_farmers
+		activate_law = law_type:law_tenant_farmers
 		}
 	}
 	option = {

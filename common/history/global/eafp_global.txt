@@ -29,39 +29,6 @@
 		name = lia_global_var_treaty_num
 		value = 1
 	}
-	## 동아시아 국가 시작 시 국고 깎음
-	#여기 에러뱉으니 일단 걍 날림. 24.06.29
-	#every_country = { # 이거 왜 안되냐???
-	#	limit = {
-	#		OR = {
-	#			# 중국
-	#			this = c:CHI
-	#			this = c:MCH
-	#			this = c:MGL
-	#			this = c:XIN
-	#			# 일본
-	#			this = c:JAP
-	#			this = c:AID
-	#			this = c:CHO
-	#			this = c:GIS
-	#			this = c:KAG
-	#			this = c:NIP
-	#			this = c:ODA
-	#			this = c:RYU
-	#			this = c:SAT
-	#			this = c:SEN
-	#			this = c:TOS
-	#			this = c:YON
-	#			# 한국
-	#			this = c:KOR
-	#		}
-	#	}
-	#	add_treasury = {
-	#		value = this.gold_reserves
-	#		divide = 5
-	#		multiply = -4
-	#	}
-	#}
 
 	# 일본용 변수
 	set_global_variable = {
@@ -209,10 +176,15 @@
 			template = eafp_jap_ii_naoaki_template
 			on_created = {
 				set_character_busy_and_immortal = yes
+				set_as_interest_group_leader = yes
 			}
 		}
 		random_scope_character = {
 			limit = { has_template = eafp_jap_ii_naoaki_template }
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence # 0 - 100
+				value = 35
+			}
 			c:JAP = {
 				set_variable = { name = tairo_var value = PREV }
 			}
@@ -259,9 +231,29 @@
 					has_template = eafp_jap_ota_sukemoto_template
 				}
 			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 35
+			}
 			c:JAP = {
 				add_to_variable_list = { name = roju_varlist target = PREV }
 			}
+		}
+
+		every_scope_character = {
+			limit = {
+				has_template = eafp_jap_mizuno_tadakuni_template
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 60
+			}
+		}
+
+		c:JAP = {
+			add_to_variable_list = { name = roju_offer_varlist target = ideology:ideology_kaikakuha }
+			add_to_variable_list = { name = roju_offer_varlist target = ideology:ideology_moderate }
+			add_to_variable_list = { name = roju_offer_varlist target = ideology:ideology_hoshuha }
 		}
 	}
 }
