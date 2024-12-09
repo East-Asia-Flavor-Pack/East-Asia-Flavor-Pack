@@ -19,13 +19,13 @@ japan_on_character_death = {
 			limit = {
 				owner = {
 					c:JAP ?= this
-					has_law = law_type:law_monarchy
+					
 				}
-				is_ruler = yes
 			}
-			if = {
+			if = { # TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
 				limit = {
-					has_journal_entry = je_bakuhantaisei # 임시 TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
+					is_ruler = yes # 임시 TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
 				}
 				# 이에요시의 즉위는 이벤트로 직접
 				if = { # 이에사다의 즉위
@@ -97,8 +97,27 @@ japan_on_character_death = {
 					}
 				}
 			}
-			else = {
-				# 천황이 지배자인 조건으로 효과 넣기 TODO
+			else_if = {
+				limit = { # 천황이 지배자인 조건으로 효과 넣기 TODO
+					is_ruler = yes
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
+				}
+			}
+			else_if = { # 노중
+				limit = {
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
+					has_variable = eafp_bakuhantaisei_politician_influence
+					owner = { is_target_in_variable_list = { name = roju_varlist target = PREV } }
+				}
+				trigger_event = eafp_japan.4
+			}
+			else_if = { # 노중수좌
+				limit = {
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
+					has_variable = eafp_bakuhantaisei_politician_influence
+					owner = { var:rojushuza_var ?= PREV }
+				}
+				trigger_event = eafp_japan.3
 			}
 		}
 	}
