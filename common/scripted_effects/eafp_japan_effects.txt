@@ -48,8 +48,14 @@ create_bakufu_politician_character = {
 						name = eafp_bakuhantaisei_politician_influence
 						value = { 30 50 }
 					}
-					c:JAP = {
-						add_to_variable_list = { name = roju_varlist target = PREV }
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence_max
+						value = 100
+					}
+					assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = yes
+					add_modifier = {
+						name = modifier_bakufu_recently_appointed
+						years = 3
 					}
 					random_list = {
 						1 = { }
@@ -57,9 +63,8 @@ create_bakufu_politician_character = {
 							add_random_trait = personality
 						}
 					}
-					trigger_event = {
-						id = eafp_japan.5
-						months = { 36 96 } # 3-8년
+					c:JAP = {
+						add_to_variable_list = { name = roju_varlist target = PREV }
 					}
 				}
 			}
@@ -72,7 +77,16 @@ create_bakufu_politician_character = {
 					set_character_busy_and_immortal = yes
 					set_variable = {
 						name = eafp_bakuhantaisei_politician_influence
-						value = { 40 60 }
+						value = { 50 80 }
+					}
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence_max
+						value = 150
+					}
+					assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = yes
+					add_modifier = {
+						name = modifier_bakufu_recently_appointed
+						years = 3
 					}
 					random_list = {
 						1 = { }
@@ -82,10 +96,6 @@ create_bakufu_politician_character = {
 					}
 					c:JAP = {
 						set_variable = { name = rojushuza_var value = PREV }
-					}
-					trigger_event = {
-						id = eafp_japan.5
-						months = { 36 96 } # 3-8년
 					}
 				}
 			}
@@ -101,7 +111,16 @@ create_bakufu_politician_character = {
 							set_character_busy_and_immortal = yes
 							set_variable = {
 								name = eafp_bakuhantaisei_politician_influence
-								value = { 40 60 }
+								value = { 70 100 }
+							}
+							set_variable = {
+								name = eafp_bakuhantaisei_politician_influence_max
+								value = 200
+							}
+							assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = yes
+							add_modifier = {
+								name = modifier_bakufu_recently_appointed
+								years = 3
 							}
 							random_list = {
 								1 = { }
@@ -111,10 +130,6 @@ create_bakufu_politician_character = {
 							}
 							c:JAP = {
 								set_variable = { name = tairo_var value = PREV }
-							}
-							trigger_event = {
-								id = eafp_japan.5
-								months = { 36 96 } # 3-8년
 							}
 						}
 					}
@@ -128,8 +143,13 @@ create_bakufu_politician_character = {
 							set_character_busy_and_immortal = yes
 							set_variable = {
 								name = eafp_bakuhantaisei_politician_influence
-								value = { 40 60 }
+								value = { 70 100 }
 							}
+							set_variable = {
+								name = eafp_bakuhantaisei_politician_influence_max
+								value = 200
+							}
+							assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = yes
 							random_list = {
 								1 = { }
 								1 = {
@@ -139,16 +159,53 @@ create_bakufu_politician_character = {
 							c:JAP = {
 								set_variable = { name = tairo_var value = PREV }
 							}
-							trigger_event = {
-								id = eafp_japan.5
-								months = { 36 96 } # 3-8년
-							}
 						}
 					}
 				}
 			}
 		}
 	}
+}
+
+assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = { # 막부 정치인이기만 한 인물물은 immortal이므로 이걸로 따로 계산 때림
+	set_variable = {
+		name = CHARACTER_LIFE_EXPECTANCY_STDDEV_value # 일차함수랑 별 차이 없어서 계산 소요 줄일 겸...
+		value = {
+			value = { -300 300 }
+			divide = 100
+		}
+	}
+}
+
+remove_bakufu_politician_role = { # scope = character
+	remove_variable = eafp_bakuhantaisei_politician_influence
+	remove_variable = CHARACTER_LIFE_EXPECTANCY_STDDEV_value
+	if = {
+		limit = { c:JAP = { var:tairo_var ?= PREV } }
+		c:JAP = {
+			remove_variable = tairo_var
+		}
+	}
+	else_if = {
+		limit = { c:JAP = { var:rojushuza_var ?= PREV } }
+		c:JAP = {
+			remove_variable = rojushuza_var
+			trigger_event = eafp_japan.3
+		}
+	}
+	else_if = {
+		limit = {
+			c:JAP = {
+				has_variable_list = roju_varlist
+				is_target_in_variable_list = { name = roju_varlist target = PREV }
+			}
+		}
+		c:JAP = {
+			remove_list_variable = { name = roju_varlist target = PREV }
+			trigger_event = eafp_japan.4
+		}
+	}
+	set_character_busy_and_immortal = no
 }
 
 add_eafp_bakuhantaisei_politician_influence = {
