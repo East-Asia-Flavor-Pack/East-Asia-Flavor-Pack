@@ -109,8 +109,43 @@ je_bakuhantaisei = {
 		}
 	}
 
-	on_monthly_pulse = {
-		
+	on_yearly_pulse = {
+		effect = {
+			every_scope_character = { # 막부 정치인이기만 한 인물 사망 판정정
+				limit = {
+					has_variable = eafp_bakuhantaisei_politician_influence
+					is_busy = yes # immortal 판정 trigger는 없음. (원래)
+
+					trigger_if = {
+						limit = { modifier:character_health_add >= 1 }
+						age >= {
+							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
+							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
+							add = {
+								value = modifier:character_health_add
+								add = -1
+								multiply = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_DELTA_YEARS_ABOVE_BASELINE
+							}
+						}
+					}
+					trigger_else = {
+						age >= {
+							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
+							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
+							add = {
+								value = modifier:character_health_add
+								add = -1
+								multiply = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_DELTA_YEARS_BELOW_BASELINE
+							}
+						}
+					}
+				}
+				trigger_event = {
+					id = eafp_japan.6
+					days = { 30 364 }
+				}
+			}
+		}
 	}
 	
 	transferable = yes
