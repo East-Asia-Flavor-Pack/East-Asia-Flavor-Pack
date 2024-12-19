@@ -194,6 +194,7 @@ assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = { # 막부 정치인이기만 �
 
 remove_bakufu_politician_role = { # scope = character
 	remove_variable = eafp_bakuhantaisei_politician_influence
+	remove_variable = eafp_bakuhantaisei_politician_influence_max
 	remove_variable = CHARACTER_LIFE_EXPECTANCY_STDDEV_value
 	if = {
 		limit = { c:JAP = { var:tairo_var ?= PREV } }
@@ -224,13 +225,34 @@ remove_bakufu_politician_role = { # scope = character
 }
 
 add_eafp_bakuhantaisei_politician_influence = {
-	change_variable = {
-		name = eafp_bakuhantaisei_politician_influence
-		add = $VALUE$
+	if = {
+		limit = {
+			var:eafp_bakuhantaisei_politician_influence_max >= {
+				value = eafp_bakuhantaisei_politician_influence
+				add = $VALUE$
+			}
+		}
+		change_variable = {
+			name = eafp_bakuhantaisei_politician_influence
+			add = $VALUE$
+		}
+		custom_description = {
+			text = add_eafp_bakuhantaisei_politician_influence
+			value = $VALUE$
+		}
 	}
-	custom_description = {
-		text = add_eafp_bakuhantaisei_politician_influence
-		value = $VALUE$
+	else = {
+		set_variable = {
+			name = eafp_bakuhantaisei_politician_influence
+			value = var:eafp_bakuhantaisei_politician_influence_max
+		}
+		custom_description = {
+			text = add_eafp_bakuhantaisei_politician_influence
+			value = {
+				value = var:eafp_bakuhantaisei_politician_influence_max
+				subtract = var:eafp_bakuhantaisei_politician_influence
+			}
+		}
 	}
 }
 

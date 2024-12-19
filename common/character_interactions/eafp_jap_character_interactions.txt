@@ -1,0 +1,51 @@
+﻿#icon					Path to icon for both right click menu and character panel buttons
+#clicksound				Clicksound for both right click menu and character panel buttons
+
+#						All scopes are character scopes with the interacting country stored as the actor
+#potential				Trigger to check if the interaction should be shown
+#possible 				Trigger to check if the interaction is available
+#effect					The effects of the interaction
+#cooldown				Scriptable duration that this interaction will be unavailable for the interacting country
+
+#show_requirements		Whether to always show requirements, similar to highlighted options in events
+#show_confirmation_box	Whether to require confirmation
+
+#ai_chance				Scriptable value for the chance (0-100) that the AI will use this interaction when available, default 0
+
+eafp_remove_bakufu_politician = { # 막부 정치인 해임
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		scope:actor ?= {
+			authority >= 100
+		}
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_remove_bakufu_politician_tt
+			remove_bakufu_politician_role = yes
+		}
+		add_modifier = {
+			name = modifier_remove_bakufu_politician
+			months = short_modifier_time
+		}
+	}
+
+	cooldown = { months = 6 }
+	show_confirmation_box = yes
+
+	ai_chance = {
+		value = 0
+	}
+}
