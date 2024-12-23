@@ -3672,7 +3672,7 @@ eafp_japan.2007 = {	# 아편전쟁 패배 소식
 	}
 }
 
-# 히토츠바시 vs 난키
+# 히토츠바시 vs 난키 + 즉위 이벤트
 
 eafp_japan.2101 = { # 일엽지추 1853년 1월 1일
 	type = country_event
@@ -3918,6 +3918,8 @@ eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 		}
 	}
 }
+
+#
 
 eafp_japan.2181 = { # 히토츠바시파 정치인 암살
 	type = country_event
@@ -4714,6 +4716,117 @@ eafp_japan.2232 = {
 		}
 	}
 }
+
+# 파벌 탄원
+eafp_japan.2301 = { # 히토츠바시파의 이국선타불령 부활 요구
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2301.t
+	desc = eafp_japan.2301.d
+	flavor = eafp_japan.2301.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+
+	trigger = {
+		has_law = law_type:law_isolationism
+		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
+		NOT = { has_variable = eafp_japan.2301 }
+	}
+
+	immediate = {
+		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
+			name = eafp_japan.2301
+			months = normal_modifier_time
+		}
+		
+		set_variable = eafp_japan.2301_ing # '이국선타불령 부활' 버튼 잠깐 막는 용
+	}
+
+	option = { # ㅇㅇ
+		name = eafp_japan.2301.a
+		add_hitotsubashiha_approval = {
+			VALUE = 10
+		}
+		add_modifier = ikokusen_uchiharairei_modifier
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			months = long_modifier_time
+			is_decaying = yes
+			multiplier = {
+				value = bakufu_hitotsubashiha_hiritsu
+				divide = 50
+			}
+		}
+	}
+
+	option = { # ㄴㄴ
+		name = eafp_japan.2301.b
+		default_option = yes
+		add_hitotsubashiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	after = {
+		remove_variable = eafp_japan.2301_ing
+	}
+}
+
+eafp_japan.2302 = { # 난키파의 막부 개혁 시행 요구 - 새 화폐 도입
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2302.t
+	desc = eafp_japan.2302.d
+	flavor = eafp_japan.2302.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+
+	trigger = {
+		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
+		NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+		NOT = { has_variable = eafp_japan.2302 }
+	}
+
+	immediate = {
+		set_variable = {
+			name = eafp_japan.2302
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # ㅇㅇ
+		name = eafp_japan.2302.a
+		add_journal_entry = je_bakufu_seisaku_new_currency_petition
+	}
+
+	option = { # ㄴㄴ
+		name = eafp_japan.2302.b
+		default_option = yes
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+}
+
 ## 900 ~ 연도 트리거
 
 eafp_japan.902 = { # 1838 이벤트 트리거
