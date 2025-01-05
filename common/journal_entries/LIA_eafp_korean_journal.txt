@@ -523,7 +523,36 @@ je_lia_korean_imsul_uprising = {
 				}
 			}
 			order_by = lia_val_imsul_uprising_risk
+			position = 0
 			save_scope_as = lia_imsul_rising_target_state
+		}
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
+			}
+			order_by = lia_val_imsul_uprising_risk
+			position = 1
+			save_scope_as = lia_imsul_rising_target_state_2nd
+		}
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
+			}
+			order_by = lia_val_imsul_uprising_risk
+			position = 2
+			save_scope_as = lia_imsul_rising_target_state_3rd
 		}
 	}
 
@@ -553,6 +582,13 @@ je_lia_korean_imsul_uprising = {
 		custom_tooltip = {
 			text = je_lia_korean_imsul_uprising_fail_tt
 		}
+		scope:lia_imsul_rising_target_state = {
+			add_modifier = {
+				name = lia_modi_imsul_state_zero
+				months = 24
+			}
+		}
+		add_journal_entry = { type = je_lia_korean_imsul_boom }	#봉기 점화
 	}
 	
 	modifiers_while_active = {
@@ -587,6 +623,34 @@ je_lia_korean_imsul_uprising = {
 				order_by = lia_val_imsul_uprising_risk
 				save_scope_as = lia_imsul_rising_target_state
 			}
+			ordered_scope_state = {
+				limit = {
+					OR = {
+						state_region = s:STATE_SEOUL
+						state_region = s:STATE_YANGHO
+						state_region = s:STATE_BUSAN
+						state_region = s:STATE_PYONGYANG
+						state_region = s:STATE_SARIWON
+					}
+				}
+				order_by = lia_val_imsul_uprising_risk
+				position = 1
+				save_scope_as = lia_imsul_rising_target_state_2nd
+			}
+			ordered_scope_state = {
+				limit = {
+					OR = {
+						state_region = s:STATE_SEOUL
+						state_region = s:STATE_YANGHO
+						state_region = s:STATE_BUSAN
+						state_region = s:STATE_PYONGYANG
+						state_region = s:STATE_SARIWON
+					}
+				}
+				order_by = lia_val_imsul_uprising_risk
+				position = 2
+				save_scope_as = lia_imsul_rising_target_state_3rd
+			}
 		}
 	}
 
@@ -610,7 +674,7 @@ je_lia_korean_imsul_uprising = {
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.206
-					days = { 1 90 }
+					days = { 1 60 }
 				}
 				set_global_variable = eafp_check_evt_k206
 			}
@@ -622,7 +686,7 @@ je_lia_korean_imsul_uprising = {
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.207
-					days = { 1 90 }
+					days = { 1 60 }
 				}
 				set_global_variable = eafp_check_evt_k207
 			}
@@ -631,12 +695,13 @@ je_lia_korean_imsul_uprising = {
 					NOT = { has_global_variable = eafp_check_evt_k208 }
 					var:lia_var_je_imsul_uprising >= 200
 					has_variable = lia_var_regent_type
+					has_global_variable = eafp_check_evt_k207	#백성들이 상경해서 억울함을 알린 후부터 발동
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.208
-					days = { 1 90 }
+					days = { 1 7 }
 				}
-				set_global_variable = eafp_check_evt_k208
+				#set_global_variable = eafp_check_evt_k208	#이벤트문 코드에서 10스택 쌓이면 선언시킬것.
 			}
 			if = {	#도결 책정
 				limit = {
@@ -646,7 +711,7 @@ je_lia_korean_imsul_uprising = {
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.209
-					days = { 1 90 }
+					days = { 1 60 }
 				}
 				set_global_variable = eafp_check_evt_k209
 			}
@@ -658,7 +723,7 @@ je_lia_korean_imsul_uprising = {
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.210
-					days = { 1 90 }
+					days = { 1 30 }
 				}
 				set_global_variable = eafp_check_evt_k210
 			}
@@ -723,6 +788,269 @@ je_lia_korean_imsul_uprising = {
 
 	progressbar = yes
 
+	weight = 1999
+	
+	should_be_pinned_by_default = yes
+}
+##농민봉기발발
+je_lia_korean_imsul_boom = {
+	icon = "gfx/interface/icons/pops_icons/peasants.dds"
+
+	group = je_group_historical_content
+
+	scripted_progress_bar = eafp_progress_bar_imsul_relax
+	scripted_progress_bar = eafp_progress_bar_imsul_spread
+	
+	scripted_button = lia_eafp_scripted_button_imsul_1
+	scripted_button = lia_eafp_scripted_button_imsul_2
+	scripted_button = lia_eafp_scripted_button_imsul_3
+	scripted_button = lia_eafp_scripted_button_imsul_4
+	scripted_button = lia_eafp_scripted_button_imsul_5
+	scripted_button = lia_eafp_scripted_button_imsul_6
+	scripted_button = lia_eafp_scripted_button_imsul_lockdown
+	scripted_button = lia_eafp_scripted_button_imsul_reopening
+	scripted_button = lia_eafp_scripted_button_imsul_final
+	
+	modifiers_while_active = {
+		lia_modi_imsul_boom_unrest
+	}
+	
+	immediate = {
+		scope:lia_imsul_rising_target_state = {
+			set_variable = {	#확산여부. 값 1은 해당 주의 중심고을만, 해당 지역 인근고을 전파시마다 +1, 최대 3
+				name = lia_var_imsul_on_state
+				value = 1
+			}
+			trigger_event = eafp_kor_mainline.211
+		}
+	}
+
+	complete = {	#중기적 개혁
+		#always = no
+		custom_tooltip = {
+			text = je_lia_korean_imsul_boom_complete_cond_tt
+			has_global_variable = lia_global_var_imsul_finish
+		}
+	}
+
+	on_complete = {
+		every_scope_state = {
+			remove_modifier = lia_modi_imsul_state_zero
+			remove_modifier = lia_modi_imsul_state_lockdown
+		}
+	}
+	
+	fail = {
+		always = no
+	}
+
+	on_fail = {
+		custom_tooltip = {
+			text = je_lia_korean_imsul_boom_fail_tt
+		}
+	}
+	
+	#progress_desc = {
+	#	first_valid = {
+	#		desc = je_lia_korean_imsul_uprising_pgdesc
+	#	}
+	#}
+	
+	on_weekly_pulse = {
+		effect = {
+			#진행바
+			if = {
+				limit = {
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_imsul_relax)" >= 90
+					}
+					NOT = { has_global_variable = eafp_check_evt_k220 }
+				}
+				trigger_event = eafp_kor_mainline.220
+				set_global_variable = eafp_check_evt_k220
+			}
+			if = {
+				limit = {
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_imsul_spread)" >= 100
+					}
+				}
+				scope:journal_entry = {
+					add_progress = { value = -100 name = eafp_progress_bar_imsul_spread }
+				}
+				random_list = {
+					#inner 주 내부 확산
+					5 = {
+						trigger = {
+							any_scope_state = {
+								has_variable = lia_var_imsul_on_state	#이미 봉기가 확산되어 있고,
+								var:lia_var_imsul_on_state < 3	#봉기 고을 슬롯이 남아있다면.
+							}
+						}
+						random_scope_state = {
+							limit = {
+								has_variable = lia_var_imsul_on_state	#이미 봉기가 확산되어 있고,
+								var:lia_var_imsul_on_state < 3	#봉기 고을 슬롯이 남아있다면.
+							}
+							trigger_event = {
+								id = eafp_kor_mainline.217
+							}
+						}
+					}
+					#outer 주 외부 확장
+					1 = {
+						trigger = {
+							#조건 2. 기본값
+							any_scope_state = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나라면.
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+							}
+						}
+						random_scope_state = {
+							limit = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나라면.
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+							}
+							trigger_event = {
+								id = eafp_kor_mainline.218
+							}
+						}
+					}
+					3 = {
+						trigger = {
+							#조건 2-1. 삼남지방 확률 보정
+							any_scope_state = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#삼남지방이라면.
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+								}
+							}
+						}
+						random_scope_state = {
+							limit = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#삼남지방이라면.
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+								}
+							}
+							trigger_event = {
+								id = eafp_kor_mainline.218
+							}
+						}
+					}
+					1 = {
+						trigger = {
+							#조건 2-2. 첫 도간 확산 확률보정
+							any_scope_state = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나라면,
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+								owner = {
+									NOT = { has_variable = lia_var_imsul_interstate_spread }	#아직 발원지 외에 확산된 지방이 없다면?
+								}
+							}
+						}
+						random_scope_state = {
+							limit = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나라면,
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+							}
+							trigger_event = {
+								id = eafp_kor_mainline.218
+							}
+						}
+					}
+					3 = {
+						trigger = {
+							#조건 2-3. 육로 인접 여부 확률보정
+							any_scope_state = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나이고,
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+								any_neighbouring_state = {
+									has_variable = lia_var_imsul_on_state #봉기가 퍼진 주와 육로로 인접해있다면.
+								}
+							}
+						}
+						random_scope_state = {
+							limit = {
+								NOT = { has_variable = lia_var_imsul_on_state }	#아직 봉기가 퍼지지 아니하였으며,
+								OR = {	#한반도 5개 주 중 하나이고,
+									state_region = s:STATE_SEOUL
+									state_region = s:STATE_YANGHO
+									state_region = s:STATE_BUSAN
+									state_region = s:STATE_PYONGYANG
+									state_region = s:STATE_SARIWON
+								}
+								any_neighbouring_state = {
+									has_variable = lia_var_imsul_on_state #봉기가 퍼진 주와 육로로 인접해있다면.
+								}
+							}
+							trigger_event = {
+								id = eafp_kor_mainline.218
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			#부수피해 굴림
+			if = {
+				limit = {
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_imsul_relax)" >= 20
+						"scripted_bar_progress(eafp_progress_bar_imsul_relax)" <= 80
+					}
+					scope:journal_entry = {
+						"scripted_bar_progress(eafp_progress_bar_imsul_spread)" >= 50
+					}
+				}
+				random_scope_state = {
+					limit = {
+						has_variable = lia_var_imsul_on_state	#이미 봉기가 확산되어 있는 주 중에서,
+					}
+					trigger_event = {
+						id = eafp_kor_mainline.219
+					}
+				}
+			}
+		}
+	}
+	
 	weight = 1999
 	
 	should_be_pinned_by_default = yes

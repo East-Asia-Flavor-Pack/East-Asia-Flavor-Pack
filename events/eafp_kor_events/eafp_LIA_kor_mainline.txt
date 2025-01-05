@@ -4767,7 +4767,7 @@ eafp_kor_mainline.207 = {	#봉기 전조
 		#
 	}
 }
-eafp_kor_mainline.208 = {	#봉기 전조
+eafp_kor_mainline.208 = {	#봉기 전조-목사 교체
 	type = country_event
 	placement = ROOT
 
@@ -4788,19 +4788,84 @@ eafp_kor_mainline.208 = {	#봉기 전조
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 	
 	trigger = {
+		OR = {	#최대 10회 제한
+			NOT = { has_variable = eafp_check_evt_k208_count }
+			var:eafp_check_evt_k208_count < 10
+		}
 	}
 	immediate = {
+		if = {
+			limit = {
+				NOT = { has_global_variable = eafp_check_evt_k208 }
+			}
+			set_global_variable = eafp_check_evt_k208
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.208.oa
 		default_option = yes
 		#
+		if = {
+			limit = {
+				NOT = { has_variable = eafp_check_evt_k208_repeat }
+			}
+			set_variable = eafp_check_evt_k208_repeat
+		}
+		random_state = {
+			limit = {
+				state_region = s:STATE_BUSAN
+				is_largest_state_in_region = yes
+			}
+			add_modifier = {
+				name = lia_modi_jinju_change_adm
+				months = 2
+			}
+		}
+		if = {	#최대 10회 제한
+			limit = {
+				NOT = { has_variable = eafp_check_evt_k208_count }
+			}
+			set_variable = {
+				name = eafp_check_evt_k208_count
+				value = 0
+			}
+		}
+		change_variable = {
+			name = eafp_check_evt_k208_count
+			add = 1
+		}
 	}
 	option = {	#반복시
 		name = eafp_kor_mainline.208.ob
 		#default_option = yes
+		trigger = {
+			has_variable = eafp_check_evt_k208_repeat
+		}
 		#
+		random_state = {
+			limit = {
+				state_region = s:STATE_BUSAN
+				is_largest_state_in_region = yes
+			}
+			add_modifier = {
+				name = lia_modi_jinju_change_adm
+				months = 2
+			}
+		}
+		if = {	#최대 10회 제한
+			limit = {
+				NOT = { has_variable = eafp_check_evt_k208_count }
+			}
+			set_variable = {
+				name = eafp_check_evt_k208_count
+				value = 0
+			}
+		}
+		change_variable = {
+			name = eafp_check_evt_k208_count
+			add = 1
+		}
 	}
 }
 eafp_kor_mainline.209 = {	#봉기 전조
@@ -4863,6 +4928,1195 @@ eafp_kor_mainline.210 = {	#봉기 직전
 		name = eafp_kor_mainline.210.oa
 		default_option = yes
 		#
+	}
+}
+#진행국면
+eafp_kor_mainline.211 = {	#봉기 시작
+	type = state_event
+	placement = ROOT
+
+	#title = eafp_kor_mainline.211.mt
+	#desc = eafp_kor_mainline.211.md
+	#flavor = eafp_kor_mainline.211.mf
+	
+	title = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.1
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.2
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SEOUL
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.3
+				trigger = {
+					THIS = {
+						state_region = s:STATE_YANGHO
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.4
+				trigger = {
+					THIS = {
+						state_region = s:STATE_PYONGYANG
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.5
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SARIWON
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mt.e
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	desc = eafp_kor_mainline.211.md
+	#desc = {
+	#	first_valid = {
+	#		triggered_desc = {
+	#			desc = eafp_kor_mainline.211.md.1
+	#			trigger = {
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = eafp_kor_mainline.211.md.2
+	#			trigger = {
+	#			}
+	#		}
+	#		triggered_desc = {
+	#			desc = eafp_kor_mainline.211.md.3
+	#			trigger = {
+	#			}
+	#		}
+	#	}
+	#}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mf.1
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.211.mf.2
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/bonggi.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.211.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = -5
+		}
+		lia_effect_option_gain_adm = {
+			LIA_ADM = -5
+		}
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -5
+		}
+		add_radicals_in_state = {
+			value = 0.05
+			strata = poor
+		}
+		add_radicals_in_state = {
+			value = 0.05
+			strata = middle
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.212
+				days = { 7 14 }
+			}
+		}
+	}
+}
+eafp_kor_mainline.212 = {	#철시
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.212.mt
+	desc = eafp_kor_mainline.212.md
+	flavor = eafp_kor_mainline.212.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/city.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.212.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = -25
+		}
+		add_modifier = {
+			name = lia_modi_imsul_state_evt_closed
+			years = 1
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.213
+				days = { 7 14 }
+			}
+		}
+	}
+}
+eafp_kor_mainline.213 = {	#방화
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.213.mt
+	desc = eafp_kor_mainline.213.md
+	flavor = eafp_kor_mainline.213.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/bigfire.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.213.oa
+		default_option = yes
+		#
+		state_region = {
+			add_devastation = 15
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			strata = rich
+		}
+		lia_effect_option_gain_civ = {
+			LIA_CIV = 5
+		}
+		add_modifier = {
+			name = lia_modi_imsul_state_evt_fire
+			years = 1
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.214
+				days = { 7 14 }
+			}
+		}
+		owner = {
+			custom_tooltip = {
+				text = lia_eafp_state_event_imsul_relax_tt
+			}
+			je:je_lia_korean_imsul_boom = {
+				add_progress = { value = 5 name = eafp_progress_bar_imsul_relax }
+			}
+		}
+	}
+}
+eafp_kor_mainline.214 = {	#주민호응
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.214.mt
+	desc = eafp_kor_mainline.214.md
+	flavor = eafp_kor_mainline.214.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/sulruntang.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.214.oa
+		default_option = yes
+		#
+		add_radicals_in_state = {
+			value = 0.03
+			strata = poor
+		}
+		add_radicals_in_state = {
+			value = 0.01
+			strata = middle
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.215
+				days = { 7 14 }
+			}
+		}
+		owner = {
+			custom_tooltip = {
+				text = lia_eafp_state_event_imsul_spread_tt
+			}
+			je:je_lia_korean_imsul_boom = {
+				add_progress = { value = 15 name = eafp_progress_bar_imsul_spread }
+			}
+		}
+	}
+}
+eafp_kor_mainline.215 = {	#탐관오리 척살
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.215.mt
+	desc = eafp_kor_mainline.215.md
+	flavor = eafp_kor_mainline.215.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/gonjang.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.215.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = 30
+		}
+		lia_effect_option_gain_adm = {
+			LIA_ADM = -25
+		}
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -10
+		}
+		kill_population_percent_in_state = {
+			percent = 0.02
+			pop_type = bureaucrats
+		}
+		add_modifier = {
+			name = lia_modi_imsul_state_evt_adm
+			years = 1
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.216
+				days = { 7 14 }
+			}
+		}
+		owner = {
+			custom_tooltip = {
+				text = lia_eafp_state_event_imsul_relax_tt
+			}
+			je:je_lia_korean_imsul_boom = {
+				add_progress = { value = 5 name = eafp_progress_bar_imsul_relax }
+			}
+		}
+	}
+}
+eafp_kor_mainline.216 = {	#항명
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.216.mt
+	desc = eafp_kor_mainline.216.md
+	flavor = eafp_kor_mainline.216.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/teheheng.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.216.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -20
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = bureaucrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = aristocrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = capitalists
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = clergymen
+		}
+		kill_population_percent_in_state = {
+			percent = 0.02
+			pop_type = officers
+		}
+		owner = {
+			custom_tooltip = {
+				text = lia_eafp_state_event_imsul_relax_tt
+			}
+			je:je_lia_korean_imsul_boom = {
+				add_progress = { value = 5 name = eafp_progress_bar_imsul_relax }
+			}
+		}
+	}
+}
+eafp_kor_mainline.217 = {	#소식확산
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.217.mt
+	#desc = eafp_kor_mainline.217.md
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.1.a
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.1.b
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.2.a
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SEOUL
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.2.b
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SEOUL
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.3.a
+				trigger = {
+					THIS = {
+						state_region = s:STATE_YANGHO
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.3.b
+				trigger = {
+					THIS = {
+						state_region = s:STATE_YANGHO
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.4.a
+				trigger = {
+					THIS = {
+						state_region = s:STATE_PYONGYANG
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.4.b
+				trigger = {
+					THIS = {
+						state_region = s:STATE_PYONGYANG
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.5.a
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SARIWON
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.5.b
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SARIWON
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.md.e
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	#flavor = eafp_kor_mainline.217.mf
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.mf.a
+				trigger = {
+					THIS = {
+						var:lia_var_imsul_on_state = 2
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.mf.b
+				trigger = {
+					THIS = {
+						var:lia_var_imsul_on_state = 3
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.217.mf.e
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/jumo.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+		if = {
+			limit = {
+				has_variable = lia_var_imsul_on_state
+			}
+			change_variable = {
+				name = lia_var_imsul_on_state
+				add = 1
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.217.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = -5
+		}
+		lia_effect_option_gain_adm = {
+			LIA_ADM = -10
+		}
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -10
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = bureaucrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = aristocrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = capitalists
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = clergymen
+		}
+		kill_population_percent_in_state = {
+			percent = 0.005
+			pop_type = officers
+		}
+		state_region = {
+			add_devastation = 5
+		}
+		add_radicals_in_state = {
+			value = 0.02
+			strata = poor
+		}
+		add_radicals_in_state = {
+			value = 0.01
+			strata = middle
+		}
+		add_modifier = {
+			name = lia_modi_imsul_state_spread_inner
+			years = 2
+		}
+	}
+}
+eafp_kor_mainline.218 = {	#봉기고을확대
+	type = state_event
+	placement = ROOT
+
+	#title = eafp_kor_mainline.218.mt
+	title = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.1
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.2
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SEOUL
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.3
+				trigger = {
+					THIS = {
+						state_region = s:STATE_YANGHO
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.4
+				trigger = {
+					THIS = {
+						state_region = s:STATE_PYONGYANG
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.5
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SARIWON
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.mt.e
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	#desc = eafp_kor_mainline.218.md
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.1
+				trigger = {
+					THIS = {
+						state_region = s:STATE_BUSAN
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.2
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SEOUL
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.3
+				trigger = {
+					THIS = {
+						state_region = s:STATE_YANGHO
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.4
+				trigger = {
+					THIS = {
+						state_region = s:STATE_PYONGYANG
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.5
+				trigger = {
+					THIS = {
+						state_region = s:STATE_SARIWON
+					}
+				}
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.218.md.e
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+	flavor = eafp_kor_mainline.218.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/bonggi.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+		if = {	#처음으로 도 경계를 넘어 봉기가 확산될 때, 국가에 이를 확인할 수 있는 변수를 생성.
+			limit = {
+				owner = {
+					NOT = { has_variable = lia_var_imsul_interstate_spread }
+				}
+			}
+			owner = {
+				set_variable = lia_var_imsul_interstate_spread
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.218.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = -5
+		}
+		lia_effect_option_gain_adm = {
+			LIA_ADM = -20
+		}
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -20
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			pop_type = bureaucrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			pop_type = aristocrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			pop_type = capitalists
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			pop_type = clergymen
+		}
+		kill_population_percent_in_state = {
+			percent = 0.01
+			pop_type = officers
+		}
+		state_region = {
+			add_devastation = 10
+		}
+		add_radicals_in_state = {
+			value = 0.05
+			strata = poor
+		}
+		add_radicals_in_state = {
+			value = 0.04
+			strata = middle
+		}
+		add_modifier = {
+			name = lia_modi_imsul_state_spread_outer
+			years = 2
+		}
+		owner = {
+			lia_effect_option_gain_stress = {
+				LIA_STRESS = 5
+			}
+		}
+	}
+}
+eafp_kor_mainline.219 = {	#부수피해 확대
+	type = state_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.219.mt
+	desc = eafp_kor_mainline.219.md
+	flavor = eafp_kor_mainline.219.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/bigfire.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.219.oa
+		default_option = yes
+		#
+		lia_effect_option_gain_civ = {
+			LIA_CIV = -3
+		}
+		lia_effect_option_gain_adm = {
+			LIA_ADM = -3
+		}
+		lia_effect_option_gain_mil = {
+			LIA_MIL = -3
+		}
+		kill_population_percent_in_state = {
+			percent = 0.002
+			pop_type = bureaucrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.001
+			pop_type = aristocrats
+		}
+		kill_population_percent_in_state = {
+			percent = 0.002
+			pop_type = capitalists
+		}
+		kill_population_percent_in_state = {
+			percent = 0.001
+			pop_type = clergymen
+		}
+		kill_population_percent_in_state = {
+			percent = 0.002
+			pop_type = officers
+		}
+		state_region = {
+			add_devastation = 3
+		}
+		add_radicals_in_state = {
+			value = 0.01
+			strata = poor
+		}
+	}
+}
+eafp_kor_mainline.220 = {	#진정
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.220.mt
+	desc = eafp_kor_mainline.220.md
+	flavor = eafp_kor_mainline.220.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/night_runjo.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.220.oa
+		default_option = yes
+		#
+		owner = {
+			lia_effect_option_gain_stress = {
+				LIA_STRESS = -5
+			}
+		}
+	}
+}
+#수습국면
+eafp_kor_mainline.221 = {	#안핵사 파견
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.221.mt
+	desc = eafp_kor_mainline.221.md
+	flavor = eafp_kor_mainline.221.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+		if = {
+			limit = {
+				NOT = {
+					any_scope_character = {
+						has_variable = is_gyusu_eafp
+					}
+				}
+			}
+			create_character = {	#박규수
+				# 박규수.
+				first_name = Gyusu
+				last_name = Park
+				historical = yes
+				birth_date = 1807.10.27
+				#ig_leader = yes
+				interest_group = ig_intelligentsia
+				ideology = ideology_reformer
+				traits = {
+					erudite
+					direct
+					basic_diplomat
+				}
+				on_created = {	#추가함. 24.08.19
+					#add_modifier = {
+					#	name = lia_modi_chusa_early_game
+					#	months = 24
+					#}
+					set_variable = {
+						name = is_gyusu_eafp
+					}
+				}
+				save_scope_as = lia_char_park_gyusu
+			}
+		}
+		else = {
+			random_scope_character = {
+				limit = {
+					has_variable = is_gyusu_eafp
+				}
+				save_scope_as = lia_char_park_gyusu
+			}
+		}
+	}
+	
+	option = {
+		name = eafp_kor_mainline.221.oa
+		every_scope_character = {
+			limit = {
+				has_variable = is_gyusu_eafp
+			}
+			add_modifier = {
+				name = lia_modi_chusa_early_game
+				months = 12
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_lia_korean_confu
+			}
+			lia_effect_option_gain_blossom = {
+				LIA_BLOSSOM = 20
+			}
+		}
+		if = {	#일단은 현 왕이 철종일때만 삼정이정청 관련 후속이벤트를 보여주도록.
+			limit = {
+				ruler = {
+					has_variable = is_yibyeon_eafp
+				}
+			}
+			trigger_event = {
+				id = eafp_kor_mainline.222
+				days = { 21 30 }
+			}
+		}
+	}
+	option = {
+		name = eafp_kor_mainline.221.ob
+		trigger = {	#박규수가 지식인 리더가 아닐 때
+			ig:ig_intelligentsia = {
+				leader = {
+					NOT = {
+						has_variable = is_gyusu_eafp
+					}
+				}
+			}
+		}
+		
+		default_option = yes
+		every_scope_character = {
+			limit = {
+				has_variable = is_gyusu_eafp
+			}
+			set_as_interest_group_leader = yes
+			add_modifier = {
+				name = lia_modi_chusa_early_game
+				months = 12
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_lia_korean_confu
+			}
+			lia_effect_option_gain_blossom = {
+				LIA_BLOSSOM = 20
+			}
+		}
+		if = {	#일단은 현 왕이 철종일때만 삼정이정청 관련 후속이벤트를 보여주도록.
+			limit = {
+				ruler = {
+					has_variable = is_yibyeon_eafp
+				}
+			}
+			trigger_event = {
+				id = eafp_kor_mainline.222
+				days = { 21 30 }
+			}
+		}
+	}
+}
+eafp_kor_mainline.222 = {	#탐관오리 수령 처벌
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.222.mt
+	desc = eafp_kor_mainline.222.md
+	flavor = eafp_kor_mainline.222.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/novel.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.222.oa
+		default_option = yes
+		#
+		trigger_event = {
+			id = eafp_kor_mainline.223
+			days = { 7 15 }
+		}
+	}
+}
+eafp_kor_mainline.223 = {	#암행어사 파견
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.223.mt
+	desc = eafp_kor_mainline.223.md
+	flavor = eafp_kor_mainline.223.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/novel.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.223.oa
+		default_option = yes
+		#
+		trigger_event = {
+			id = eafp_kor_mainline.224
+			days = { 7 15 }
+		}
+	}
+}
+eafp_kor_mainline.224 = {	#삼정이정청
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.224.mt
+	desc = eafp_kor_mainline.224.md
+	flavor = eafp_kor_mainline.224.mf
+
+	duration = 1
+	is_popup = yes
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+	
+	trigger = {
+	}
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.224.oa
+		default_option = yes
+		#
+		#작업중...
+		every_scope_state = {
+			remove_modifier = lia_modi_imsul_state_spread_inner
+			remove_modifier = lia_modi_imsul_state_spread_outer
+			lia_effect_option_gain_civ = {
+				LIA_CIV = 10
+			}
+			lia_effect_option_gain_adm = {
+				LIA_ADM = 10
+			}
+			lia_effect_option_gain_mil = {
+				LIA_MIL = 10
+			}
+		}
+		add_loyalists = {
+			value = 0.05
+			strata = poor
+		}
 	}
 }
 #299까지 - 주별 랜덤이벤트
