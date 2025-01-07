@@ -68,7 +68,62 @@
 		}
 	}
 
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 100
+		# 사대부는 유교 믿는 지도자만
+		#if = {
+		#	limit = {
+		#		scope:character = {
+		#			NOT = { has_religion = confucian }
+		#		}
+		#	}
+		#	add = -200
+		#}
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_landowners
+				}
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 100
+		}
+		# 기업가, 노동조합, 또는 지식인이 권세가 되면 전통 사대부가 등장할 가능성이 낮아지고, 온건 사대부 또는 성리학 근본주의의 가능성이 더 높아짐
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						ig:ig_industrialists = { is_powerful = yes }
+						ig:ig_trade_unions = { is_powerful = yes }
+						ig:ig_intelligentsia = { is_powerful = yes }
+					}
+				}
+			}
+			add = -200
+		}
+		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+				owner = {
+					THIS = c:CHI
+					has_variable = ultraconservative_devout_chi
+				}
+			}
+			add = 100
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 100
 		# 사대부는 유교 믿는 지도자만
 		#if = {
@@ -192,7 +247,52 @@ ideology_moderate_scholar_paternalistic = {
 		}
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 100
+		# 사대부는 유교 믿는 지도자만
+		#if = {
+		#	limit = {
+		#		scope:character = {
+		#			NOT = { has_religion = confucian }
+		#		}
+		#	}
+		#	add = -200
+		#}
+		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음. 지식인은 개화파가 되는 것을 우선시해야 함
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval >= 5
+					NOT = { is_interest_group_type = ig_intelligentsia }
+				}
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval >= 10
+					NOT = { is_interest_group_type = ig_intelligentsia }
+				}
+			}
+			add = 50
+		}
+		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+				owner = {
+					THIS = c:CHI
+					has_variable = ultraconservative_devout_chi
+				}
+			}
+			add = 50
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 100
 		# 사대부는 유교 믿는 지도자만
 		#if = {
@@ -313,7 +413,60 @@ ideology_reformed_confucian = {
 		}
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 100
+		# 개혁 유교도 유교 믿는 지도자만
+		if = {
+			limit = {
+				scope:character = {
+					NOT = { has_religion = confucian }
+				}
+			}
+			add = -200
+		}
+		# 성리학자, 양반 지주의 경우 기업가, 노동조합, 또는 지식인이 권세가 되어야만 개혁 유교가 등장할 가능성이 있음  
+		if = {
+			limit = {
+				scope:interest_group = {
+					OR = {
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_landowners
+					}
+				}
+				owner = {
+					NOR = {
+						owner.ig:ig_intelligentsia = { is_powerful = yes }
+						owner.ig:ig_industrialists = { is_powerful = yes }
+						owner.ig:ig_trade_unions = { is_powerful = yes }
+					}
+				}
+			}
+			add = -200
+		}
+		# 지식인은 가능성이 더 높음
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_intelligentsia
+				}
+			}
+			add = 100
+		}
+		# very unlikely for trade unions after socialism is researched
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_trade_unions
+				}
+				owner = {
+					has_technology_researched = socialism
+				}
+			}
+			add = -200
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 100
 		# 개혁 유교도 유교 믿는 지도자만
 		if = {
@@ -449,7 +602,45 @@ ideology_confucious_fundamentalism = {
 		}
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 100
+		# 유교 탈레반은 유교 믿는 지도자만
+		#if = {
+		#	limit = {
+		#		scope:character = {
+		#		NOT = { has_religion = confucian }
+		#		}
+		#	}
+		#	add = -200
+		#}
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_devout
+				}
+			}
+			add = 50
+		}
+		# 주로 빡친 양반 지주랑 빡친 성리학자들이 성리학 근본주의자가 됨.
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval < -5
+				}
+			}
+			add = 100
+		}
+		if = {
+			limit = {
+				scope:interest_group = {
+					ig_approval < -10
+				}
+			}
+			add = 50
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 100
 		# 유교 탈레반은 유교 믿는 지도자만
 		#if = {
@@ -582,7 +773,58 @@ ideology_enlightenment = {
 		}
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 100
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_intelligentsia
+				}
+			}
+			add = 50
+		}
+		# 국가가 퇴행적인 상태일수록 개화파가 되기 쉬움
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						# has_law = law_type:law_secret_police
+						# has_law = law_type:law_outlawed_dissent
+						has_law = law_type:law_autocracy
+						has_law = law_type:law_oligarchy
+						# has_law = law_type:law_hereditary_bureaucrats
+						has_law = law_type:law_isolationism
+						has_law = law_type:law_traditionalism
+						has_law = law_type:law_agrarianism
+						# has_law = law_type:law_censorship
+						has_law = law_type:law_serfdom
+					}
+				}
+			}
+			add = 100
+		}
+		# 나라가 개판이면 더더욱 개화파가 되려고 함
+		if = {
+			limit = {
+				owner = {
+					OR = {
+						# has_law = law_type:law_secret_police
+						has_law = law_type:law_serfdom
+						has_law = law_type:law_outlawed_dissent
+						has_law = law_type:law_autocracy
+						has_law = law_type:law_oligarchy
+					}
+					any_scope_state = {
+						is_incorporated = yes
+						turmoil >= 0.25
+					}
+				}
+			}
+			add = 100
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 100
 		if = {
 			limit = {
@@ -687,7 +929,37 @@ ideology_donghak = {
 		}
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 0
+		if = {
+			limit = {
+				scope:interest_group = {
+					OR = {
+						is_interest_group_type = ig_rural_folk
+					}
+				}
+			}
+			add = 75
+		}
+		# 나라가 개판이면 전원 주민과 성리학자들은 더더욱 동학을 하려고 함
+		if = {
+			limit = {
+				scope:interest_group = {
+					is_interest_group_type = ig_rural_folk
+					is_interest_group_type = ig_devout
+				}
+				owner = {
+					any_scope_state = {
+						is_incorporated = yes
+						turmoil >= 0.25
+					}
+				}
+			}
+			add = 100
+		}
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 		if = {
 			limit = {
@@ -750,7 +1022,11 @@ ideology_cixi1 = {
 		always = yes
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -801,7 +1077,11 @@ ideology_cixi2 = {
 		always = yes
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -882,7 +1162,11 @@ ideology_cixi3 = {
 		always = yes
 	}
 	
-	leader_weight = {
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -941,6 +1225,14 @@ ideology_tridemism = { # Three Principles of the People
 	lawgroup_church_and_state = {
 		law_state_religion = strongly_disapprove
 	}
+	
+	#leader_weight = {}
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
+		value = 0
+	}
 }
 ideology_eafp_missionary = {	#가톨릭 선교사용, 24.07.25 추가됨.
 	icon = "gfx/interface/icons/ideology_icons/ideology_leader/ideology_leader_theocrat.dds"
@@ -966,7 +1258,15 @@ ideology_eafp_missionary = {	#가톨릭 선교사용, 24.07.25 추가됨.
 		#}
 	}
 	
-	leader_weight = {
+	#leader_weight = {
+	#	value = 0
+	#	#없음.
+	#}
+	interest_group_leader_weight = {
+		value = 0
+		#없음.
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 		#없음.
 	}

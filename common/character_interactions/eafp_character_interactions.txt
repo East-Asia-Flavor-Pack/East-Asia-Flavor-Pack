@@ -16,18 +16,28 @@
 	show_requirements = yes
 
 	possible = {
-		owner = {
+		##이부분은 내가 좀 쓸게-소빙하기. 25.01.07
+		NOT = { has_ideology = ideology:ideology_eafp_missionary }	#비밀선교사가 아니어야함
+		##
+		owner ?= {
 			NOT = {
 				has_law = law_type:law_protected_speech
 			}
 		}
-		OR = {
+		is_busy = no
+		trigger_if = {
+			limit = {
+				has_role = agitator
+			}
+			
+			political_movement ?= { is_insurrectionary = no }
+		}
+		trigger_else = {
 			interest_group = {
 				is_in_government = no
 				is_insurrectionary = no
 				is_marginal = no
-			}
-			has_role = agitator
+			}	
 		}
 		custom_tooltip = {
 			text = ideology_not_too_close_tt
@@ -78,14 +88,14 @@
 		this = {
 			save_scope_as = exile_scope
 		}
-		owner = {
+		owner ?= {
 			save_scope_as = exiling_country_scope
 		}
 		if = {
 			limit = {
 				has_role = politician
 			}
-			owner = {
+			owner ?= {
 				scope:relevant_ig = {
 					add_modifier = {
 						name = modifier_exiled_leader
@@ -97,7 +107,7 @@
 		}
 		if = {
 			limit = {
-				owner = { has_journal_entry = je_caudillo }
+				owner ?= { has_journal_entry = je_caudillo }
 				interest_group = {
 					is_interest_group_type = ig_armed_forces
 				}
@@ -110,7 +120,7 @@
 						}
 					}
 				}
-				owner = {
+				owner ?= {
 					custom_tooltip = {
 						text = lose_large_caudillo_points
 						change_variable = {
@@ -121,7 +131,7 @@
 				}
 			}
 			else = {
-				owner = {
+				owner ?= {
 					custom_tooltip = {
 						text = lose_caudillo_points
 						change_variable = {
@@ -134,13 +144,13 @@
 		}
 		if = {
 			limit = {
-				owner = {
+				owner ?= {
 					is_player = yes
 					NOT = { has_variable = achievement_agitate_elsewhere_var }
 				}
 				popularity >= 100
 			}
-			owner = { set_variable = achievement_agitate_elsewhere_var }
+			owner ?= { set_variable = achievement_agitate_elsewhere_var }
 		}
 		hidden_effect = {
 			if = {
@@ -165,11 +175,10 @@
 				limit = {
 					has_role = politician
 				}
-				set_as_interest_group_leader = no
 				remove_character_role = politician
 			}
 		}
-		owner = {
+		owner ?= {
 			custom_tooltip = exiling_dissident_radicals_factors
 		}
 		# Extra radical from exiling a popular character
@@ -177,7 +186,7 @@
 			limit = {
 				popularity >= 50
 			}
-			owner = {
+			owner ?= {
 				add_radicals = {
 					value = small_radicals
 					interest_group = scope:relevant_ig
@@ -187,9 +196,9 @@
 		# Standard radicals from having Right of Assembly
 		if = {
 			limit = {
-				owner = { has_law = law_type:law_right_of_assembly }
+				owner ?= { has_law = law_type:law_right_of_assembly }
 			}
-			owner = {
+			owner ?= {
 				add_radicals = {
 					value = medium_radicals
 					interest_group = scope:relevant_ig
@@ -199,9 +208,9 @@
 		# Fewer radicals from Censorship
 		else_if = {
 			limit = {
-				owner = { has_law = law_type:law_censorship }
+				owner ?= { has_law = law_type:law_censorship }
 			}
-			owner = {
+			owner ?= {
 				add_radicals = {
 					value = small_radicals
 					interest_group = scope:relevant_ig
@@ -234,6 +243,24 @@
 				add_modifier = {
 					name = in_exile_modifier
 					multiplier = 3
+				}
+			}
+			if = {
+				limit = {
+					has_template = canonic_count_dracula
+				}
+				kill_character = {
+					hidden = yes
+				}
+				owner = {
+					create_character = {
+						template = exile_count_dracula
+						on_created = {
+							exile_character = yes
+							set_character_immortal = yes
+							add_character_role = agitator
+						}
+					}
 				}
 			}
 		}
@@ -340,7 +367,7 @@ retire_commander = { # 수정
 	clicksound = "event:/SFX/UI/Military/commander_retire"
 
 	potential = {
-		owner = scope:actor
+		owner ?= scope:actor
 		# is_commander = yes
 		AND = { # 추가
 			is_commander = yes
@@ -355,6 +382,7 @@ retire_commander = { # 수정
 			is_insurrectionary = no
 		}
 		commander_is_available = yes
+		years_of_service >= 1
 	}
 
 	effect = {
@@ -475,7 +503,7 @@ retire_commander = { # 수정
 		}
 		if = {
 			limit = {		
-				owner = {
+				owner ?= {
 					OR = {
 						is_diplomatic_play_committed_participant = yes
 						is_at_war = yes
@@ -486,7 +514,7 @@ retire_commander = { # 수정
 		}
 		if = {
 			limit = {
-				owner = {
+				owner ?= {
 					any_scope_war = {
 						any_scope_front = {
 							is_vulnerable_front = root
@@ -495,6 +523,211 @@ retire_commander = { # 수정
 				}
 			}
 			add = -150
+		}
+	}
+}
+
+grant_command_to_agitator = {	#지휘권 부여
+	icon = "gfx/interface/character_panel/grant_command.dds"
+	clicksound = "event:/SFX/UI/Military/command_grant"
+
+	potential = {
+		has_dlc_feature = agitators
+		has_role = agitator
+		NOT = { has_role = general }
+		NOT = { has_role = admiral }
+		owner ?= scope:actor
+	}
+
+	possible = {
+		age >= define:NCharacters|ADULT_AGE
+		is_female = no
+		exists = owner.capital.land_hq
+		OR = {	#비밀선교사가 아니거나 완전분리 제정
+			NOT = { has_ideology = ideology:ideology_eafp_missionary }
+			owner = {
+				has_law = law_type:law_total_separation
+			}
+		}
+	}
+
+	effect = {
+		add_character_role = general
+	}
+
+	cooldown = { months = normal_modifier_time }
+
+	ai_chance = {
+		value = 0
+		if = {
+			limit = {
+				has_commander_traits = yes
+			}
+			add = 50
+		}	
+		if = {
+			limit = {
+				is_interest_group_type = ig_armed_forces
+			}
+			add = 25
+		}	
+		if = {
+			limit = {
+				NOT = {
+					owner ?= {	
+						any_scope_general = {
+							exists = this
+						}
+					}
+				}	
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				owner ?= {
+					any_scope_war = {
+						any_scope_front = {
+							is_vulnerable_front = root
+						}
+					}
+				}	
+			}
+			add = 100
+		}
+	}
+}
+
+#### 이 밑은 01_additional_interactions.txt에 있는 상호작용들!
+
+send_to_jail = {	#깜빵보내기
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
+
+	potential = {
+		is_in_exile_pool = no
+		is_in_void = no
+		is_ruler = no
+		is_heir = no
+		has_role = agitator
+		is_immortal = no
+		has_dlc_feature = ip2_content
+	}
+
+	show_requirements = yes
+
+	possible = {
+		owner ?= {
+			NOT = {
+				has_law = law_type:law_guaranteed_liberties
+			}
+		}
+		NOT = { has_modifier = lia_modi_missionary_stealth }	#비밀리에 활동중...모디파이어(lia_modi_missionary_stealth)가 없어야 함!
+	}
+
+	effect = {
+		this = {
+			save_scope_as = prisoner_scope
+		}
+		trigger_event = { id = jail.1 popup = yes }
+	}
+
+	cooldown = { months = short_modifier_time }
+
+	ai_chance = {
+		value = -50
+		if = {
+			limit = {
+				interest_group = {
+					ig_approval <= -5
+				}		
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				interest_group = {
+					ig_approval <= -10
+				}		
+			}
+			add = 30
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					NOR = {
+						has_law = law_type:law_autocracy
+						has_law = law_type:law_oligarchy
+						has_law = law_type:law_single_party_state
+					}
+				}			
+			}
+			add = -25
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_outlawed_dissent
+				}			
+			}
+			add = 30
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_censorship
+				}			
+			}
+			add = 10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_right_of_assembly
+				}			
+			}
+			add = -10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_protected_speech
+				}			
+			}
+			add = -20
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					any_interest_group = {
+						is_insurrectionary = yes
+					}
+				}			
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					ruler = {
+						OR = {
+							has_trait = cruel
+						}
+					}
+				}			
+			}
+			add = 15
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					ruler = {
+						OR = {
+							has_trait = imperious
+						}
+					}
+				}			
+			}
+			add = 10
 		}
 	}
 }
