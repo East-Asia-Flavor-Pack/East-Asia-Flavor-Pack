@@ -1,0 +1,789 @@
+# ID명, 변수명은 기본적으로 일본어 음차합니다.
+# weight = 12000 최중요저널 10000 중요저널 8000 일반 5000 별 의미없음
+
+je_bakufu_seisaku_new_currency = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds"
+
+	group = je_group_historical_content
+
+	modifiers_while_active = {
+		bakufu_seisaku_new_currency_modifier
+	}
+
+	scripted_button = bakufu_seisaku_new_currency_exploring_ore_button
+
+	immediate = {
+		set_variable = je_bakufu_seisaku_new_currency_start
+	}
+
+	complete = { 
+		country_has_building_type_levels = {
+			target = bt:building_gold_mine
+			value >= 10
+		}
+	}
+
+	on_complete = {
+		trigger_event = eafp_japan.2201
+		set_variable = je_bakufu_seisaku_new_currency_complete
+		show_as_tooltip = {
+			add_modifier = {
+				name = bakufu_seisaku_new_currency_complete_modifier
+				months = long_modifier_time
+			}
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = 5
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = 5
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = 100
+			}
+		}
+	}
+
+	timeout = 3650
+
+	on_timeout = {
+		trigger_event = eafp_japan.2202
+		show_as_tooltip = {
+			add_modifier = {
+				name = bakufu_seisaku_new_currency_fail_modifier
+				months = long_modifier_time
+			}
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = -15
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = -15
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = -100
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		
+	}
+
+	weight = 5000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_junochisui = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds" # TODO
+
+	group = je_group_historical_content
+
+	scripted_button = bakufu_seisaku_junochisui_reclaiming_swamp_button
+
+	immediate = {
+		set_variable = je_bakufu_seisaku_junochisui_start
+		set_variable = {
+			name = je_bakufu_seisaku_junochisui_var
+			value = 0
+		}
+		set_variable = {
+			name = bakufu_seisaku_junochisui_reclaiming_swamp_var
+			value = 0
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					# TODO
+				}
+				change_variable = {
+					name = je_bakufu_seisaku_junochisui_var
+					add = 1
+				}
+			}
+			else = {
+				change_variable = {
+					name = je_bakufu_seisaku_junochisui_var
+					add = -1
+				}
+			}
+			clamp_variable = {
+				name = je_bakufu_seisaku_junochisui_var
+				max = 12
+				min = 0
+			}
+		}
+	}
+
+	is_progressing = {
+		# TODO
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		set_variable = je_bakufu_seisaku_junochisui_complete
+		show_as_tooltip = {
+			add_modifier = {
+				name = bakufu_seisaku_junochisui_complete_modifier
+				months = long_modifier_time
+			}
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = -10
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = -10
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = 100
+			}
+		}
+		remove_variable = je_bakufu_seisaku_junochisui_var
+		remove_variable = bakufu_seisaku_junochisui_reclaiming_swamp_var
+		trigger_event = eafp_japan.2211
+	}
+
+	invalid = {
+		NOT = { exists = s:STATE_KANTO.region_state:JAP }
+		NOT = { exists = s:STATE_KANSAI.region_state:JAP }
+	}
+
+	on_invalid = {
+		remove_variable = je_bakufu_seisaku_junochisui_var
+		remove_variable = bakufu_seisaku_junochisui_reclaiming_swamp_var
+	}
+
+	timeout = 3650
+
+	on_timeout = {
+		show_as_tooltip = {
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = 10
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = 10
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = -100
+			}
+		}
+		remove_variable = je_bakufu_seisaku_junochisui_var
+		remove_variable = bakufu_seisaku_junochisui_reclaiming_swamp_var
+		trigger_event = eafp_japan.2212
+	}
+
+	current_value = {
+		value = var:je_bakufu_seisaku_junochisui_var
+	}
+
+	goal_add_value = {
+		add = 12
+	}
+
+	progressbar = yes
+
+	weight = 5000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_agechirei = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds" # TODO
+
+	group = je_group_historical_content
+	
+	immediate = {
+		set_variable = je_bakufu_seisaku_agechirei_start
+		set_variable = {
+			name = je_bakufu_seisaku_agechirei_var
+			value = 0
+		}
+		je:je_bakuhantaisei_KANTO = {
+			save_scope_value_as = {
+				name = kanto_goryo
+				value = {
+					value = "scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)"
+					min = bakuhantaisei_KANTO_goryo_progress_bar_initial_value
+				}
+			}
+		}
+		je:je_bakuhantaisei_KANSAI = {
+			save_scope_value_as = {
+				name = kansai_goryo
+				value = {
+					value = "scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)"
+					min = bakuhantaisei_KANSAI_goryo_progress_bar_initial_value
+				}
+			}
+		}
+	}
+	
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					je:je_bakuhantaisei_KANTO = {
+						"scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)" >= {
+							value = scope:kanto_goryo
+							add = 20
+							max = 80
+						}
+					}
+					je:je_bakuhantaisei_KANSAI = {
+						"scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)" >= {
+							value = scope:kansai_goryo
+							add = 20
+							max = 80
+						}
+					}
+				}
+				change_variable = {
+					name = je_bakufu_seisaku_agechirei_var
+					add = 1
+				}
+			}
+			else = {
+				change_variable = {
+					name = je_bakufu_seisaku_agechirei_var
+					add = -1
+				}
+			}
+			clamp_variable = {
+				name = je_bakufu_seisaku_agechirei_var
+				max = 12
+				min = 0
+			}
+		}
+	}
+
+	is_progressing = {
+		je:je_bakuhantaisei_KANTO = {
+			"scripted_bar_progress(bakuhantaisei_KANTO_goryo_progress_bar)" >= {
+				value = scope:kanto_goryo
+				add = 20
+				max = 80
+			}
+		}
+		je:je_bakuhantaisei_KANSAI = {
+			"scripted_bar_progress(bakuhantaisei_KANSAI_goryo_progress_bar)" >= {
+				value = scope:kansai_goryo
+				add = 20
+				max = 80
+			}
+		}
+		
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		set_variable = je_bakufu_seisaku_agechirei_complete
+		show_as_tooltip = {
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = -15
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = -15
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = -150
+			}
+		}
+		remove_variable = je_bakufu_seisaku_agechirei_var
+		trigger_event = eafp_japan.2221
+	}
+
+	invalid = {
+		NOT = { exists = s:STATE_KANTO.region_state:JAP }
+		NOT = { exists = s:STATE_KANSAI.region_state:JAP }
+	}
+
+	on_invalid = {
+		show_as_tooltip = {
+			add_modifier = {
+				name = bakufu_seisaku_junochisui_complete_modifier
+				months = long_modifier_time
+			}
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = -15
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = -15
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = 150
+			}
+		}
+		remove_variable = je_bakufu_seisaku_agechirei_var
+	}
+
+	timeout = 3650
+
+	on_timeout = {
+		trigger_event = eafp_japan.2222
+		remove_variable = je_bakufu_seisaku_agechirei_var
+	}
+
+	current_value = {
+		value = var:je_bakufu_seisaku_agechirei_var
+	}
+
+	goal_add_value = {
+		add = 12
+	}
+
+	progressbar = yes
+
+	weight = 5000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_kokishukusei = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds" # TODO
+
+	group = je_group_historical_content
+
+	modifiers_while_active = {
+		bakufu_seisaku_kokishukusei_modifier
+	}
+
+	immediate = {
+		set_variable = je_bakufu_seisaku_kokishukusei_start
+		set_variable = {
+			name = je_bakufu_seisaku_kokishukusei_var
+			value = 0
+		}
+		set_variable = {
+			name = radical_loyalist_0p2
+			value = {
+				value = ROOT.radical_fraction
+				subtract = ROOT.loyalist_fraction
+				subtract = 0.2
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					0.2 >= {
+						value = ROOT.radical_fraction
+						subtract = ROOT.loyalist_fraction
+					}
+					var:radical_loyalist_0p2 >= {
+						value = ROOT.radical_fraction
+						subtract = ROOT.loyalist_fraction
+					}
+				}
+				change_variable = {
+					name = je_bakufu_seisaku_kokishukusei_var
+					add = 1
+				}
+			}
+			else = {
+				change_variable = {
+					name = je_bakufu_seisaku_kokishukusei_var
+					add = -1
+				}
+			}
+			clamp_variable = {
+				name = je_bakufu_seisaku_kokishukusei_var
+				max = 12
+				min = 0
+			}
+		}
+	}
+
+	is_progressing = {
+		0.2 >= {
+			value = ROOT.radical_fraction
+			subtract = ROOT.loyalist_fraction
+		}
+		var:radical_loyalist_0p2 >= {
+			value = ROOT.radical_fraction
+			subtract = ROOT.loyalist_fraction
+		}
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		set_variable = je_bakufu_seisaku_kokishukusei_complete
+		show_as_tooltip = {
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				s:STATE_KANTO.region_state:JAP = {
+					add_loyalists_in_state = {
+						value = medium_radicals
+					}
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				s:STATE_KANSAI.region_state:JAP = {
+					add_loyalists_in_state = {
+						value = medium_radicals
+					}
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = 100
+			}
+		}
+		remove_variable = je_bakufu_seisaku_kokishukusei_var
+		remove_variable = radical_loyalist_0p2
+		trigger_event = eafp_japan.2231
+	}
+
+	invalid = {
+		
+	}
+
+	on_invalid = {
+		remove_variable = je_bakufu_seisaku_kokishukusei_var
+		remove_variable = radical_loyalist_0p2
+	}
+
+	timeout = 3650
+
+	on_timeout = {
+		show_as_tooltip = {
+			if = {
+				limit = { exists = s:STATE_KANTO.region_state:JAP }
+				s:STATE_KANTO.region_state:JAP = {
+					add_radicals_in_state = {
+						value = medium_radicals
+					}
+				}
+			}
+			if = {
+				limit = { exists = s:STATE_KANSAI.region_state:JAP }
+				s:STATE_KANSAI.region_state:JAP = {
+					add_radicals_in_state = {
+						value = medium_radicals
+					}
+				}
+			}
+			add_bakuhantaisei_bakufu_authority = {
+				VALUE = -100
+			}
+		}
+		trigger_event = eafp_japan.2232
+		remove_variable = je_bakufu_seisaku_kokishukusei_var
+		remove_variable = radical_loyalist_0p2
+	}
+
+	current_value = {
+		value = var:je_bakufu_seisaku_kokishukusei_var
+	}
+
+	goal_add_value = {
+		add = 12
+	}
+
+	progressbar = yes
+
+	weight = 5000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_new_currency_petition = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds"
+
+	group = je_group_internal_affairs
+	
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_bakufu_seisaku_new_currency_complete_tt
+			has_variable = je_bakufu_seisaku_new_currency_complete
+		}
+	}
+
+	on_complete = {
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			months = long_modifier_time
+			is_decaying = yes
+			multiplier = {
+				value = bakufu_nankiha_hiritsu
+				divide = 50
+			}
+		}
+	}
+
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	fail = {
+		NOT = { has_journal_entry = je_bakufu_seisaku_new_currency }
+		has_variable = je_bakufu_seisaku_new_currency_start
+	}
+
+	on_fail = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	on_timeout = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 1825
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_junochisui_petition = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds"
+
+	group = je_group_internal_affairs
+	
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_bakufu_seisaku_junochisui_complete_tt
+			has_variable = je_bakufu_seisaku_junochisui_complete
+		}
+	}
+
+	on_complete = {
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			months = long_modifier_time
+			is_decaying = yes
+			multiplier = {
+				value = bakufu_nankiha_hiritsu
+				divide = 50
+			}
+		}
+	}
+
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	fail = {
+		NOT = { has_journal_entry = je_bakufu_seisaku_junochisui }
+		has_variable = je_bakufu_seisaku_junochisui_start
+	}
+
+	on_fail = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	on_timeout = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 1825
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_agechirei_petition = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds"
+
+	group = je_group_internal_affairs
+	
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_bakufu_seisaku_agechirei_complete_tt
+			has_variable = je_bakufu_seisaku_agechirei_complete
+		}
+	}
+
+	on_complete = {
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			months = long_modifier_time
+			is_decaying = yes
+			multiplier = {
+				value = bakufu_nankiha_hiritsu
+				divide = 50
+			}
+		}
+	}
+
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	fail = {
+		NOT = { has_journal_entry = je_bakufu_seisaku_agechirei }
+		has_variable = je_bakufu_seisaku_agechirei_start
+	}
+
+	on_fail = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	on_timeout = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 1825
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}
+
+je_bakufu_seisaku_kokishukusei_petition = {
+	icon = "gfx/interface/icons/law_icons/land_based_taxation.dds"
+
+	group = je_group_internal_affairs
+	
+	immediate = {
+		
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_bakufu_seisaku_kokishukusei_complete_tt
+			has_variable = je_bakufu_seisaku_kokishukusei_complete
+		}
+	}
+
+	on_complete = {
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			months = long_modifier_time
+			is_decaying = yes
+			multiplier = {
+				value = bakufu_nankiha_hiritsu
+				divide = 50
+			}
+		}
+	}
+
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	fail = {
+		NOT = { has_journal_entry = je_bakufu_seisaku_kokishukusei }
+		has_variable = je_bakufu_seisaku_kokishukusei_start
+	}
+
+	on_fail = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	on_timeout = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 1825
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}

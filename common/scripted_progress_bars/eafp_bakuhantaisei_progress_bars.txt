@@ -1,0 +1,782 @@
+﻿bakuhantaisei_bakufu_authority_progress_bar = {
+	name = "bakuhantaisei_bakufu_authority_progress_bar_name"
+	desc = "bakuhantaisei_bakufu_authority_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei }
+			add = {
+				desc = bakuhantaisei_bakufu_authority_progress_bar_base
+				value = -10
+			}
+			add = {
+				desc = bakuhantaisei_bakufu_authority_progress_bar_from_character
+				value = ROOT.ruler.popularity
+				divide = 4
+			}
+			
+			je:je_bakuhantaisei_TOHOKU = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_TOHOKU
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_TOHOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_KANTO = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_KANTO
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_KANTO_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_CHUBU = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_CHUBU
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_CHUBU_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_KANSAI = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_KANSAI
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_KANSAI_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_KYUSHU = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_KYUSHU
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_KYUSHU_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_CHUGOKU = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_CHUGOKU
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_CHUGOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			je:je_bakuhantaisei_SHIKOKU = {
+				add = {
+					desc = bakuhantaisei_bakufu_authority_progress_bar_from_SHIKOKU
+					value = {
+						value = "scripted_bar_progress(bakuhantaisei_SHIKOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = 20
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_bakufu_authority_progress_bar_from_igs
+				value = {
+					value = ROOT.ig:ig_landowners.ig_approval
+					divide = 5
+				}
+			}
+			subtract = {
+				desc = bakuhantaisei_bakufu_authority_progress_bar_from_radicals
+				value = {
+					value = radical_fraction
+					multiply = 75
+				}
+			}
+			add = {
+				desc = bakuhantaisei_bakufu_authority_progress_bar_from_loyalists
+				value = {
+					value = loyalist_fraction
+					multiply = 75
+				}
+			}
+			if = {
+				limit = { has_modifier = ikokusen_uchiharairei_modifier }
+				add = {
+					desc = "[Localize('ikokusen_uchiharairei_modifier')] [Concept('concept_modifier',Localize('concept_modifiers'))]"
+					value = 5
+				}
+			}
+			if = {
+				limit = { any_scope_building = { has_active_production_method = pm_sankinkotai_1 } }
+				add = {
+					desc = "[Localize('building_edojo')] [Concept('concept_building',Localize('concept_building'))]"
+					value = 10
+				}
+			}
+			if = {
+				limit = { any_scope_building = { has_active_production_method = pm_sankinkotai_2 } }
+				add = {
+					desc = "[Localize('building_edojo')] [Concept('concept_building',Localize('concept_building'))]"
+					value = 5
+				}
+			}
+		}
+	}
+
+	start_value = 4000
+	min_value = 0
+	max_value = 4000
+}
+
+bakuhantaisei_TOHOKU_loyalty_progress_bar = {
+	name = "bakuhantaisei_TOHOKU_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_TOHOKU_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_TOHOKU = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_TOHOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_TOHOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_TOHOKU.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_TOHOKU_independency_progress_bar = {
+	name = "bakuhantaisei_TOHOKU_independency_progress_bar_name"
+	desc = "bakuhantaisei_TOHOKU_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+			je:je_bakuhantaisei_TOHOKU = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_TOHOKU_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_TOHOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_TOHOKU.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_TOHOKU.region_state:JAP.tax_capacity
+				divide = s:STATE_TOHOKU.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_TOHOKU.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_TOHOKU_goryo_progress_bar = {
+	name = "bakuhantaisei_TOHOKU_goryo_progress_bar_name"
+	desc = "bakuhantaisei_TOHOKU_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_TOHOKU.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_KANTO_loyalty_progress_bar = {
+	name = "bakuhantaisei_KANTO_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_KANTO_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANTO }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_KANTO = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_KANTO_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KANTO.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KANTO.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KANTO_independency_progress_bar = {
+	name = "bakuhantaisei_KANTO_independency_progress_bar_name"
+	desc = "bakuhantaisei_KANTO_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANTO }
+			je:je_bakuhantaisei_KANTO = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_KANTO_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KANTO.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_KANTO.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_KANTO.region_state:JAP.tax_capacity
+				divide = s:STATE_KANTO.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KANTO.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KANTO_goryo_progress_bar = {
+	name = "bakuhantaisei_KANTO_goryo_progress_bar_name"
+	desc = "bakuhantaisei_KANTO_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_KANTO.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_CHUBU_loyalty_progress_bar = {
+	name = "bakuhantaisei_CHUBU_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_CHUBU_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUBU }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_CHUBU = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_CHUBU_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_CHUBU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_CHUBU.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_CHUBU_independency_progress_bar = {
+	name = "bakuhantaisei_CHUBU_independency_progress_bar_name"
+	desc = "bakuhantaisei_CHUBU_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUBU }
+			je:je_bakuhantaisei_CHUBU = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_CHUBU_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_CHUBU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_CHUBU.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_CHUBU.region_state:JAP.tax_capacity
+				divide = s:STATE_CHUBU.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_CHUBU.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_CHUBU_goryo_progress_bar = {
+	name = "bakuhantaisei_CHUBU_goryo_progress_bar_name"
+	desc = "bakuhantaisei_CHUBU_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_CHUBU.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_KANSAI_loyalty_progress_bar = {
+	name = "bakuhantaisei_KANSAI_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_KANSAI_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANSAI }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_KANSAI = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_KANSAI_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KANSAI.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KANSAI.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KANSAI_independency_progress_bar = {
+	name = "bakuhantaisei_KANSAI_independency_progress_bar_name"
+	desc = "bakuhantaisei_KANSAI_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANSAI }
+			je:je_bakuhantaisei_KANSAI = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_KANSAI_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KANSAI.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_KANSAI.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_KANSAI.region_state:JAP.tax_capacity
+				divide = s:STATE_KANSAI.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KANSAI.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KANSAI_goryo_progress_bar = {
+	name = "bakuhantaisei_KANSAI_goryo_progress_bar_name"
+	desc = "bakuhantaisei_KANSAI_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_KANSAI.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_KYUSHU_loyalty_progress_bar = {
+	name = "bakuhantaisei_KYUSHU_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_KYUSHU_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_KYUSHU = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_KYUSHU_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KYUSHU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KYUSHU.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KYUSHU_independency_progress_bar = {
+	name = "bakuhantaisei_KYUSHU_independency_progress_bar_name"
+	desc = "bakuhantaisei_KYUSHU_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+			je:je_bakuhantaisei_KYUSHU = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_KYUSHU_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_KYUSHU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_KYUSHU.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_KYUSHU.region_state:JAP.tax_capacity
+				divide = s:STATE_KYUSHU.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_KYUSHU.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_KYUSHU_goryo_progress_bar = {
+	name = "bakuhantaisei_KYUSHU_goryo_progress_bar_name"
+	desc = "bakuhantaisei_KYUSHU_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_KYUSHU.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_CHUGOKU_loyalty_progress_bar = {
+	name = "bakuhantaisei_CHUGOKU_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_CHUGOKU_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_CHUGOKU = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_CHUGOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_CHUGOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_CHUGOKU.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_CHUGOKU_independency_progress_bar = {
+	name = "bakuhantaisei_CHUGOKU_independency_progress_bar_name"
+	desc = "bakuhantaisei_CHUGOKU_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+			je:je_bakuhantaisei_CHUGOKU = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_CHUGOKU_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_CHUGOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_CHUGOKU.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_CHUGOKU.region_state:JAP.tax_capacity
+				divide = s:STATE_CHUGOKU.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_CHUGOKU.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_CHUGOKU_goryo_progress_bar = {
+	name = "bakuhantaisei_CHUGOKU_goryo_progress_bar_name"
+	desc = "bakuhantaisei_CHUGOKU_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_CHUGOKU.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}
+
+bakuhantaisei_SHIKOKU_loyalty_progress_bar = {
+	name = "bakuhantaisei_SHIKOKU_loyalty_progress_bar_name"
+	desc = "bakuhantaisei_SHIKOKU_loyalty_progress_bar_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+			add = {
+				desc = bakuhantaisei_progress_base
+				je:je_bakuhantaisei_SHIKOKU = {
+					add = {
+						desc = bakuhantaisei_progress_from_STATE_loyalty
+						value = "scripted_bar_progress(bakuhantaisei_SHIKOKU_loyalty_progress_bar)"
+						subtract = 50
+						divide = -100
+					}
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_SHIKOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_SHIKOKU.region_state:JAP.modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_SHIKOKU_independency_progress_bar = {
+	name = "bakuhantaisei_SHIKOKU_independency_progress_bar_name"
+	desc = "bakuhantaisei_SHIKOKU_independency_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+			je:je_bakuhantaisei_SHIKOKU = {
+				add = {
+					desc = bakuhantaisei_progress_from_STATE_loyalty
+					value = "scripted_bar_progress(bakuhantaisei_SHIKOKU_loyalty_progress_bar)"
+					divide = 100
+				}
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_gdp
+				value = s:STATE_SHIKOKU.region_state:JAP
+				divide = c:JAP.gdp
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_tax_capacity_usage
+				value = s:STATE_SHIKOKU.region_state:JAP.tax_capacity_usage
+				subtract = s:STATE_SHIKOKU.region_state:JAP.tax_capacity
+				divide = s:STATE_SHIKOKU.region_state:JAP.tax_capacity
+			}
+			add = {
+				desc = bakuhantaisei_progress_from_STATE_modifier
+				value = s:STATE_SHIKOKU.region_state:JAP.modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+			}
+		}
+	}
+
+	start_value = 50
+	min_value = 0
+	max_value = 100
+}
+bakuhantaisei_SHIKOKU_goryo_progress_bar = {
+	name = "bakuhantaisei_SHIKOKU_goryo_progress_bar_name"
+	desc = "bakuhantaisei_SHIKOKU_goryo_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = bakuhantaisei_progress_from_STATE_modifier
+			value = s:STATE_SHIKOKU.region_state:JAP.modifier:state_bakuhantaisei_goryo_progress_bar_monthly_add
+		}
+	}
+
+	start_value = 20
+	min_value = 0
+	max_value = 100
+}

@@ -1,0 +1,647 @@
+﻿opium_war_special_event_pulse = {
+	effect = {
+		if = {
+			limit = {
+				c:CHI = {
+					is_diplomatic_play_enemy_of = c:GBR
+				}
+				game_date < 1841.12.31
+				not = { has_global_variable = opium_war_fired }
+			}
+			set_global_variable = opium_war_fired
+		}
+	}
+}
+
+japan_on_character_death = {
+	effect = {
+		if = {
+			limit = {
+				owner = {
+					c:JAP ?= this
+					
+				}
+			}
+			if = { # TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
+				limit = {
+					is_ruler = yes # 임시 TODO, 도쿠가와 가문이 지배자인 조건 따로 찾아서 넣을 것.
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
+				}
+				# 이에요시의 즉위는 이벤트로 직접
+				if = { # 이에사다의 즉위
+					limit = {
+						has_template = eafp_jap_tokugawa_ieyoshi_template
+					}
+					save_scope_as = ieyoshi_scope
+					owner = {
+						if = {
+							limit = {
+								NOT = { heir ?= { has_template = eafp_jap_tokugawa_iesada_template } }
+							}
+							every_scope_character = {
+								limit = { has_template = eafp_jap_tokugawa_iesada_template }
+								kill_character = { hidden = yes }
+							}
+							create_character = {
+								template = eafp_jap_tokugawa_iesada_template
+								heir = yes
+								on_created = { set_character_busy_and_immortal = yes }
+							}
+						}
+						heir = { save_scope_as = iesada_scope }
+						trigger_event = { id = eafp_japan.2006 popup = yes }
+					}
+				}
+				else_if = {
+					limit = { # 이에사다 이후 이에모치 또는 요시노부
+						has_template = eafp_jap_tokugawa_iesada_template
+					}
+					save_scope_as = iesada_scope
+					owner = {
+						if = {
+							limit = { var:nankiha_var >= var:hitotsubashiha_var }
+							if = {
+								limit = {
+									NOT = { heir ?= { has_template = eafp_jap_tokugawa_iemochi_template } }
+								}
+								every_scope_character = {
+									limit = { has_template = eafp_jap_tokugawa_iemochi_template }
+									kill_character = { hidden = yes }
+								}
+								create_character = {
+									template = eafp_jap_tokugawa_iemochi_template
+									heir = yes
+								}
+							}
+							heir = { save_scope_as = iemochi_scope }
+							trigger_event = { id = eafp_japan.2104 popup = yes }
+						}
+						else = {
+							if = {
+								limit = {
+									NOT = { heir ?= { has_template = eafp_jap_tokugawa_yoshinobu_template } }
+								}
+								every_scope_character = {
+									limit = { has_template = eafp_jap_tokugawa_yoshinobu_template }
+									kill_character = { hidden = yes }
+								}
+								create_character = {
+									template = eafp_jap_tokugawa_yoshinobu_template
+									heir = yes
+								}
+							}
+							heir = { save_scope_as = yoshinobu_scope }
+							trigger_event = { id = eafp_japan.2105 popup = yes }
+						}
+						
+					}
+				}
+			}
+			else_if = {
+				limit = { # 천황이 지배자인 조건으로 효과 넣기 TODO
+					is_ruler = yes
+					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
+				}
+			}
+			else_if = { # 대로, 노중수좌, 노중
+				limit = {
+					owner = { has_journal_entry = je_bakuhantaisei }
+					has_variable = eafp_bakuhantaisei_politician_influence
+				}
+				remove_bakufu_politician_role = yes
+			}
+		}
+	}
+}
+
+japan_on_monthly_pulse_character = {
+	effect = {
+		if = { # 막번체제 정치인
+			limit = { has_variable = eafp_bakuhantaisei_politician_influence }
+			save_scope_as = actor
+			if = { # 정치력 한도 올림, 비용 max의 1/4, 효과 25
+				limit = {
+					var:eafp_bakuhantaisei_politician_influence >= { # 실행하고도 50만큼의 여유분이 있을 때
+						value = 50
+						add = {
+							value = var:eafp_bakuhantaisei_politician_influence_max
+							multiply = 0.25
+						}
+					}
+				}
+				random_list = {
+					1000 = {  }
+					200 = {
+						modifier = { # 정치력 한도 절반 이상 채움
+							var:eafp_bakuhantaisei_politician_influence >= {
+								value = var:eafp_bakuhantaisei_politician_influence_max
+								multiply = 0.5
+							}
+							add = 200
+						}
+						modifier = { # 정치력 한도 3/4 이상 채움
+							var:eafp_bakuhantaisei_politician_influence >= {
+								value = var:eafp_bakuhantaisei_politician_influence_max
+								multiply = 0.75
+							}
+							add = 200
+						}
+						modifier = { # 성격
+							scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
+							add = 100
+						}
+						modifier = { # 성격
+							scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+							add = 100
+						}
+						modifier = { # 성격
+							scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+							add = 100
+						}
+						modifier = { # 성격
+							scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+							add = 100
+						}
+						modifier = { # 막번체제 저널 진행도
+							owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+							add = 200
+						}
+						modifier = { # 막번체제 저널 진행도
+							owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+							add = 200
+						}
+
+						post_notification = eafp_bakufu_politician_expand_influence_cap_notification
+						change_variable = {
+							name = var:eafp_bakuhantaisei_politician_influence
+							subtract = {
+								value = var:eafp_bakuhantaisei_politician_influence_max
+								divide = 4
+							}
+						}
+						change_variable = {
+							name = var:eafp_bakuhantaisei_politician_influence_max
+							add = 25
+						}
+					}
+				}
+			}
+			if = { # 누군가의 정치력을 깎음, 비용 25, 효과 25
+				limit = {
+					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
+					owner = {
+						any_scope_character = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+						}
+					}
+				}
+				owner = {
+					random_scope_character = {
+						limit = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+						}
+						random_list = {
+							1000 = {  }
+							100 = {
+								modifier = { # 반대 당파 공격
+									OR = {
+										AND = {
+											scope:actor = { is_hitotsubashiha = yes }
+											is_nankiha = yes
+										}
+										AND = {
+											scope:actor = { is_nankiha = yes }
+											is_hitotsubashiha = yes
+										}
+									}
+									add = 300
+								}
+								modifier = { # 자기 당파는 공격 안함
+									OR = {
+										AND = {
+											scope:actor = { is_hitotsubashiha = yes }
+											is_hitotsubashiha = yes
+										}
+										AND = {
+											scope:actor = { is_nankiha = yes }
+											is_nankiha = yes
+										}
+									}
+									add = -500
+								}
+								modifier = { # 장군계각문제 시작 안하면 깎음
+									owner = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+									add = -100
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									add = 50
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+									add = 100
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+
+								post_notification = eafp_bakufu_politician_lose_influence_notification
+								change_variable = {
+									name = var:eafp_bakuhantaisei_politician_influence
+									subtract = 25 # TODO
+									min = 0
+								}
+								scope:actor = {
+									change_variable = {
+										name = var:eafp_bakuhantaisei_politician_influence
+										subtract = 25 # TODO
+										min = 0
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if = { # 누군가의 정치력을 늘림, 비용 25, 효과 25
+				limit = {
+					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
+					owner = {
+						any_scope_character = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+							OR = { # 자기 당파만
+								AND = {
+									scope:actor = { is_hitotsubashiha = yes }
+									is_hitotsubashiha = yes
+								}
+								AND = {
+									scope:actor = { is_nankiha = yes }
+									is_nankiha = yes
+								}
+							}
+						}
+					}
+				}
+				owner = {
+					random_scope_character = {
+						limit = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+							OR = {
+								AND = {
+									scope:actor = { is_hitotsubashiha = yes }
+									is_hitotsubashiha = yes
+								}
+								AND = {
+									scope:actor = { is_nankiha = yes }
+									is_nankiha = yes
+								}
+							}
+						}
+						random_list = {
+							1000 = {  }
+							200 = {
+								modifier = { # 장군계각문제 시작 안하면 깎음
+									owner = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+									add = -100
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									add = 50
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+									add = 100
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+
+								post_notification = eafp_bakufu_politician_gain_influence_notification
+								change_variable = {
+									name = var:eafp_bakuhantaisei_politician_influence
+									add = 25 # TODO
+									min = 0
+								}
+								scope:actor = {
+									change_variable = {
+										name = var:eafp_bakuhantaisei_politician_influence
+										subtract = 25 # TODO
+										min = 0
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if = { # 히토츠바시파 지지, 비용 25, 효과 6 <- 비율 상 5인데 더 이득보게 함
+				limit = {
+					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
+					OR = { # 히토츠바시파 or 중도파
+						is_hitotsubashiha = yes
+						has_ideology = ideology:ideology_moderate
+					}
+				}
+				owner = {
+					random_list = {
+						1000 = {  }
+						0 = {
+							modifier = { # 중도파면 깎음
+								owner = { has_ideology = ideology:ideology_moderate }
+								add = -400
+							}
+							modifier = { # 장군계각문제 시작 안하면 깎음
+								owner = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+								add = -100
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+								add = 50
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+								add = 50
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+								add = 50
+							}
+							modifier = { # 막번체제 저널 진행도
+								owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+								add = 50
+							}
+							modifier = { # 막번체제 저널 진행도
+								owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+								add = 50
+							}
+							modifier = { # 히토츠바시파의 권력
+								owner = { var:hitotsubashiha_var <= 50 }
+								add = 200
+							}
+							modifier = { # 히토츠바시파의 권력
+								owner = { var:hitotsubashiha_var <= 25 }
+								add = 200
+							}
+
+							post_notification = eafp_bakufu_politician_support_hitotsubashiha_notification
+							scope:actor = {
+								change_variable = {
+									name = var:eafp_bakuhantaisei_politician_influence
+									subtract = 25 # TODO
+								}
+							}
+							add_hitotsubashiha_var = {
+								VALUE = 6
+							}
+						}
+					}
+				}
+			}
+			if = { # 난키파 지지, 비용 25, 효과 6 <- 비율 상 5인데 더 이득보게 함
+				limit = {
+					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
+					OR = { # 난키파 or 중도파
+						is_nankiha = yes
+						has_ideology = ideology:ideology_moderate
+					}
+				}
+				owner = {
+					random_list = {
+						1000 = {  }
+						0 = {
+							modifier = { # 중도파면 깎음
+								owner = { has_ideology = ideology:ideology_moderate }
+								add = -400
+							}
+							modifier = { # 장군계각문제 시작 안하면 깎음
+								owner = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+								add = -100
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+								add = 50
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+								add = 50
+							}
+							modifier = { # 성격
+								scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+								add = 50
+							}
+							modifier = { # 막번체제 저널 진행도
+								owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+								add = 50
+							}
+							modifier = { # 막번체제 저널 진행도
+								owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+								add = 50
+							}
+							modifier = { # 난키파의 권력
+								owner = { var:nankiha_var <= 50 }
+								add = 200
+							}
+							modifier = { # 난키파의 권력
+								owner = { var:nankiha_var <= 25 }
+								add = 200
+							}
+
+							post_notification = eafp_bakufu_politician_support_nankiha_notification
+							scope:actor = {
+								change_variable = {
+									name = var:eafp_bakuhantaisei_politician_influence
+									subtract = 25 # TODO
+								}
+							}
+							add_nankiha_var = {
+								VALUE = 6
+							}
+						}
+					}
+				}
+			}
+			if = { # 누군가를 직위에서 퇴출시킴, 비용 25 + 상대 영향력
+				limit = {
+					owner = {
+						any_scope_character = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+							NOT = { has_modifier = modifier_bakufu_recently_appointed }
+							var:eafp_bakuhantaisei_politician_influence < {
+								value = scope:actor.var:eafp_bakuhantaisei_politician_influence
+								add = -25
+								add = -50 # 실행하고도 50만큼의 여유분이 있을 때
+							}
+						}
+					}
+				}
+				owner = {
+					random_scope_character = {
+						limit = {
+							has_variable = eafp_bakuhantaisei_politician_influence
+							NOT = { THIS = ROOT }
+							NOT = { has_modifier = modifier_bakufu_recently_appointed }
+							var:eafp_bakuhantaisei_politician_influence < {
+								value = scope:actor.var:eafp_bakuhantaisei_politician_influence
+								add = -25
+								add = -50 # 실행하고도 50만큼의 여유분이 있을 때
+							}
+						}
+						random_list = {
+							1000 = {  }
+							0 = {
+								modifier = { # 반대 당파 공격
+									OR = {
+										AND = {
+											scope:actor = { is_hitotsubashiha = yes }
+											is_nankiha = yes
+										}
+										AND = {
+											scope:actor = { is_nankiha = yes }
+											is_hitotsubashiha = yes
+										}
+									}
+									add = 300
+								}
+								modifier = { # 자기 당파는 거의 공격 안함
+									OR = {
+										AND = {
+											scope:actor = { is_hitotsubashiha = yes }
+											is_hitotsubashiha = yes
+										}
+										AND = {
+											scope:actor = { is_nankiha = yes }
+											is_nankiha = yes
+										}
+									}
+									add = -200
+								}
+								modifier = { # 장군계각문제 시작 안하면 깎음
+									owner = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+									add = -100
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+									add = 50
+								}
+								modifier = { # 성격
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									add = 50
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 } }
+									add = 100
+								}
+								modifier = { # 막번체제 저널 진행도
+									owner = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 히토츠바시파의 approval
+									scope:actor = { is_hitotsubashiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 50 } }
+									add = 100
+								}
+								modifier = { # 난키파의 approval
+									scope:actor = { is_nankiha = yes }
+									owner = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 } }
+									add = 100
+								}
+
+								post_notification = afp_bakufu_politician_removed_notification
+								scope:actor = {
+									change_variable = {
+										name = var:eafp_bakuhantaisei_politician_influence
+										subtract = {
+											value = PREV.var:eafp_bakuhantaisei_politician_influence
+											add = 25
+										}
+									}
+								}
+								kill_character = {
+									hidden = yes
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+

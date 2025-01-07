@@ -1,100 +1,296 @@
-japan_tutorial_button = {
-	name = "japan_tutorial_button"
-	desc = "japan_tutorial_button_desc"
+# 홋카이도
+
+make_into_shogunate_domain_button = {
+	name = "make_into_shogunate_domain_button"
+	desc = "make_into_shogunate_domain_button_desc"
 
 	visible = {
-		always = yes
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			has_modifier = matsumae_han_modifier
+		}
 	}
 
 	possible = {
-		root.var:japan_tutorial_var < 61
+		always = yes
 	}
 
 	effect = {
-		trigger_event = {
-			id = eafp_japan.1
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			remove_modifier = matsumae_han_modifier
 		}
-		change_variable = {
-			name = japan_tutorial_var
-			add = 60
-		}
-		set_variable = {
-            name = lia_var_regent_character
-            value = root.heir
-        }
+		# TODO
 	}
 }
 
-japan_hokkaido_button = {
-	name = "japan_hokkaido_button"
-	desc = "japan_hokkaido_button_desc"
+strengthen_merchant_surveillance_button = {
+	name = "strengthen_merchant_surveillance_button"
+	desc = "strengthen_merchant_surveillance_button_desc"
+
+	visible = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			NOT = { has_modifier = matsumae_han_modifier }
+			has_modifier = disorganized_bashoukeoisei_modifier
+		}
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			remove_modifier = disorganized_bashoukeoisei_modifier
+			add_modifier = bashoukeoisei_modifier
+		}
+	}
+}
+
+encourage_ezo_japanization_button = { # TODO
+	name = "encourage_ezo_japanization_button"
+	desc = "encourage_ezo_japanization_button_desc"
+
+	visible = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			NOT = { has_modifier = matsumae_han_modifier }
+			has_modifier = disorganized_bashoukeoisei_modifier
+		}
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		s:STATE_HOKKAIDO.region_state:JAP = {
+			remove_modifier = disorganized_bashoukeoisei_modifier
+			add_modifier = bashoukeoisei_modifier
+		}
+		# TODO
+	}
+}
+
+# 막부 정책
+
+bakufu_seisaku_new_currency_start_button = {
+	name = "bakufu_seisaku_new_currency_start_button"
+	desc = "bakufu_seisaku_new_currency_start_button_desc"
+
+	visible = {
+		NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		add_journal_entry = {
+			type = je_bakufu_seisaku_new_currency
+		}
+	}
+}
+
+bakufu_seisaku_junochisui_start_button = {
+	name = "bakufu_seisaku_junochisui_start_button"
+	desc = "bakufu_seisaku_junochisui_start_button_desc"
+
+	visible = {
+		NOT = { has_variable = je_bakufu_seisaku_junochisui_start }
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		add_journal_entry = {
+			type = je_bakufu_seisaku_junochisui
+		}
+	}
+}
+
+bakufu_seisaku_agechirei_start_button = {
+	name = "bakufu_seisaku_agechirei_start_button"
+	desc = "bakufu_seisaku_agechirei_start_button_desc"
+
+	visible = {
+		NOT = { has_variable = je_bakufu_seisaku_agechirei_start }
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		add_journal_entry = {
+			type = je_bakufu_seisaku_agechirei
+		}
+	}
+}
+
+bakufu_seisaku_kokishukusei_start_button = {
+	name = "bakufu_seisaku_kokishukusei_start_button"
+	desc = "bakufu_seisaku_kokishukusei_start_button_desc"
+
+	visible = {
+		NOT = { has_variable = je_bakufu_seisaku_kokishukusei_start }
+	}
+
+	possible = {
+		always = yes
+	}
+
+	effect = {
+		add_journal_entry = {
+			type = je_bakufu_seisaku_kokishukusei
+		}
+	}
+}
+
+bakufu_seisaku_new_currency_exploring_ore_button = {
+	name = "bakufu_seisaku_new_currency_exploring_ore_button"
+	desc = "bakufu_seisaku_new_currency_exploring_ore_button_desc"
 
 	visible = {
 		always = yes
 	}
 
 	possible = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			not = { has_modifier = hokkaido_iju }
+		any_scope_state = {
+			OR = {
+				state_region = s:STATE_CHUBU
+				state_region = s:STATE_CHUGOKU
+			}
+			is_incorporated = yes
+			NOT = {
+				state_region = {
+					remaining_undepleted = {
+						type = bg_gold_fields
+						amount >= 1
+					}
+				}
+			}
+			has_potential_resource = bg_gold_fields
 		}
+		NOT = { has_modifier = exploring_for_ore_modifier }
 	}
 
 	effect = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			add_modifier = {
-				name = hokkaido_iju
-				months = 12
+		add_modifier = {
+			name = exploring_for_ore_modifier
+		}
+		trigger_event = {
+			id = eafp_japan.2203
+			months = { 12 24 }
+		}
+	}
+}
+
+bakufu_seisaku_junochisui_reclaiming_swamp_button = {
+	name = "bakufu_seisaku_junochisui_reclaiming_swamp_button"
+	desc = "bakufu_seisaku_junochisui_reclaiming_swamp_button_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		NOT = { has_modifier = reclaiming_jap_swamp_modifier }
+		custom_tooltip = {
+			text = bakufu_seisaku_junochisui_reclaiming_swamp_button_tt
+			var:bakufu_seisaku_junochisui_reclaiming_swamp_var < 5
+		}
+	}
+
+	selected = {
+		has_modifier = reclaiming_jap_swamp_modifier
+	}
+
+	effect = {
+		hidden_effect = {
+			change_variable = {
+				name = bakufu_seisaku_junochisui_reclaiming_swamp_var
+				add = 1
 			}
 		}
+		add_modifier = {
+			name = reclaiming_jap_swamp_modifier
+			months = 2
+		}
 		trigger_event = {
-			id = eafp_japan.1001
+			id = eafp_japan.2213
+			months = 2
 		}
 	}
 }
+
+
+
+repeal_ikokusen_uchiharairei_button = { # 이국선 타불령 폐지
+	name = "repeal_ikokusen_uchiharairei_button"
+	desc = "repeal_ikokusen_uchiharairei_button_desc"
+
+	visible = {
+		has_modifier = ikokusen_uchiharairei_modifier
+	}
+
+	possible = {
+		NOT = { has_variable = eafp_japan.2306_ing }
+	}
+
+	effect = {
+		remove_modifier = ikokusen_uchiharairei_modifier
+	}
+}
+
+reenact_ikokusen_uchiharairei_button = { # 이국선 타불령 부활
+	name = "reenact_ikokusen_uchiharairei_button"
+	desc = "reenact_ikokusen_uchiharairei_button_desc"
+
+	visible = {
+		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+		has_law = law_type:law_isolationism
+	}
+
+	possible = {
+		authority >= 50
+		NOT = { has_variable = eafp_japan.2301_ing }
+	}
+
+	effect = {
+		add_modifier = ikokusen_uchiharairei_modifier
+	}
+}
+
+#############################################
+
 
 japan_kaikakuha_button = {
 	name = "japan_kaikakuha_button"
 	desc = "japan_kaikakuha_button_desc"
 
 	visible = {
-		owner = { 
-			NOT = { 
-				OR = {
-					has_variable = yoshinobu_start 
-					has_variable = is_hitotsubashiha
-					has_variable = is_nankiha
-				}
-			
-			} 
-			
-		}
+		always = yes
 	}
 
-
 	possible = {
-		hidden_trigger = {
-			not = { has_variable = supporting_nankiha_time_var }
-			not = { has_variable = supporting_hitotsubashiha_time_var }
-		}
+		always = yes
 	}
 
 	selected = {
-		has_variable = supporting_hitotsubashiha_var
+		has_modifier = supporting_hitotsubashiha_modifier
 	}
 
 	effect = {
-		set_variable = supporting_hitotsubashiha_var
-		set_variable = {
-			name = supporting_hitotsubashiha_time_var
-			month = 60
+		add_modifier = {
+			name = supporting_hitotsubashiha_modifier
+			months = 60
 		}
-		remove_variable = supporting_nankiha_var
-		custom_tooltip = {
-			text = supporting_hitotsubashiha_tt
+		add_hitotsubashiha_var = {
+			VALUE = 5
 		}
-		custom_tooltip = {
-			text = hitotsubashiha_progress_increase_5_tt
-			change_variable = { name = hitotsubashiha_var add = 3 }
+		add_hitotsubashiha_approval = {
+			VALUE = 10
 		}
 	}
 }
@@ -104,119 +300,27 @@ japan_hoshuha_button = {
 	desc = "japan_hoshuha_button_desc"
 
 	visible = {
-		owner = { 
-			NOT = { 
-				OR = {
-					has_variable = yoshinobu_start 
-					has_variable = is_hitotsubashiha
-					has_variable = is_nankiha
-				}
-			
-			} 
-			
-		}
+		always = yes
 	}
 
 	possible = {
-		hidden_trigger = {
-			not = { has_variable = supporting_nankiha_time_var }
-			not = { has_variable = supporting_hitotsubashiha_time_var }
-		}
+		always = yes
 	}
 
 	selected = {
-		has_variable = supporting_nankiha_var
+		has_modifier = supporting_nankiha_modifier
 	}
 
 	effect = {
-		set_variable = supporting_nankiha_var
-		set_variable = {
-			name = supporting_nankiha_time_var
-			month = 60
+		add_modifier = {
+			name = supporting_nankiha_modifier
+			months = 60
 		}
-		remove_variable = supporting_hitotsubashiha_var
-		custom_tooltip = {
-			text = supporting_nankiha_tt
+		add_nankiha_var = {
+			VALUE = 5
 		}
-		custom_tooltip = {
-			text = nankiha_progress_increase_5_tt
-			change_variable = { name = hitotsubashiha_var add = 3 }
-		}
-	}
-}
-
-japan_hitotsubashiha_button = {
-	name = "japan_hitotsubashiha_button"
-	desc = "japan_hitotsubashiha_button_desc"
-
-	visible = { 
-			owner = {
-					has_variable = yoshinobu_start
-			}
-	}
-
-	possible = {
-		hidden_trigger = {
-			not = { has_variable = supporting_nankiha_time_var }
-			not = { has_variable = supporting_hitotsubashiha_time_var }
-		}
-	}
-
-	selected = {
-		has_variable = supporting_hitotsubashiha_var
-	}
-
-	effect = {
-		set_variable = supporting_hitotsubashiha_var
-		set_variable = {
-			name = supporting_hitotsubashiha_time_var
-			month = 60
-		}
-		remove_variable = supporting_nankiha_var
-		custom_tooltip = {
-			text = supporting_hitotsubashiha_tt
-		}
-		custom_tooltip = {
-			text = hitotsubashiha_progress_increase_5_tt
-			change_variable = { name = hitotsubashiha_var add = 3 }
-		}
-	}
-}
-
-japan_nankiha_button = {
-	name = "japan_nankiha_button"
-	desc = "japan_nankiha_button_desc"
-
-	visible = {
-		owner = {
-				has_variable = yoshinobu_start
-		}
-	}
-
-	possible = {
-		hidden_trigger = {
-			not = { has_variable = supporting_nankiha_time_var }
-			not = { has_variable = supporting_hitotsubashiha_time_var }
-		}
-	}
-
-	selected = {
-		has_variable = supporting_nankiha_var
-	}
-
-	effect = {
-		set_variable = supporting_nankiha_var
-		set_variable = {
-			name = supporting_nankiha_time_var
-			month = 60
-		}
-		remove_variable = supporting_hitotsubashiha_var
-		custom_tooltip = {
-			text = supporting_nankiha_tt
-		}
-		custom_tooltip = {
-			text = nankiha_progress_increase_5_tt
-			change_variable = { name = hitotsubashiha_var add = 3 }
+		add_nankiha_approval = {
+			VALUE = 10
 		}
 	}
 }
@@ -269,13 +373,13 @@ japan_hitotsubashiha_phase_1_button = {
 	visible = {
 		not = { has_variable = hitotsubashiha_phase_1_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var > 100
+		#var:hitotsubashiha_var > 100
 	}
 
 	possible = {
 		not = { has_variable = hitotsubashiha_phase_1_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var >= 300
+		#var:hitotsubashiha_var >= 300
 	}
 
 	effect = {
@@ -290,13 +394,13 @@ japan_hitotsubashiha_phase_2_button = {
 	visible = {
 		not = { has_variable = hitotsubashiha_phase_2_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var > 300
+		#var:hitotsubashiha_var > 300
 	}
 
 	possible = {
 		not = { has_variable = hitotsubashiha_phase_2_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var >= 500
+		#var:hitotsubashiha_var >= 500
 	}
 
 	effect = {
@@ -312,13 +416,13 @@ japan_hitotsubashiha_phase_3_button = {
 	visible = {
 		not = { has_variable = hitotsubashiha_phase_3_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var > 500
+		#var:hitotsubashiha_var > 500
 	}
 
 	possible = {
 		not = { has_variable = hitotsubashiha_phase_3_set }
 		has_variable = is_hitotsubashiha
-		var:hitotsubashiha_var >= 750
+		#var:hitotsubashiha_var >= 750
 	}
 
 	effect = {
@@ -354,10 +458,10 @@ japan_tobaku_1_button = {
 		}
 		tobaku_kuni_2 = yes
 		c:JAP = {
-			change_variable = {
-				name = sonnoha_var
-				add = 50
-			}
+			#change_variable = {
+			#	name = sonnoha_var
+			#	add = 50
+			#}
 		}
 	}
 }
@@ -388,7 +492,6 @@ japan_tobaku_2_button = {
 			add_war_goal = { holder = c:JAP target_country = c:NIP type = annex_country }
 		}
 		change_infamy = -200
-		set_global_variable = boshin_war_event_gvar
 	}
 
 	ai_chance = {

@@ -29,39 +29,6 @@
 		name = lia_global_var_treaty_num
 		value = 1
 	}
-	## 동아시아 국가 시작 시 국고 깎음
-	#여기 에러뱉으니 일단 걍 날림. 24.06.29
-	#every_country = { # 이거 왜 안되냐???
-	#	limit = {
-	#		OR = {
-	#			# 중국
-	#			this = c:CHI
-	#			this = c:MCH
-	#			this = c:MGL
-	#			this = c:XIN
-	#			# 일본
-	#			this = c:JAP
-	#			this = c:AID
-	#			this = c:CHO
-	#			this = c:GIS
-	#			this = c:KAG
-	#			this = c:NIP
-	#			this = c:ODA
-	#			this = c:RYU
-	#			this = c:SAT
-	#			this = c:SEN
-	#			this = c:TOS
-	#			this = c:YON
-	#			# 한국
-	#			this = c:KOR
-	#		}
-	#	}
-	#	add_treasury = {
-	#		value = this.gold_reserves
-	#		divide = 5
-	#		multiply = -4
-	#	}
-	#}
 
 	# 일본용 변수
 	set_global_variable = {
@@ -172,5 +139,142 @@
 			culture = cu:manchu
 		}
 		je_manchus_and_han_d_var_calc = yes
+	}
+
+	c:JAP = {
+		trigger_event = { id = eafp_japan.1 popup = yes }
+		trigger_event = tenpo_famine.1
+		je:je_hokkaido = {
+			set_bar_progress = {
+				name = hokkaido_progress_bar
+				value = s:STATE_HOKKAIDO.region_state:JAP.state_population
+			}
+		}
+		every_scope_state = {
+			limit = {
+				NOT = { state_region = s:STATE_TOHOKU }
+				NOT = { state_region = s:STATE_KYUSHU }
+				NOT = { state_region = s:STATE_HOKKAIDO }
+			}
+			add_radicals_in_state = {
+				value = 0.075
+			}
+		}
+		s:STATE_TOHOKU.region_state:JAP = {
+			add_radicals_in_state = {
+				value = 0.15
+			}
+		}
+		s:STATE_KYUSHU.region_state:JAP = {
+			add_radicals_in_state = {
+				value = 0.05
+			}
+		}
+
+		# 대로
+		create_character = {
+			template = eafp_jap_ii_naoaki_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+				set_as_interest_group_leader = yes
+			}
+		}
+		random_scope_character = {
+			limit = { has_template = eafp_jap_ii_naoaki_template }
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 50
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence_max
+				value = 200
+			}
+			c:JAP = {
+				set_variable = { name = tairo_var value = PREV }
+			}
+		}
+
+		# 노중수좌
+		create_character = {
+			template = eafp_jap_okubo_tadazane_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+		random_scope_character = {
+			limit = { has_template = eafp_jap_okubo_tadazane_template }
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 50
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence_max
+				value = 150
+			}
+			c:JAP = {
+				set_variable = { name = rojushuza_var value = PREV }
+			}
+		}
+
+		# 노중
+		create_character = {
+			template = eafp_jap_matsudaira_norihiro_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+		create_character = {
+			template = eafp_jap_mizuno_tadakuni_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+		create_character = {
+			template = eafp_jap_matsudaira_muneakira_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+		create_character = {
+			template = eafp_jap_ota_sukemoto_template
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+		every_scope_character = {
+			limit = {
+				OR = {
+					has_template = eafp_jap_matsudaira_norihiro_template
+					has_template = eafp_jap_mizuno_tadakuni_template
+					has_template = eafp_jap_matsudaira_muneakira_template
+					has_template = eafp_jap_ota_sukemoto_template
+				}
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 50
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence_max
+				value = 100
+			}
+			c:JAP = {
+				add_to_variable_list = { name = roju_varlist target = PREV }
+			}
+		}
+
+		every_scope_character = {
+			limit = {
+				has_template = eafp_jap_mizuno_tadakuni_template
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence
+				value = 100
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_influence_max
+				value = 150
+			}
+		}
 	}
 }
