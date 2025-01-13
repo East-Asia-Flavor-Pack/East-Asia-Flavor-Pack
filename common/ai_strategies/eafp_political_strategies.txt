@@ -9,24 +9,10 @@
 	
 	min_law_chance_to_pass = {
 		value = 50
-		
 		if = {
-			limit = { 				
-				OR = {
-					any_political_movement = {
-						desired_law ?= scope:law.type
-						political_movement_radicalism >= 75
-					}
-					AND = {
-						has_journal_entry = je_government_petition
-						var:desired_law_var	?= scope:law			
-					}
-				}
-			}
-			
+			limit = { ai_has_reasons_to_not_oppose_law = yes }			
 			multiply = 0.25
 		}	
-
 		min = 12.5 # 추가
 	}
 	
@@ -68,9 +54,15 @@
 		value = 1
 		
 		if = {
-			limit = { has_journal_entry = je_government_petition  }
+			limit = { 
+				OR = {
+					has_journal_entry = je_government_petition  
+					has_journal_entry = je_law_imposition
+					has_journal_entry = je_british_dictate_law
+				}
+			}
 			add = 10
-		}
+		}		
 
 		if = { # 추가
 			limit = { has_journal_entry = je_chinese_westernization }
@@ -92,9 +84,30 @@
 	}
 	
 	anti_interest_groups ={
-		# ig_industrialists
+		# ig_industrialists # 수정
 		ig_trade_unions
-		# ig_intelligentsia
+		# ig_intelligentsia # 수정
+	}
+
+	pro_movements = {
+		movement_royalist_constitutional
+		movement_royalist_absolutist
+		movement_religious_majority
+		movement_cultural_majority
+		movement_reactionary
+	}
+	
+	anti_movements = {
+		movement_socialist
+		movement_labor
+		movement_communist
+		movement_anarchist
+		movement_nihilist
+		movement_feminist
+		movement_radical
+		movement_liberal
+		movement_modernizer
+		movement_land_reform
 	}
 	
 	institution_scores = {

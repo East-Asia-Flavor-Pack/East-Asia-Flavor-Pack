@@ -16,9 +16,8 @@
 	show_requirements = yes
 
 	possible = {
-		##이부분은 내가 좀 쓸게-소빙하기. 25.01.07
-		NOT = { has_ideology = ideology:ideology_eafp_missionary }	#비밀선교사가 아니어야함
-		##
+		NOT = { has_ideology = ideology:ideology_eafp_missionary } # 추가, 비밀선교사가 아니어야함
+		NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template } # 추가
 		owner ?= {
 			NOT = {
 				has_law = law_type:law_protected_speech
@@ -76,10 +75,199 @@
 				}
 			}
 		}
-		hidden_trigger = { # 추가
-			NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template }
+	}
+
+	effect = {
+		this.interest_group = {
+			save_scope_as = relevant_ig
+		}
+		this = {
+			save_scope_as = exile_scope
+		}
+		owner ?= {
+			save_scope_as = exiling_country_scope
+		}
+		if = {
+			limit = {
+				has_role = politician
+			}
+			owner ?= {
+				scope:relevant_ig = {
+					add_modifier = {
+						name = modifier_exiled_leader
+						months = normal_modifier_time
+						is_decaying = yes
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner ?= { has_journal_entry = je_caudillo }
+				interest_group = {
+					is_interest_group_type = ig_armed_forces
+				}
+			}
+			if = {
+				limit = {
+					interest_group = {
+						leader = {
+							this = ROOT
+						}
+					}
+				}
+				owner ?= {
+					custom_tooltip = {
+						text = lose_large_caudillo_points
+						change_variable = {
+							name = caudillo_var
+							add = -200
+						}
+					}
+				}
+			}
+			else = {
+				owner ?= {
+					custom_tooltip = {
+						text = lose_caudillo_points
+						change_variable = {
+							name = caudillo_var
+							add = -100
+						}
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner ?= {
+					is_player = yes
+					NOT = { has_variable = achievement_agitate_elsewhere_var }
+				}
+				popularity >= 100
+			}
+			owner ?= { set_variable = achievement_agitate_elsewhere_var }
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					NOT = { has_role = agitator }
+				}
+				add_character_role = agitator
+			}
+			if = {
+				limit = {
+					has_role = general
+				}
+				remove_character_role = general
+			}
+			if = {
+				limit = {
+					has_role = admiral
+				}
+				remove_character_role = admiral
+			}
+			if = {
+				limit = {
+					has_role = politician
+				}
+				remove_character_role = politician
+			}
+		}
+		owner ?= {
+			custom_tooltip = exiling_dissident_radicals_factors
+		}
+		# Extra radical from exiling a popular character
+		if = {
+			limit = {
+				popularity >= 50
+			}
+			owner ?= {
+				add_radicals = {
+					value = small_radicals
+					interest_group = scope:relevant_ig
+				}
+			}
+		}
+		# Standard radicals from having Right of Assembly
+		if = {
+			limit = {
+				owner ?= { has_law = law_type:law_right_of_assembly }
+			}
+			owner ?= {
+				add_radicals = {
+					value = medium_radicals
+					interest_group = scope:relevant_ig
+				}
+			}
+		}
+		# Fewer radicals from Censorship
+		else_if = {
+			limit = {
+				owner ?= { has_law = law_type:law_censorship }
+			}
+			owner ?= {
+				add_radicals = {
+					value = small_radicals
+					interest_group = scope:relevant_ig
+				}
+			}
+		}
+		# Boring characters should be made interesting when being exiled
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_moderate
+			}
+			adopt_random_antigovernment_ideology = yes
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					popularity > 15
+				}
+				add_modifier = {
+					name = in_exile_modifier
+				}
+				every_country = {
+					limit = {
+						has_diplomatic_relevance = scope:exiling_country_scope
+					}
+					post_notification = exile_notification
+				}
+			}
+			else = {
+				add_modifier = {
+					name = in_exile_modifier
+					multiplier = 3
+				}
+			}
+			if = {
+				limit = {
+					has_template = canonic_count_dracula
+				}
+				kill_character = {
+					hidden = yes
+				}
+				owner = {
+					create_character = {
+						template = exile_count_dracula
+						on_created = {
+							exile_character = yes
+							set_character_immortal = yes
+							add_character_role = agitator
+						}
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			text = exile_dissident_tt
+			exile_character_with_martyrdom = yes
 		}
 	}
+
+	cooldown = { months = normal_modifier_time }
+	show_confirmation_box = yes
 
 	effect = {
 		this.interest_group = {
@@ -362,172 +550,7 @@
 	}
 }
 
-retire_commander = { # 수정
-	# icon = ""
-	clicksound = "event:/SFX/UI/Military/commander_retire"
-
-	potential = {
-		owner ?= scope:actor
-		# is_commander = yes
-		AND = { # 추가
-			is_commander = yes
-			NOT = { has_variable = figure_var }
-		}
-		is_ruler = no
-	}
-
-	possible = {
-		is_ruler = no
-		interest_group = {
-			is_insurrectionary = no
-		}
-		commander_is_available = yes
-		years_of_service >= 1
-	}
-
-	effect = {
-		hidden_effect = {
-			if = {
-				limit = {
-					has_role = general
-				}
-				remove_character_role = general
-			}
-			if = {
-				limit = {
-					has_role = admiral
-				}
-				remove_character_role = admiral
-			}
-		}
-
-		interest_group = {
-			add_modifier = {
-				name = retired_commander_interest_group_impact
-				multiplier = {
-					value = root.popularity
-					divide = 100
-					add = 1
-					min = 1
-					multiply = root.commander_rank
-					round = 1
-				}
-				years = 5
-				is_decaying = yes
-			}
-		}
-	}
-
-	show_confirmation_box = yes
-
-	ai_chance = {
-		value = -50
-		if = {
-			limit = {
-				popularity <= -50
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				popularity <= -75			
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				age >= 75
-			}
-			add = 50
-		}
-		if = {
-			limit = {
-				OR = {	
-					has_trait = psychological_affliction
-					has_trait = syphilis
-					has_trait = wounded
-					has_trait = kidney_stones
-				}
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				OR = {	
-					has_trait = alcoholic
-					has_trait = cocaine_addiction
-					has_trait = opium_addiction
-				}
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				has_trait = shellshocked
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				OR = {	
-					has_trait = trench_rat
-					has_trait = stalwart_defender
-					has_trait = defense_in_depth_specialist
-				}
-			}
-			add = -100
-		}
-		if = {
-			limit = {
-				OR = {	
-					has_trait = expert_convoy_raider
-					has_trait = expert_artillery_commander
-					has_trait = expert_offensive_planner
-					has_trait = expert_defensive_strategist
-					has_trait = expert_naval_commander
-				}
-			}
-			add = -75
-		}
-		if = {
-			limit = {
-				OR = {	
-					has_trait = experienced_convoy_raider
-					has_trait = experienced_artillery_commander
-					has_trait = experienced_offensive_planner
-					has_trait = experienced_defensive_strategist
-					has_trait = experienced_naval_commander
-				}			
-			}
-			add = -50
-		}
-		if = {
-			limit = {		
-				owner ?= {
-					OR = {
-						is_diplomatic_play_committed_participant = yes
-						is_at_war = yes
-					}
-				}	
-			}
-			add = -50
-		}
-		if = {
-			limit = {
-				owner ?= {
-					any_scope_war = {
-						any_scope_front = {
-							is_vulnerable_front = root
-						}
-					}
-				}
-			}
-			add = -150
-		}
-	}
-}
-
-grant_command_to_agitator = {	#지휘권 부여
+grant_command_to_agitator = { # 수정
 	icon = "gfx/interface/character_panel/grant_command.dds"
 	clicksound = "event:/SFX/UI/Military/command_grant"
 
@@ -543,7 +566,7 @@ grant_command_to_agitator = {	#지휘권 부여
 		age >= define:NCharacters|ADULT_AGE
 		is_female = no
 		exists = owner.capital.land_hq
-		OR = {	#비밀선교사가 아니거나 완전분리 제정
+		OR = { # 추가, 비밀선교사가 아니거나 완전분리 제정
 			NOT = { has_ideology = ideology:ideology_eafp_missionary }
 			owner = {
 				has_law = law_type:law_total_separation
@@ -594,140 +617,6 @@ grant_command_to_agitator = {	#지휘권 부여
 				}	
 			}
 			add = 100
-		}
-	}
-}
-
-#### 이 밑은 01_additional_interactions.txt에 있는 상호작용들!
-
-send_to_jail = {	#깜빵보내기
-	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
-
-	potential = {
-		is_in_exile_pool = no
-		is_in_void = no
-		is_ruler = no
-		is_heir = no
-		has_role = agitator
-		is_immortal = no
-		has_dlc_feature = ip2_content
-	}
-
-	show_requirements = yes
-
-	possible = {
-		owner ?= {
-			NOT = {
-				has_law = law_type:law_guaranteed_liberties
-			}
-		}
-		NOT = { has_modifier = lia_modi_missionary_stealth }	#비밀리에 활동중...모디파이어(lia_modi_missionary_stealth)가 없어야 함!
-	}
-
-	effect = {
-		this = {
-			save_scope_as = prisoner_scope
-		}
-		trigger_event = { id = jail.1 popup = yes }
-	}
-
-	cooldown = { months = short_modifier_time }
-
-	ai_chance = {
-		value = -50
-		if = {
-			limit = {
-				interest_group = {
-					ig_approval <= -5
-				}		
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				interest_group = {
-					ig_approval <= -10
-				}		
-			}
-			add = 30
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					NOR = {
-						has_law = law_type:law_autocracy
-						has_law = law_type:law_oligarchy
-						has_law = law_type:law_single_party_state
-					}
-				}			
-			}
-			add = -25
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_outlawed_dissent
-				}			
-			}
-			add = 30
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_censorship
-				}			
-			}
-			add = 10
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_right_of_assembly
-				}			
-			}
-			add = -10
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_protected_speech
-				}			
-			}
-			add = -20
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					any_interest_group = {
-						is_insurrectionary = yes
-					}
-				}			
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					ruler = {
-						OR = {
-							has_trait = cruel
-						}
-					}
-				}			
-			}
-			add = 15
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					ruler = {
-						OR = {
-							has_trait = imperious
-						}
-					}
-				}			
-			}
-			add = 10
 		}
 	}
 }

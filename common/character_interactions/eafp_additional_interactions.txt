@@ -1,0 +1,132 @@
+﻿send_to_jail = { # 수정
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
+
+	potential = {
+		is_in_exile_pool = no
+		is_in_void = no
+		is_ruler = no
+		is_heir = no
+		has_role = agitator
+		is_immortal = no
+		has_dlc_feature = ip2_content
+	}
+
+	show_requirements = yes
+
+	possible = {
+		owner ?= {
+			NOT = {
+				has_law = law_type:law_guaranteed_liberties
+			}
+		}
+		NOT = { has_modifier = lia_modi_missionary_stealth } # 추가, 비밀리에 활동중...모디파이어(lia_modi_missionary_stealth)가 없어야 함
+		NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template } # 추가
+	}
+
+	effect = {
+		this = {
+			save_scope_as = prisoner_scope
+		}
+		trigger_event = { id = jail.1 popup = yes }
+	}
+
+	cooldown = { months = short_modifier_time }
+
+	ai_chance = {
+		value = -50
+		if = {
+			limit = {
+				interest_group = {
+					ig_approval <= -5
+				}		
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				interest_group = {
+					ig_approval <= -10
+				}		
+			}
+			add = 30
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					NOR = {
+						has_law = law_type:law_autocracy
+						has_law = law_type:law_oligarchy
+						has_law = law_type:law_single_party_state
+					}
+				}			
+			}
+			add = -25
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_outlawed_dissent
+				}			
+			}
+			add = 30
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_censorship
+				}			
+			}
+			add = 10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_right_of_assembly
+				}			
+			}
+			add = -10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law = law_type:law_protected_speech
+				}			
+			}
+			add = -20
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					any_interest_group = {
+						is_insurrectionary = yes
+					}
+				}			
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					ruler = {
+						OR = {
+							has_trait = cruel
+						}
+					}
+				}			
+			}
+			add = 15
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					ruler = {
+						OR = {
+							has_trait = imperious
+						}
+					}
+				}			
+			}
+			add = 10
+		}
+	}
+}
