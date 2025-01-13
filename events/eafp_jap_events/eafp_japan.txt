@@ -120,7 +120,121 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 
 	duration = 1
 
-	immediate = { # 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+	immediate = {
+		
+	}
+
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.2.a
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.2.b
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.2.c
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.2.e
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.2.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.3
+	}
+}
+
+eafp_japan.3 = { # 대로 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3.t
+	desc = eafp_japan.3.d
+	flavor = eafp_japan.3.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -176,639 +290,67 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 			}
 		}
 
-
-	}
-
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.2.a
-		trigger = {
-			authority >= 200
-		}
-
+		# 누가 뽑힐까?
 		if = {
-			limit = { 
+			limit = {
+				exists = scope:nankiha_candidate
 				25 <= {
 					value = var:nankiha_invested_influence
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.2.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-				}
+			# 난키파 등용
+			if = {
+				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
+				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			else = {
+				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
+			}
+			add_eafp_bakuhantaisei_politician_influence_calc_nankiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 1
 			}
 		}
 		else_if = {
-			limit = { 
+			limit = {
 				-25 >= {
 					value = var:nankiha_invested_influence
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.2.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-				}
+			# 히토츠바시파 등용
+			if = {
+				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
+				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			else = {
+				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
+			}
+			add_eafp_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 2
 			}
 		}
 		else = {
-			custom_tooltip = {
-				text = eafp_japan.2.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
+			# 중도파 등용
+			create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
+			add_eafp_bakuhantaisei_politician_influence_calc_moderate = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 3
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.2.b
-		trigger = {
-			authority >= 100
 		}
 
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.2.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.2.c
-		trigger = {
-			authority >= 100
-		}
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.2.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.2.e
-		trigger = {
-			authority >= 200
-		}
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.2.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.2.z
-		default_option = yes
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.2.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.2.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-	}
-
-	option = { # 취소
-		name = eafp_japan.2.zz
-		default_option = yes
-	}
-
-	after = {
+		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
 		remove_variable = hitotsubashiha_invested_influence
 		remove_variable = nankiha_invested_influence
@@ -817,15 +359,39 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 			remove_variable = invested_influence
 		}
 	}
+
+	option = { # 난키파
+		name = eafp_japan.3.nankiha
+		trigger = {
+			scope:new_politician = 1
+		}
+		custom_tooltip = eafp_japan.3.nankiha.tt
+	}
+
+	option = { # 히토츠바시파
+		name = eafp_japan.3.hitotsubashiha
+		trigger = {
+			scope:new_politician = 2
+		}
+		custom_tooltip = eafp_japan.3.hitotsubashiha.tt
+	}
+
+	option = { # 중도파
+		name = eafp_japan.3.moderate
+		trigger = {
+			scope:new_politician = 3
+		}
+		custom_tooltip = eafp_japan.3.moderate.tt
+	}
 }
 
-eafp_japan.3 = { # 노중수좌 임명용 이벤트
+eafp_japan.4 = { # 노중수좌 임명용 이벤트
 	type = country_event
 	placement = root
 
-	title = eafp_japan.3.t
-	desc = eafp_japan.3.d
-	flavor = eafp_japan.3.f
+	title = eafp_japan.4.t
+	desc = eafp_japan.4.d
+	flavor = eafp_japan.4.f
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
@@ -840,8 +406,126 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 	trigger = {
 		NOT = { has_variable = recruiting_bakufu_politicians }
 	}
-	
-	immediate = { # 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.4.a
+		trigger = {
+			authority >= 200
+			exists = scope:hitotsubashiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.4.b
+		trigger = {
+			authority >= 100
+			exists = scope:hitotsubashiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.4.c
+		trigger = {
+			authority >= 100
+			exists = scope:nankiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.4.e
+		trigger = {
+			authority >= 200
+			exists = scope:nankiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.4.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.5
+	}
+}
+
+eafp_japan.5 = { # 노중수좌 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.5.t
+	desc = eafp_japan.5.d
+	flavor = eafp_japan.5.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -941,15 +625,8 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 				save_scope_as = moderate_candidate
 			}
 		}
-	}
 
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.3.a
-		trigger = {
-			authority >= 200
-			exists = scope:hitotsubashiha_candidate
-		}
-
+		# 누가 뽑힐까?
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
@@ -958,34 +635,16 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			# 난키파 등용
+			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
+			add_eafp_bakuhantaisei_politician_influence_calc_nankiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 1
 			}
 		}
 		else_if = {
@@ -996,63 +655,27 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			# 히토츠바시파 등용
+			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
+			add_eafp_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 2
 			}
 		}
 		else_if = {
 			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			# 중도파 등용
+			set_variable = { name = rojushuza_var value = scope:moderate_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:moderate_candidate }
+			add_eafp_bakuhantaisei_politician_influence_calc_moderate = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 3
 			}
 		}
 		else_if = {
@@ -1063,980 +686,30 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			# 난키파 등용
+			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
+			add_eafp_bakuhantaisei_politician_influence_calc_nankiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 1
 			}
 		}
 		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
+			# 히토츠바시파 등용
+			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
+			add_eafp_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 2
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.3.b
-		trigger = {
-			authority >= 100
-			exists = scope:hitotsubashiha_candidate
 		}
 
-		if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				0 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.3.c
-		trigger = {
-			authority >= 100
-			exists = scope:nankiha_candidate
-		}
-
-		if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				0 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.3.e
-		trigger = {
-			authority >= 200
-			exists = scope:nankiha_candidate
-		}
-
-		if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				0 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.3.zh
-		default_option = yes
-		trigger = {
-			exists = scope:hitotsubashiha_candidate
-		}
-
-		if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				0 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.3.zn
-		default_option = yes
-		trigger = {
-			exists = scope:nankiha_candidate
-		}
-
-		if = {
-			limit = {
-				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { exists = scope:moderate_candidate }
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				set_variable = { name = rojushuza_var value = scope:moderate_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = {
-				exists = scope:hitotsubashiha_candidate
-				0 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-			
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-	}
-
-	after = {
+		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
 		remove_variable = hitotsubashiha_invested_influence
 		remove_variable = nankiha_invested_influence
@@ -2045,15 +718,39 @@ eafp_japan.3 = { # 노중수좌 임명용 이벤트
 			remove_variable = invested_influence
 		}
 	}
+
+	option = { # 난키파
+		name = eafp_japan.5.nankiha
+		trigger = {
+			scope:new_politician = 1
+		}
+		custom_tooltip = eafp_japan.5.nankiha.tt
+	}
+
+	option = { # 히토츠바시파
+		name = eafp_japan.5.hitotsubashiha
+		trigger = {
+			scope:new_politician = 2
+		}
+		custom_tooltip = eafp_japan.5.hitotsubashiha.tt
+	}
+
+	option = { # 중도파
+		name = eafp_japan.5.moderate
+		trigger = {
+			scope:new_politician = 3
+		}
+		custom_tooltip = eafp_japan.5.moderate.tt
+	}
 }
 
-eafp_japan.4 = { # 노중 임명용 이벤트
+eafp_japan.6 = { # 노중 임명용 이벤트
 	type = country_event
 	placement = root
 
-	title = eafp_japan.4.t
-	desc = eafp_japan.4.d
-	flavor = eafp_japan.4.f
+	title = eafp_japan.6.t
+	desc = eafp_japan.6.d
+	flavor = eafp_japan.6.f
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
@@ -2069,7 +766,121 @@ eafp_japan.4 = { # 노중 임명용 이벤트
 		NOT = { has_variable = recruiting_bakufu_politicians }
 	}
 
-	immediate = { # 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.6.a
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.6.b
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.6.c
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.6.e
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.6.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.7
+	}
+}
+
+eafp_japan.7 = { # 노중 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.7.t
+	desc = eafp_japan.7.d
+	flavor = eafp_japan.7.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -2125,15 +936,7 @@ eafp_japan.4 = { # 노중 임명용 이벤트
 			}
 		}
 
-
-	}
-
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.4.a
-		trigger = {
-			authority >= 200
-		}
-
+		# 누가 뽑힐까?
 		if = {
 			limit = { 
 				25 <= {
@@ -2141,40 +944,21 @@ eafp_japan.4 = { # 노중 임명용 이벤트
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-				}
+			# 난키파 등용
+			if = {
+				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
+				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			else = {
+				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
+			}
+			add_eafp_bakuhantaisei_politician_influence_calc_nankiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 1
 			}
 		}
 		else_if = {
@@ -2184,575 +968,34 @@ eafp_japan.4 = { # 노중 임명용 이벤트
 					add = var:nankiha_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+					add = scope:shogun_influence
 				}
 			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-				}
+			# 히토츠바시파 등용
+			if = {
+				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
+				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
 			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			else = {
+				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
+			}
+			add_eafp_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 2
 			}
 		}
 		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
+			# 중도파 등용
+			create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
+			add_eafp_bakuhantaisei_politician_influence_calc_moderate = yes
+			save_scope_value_as = {
+				name = new_politician
+				value = 3
 			}
 		}
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.4.b
-		trigger = {
-			authority >= 100
-		}
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.4.c
-		trigger = {
-			authority >= 100
-		}
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.4.e
-		trigger = {
-			authority >= 200
-		}
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.4.z
-		default_option = yes
-
-		if = {
-			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.nankiha # 난키파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_nankiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:nankiha_invested_influence
-							multiply = var:hitotsubashiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else_if = {
-			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-				}
-			}
-			custom_tooltip = {
-				text = eafp_japan.4.hitotsubashiha # 히토츠바시파 등용
-				if = {
-					limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-				}
-				else = {
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-				}
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = { is_hitotsubashiha = yes }
-					add_eafp_bakuhantaisei_politician_influence = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
-						VALUE = {
-							value = var:invested_influence
-							divide = var:hitotsubashiha_invested_influence
-							multiply = var:nankiha_invested_influence
-							multiply = -1
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-		else = {
-			custom_tooltip = {
-				text = eafp_japan.4.moderate # 중도파 등용
-				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
-			}
-			every_scope_character = {
-				limit = { has_variable = eafp_bakuhantaisei_politician_influence }
-				if = {
-					limit = {
-						has_ideology = ideology:ideology_moderate
-					}
-					add_eafp_bakuhantaisei_politician_influence = { # 3/4만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.75
-						}
-					}
-				}
-				else = {
-					add_eafp_bakuhantaisei_politician_influence = { # 그 외 절반만 소모
-						VALUE = {
-							value = var:invested_influence
-							multiply = -0.5
-						}
-					}
-				}
-			}
-		}
-	}
-
-	after = {
+		
+		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
 		remove_variable = hitotsubashiha_invested_influence
 		remove_variable = nankiha_invested_influence
@@ -2761,9 +1004,33 @@ eafp_japan.4 = { # 노중 임명용 이벤트
 			remove_variable = invested_influence
 		}
 	}
+
+	option = { # 난키파
+		name = eafp_japan.7.nankiha
+		trigger = {
+			scope:new_politician = 1
+		}
+		custom_tooltip = eafp_japan.7.nankiha.tt
+	}
+
+	option = { # 히토츠바시파
+		name = eafp_japan.7.hitotsubashiha
+		trigger = {
+			scope:new_politician = 2
+		}
+		custom_tooltip = eafp_japan.7.hitotsubashiha.tt
+	}
+
+	option = { # 중도파
+		name = eafp_japan.7.moderate
+		trigger = {
+			scope:new_politician = 3
+		}
+		custom_tooltip = eafp_japan.7.moderate.tt
+	}
 }
 
-eafp_japan.5 = { # 막부 정치인 실각용 히든 이벤트
+eafp_japan.8 = { # 막부 정치인 실각용 히든 이벤트
 	type = character_event
 	hidden = yes
 
@@ -2772,7 +1039,7 @@ eafp_japan.5 = { # 막부 정치인 실각용 히든 이벤트
 	immediate = { remove_bakufu_politician_role = yes }
 }
 
-eafp_japan.6 = { # 막부 정치인 수명 끝나서 죽는 용도 히든 이벤트
+eafp_japan.9 = { # 막부 정치인 수명 끝나서 죽는 용도 히든 이벤트
 	type = character_event
 	hidden = yes
 
@@ -4740,12 +3007,13 @@ eafp_japan.2301 = { # 히토츠바시파의 이국선타불령 부활 요구
 		has_law = law_type:law_isolationism
 		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafp_japan.2301 }
+		NOT = { has_variable = eafpjap2301_cooldown }
 	}
 
 	immediate = {
-		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
-			name = eafp_japan.2301
+		set_variable = {
+			name = eafpjap2301_cooldown
+			value = yes
 			months = normal_modifier_time
 		}
 		
@@ -4803,12 +3071,12 @@ eafp_japan.2302 = { # 난키파의 막부 개혁 시행 요구 - 새 화폐 도�
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
 		NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
-		NOT = { has_variable = eafp_japan.2302 }
+		NOT = { has_variable = eafpjap2302_cooldown }
 	}
 
 	immediate = {
 		set_variable = {
-			name = eafp_japan.2302
+			name = eafpjap2302_cooldown
 			months = normal_modifier_time
 		}
 	}
@@ -4848,12 +3116,12 @@ eafp_japan.2303 = { # 난키파의 막부 개혁 시행 요구 - 중농치수
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
 		NOT = { has_variable = je_bakufu_seisaku_junochisui_start }
-		NOT = { has_variable = eafp_japan.2303 }
+		NOT = { has_variable = eafpjap2303_cooldown }
 	}
 
 	immediate = {
 		set_variable = {
-			name = eafp_japan.2303
+			name = eafpjap2303_cooldown
 			months = normal_modifier_time
 		}
 	}
@@ -4893,12 +3161,12 @@ eafp_japan.2304 = { # 난키파의 막부 개혁 시행 요구 - 상지령
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
 		NOT = { has_variable = je_bakufu_seisaku_agechirei_start }
-		NOT = { has_variable = eafp_japan.2304 }
+		NOT = { has_variable = eafpjap2304_cooldown }
 	}
 
 	immediate = {
 		set_variable = {
-			name = eafp_japan.2304
+			name = eafpjap2304_cooldown
 			months = normal_modifier_time
 		}
 	}
@@ -4938,12 +3206,12 @@ eafp_japan.2305 = { # 난키파의 막부 개혁 시행 요구 - 강기숙정
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
 		NOT = { has_variable = je_bakufu_seisaku_kokishukusei_start }
-		NOT = { has_variable = eafp_japan.2305 }
+		NOT = { has_variable = eafpjap2305_cooldown }
 	}
 
 	immediate = {
 		set_variable = {
-			name = eafp_japan.2305
+			name = eafpjap2305_cooldown
 			months = normal_modifier_time
 		}
 	}
@@ -4984,12 +3252,13 @@ eafp_japan.2306 = { # 난키파의 이국선타불령 폐지 요구
 		has_law = law_type:law_isolationism
 		has_modifier = ikokusen_uchiharairei_modifier
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafp_japan.2306 }
+		NOT = { has_variable = eafpjap2306_cooldown }
 	}
 
 	immediate = {
-		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
-			name = eafp_japan.2306
+		set_variable = {
+			name = eafpjap2306_cooldown
+			value = yes
 			months = normal_modifier_time
 		}
 		
@@ -5046,16 +3315,17 @@ eafp_japan.2307 = { # 히토츠바시파의 정략결혼 요구 TODO
 
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafp_japan.2307 }
+		NOT = { has_variable = eafpjap2307_cooldown }
 	}
 
 	immediate = {
-		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
-			name = eafp_japan.2307
+		set_variable = {
+			name = eafpjap2307_cooldown
+			value = yes
 			months = normal_modifier_time
 		}
 		
-		set_variable = eafp_japan.2307_ing # 버튼 잠깐 막는 용
+		set_variable = eafpjap2307_ing # 버튼 잠깐 막는 용
 	}
 
 	option = { # ㅇㅇ
@@ -5074,7 +3344,7 @@ eafp_japan.2307 = { # 히토츠바시파의 정략결혼 요구 TODO
 	}
 
 	after = {
-		remove_variable = eafp_japan.2307_ing
+		remove_variable = eafpjap2307_ing
 	}
 }
 
@@ -5098,16 +3368,17 @@ eafp_japan.2308 = { # 히토츠바시파의 교토 상경 요구 TODO
 
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafp_japan.2308 }
+		NOT = { has_variable = eafpjap2308_cooldown }
 	}
 
 	immediate = {
-		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
-			name = eafp_japan.2308
+		set_variable = {
+			name = eafpjap2308_cooldown
+			value = yes
 			months = normal_modifier_time
 		}
 		
-		set_variable = eafp_japan.2308_ing # 버튼 잠깐 막는 용
+		set_variable = eafpjap2308_ing # 버튼 잠깐 막는 용
 	}
 
 	option = { # ㅇㅇ
@@ -5126,7 +3397,7 @@ eafp_japan.2308 = { # 히토츠바시파의 교토 상경 요구 TODO
 	}
 
 	after = {
-		remove_variable = eafp_japan.2308_ing
+		remove_variable = eafpjap2308_ing
 	}
 }
 
@@ -5150,16 +3421,17 @@ eafp_japan.2309 = { # 히토츠바시파의 양이 요구 TODO
 
 	trigger = {
 		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafp_japan.2309 }
+		NOT = { has_variable = eafpjap2309_cooldown }
 	}
 
 	immediate = {
-		set_variable = { # 이게 cooldown이랑 뭐가 다를까??
-			name = eafp_japan.2309
+		set_variable = {
+			name = eafpjap2309_cooldown
+			value = yes
 			months = normal_modifier_time
 		}
 		
-		set_variable = eafp_japan.2309_ing # 버튼 잠깐 막는 용
+		set_variable = eafpjap2309_ing # 버튼 잠깐 막는 용
 	}
 
 	option = { # ㅇㅇ
@@ -5178,7 +3450,7 @@ eafp_japan.2309 = { # 히토츠바시파의 양이 요구 TODO
 	}
 
 	after = {
-		remove_variable = eafp_japan.2309_ing
+		remove_variable = eafpjap2309_ing
 	}
 }
 

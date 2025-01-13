@@ -218,7 +218,7 @@ remove_bakufu_politician_role = { # scope = character
 		}
 		c:JAP = {
 			remove_list_variable = { name = roju_varlist target = PREV }
-			trigger_event = eafp_japan.4
+			trigger_event = eafp_japan.6
 		}
 	}
 	set_character_busy_and_immortal = no
@@ -228,7 +228,7 @@ add_eafp_bakuhantaisei_politician_influence = {
 	if = {
 		limit = {
 			var:eafp_bakuhantaisei_politician_influence_max >= {
-				value = eafp_bakuhantaisei_politician_influence
+				value = var:eafp_bakuhantaisei_politician_influence
 				add = $VALUE$
 			}
 		}
@@ -246,13 +246,105 @@ add_eafp_bakuhantaisei_politician_influence = {
 			name = eafp_bakuhantaisei_politician_influence
 			value = var:eafp_bakuhantaisei_politician_influence_max
 		}
-		custom_description = {
-			text = add_eafp_bakuhantaisei_politician_influence
+		set_local_variable = {
+			name = temp
 			value = {
 				value = var:eafp_bakuhantaisei_politician_influence_max
 				subtract = var:eafp_bakuhantaisei_politician_influence
 			}
 		}
+		custom_description = {
+			text = add_eafp_bakuhantaisei_politician_influence
+			value = local_var:temp
+		}
+		remove_local_variable = temp
+	}
+}
+
+add_eafp_bakuhantaisei_politician_influence_calc_nankiha = { # 난키파 등용
+	every_scope_character = {
+		limit = { has_variable = eafp_bakuhantaisei_politician_influence }
+		if = {
+			limit = { is_nankiha = yes }
+			set_variable = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					divide = var:nankiha_invested_influence
+					multiply = var:hitotsubashiha_invested_influence
+					multiply = -1
+				}
+			}
+		}
+		else = {
+			set_variable = { # 그 외 절반만 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					multiply = -0.5
+				}
+			}
+		}
+		add_eafp_bakuhantaisei_politician_influence = { VALUE = var:add_eafp_bakuhantaisei_politician_influence_value_var }
+		remove_variable = add_eafp_bakuhantaisei_politician_influence_value_var
+	}
+}
+
+add_eafp_bakuhantaisei_politician_influence_calc_hitotsubashiha = { # 히토츠바시파 등용
+	every_scope_character = {
+		limit = { has_variable = eafp_bakuhantaisei_politician_influence }
+		if = {
+			limit = { is_hitotsubashiha = yes }
+			set_variable = { # 이겼으면 넘치게 투자한 정치력은 빼고 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					divide = var:hitotsubashiha_invested_influence
+					multiply = var:nankiha_invested_influence
+					multiply = -1
+				}
+			}
+		}
+		else = {
+			set_variable = { # 그 외 절반만 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					multiply = -0.5
+				}
+			}
+		}
+		add_eafp_bakuhantaisei_politician_influence = { VALUE = var:add_eafp_bakuhantaisei_politician_influence_value_var }
+		remove_variable = add_eafp_bakuhantaisei_politician_influence_value_var
+	}
+}
+
+add_eafp_bakuhantaisei_politician_influence_calc_moderate = { # 중도파 등용
+	every_scope_character = {
+		limit = { has_variable = eafp_bakuhantaisei_politician_influence }
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_moderate
+			}
+			set_variable = { # 3/4만 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					multiply = -0.5
+				}
+			}
+		}
+		else = {
+			set_variable = { # 그 외 절반만 소모
+				name = add_eafp_bakuhantaisei_politician_influence_value_var
+				value = {
+					value = var:invested_influence
+					multiply = -0.5
+				}
+			}
+		}
+		add_eafp_bakuhantaisei_politician_influence = { VALUE = var:add_eafp_bakuhantaisei_politician_influence_value_var }
+		remove_variable = add_eafp_bakuhantaisei_politician_influence_value_var
 	}
 }
 
@@ -619,9 +711,9 @@ add_bakuhantaisei_state_goryo = {
 tobaku_tokuritsu_first = {
 	clear_global_variable_list = tobaku_list
 	#set_global_variable = tobaku_start_var
-	trigger_event = {
-		id = boshin_war.1 # 대충 반란 함
-	}
+	#trigger_event = {
+	#	id = boshin_war.1 # 대충 반란 함
+	#}
 }
 
 
