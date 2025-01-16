@@ -46,30 +46,13 @@
 		law_womens_suffrage = strongly_disapprove
 	}
 
-	possible = {
-		owner = {
-			OR = {
-				c:KOR ?= THIS
-				c:CHI ?= THIS
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_landowners
-				is_interest_group_type = ig_devout
-				is_interest_group_type = ig_rural_folk
-			}
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
+	country_trigger = {
+		OR = {
+			c:KOR ?= THIS
+			c:CHI ?= THIS
 		}
 	}
 
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 100
 		# 사대부는 유교 믿는 지도자만
@@ -83,17 +66,13 @@
 		#}
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_landowners
-				}
+				is_interest_group_type = ig_landowners
 			}
 			add = 50
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_devout
-				}
+				is_interest_group_type = ig_devout
 			}
 			add = 100
 		}
@@ -113,15 +92,38 @@
 		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_devout
-				}
+				is_interest_group_type = ig_devout
 				owner = {
 					THIS = c:CHI
 					has_variable = ultraconservative_devout_chi
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					is_interest_group_type = ig_landowners
+					is_interest_group_type = ig_devout
+					is_interest_group_type = ig_rural_folk
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
@@ -137,7 +139,7 @@
 		#}
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_landowners
 				}
 			}
@@ -145,7 +147,7 @@
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_devout
 				}
 			}
@@ -167,7 +169,7 @@
 		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_devout
 				}
 				owner = {
@@ -176,6 +178,35 @@
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					NOR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_rural_folk
+					}
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -226,30 +257,13 @@ ideology_moderate_scholar_paternalistic = {
 		law_womens_suffrage = disapprove
 	}
 	
-	possible = {
-		owner = {
-			OR = {
-				c:KOR ?= THIS
-				c:CHI ?= THIS
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_landowners
-				is_interest_group_type = ig_devout
-				is_interest_group_type = ig_rural_folk
-			}
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
+	country_trigger = {
+		OR = {
+			c:KOR ?= THIS
+			c:CHI ?= THIS
 		}
 	}
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 100
 		# 사대부는 유교 믿는 지도자만
@@ -264,34 +278,53 @@ ideology_moderate_scholar_paternalistic = {
 		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음. 지식인은 개화파가 되는 것을 우선시해야 함
 		if = {
 			limit = {
-				scope:interest_group = {
-					ig_approval >= 5
-					NOT = { is_interest_group_type = ig_intelligentsia }
-				}
+				ig_approval >= 5
+				NOT = { is_interest_group_type = ig_intelligentsia }
 			}
 			add = 50
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
-					ig_approval >= 10
-					NOT = { is_interest_group_type = ig_intelligentsia }
-				}
+				ig_approval >= 10
+				NOT = { is_interest_group_type = ig_intelligentsia }
 			}
 			add = 50
 		}
 		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_devout
-				}
+				is_interest_group_type = ig_devout
 				owner = {
 					THIS = c:CHI
 					has_variable = ultraconservative_devout_chi
 				}
 			}
 			add = 50
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					is_interest_group_type = ig_landowners
+					is_interest_group_type = ig_devout
+					is_interest_group_type = ig_rural_folk
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
@@ -308,7 +341,7 @@ ideology_moderate_scholar_paternalistic = {
 		# 만족하고 있으면 온건 사대부가 될 가능성이 높음, 매우 만족하면 더 높음. 지식인은 개화파가 되는 것을 우선시해야 함
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					ig_approval >= 5
 					NOT = { is_interest_group_type = ig_intelligentsia }
 				}
@@ -317,7 +350,7 @@ ideology_moderate_scholar_paternalistic = {
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					ig_approval >= 10
 					NOT = { is_interest_group_type = ig_intelligentsia }
 				}
@@ -327,7 +360,7 @@ ideology_moderate_scholar_paternalistic = {
 		# 동문관 논쟁에서 지기 전 까지는 많이 등장함
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_devout
 				}
 				owner = {
@@ -336,6 +369,35 @@ ideology_moderate_scholar_paternalistic = {
 				}
 			}
 			add = 50
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					NOR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_rural_folk
+					}
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -386,44 +448,19 @@ ideology_reformed_confucian = {
 		law_women_in_the_workplace = approve
 		law_womens_suffrage = neutral
 	}
-	
-	possible = {
+
+	country_trigger = {
+		c:KOR ?= THIS
 		# 평등주의 해금해야 개혁 유교가 뜨기 시작
-		owner = {
-			has_technology_researched = egalitarianism
-			OR = {
-				AND = { exists = c:KOR c:KOR = THIS }
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_rural_folk
-				is_interest_group_type = ig_landowners
-				is_interest_group_type = ig_devout
-				is_interest_group_type = ig_trade_unions
-				is_interest_group_type = ig_petty_bourgeoisie
-				is_interest_group_type = ig_industrialists
-				is_interest_group_type = ig_intelligentsia
-			}
-		}
-		scope:interest_group = {
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
-		}
+		has_technology_researched = egalitarianism
 	}
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 100
 		# 개혁 유교도 유교 믿는 지도자만
 		if = {
 			limit = {
-				scope:character = {
+				leader = {
 					NOT = { has_religion = confucian }
 				}
 			}
@@ -432,17 +469,15 @@ ideology_reformed_confucian = {
 		# 성리학자, 양반 지주의 경우 기업가, 노동조합, 또는 지식인이 권세가 되어야만 개혁 유교가 등장할 가능성이 있음  
 		if = {
 			limit = {
-				scope:interest_group = {
-					OR = {
-						is_interest_group_type = ig_devout
-						is_interest_group_type = ig_landowners
-					}
+				OR = {
+					is_interest_group_type = ig_devout
+					is_interest_group_type = ig_landowners
 				}
 				owner = {
 					NOR = {
-						owner.ig:ig_intelligentsia = { is_powerful = yes }
-						owner.ig:ig_industrialists = { is_powerful = yes }
-						owner.ig:ig_trade_unions = { is_powerful = yes }
+						ig:ig_intelligentsia = { is_powerful = yes }
+						ig:ig_industrialists = { is_powerful = yes }
+						ig:ig_trade_unions = { is_powerful = yes }
 					}
 				}
 			}
@@ -451,23 +486,34 @@ ideology_reformed_confucian = {
 		# 지식인은 가능성이 더 높음
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_intelligentsia
-				}
+				is_interest_group_type = ig_intelligentsia
 			}
 			add = 100
 		}
 		# very unlikely for trade unions after socialism is researched
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_trade_unions
-				}
+				is_interest_group_type = ig_trade_unions
 				owner = {
 					has_technology_researched = socialism
 				}
 			}
 			add = -200
+		}
+
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
@@ -475,16 +521,14 @@ ideology_reformed_confucian = {
 		# 개혁 유교도 유교 믿는 지도자만
 		if = {
 			limit = {
-				scope:character = {
-					NOT = { has_religion = confucian }
-				}
+				NOT = { has_religion = confucian }
 			}
 			add = -200
 		}
 		# 성리학자, 양반 지주의 경우 기업가, 노동조합, 또는 지식인이 권세가 되어야만 개혁 유교가 등장할 가능성이 있음  
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					OR = {
 						is_interest_group_type = ig_devout
 						is_interest_group_type = ig_landowners
@@ -503,7 +547,7 @@ ideology_reformed_confucian = {
 		# 지식인은 가능성이 더 높음
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_intelligentsia
 				}
 			}
@@ -512,7 +556,7 @@ ideology_reformed_confucian = {
 		# very unlikely for trade unions after socialism is researched
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_trade_unions
 				}
 				owner = {
@@ -520,6 +564,23 @@ ideology_reformed_confucian = {
 				}
 			}
 			add = -200
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -585,29 +646,11 @@ ideology_confucious_fundamentalism = {
 		law_national_militia = disapprove
 		law_mass_conscription = strongly_disapprove
 	}
-	
-	possible = {
-		owner = {
-			OR = {
-				AND = { exists = c:KOR c:KOR = THIS }
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_landowners
-				is_interest_group_type = ig_devout
-			}
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
-		}
+
+	country_trigger = {
+		c:KOR ?= THIS
 	}
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 100
 		# 유교 탈레반은 유교 믿는 지도자만
@@ -621,28 +664,46 @@ ideology_confucious_fundamentalism = {
 		#}
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_devout
-				}
+				is_interest_group_type = ig_devout
 			}
 			add = 50
 		}
 		# 주로 빡친 양반 지주랑 빡친 성리학자들이 성리학 근본주의자가 됨.
 		if = {
 			limit = {
-				scope:interest_group = {
-					ig_approval < -5
-				}
+				ig_approval < -5
 			}
 			add = 100
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
-					ig_approval < -10
-				}
+				ig_approval < -10
 			}
 			add = 50
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					is_interest_group_type = ig_landowners
+					is_interest_group_type = ig_devout
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
@@ -658,7 +719,7 @@ ideology_confucious_fundamentalism = {
 		#}
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_devout
 				}
 			}
@@ -667,7 +728,7 @@ ideology_confucious_fundamentalism = {
 		# 주로 빡친 양반 지주랑 빡친 성리학자들이 성리학 근본주의자가 됨.
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					ig_approval < -5
 				}
 			}
@@ -675,11 +736,40 @@ ideology_confucious_fundamentalism = {
 		}
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					ig_approval < -10
 				}
 			}
 			add = 50
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					NOR = {
+						is_interest_group_type = ig_landowners
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_rural_folk
+					}
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -753,40 +843,16 @@ ideology_enlightenment = {
 	# 	law_secret_police = disapprove
 	# }
 	
-	possible = {
-		owner = {
-			has_technology_researched = egalitarianism
-			OR = {
-				AND = { exists = c:KOR c:KOR = THIS }
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_intelligentsia
-				is_interest_group_type = ig_trade_unions
-				is_interest_group_type = ig_petty_bourgeoisie
-				is_interest_group_type = ig_industrialists
-			}
-		}
-		scope:interest_group = {
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
-		}
+	country_trigger = {
+		c:KOR ?= THIS
+		has_technology_researched = egalitarianism
 	}
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 100
 		if = {
 			limit = {
-				scope:interest_group = {
-					is_interest_group_type = ig_intelligentsia
-				}
+				is_interest_group_type = ig_intelligentsia
 			}
 			add = 50
 		}
@@ -828,13 +894,39 @@ ideology_enlightenment = {
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					is_interest_group_type = ig_intelligentsia
+					is_interest_group_type = ig_trade_unions
+					is_interest_group_type = ig_petty_bourgeoisie
+					is_interest_group_type = ig_industrialists
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
 		value = 100
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_intelligentsia
 				}
 			}
@@ -878,6 +970,36 @@ ideology_enlightenment = {
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					NOR = {
+						is_interest_group_type = ig_intelligentsia
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_petty_bourgeoisie
+						is_interest_group_type = ig_industrialists
+					}
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -908,51 +1030,24 @@ ideology_donghak = {
 		law_elected_bureaucrats = approve
 	}
 	
-	possible = {
+	country_trigger = {
 		# 평등주의 연구 후에 나라가 개판이면 동학이 들고일어날 것.
-		owner = {
-			has_technology_researched = egalitarianism
-			OR = {
-				AND = { exists = c:KOR c:KOR = THIS }
-			}
-		}
-		scope:interest_group = {
-			OR = {
-				is_interest_group_type = ig_rural_folk
-				is_interest_group_type = ig_devout
-				is_interest_group_type = ig_trade_unions
-				is_interest_group_type = ig_petty_bourgeoisie
-				is_interest_group_type = ig_armed_forces
-			}
-		}
-		scope:interest_group = {
-			NOR = {
-				has_variable = communist_ig_var
-				has_variable = chose_vanguardism
-				has_variable = chose_fascism
-				has_variable = chose_conservatism
-				has_variable = chose_ethno_nationalism
-			}
-		}
+		c:KOR ?= THIS
+		has_technology_researched = egalitarianism
 	}
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 0
 		if = {
 			limit = {
-				scope:interest_group = {
-					OR = {
-						is_interest_group_type = ig_rural_folk
-					}
-				}
+				is_interest_group_type = ig_rural_folk
 			}
 			add = 75
 		}
 		# 나라가 개판이면 전원 주민과 성리학자들은 더더욱 동학을 하려고 함
 		if = {
 			limit = {
-				scope:interest_group = {
+				OR = {
 					is_interest_group_type = ig_rural_folk
 					is_interest_group_type = ig_devout
 				}
@@ -964,16 +1059,41 @@ ideology_donghak = {
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					is_interest_group_type = ig_rural_folk
+					is_interest_group_type = ig_devout
+					is_interest_group_type = ig_trade_unions
+					is_interest_group_type = ig_petty_bourgeoisie
+					is_interest_group_type = ig_armed_forces
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				OR = {
+					has_variable = communist_ig_var
+					has_variable = chose_vanguardism
+					has_variable = chose_anarchism
+					has_variable = chose_communism
+					has_variable = chose_ethno_nationalism
+					has_variable = chose_conservatism
+					has_variable = chose_fascism
+				}
+			}
+			multiply = 0.1
 		}
 	}
 	non_interest_group_leader_weight = {
 		value = 0
 		if = {
 			limit = {
-				scope:interest_group = {
-					OR = {
-						is_interest_group_type = ig_rural_folk
-					}
+				interest_group = {
+					is_interest_group_type = ig_rural_folk
 				}
 			}
 			add = 75
@@ -981,7 +1101,7 @@ ideology_donghak = {
 		# 나라가 개판이면 전원 주민과 성리학자들은 더더욱 동학을 하려고 함
 		if = {
 			limit = {
-				scope:interest_group = {
+				interest_group = {
 					is_interest_group_type = ig_rural_folk
 					is_interest_group_type = ig_devout
 				}
@@ -993,6 +1113,37 @@ ideology_donghak = {
 				}
 			}
 			add = 100
+		}
+
+		if = {
+			limit = {
+				interest_group = {
+					NOR = {
+						is_interest_group_type = ig_rural_folk
+						is_interest_group_type = ig_devout
+						is_interest_group_type = ig_trade_unions
+						is_interest_group_type = ig_petty_bourgeoisie
+						is_interest_group_type = ig_armed_forces
+					}
+				}
+			}
+			multiply = 0.1
+		}
+		if = {
+			limit = {
+				interest_group = {
+					OR = {
+						has_variable = communist_ig_var
+						has_variable = chose_vanguardism
+						has_variable = chose_anarchism
+						has_variable = chose_communism
+						has_variable = chose_ethno_nationalism
+						has_variable = chose_conservatism
+						has_variable = chose_fascism
+					}
+				}
+			}
+			multiply = 0.1
 		}
 	}
 }
@@ -1024,12 +1175,9 @@ ideology_cixi1 = {
 		law_mercantilism = approve
 		law_free_trade = neutral
 	}
+
+	country_trigger = { always = yes }
 	
-	possible = {
-		always = yes
-	}
-	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 0
 	}
@@ -1080,11 +1228,8 @@ ideology_cixi2 = {
 		law_no_schools = neutral	
 	}
 	
-	possible = {
-		always = yes
-	}
+	country_trigger = { always = yes }
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 0
 	}
@@ -1165,11 +1310,8 @@ ideology_cixi3 = {
 		law_no_schools = neutral	
 	}
 	
-	possible = {
-		always = yes
-	}
+	country_trigger = { always = yes }
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 0
 	}
@@ -1232,8 +1374,9 @@ ideology_tridemism = { # Three Principles of the People
 	lawgroup_church_and_state = {
 		law_state_religion = strongly_disapprove
 	}
+
+	country_trigger = { always = yes }
 	
-	#leader_weight = {}
 	interest_group_leader_weight = {
 		value = 0
 	}
@@ -1254,7 +1397,12 @@ ideology_eafp_missionary = {	#가톨릭 선교사용, 24.07.25 추가됨.
 		law_state_atheism = strongly_disapprove
 	}
 	
-	possible = {
+	country_trigger = { c:KOR ?= owner }
+
+	interest_group_leader_trigger = {
+		always = no
+	}
+	non_interest_group_leader_trigger = {
 		has_role = agitator	#선동가용
 		#has_religion = rel:catholic	#당연히 가톨릭 신자여야
 		owner = {
@@ -1262,14 +1410,9 @@ ideology_eafp_missionary = {	#가톨릭 선교사용, 24.07.25 추가됨.
 			NOT = { has_law = law_type:law_freedom_of_conscience }	#활약국이 이미 신앙의 자유가 있다면 의미가 없음
 			NOT = { has_law = law_type:law_total_separation }
 		}
-		#scope:interest_group = {
+		#interest_group = {
 		#}
 	}
-	
-	#leader_weight = {
-	#	value = 0
-	#	#없음.
-	#}
 	interest_group_leader_weight = {
 		value = 0
 		#없음.
@@ -1286,12 +1429,20 @@ ideology_kaikakuha = {
 	
 	character_ideology = yes
 
-	possible = {
-		has_role = politician
-		c:JAP ?= owner
+	country_trigger = { c:JAP ?= owner }
+
+	interest_group_leader_trigger = {
+		always = yes
 	}
 
-	leader_weight = {
+	non_interest_group_leader_trigger = {
+		has_role = politician
+	}
+
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -1301,12 +1452,20 @@ ideology_hoshuha = {
 	
 	character_ideology = yes
 
-	possible = {
-		has_role = politician
-		c:JAP ?= owner
+	country_trigger = { c:JAP ?= owner }
+
+	interest_group_leader_trigger = {
+		always = yes
 	}
 
-	leader_weight = {
+	non_interest_group_leader_trigger = {
+		has_role = politician
+	}
+
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -1316,12 +1475,20 @@ ideology_hitotsubashiha = {
 	
 	character_ideology = yes
 
-	possible = {
-		has_role = politician
-		c:JAP ?= owner
+	country_trigger = { c:JAP ?= owner }
+
+	interest_group_leader_trigger = {
+		always = yes
 	}
 
-	leader_weight = {
+	non_interest_group_leader_trigger = {
+		has_role = politician
+	}
+
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
@@ -1331,12 +1498,20 @@ ideology_nankiha = {
 	
 	character_ideology = yes
 
-	possible = {
-		has_role = politician
-		c:JAP ?= owner
+	country_trigger = { c:JAP ?= owner }
+
+	interest_group_leader_trigger = {
+		always = yes
 	}
 
-	leader_weight = {
+	non_interest_group_leader_trigger = {
+		has_role = politician
+	}
+
+	interest_group_leader_weight = {
+		value = 0
+	}
+	non_interest_group_leader_weight = {
 		value = 0
 	}
 }
