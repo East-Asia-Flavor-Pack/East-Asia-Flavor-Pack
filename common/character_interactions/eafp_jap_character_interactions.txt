@@ -26,9 +26,11 @@ eafp_remove_bakufu_politician = { # 막부 정치인 해임
 	show_requirements = yes
 
 	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
 		scope:actor ?= {
 			authority >= 100
 		}
+		var:eafp_bakuhantaisei_politician_influence <= 50
 	}
 
 	effect = {
@@ -36,14 +38,328 @@ eafp_remove_bakufu_politician = { # 막부 정치인 해임
 			text = eafp_remove_bakufu_politician_tt
 			remove_bakufu_politician_role = yes
 		}
-		add_modifier = {
-			name = modifier_remove_bakufu_politician
-			months = short_modifier_time
+		scope:actor ?= {
+			add_modifier = {
+				name = modifier_remove_bakufu_politician
+				months = short_modifier_time
+			}
 		}
 	}
 
-	cooldown = { months = 6 }
 	show_confirmation_box = yes
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_reduce_influence_bakufu_politician = { # 영향력 약화
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		add_bakuhantaisei_politician_influence = { VALUE = -50 }
+		scope:actor ?= {
+			add_modifier = {
+				name = modifier_reduce_influence_bakufu_politician
+				months = short_modifier_time
+			}
+		}
+	}
+
+	show_confirmation_box = yes
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_return_bakufu_politician = { # 임무 중단
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		has_variable = eafp_bakuhantaisei_politician_current_mission
+	}
+
+	effect = {
+		remove_bakufu_politician_mission = yes
+	}
+
+	show_confirmation_box = no
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_oversee_daimyo_domains = { # 다이묘 영지 감독
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		NOT = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		trigger_event = {
+			id = eafp_japan.11
+			popup = yes
+		}
+	}
+
+	show_confirmation_box = no
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_reaffirm_daimyos_loyalty = { # 다이묘들의 충성심을 재확인
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		NOT = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		trigger_event = {
+			id = eafp_japan.12
+			popup = yes
+		}
+	}
+
+	show_confirmation_box = no
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_improve_relation_with_court = { # 조정과의 관계 개선
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		NOT = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_improve_relation_with_court.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_improve_relation_with_court
+			}
+		}
+		owner = {
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_improve_relation_with_court
+					}
+				}
+				custom_tooltip = {
+					text = eafp_improve_relation_with_court.tt2
+					every_scope_character = {
+						limit = {
+							var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_improve_relation_with_court
+						}
+					}
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+				}
+			}
+			else = {
+				add_modifier = modifier_improve_relation_with_court
+			}
+		}
+	}
+
+	show_confirmation_box = no
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_focus_on_administration = { # 내부 소요 중재
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		NOT = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_focus_on_administration.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_focus_on_administration
+			}
+		}
+		owner = {
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_focus_on_administration
+					}
+				}
+				custom_tooltip = {
+					text = eafp_focus_on_administration.tt2
+					every_scope_character = {
+						limit = {
+							var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_focus_on_administration
+						}
+					}
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+				}
+			}
+			else = {
+				add_modifier = modifier_focus_on_administration
+			}
+		}
+	}
+
+	show_confirmation_box = no
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_bill_review = { # 법률안 검토
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
+
+	potential = {
+		owner = scope:actor
+		scope:actor ?= {
+			has_journal_entry = je_bakuhantaisei
+		}
+		has_variable = eafp_bakuhantaisei_politician_influence
+	}
+
+	show_requirements = yes
+
+	possible = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+		NOT = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		scope:actor ?= {
+			authority >= 50
+		}
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_bill_review.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_bill_review
+			}
+		}
+		owner = {
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_bill_review
+					}
+				}
+				custom_tooltip = {
+					text = eafp_bill_review.tt2
+					every_scope_character = {
+						limit = {
+							var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_bill_review
+						}
+					}
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+				}
+			}
+			else = {
+				add_modifier = modifier_bill_review
+			}
+		}
+	}
+
+	show_confirmation_box = no
 
 	ai_chance = {
 		value = 0

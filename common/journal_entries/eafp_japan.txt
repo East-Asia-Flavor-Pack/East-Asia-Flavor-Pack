@@ -109,9 +109,23 @@ je_bakuhantaisei = {
 		}
 	}
 
+	on_monthly_pulse = {
+		effect = {
+			every_scope_character = {
+				limit = {
+					has_variable = eafp_bakuhantaisei_politician_influence
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = eafp_bakuhantaisei_politician_influence_monthly_add
+				}
+			}
+		}
+	}
+
 	on_yearly_pulse = {
 		effect = {
-			every_scope_character = { # 막부 정치인이기만 한 인물 사망 판정정
+			every_scope_character = { # 막부 정치인이기만 한 인물 사망 판정
 				limit = {
 					has_variable = eafp_bakuhantaisei_politician_influence
 					is_busy = yes # immortal 판정 trigger는 없음. (원래)
@@ -454,26 +468,7 @@ je_tenpo_famine = {
 	group = je_group_historical_content
 
 	immediate = {
-		every_scope_state = {
-			limit = {
-				NOT = { state_region = s:STATE_TOHOKU }
-				NOT = { state_region = s:STATE_KYUSHU }
-				NOT = { state_region = s:STATE_HOKKAIDO }
-			}
-			add_modifier = {
-				name = modifier_crop_failure_tenpo
-				multiplier = 2
-			}
-		}
-		s:STATE_TOHOKU.region_state:JAP = {
-			add_modifier = {
-				name = modifier_crop_failure_tenpo
-				multiplier = 3
-			}
-		}
-		s:STATE_KYUSHU.region_state:JAP = {
-			add_modifier = modifier_crop_failure_tenpo
-		}
+		# 텐포 대기근 변동치는 history에서
 		# 이미 구호소 운영중
 		set_variable = {
 			name = sukuigoya_for_tenpo
@@ -496,8 +491,6 @@ je_tenpo_famine = {
 			days = 448 # 1년 83일
 		}
 	}
-
-	scripted_progress_bar = tenpo_famine_progress_bar
 
 	scripted_button = install_sukuigoya_button
 	scripted_button = expand_sukuigoya_button
@@ -530,10 +523,13 @@ je_tenpo_famine = {
 	}
 
 	complete = {
-		custom_tooltip = {
-			text = je_tenpo_famine_complete
-			scope:journal_entry = { 
-				"scripted_bar_progress(tenpo_famine_progress_bar)" >= 72
+		NOT = {
+			any_scope_state = {
+				state_is_in_japan = yes
+				OR = {
+					state_region = { has_harvest_condition = flood }
+					has_famine = yes
+				}
 			}
 		}
 	}
@@ -585,14 +581,7 @@ je_bakufu_kaikaku = {
 	}
 
 	immediate = {
-		set_variable = { 
-			name = hitotsubashiha_var # 개혁파 변수
-			value = 10
-		}
-		set_variable = { 
-			name = nankiha_var # 보수파 변수
-			value = 90
-		}
+		# hitotsubashiha_influence_var와 nankiha_influence_var는 history에서 설정
 		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 	}
 
@@ -618,28 +607,207 @@ je_bakufu_kaikaku = {
 	}
 
 	on_complete = { 
-		if = {
-			limit = { is_nankiha = yes }
-			#trigger_event = { id = eafp_japan.666 }
-		}
-		else_if = {
-			limit = { is_hitotsubashiha = yes }
-			#trigger_event = { id = eafp_japan.666 }
-		}
-		else = {
-			custom_tooltip = {
-				text = unknown_tt
-			}
-		}
-		remove_variable = hitotsubashiha_var_monthly_add
-		remove_variable = nankiha_var_monthly_add
+		remove_variable = hitotsubashiha_influence_var_monthly_add
+		remove_variable = nankiha_influence_var_monthly_add
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			change_variable = { name = hitotsubashiha_var add = var:hitotsubashiha_var_monthly_add } 
-			change_variable = { name = nankiha_var add = var:nankiha_var_monthly_add } 
+			change_variable = { name = hitotsubashiha_influence_var add = var:hitotsubashiha_influence_var_monthly_add } 
+			change_variable = { name = nankiha_influence_var add = var:nankiha_influence_var_monthly_add } 
+			bakufu_kaikaku_progress_bar_monthly_calc = yes
 			bakufu_kaikaku_progress_bar_calc = yes
+
+			# 히토츠바시 vs 난키 대립 이벤트
+			random_list = {
+				2000 = {  }
+				100 = {
+					modifier = {
+						if = { # 장군계각문제 시작 안하면 깎음
+							limit = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+							add = -100
+						}
+						if = { # 고립주의 아님
+							limit = { NOT = { has_law = law_type:law_isolationism } }
+							add = 200
+						}
+						if = { # 막번체제 저널 진행도
+							limit = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 }  }
+							add = 100
+						}
+						if = { # 막번체제 저널 진행도
+							limit = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+							add = 100
+						}
+						if = { # 히토츠바시파의 approval
+							limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 50 } }
+							add = 100
+						}
+						if = { # 히토츠바시파의 approval
+							limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 } }
+							add = 200
+						}
+						if = { # 난키파의 approval
+							limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 50 } }
+							add = 100
+						}
+						if = { # 난키파의 approval
+							limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 } }
+							add = 200
+						}
+					}
+					random_list = {
+						100 = {
+							modifier = {
+								if = { # 히토츠바시파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" >= 80 } }
+									add = -25
+								}
+								if = { # 히토츠바시파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" >= 60 } }
+									add = -25
+								}
+								if = { # 히토츠바시파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" >= 40 } }
+									add = -25
+								}
+								if = { # 히토츠바시파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" >= 20 } }
+									add = -25
+								}
+							}
+							random_list = {
+								100 = { # 난키파 정치인 암살
+									trigger = {
+										je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 40 }
+									}
+									trigger_event = {
+										id = eafp_japan.2182
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 히토츠바시파의 이국선타불령 부활 요구
+									trigger = {
+										has_law = law_type:law_isolationism
+										NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+										NOT = { has_variable = eafpjap2301_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2301
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파 정치인 사임 요구
+									trigger = { NOT = { has_journal_entry = je_eafpjap2311 } }
+									trigger_event = {
+										id = eafp_japan.2311
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+							}
+						}
+						100 = {
+							modifier = { # 히토츠바시파의 이국선타불령 부활 요구
+								if = { # 난키파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" >= 80 } }
+									add = -25
+								}
+								if = { # 난키파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" >= 60 } }
+									add = -25
+								}
+								if = { # 난키파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" >= 40 } }
+									add = -25
+								}
+								if = { # 난키파의 approval
+									limit = { je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" >= 20 } }
+									add = -25
+								}
+							}
+							random_list = {
+								100 = { # 히토츠바시파 정치인 암살
+									trigger = {
+										je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 40 }
+									}
+									trigger_event = {
+										id = eafp_japan.2181
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파의 이국선타불령 폐지 요구
+									trigger = {
+										has_law = law_type:law_isolationism
+										has_modifier = ikokusen_uchiharairei_modifier
+										NOT = { has_variable = eafpjap2306_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2306
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 히토츠바시파 정치인 사임 요구
+									trigger = { NOT = { has_journal_entry = je_eafpjap2310 } }
+									trigger_event = {
+										id = eafp_japan.2310
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파의 막부 개혁 시행 요구 - 새 화폐 도입
+									trigger = {
+										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+										NOT = { has_variable = eafpjap2302_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2302
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파의 막부 개혁 시행 요구 - 중농치수
+									trigger = {
+										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+										NOT = { has_variable = eafpjap2302_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2303
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파의 막부 개혁 시행 요구 - 상지령
+									trigger = {
+										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+										NOT = { has_variable = eafpjap2302_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2304
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파의 막부 개혁 시행 요구 - 강기숙정
+									trigger = {
+										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
+										NOT = { has_variable = eafpjap2302_cooldown }
+									}
+									trigger_event = {
+										id = eafp_japan.2305
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -847,5 +1015,85 @@ je_bakufu_zaisei = {
 
 	progressbar = yes
 	weight = 10000
+
+}
+
+# 파벌 탄원
+
+je_eafpjap2310 = {
+    icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_internal_affairs
+
+	complete = { 
+		OR = {
+			NOT = { exists = scope:target }
+			NOT = { has_variable = eafp_bakuhantaisei_politician_influence }
+		}
+	}
+
+	on_complete = { 
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { has_journal_entry = je_bakuhantaisei }
+		}
+	}
+
+	on_timeout = {
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 365
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+
+}
+
+je_eafpjap2311 = {
+    icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_internal_affairs
+
+	complete = { 
+		OR = {
+			NOT = { exists = scope:target }
+			NOT = { has_variable = eafp_bakuhantaisei_politician_influence }
+		}
+	}
+
+	on_complete = { 
+		add_hitotsubashiha_approval = {
+			VALUE = 10
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { has_journal_entry = je_bakuhantaisei }
+		}
+	}
+
+	on_timeout = {
+		add_hitotsubashiha_approval = {
+			VALUE = -10
+		}
+	}
+
+	timeout = 365
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
 
 }

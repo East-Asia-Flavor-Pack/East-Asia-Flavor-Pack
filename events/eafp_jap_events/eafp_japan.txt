@@ -121,119 +121,6 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 	duration = 1
 
 	immediate = {
-		
-	}
-
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.2.a
-		trigger = {
-			authority >= 200
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -25
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.2.b
-		trigger = {
-			authority >= 100
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -12.5
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.2.c
-		trigger = {
-			authority >= 100
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 12.5
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.2.e
-		trigger = {
-			authority >= 200
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 25
-			}
-		}
-		add_modifier = {
-			name = modifier_political_influence_for_tairo
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.2.z
-		default_option = yes
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 0
-			}
-		}
-	}
-
-	after = {
-		trigger_event = eafp_japan.3
-	}
-}
-
-eafp_japan.3 = { # 대로 임명용 이벤트
-	type = country_event
-	placement = root
-
-	title = eafp_japan.3.t
-	desc = eafp_japan.3.d
-	flavor = eafp_japan.3.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-
-	duration = 1
-
-	immediate = {
 		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
@@ -289,14 +176,380 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 				}
 			}
 		}
+	}
 
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.2.a
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.2.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.2.hitotsubashiha2.tt
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.2.b
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.2.hitotsubashiha2.tt
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.2.c
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.2.hitotsubashiha2.tt
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.2.e
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.2.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.2.hitotsubashiha2.tt
+		}
+		add_modifier = {
+			name = modifier_political_influence_for_tairo
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.2.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.2.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.2.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.2.hitotsubashiha2.tt
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.3
+	}
+}
+
+eafp_japan.3 = { # 대로 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3.t
+	desc = eafp_japan.3.d
+	flavor = eafp_japan.3.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
 		# 누가 뽑힐까?
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
 				25 <= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -320,7 +573,7 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 			limit = {
 				-25 >= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -392,127 +645,6 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 	title = eafp_japan.4.t
 	desc = eafp_japan.4.d
 	flavor = eafp_japan.4.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-
-	duration = 1
-
-	trigger = {
-		NOT = { has_variable = recruiting_bakufu_politicians }
-	}
-
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.4.a
-		trigger = {
-			authority >= 200
-			exists = scope:hitotsubashiha_candidate
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -25
-			}
-		}
-
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.4.b
-		trigger = {
-			authority >= 100
-			exists = scope:hitotsubashiha_candidate
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -12.5
-			}
-		}
-		
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.4.c
-		trigger = {
-			authority >= 100
-			exists = scope:nankiha_candidate
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 12.5
-			}
-		}
-
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.4.e
-		trigger = {
-			authority >= 200
-			exists = scope:nankiha_candidate
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 25
-			}
-		}
-		
-		add_modifier = {
-			name = modifier_political_influence_for_rojushuza
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.4.z
-		default_option = yes
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 0
-			}
-		}
-	}
-
-	after = {
-		trigger_event = eafp_japan.5
-	}
-}
-
-eafp_japan.5 = { # 노중수좌 임명용 이벤트
-	type = country_event
-	placement = root
-
-	title = eafp_japan.5.t
-	desc = eafp_japan.5.d
-	flavor = eafp_japan.5.f
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
@@ -625,14 +757,392 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				save_scope_as = moderate_candidate
 			}
 		}
+	}
 
+	trigger = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+	}
+
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.4.a
+		trigger = {
+			authority >= 200
+			exists = scope:hitotsubashiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.4.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.4.b
+		trigger = {
+			authority >= 100
+			exists = scope:hitotsubashiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.4.c
+		trigger = {
+			authority >= 100
+			exists = scope:nankiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.4.e
+		trigger = {
+			authority >= 200
+			exists = scope:nankiha_candidate
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.4.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_rojushuza
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.4.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.4.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.4.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.5
+	}
+}
+
+eafp_japan.5 = { # 노중수좌 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.5.t
+	desc = eafp_japan.5.d
+	flavor = eafp_japan.5.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
 		# 누가 뽑힐까?
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
 				25 <= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -652,7 +1162,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				exists = scope:hitotsubashiha_candidate
 				-25 >= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -683,7 +1193,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				exists = scope:nankiha_candidate
 				0 <= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -762,123 +1272,6 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 
 	duration = 1
 
-	trigger = {
-		NOT = { has_variable = recruiting_bakufu_politicians }
-	}
-
-	option = { # 히토츠바시파를 강하게 지지
-		name = eafp_japan.6.a
-		trigger = {
-			authority >= 200
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -25
-			}
-		}
-		
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 히토츠바시파를 지지
-		name = eafp_japan.6.b
-		trigger = {
-			authority >= 100
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = -12.5
-			}
-		}
-
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 지지
-		name = eafp_japan.6.c
-		trigger = {
-			authority >= 100
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 12.5
-			}
-		}
-
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-		}
-	}
-
-	option = { # 난키파를 강하게 지지
-		name = eafp_japan.6.e
-		trigger = {
-			authority >= 200
-		}
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 25
-			}
-		}
-
-		add_modifier = {
-			name = modifier_political_influence_for_roju
-			months = normal_modifier_time
-			multiplier = 2
-		}
-	}
-
-	option = { # 알빠노?
-		name = eafp_japan.6.z
-		default_option = yes
-
-		hidden_effect = {
-			save_scope_value_as = {
-				name = shogun_influence
-				value = 0
-			}
-		}
-	}
-
-	after = {
-		trigger_event = eafp_japan.7
-	}
-}
-
-eafp_japan.7 = { # 노중 임명용 이벤트
-	type = country_event
-	placement = root
-
-	title = eafp_japan.7.t
-	desc = eafp_japan.7.d
-	flavor = eafp_japan.7.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-
-	duration = 1
-
 	immediate = {
 		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
 		set_variable = recruiting_bakufu_politicians
@@ -935,13 +1328,387 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 				}
 			}
 		}
+	}
 
+	trigger = {
+		NOT = { has_variable = recruiting_bakufu_politicians }
+	}
+
+	option = { # 히토츠바시파를 강하게 지지
+		name = eafp_japan.6.a
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.6.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -25
+				}
+			}
+			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+		
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 히토츠바시파를 지지
+		name = eafp_japan.6.b
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = -12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = -12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 지지
+		name = eafp_japan.6.c
+		trigger = {
+			authority >= 100
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 12.5
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 12.5
+				}
+			}
+			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+		}
+	}
+
+	option = { # 난키파를 강하게 지지
+		name = eafp_japan.6.e
+		trigger = {
+			authority >= 200
+		}
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 25
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.6.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 25
+				}
+			}
+			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+
+		add_modifier = {
+			name = modifier_political_influence_for_roju
+			months = normal_modifier_time
+			multiplier = 2
+		}
+	}
+
+	option = { # 알빠노?
+		name = eafp_japan.6.z
+		default_option = yes
+
+		hidden_effect = {
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
+		}
+		if = { # 결과 미리 보여줌 -35 -15 15 35
+			limit = {
+				35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha2.tt
+		}
+		else_if = {
+			limit = {
+				15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.6.nankiha.tt
+		}
+		else_if = {
+			limit = {
+				-15 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.6.moderate.tt
+		}
+		else_if = {
+			limit = {
+				-35 <= {
+					value = var:nankiha_invested_influence
+					add = var:nankiha_influence_var
+					subtract = -50
+					subtract = var:hitotsubashiha_invested_influence
+					add = 0
+				}
+			}
+			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
+		}
+		else = {
+			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+	}
+
+	after = {
+		trigger_event = eafp_japan.7
+	}
+}
+
+eafp_japan.7 = { # 노중 임명용 이벤트
+	type = country_event
+	placement = root
+
+	title = eafp_japan.7.t
+	desc = eafp_japan.7.d
+	flavor = eafp_japan.7.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
 		# 누가 뽑힐까?
 		if = {
 			limit = { 
 				25 <= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -965,7 +1732,7 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 			limit = { 
 				-25 >= {
 					value = var:nankiha_invested_influence
-					add = var:nankiha_var
+					add = var:nankiha_influence_var
 					subtract = -50
 					subtract = var:hitotsubashiha_invested_influence
 					add = scope:shogun_influence
@@ -1036,7 +1803,9 @@ eafp_japan.8 = { # 막부 정치인 실각용 히든 이벤트
 
 	trigger = {}
 
-	immediate = { remove_bakufu_politician_role = yes }
+	immediate = {
+		remove_bakufu_politician_role = yes
+	}
 }
 
 eafp_japan.9 = { # 막부 정치인 수명 끝나서 죽는 용도 히든 이벤트
@@ -1047,6 +1816,834 @@ eafp_japan.9 = { # 막부 정치인 수명 끝나서 죽는 용도 히든 이벤
 
 	immediate = {
 		kill_character = yes
+	}
+}
+
+eafp_japan.11 = { # 다이묘 영지 감독
+	type = character_event
+	placement = ROOT
+
+	title = eafp_japan.11.t
+	desc = eafp_japan.11.d
+	flavor = eafp_japan.11.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
+		owner = {
+			set_variable = recruiting_bakufu_politicians
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_TOHOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_TOHOKU.region_state:JAP
+					}
+					save_scope_as = TOHOKU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANTO.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANTO.region_state:JAP
+					}
+					save_scope_as = KANTO_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUBU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUBU.region_state:JAP
+					}
+					save_scope_as = CHUBU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANSAI.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANSAI.region_state:JAP
+					}
+					save_scope_as = KANSAI_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KYUSHU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KYUSHU.region_state:JAP
+					}
+					save_scope_as = KYUSHU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUGOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUGOKU.region_state:JAP
+					}
+					save_scope_as = CHUGOKU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_SHIKOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_SHIKOKU.region_state:JAP
+					}
+					save_scope_as = SHIKOKU_character_scope
+				}
+			}
+		}
+	}
+
+	trigger = {}
+
+	option = {
+		name = eafp_japan.11.TOHOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.TOHOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_TOHOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:TOHOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.TOHOKU.tt2
+				scope:TOHOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_TOHOKU.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_TOHOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.KANTO
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KANTO }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.KANTO.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KANTO.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KANTO_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.KANTO.tt2
+				scope:KANTO_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KANTO.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_KANTO
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.CHUBU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_CHUBU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.CHUBU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_CHUBU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:CHUBU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.CHUBU.tt2
+				scope:CHUBU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_CHUBU.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_CHUBU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.KANSAI
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KANSAI }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.KANSAI.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KANSAI.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KANSAI_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.KANSAI.tt2
+				scope:KANSAI_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KANSAI.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_KANSAI
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.KYUSHU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.KYUSHU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KYUSHU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KYUSHU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.KYUSHU.tt2
+				scope:KYUSHU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KYUSHU.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_KYUSHU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.CHUGOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.CHUGOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_CHUGOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:CHUGOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.CHUGOKU.tt2
+				scope:CHUGOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_CHUGOKU.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_CHUGOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.SHIKOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.11.SHIKOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_oversee_daimyo_domains
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_SHIKOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:SHIKOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.SHIKOKU.tt2
+				scope:SHIKOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_SHIKOKU.region_state:JAP = {
+				add_modifier = modifier_oversee_daimyo_domains
+			}
+			owner = {
+				add_modifier = modifier_oversee_daimyo_domains_SHIKOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.11.z
+		default_option = yes
+	}
+
+	after = {
+		owner = { remove_variable = recruiting_bakufu_politicians }
+	}
+}
+
+eafp_japan.12 = { # 다이묘들의 충성심을 재확인
+	type = character_event
+	placement = ROOT
+
+	title = eafp_japan.12.t
+	desc = eafp_japan.12.d
+	flavor = eafp_japan.12.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 1
+
+	immediate = {
+		owner = {
+			set_variable = recruiting_bakufu_politicians
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_TOHOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_TOHOKU.region_state:JAP
+					}
+					save_scope_as = TOHOKU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANTO.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANTO.region_state:JAP
+					}
+					save_scope_as = KANTO_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUBU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUBU.region_state:JAP
+					}
+					save_scope_as = CHUBU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANSAI.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KANSAI.region_state:JAP
+					}
+					save_scope_as = KANSAI_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KYUSHU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_KYUSHU.region_state:JAP
+					}
+					save_scope_as = KYUSHU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUGOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_CHUGOKU.region_state:JAP
+					}
+					save_scope_as = CHUGOKU_character_scope
+				}
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_SHIKOKU.region_state:JAP
+					}
+				}
+				every_scope_character = {
+					limit = {
+						var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+						var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_SHIKOKU.region_state:JAP
+					}
+					save_scope_as = SHIKOKU_character_scope
+				}
+			}
+		}
+	}
+
+	trigger = {}
+
+	option = {
+		name = eafp_japan.12.TOHOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.TOHOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_TOHOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:TOHOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.TOHOKU.tt2
+				scope:TOHOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_TOHOKU.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_TOHOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.KANTO
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KANTO }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.KANTO.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KANTO.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KANTO_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.KANTO.tt2
+				scope:KANTO_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KANTO.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_KANTO
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.CHUBU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_CHUBU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.CHUBU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_CHUBU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:CHUBU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.CHUBU.tt2
+				scope:CHUBU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_CHUBU.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_CHUBU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.KANSAI
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KANSAI }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.KANSAI.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KANSAI.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KANSAI_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.KANSAI.tt2
+				scope:KANSAI_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KANSAI.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_KANSAI
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.KYUSHU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.KYUSHU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_KYUSHU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:KYUSHU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.KYUSHU.tt2
+				scope:KYUSHU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_KYUSHU.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_KYUSHU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.CHUGOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.CHUGOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_CHUGOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:CHUGOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.CHUGOKU.tt2
+				scope:CHUGOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_CHUGOKU.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_CHUGOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.SHIKOKU
+		
+		trigger = {
+			owner = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+		}
+
+		custom_tooltip = {
+			text = eafp_japan.12.SHIKOKU.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_reaffirm_daimyos_loyalty
+			}
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_location
+				value = s:STATE_SHIKOKU.region_state:JAP
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:SHIKOKU_character_scope
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.SHIKOKU.tt2
+				scope:SHIKOKU_character_scope = {
+					remove_variable = eafp_bakuhantaisei_politician_current_mission
+					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+		else = {
+			s:STATE_SHIKOKU.region_state:JAP = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty
+			}
+			owner = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_SHIKOKU
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.12.z
+		default_option = yes
+	}
+
+	after = {
+		owner = { remove_variable = recruiting_bakufu_politicians }
 	}
 }
 
@@ -1249,14 +2846,14 @@ eafp_japan.1003 = { # 계승 문제
 
 		random_list = {
 			1 = {
-				add_hitotsubashiha_var = {
+				add_hitotsubashiha_influence_var = {
 					VALUE = 10
 				}
 			}
 			1 = {
 			}
 			1 = {
-				add_nankiha_var = {
+				add_nankiha_influence_var = {
 					VALUE = 10
 				}
 			}
@@ -1265,7 +2862,7 @@ eafp_japan.1003 = { # 계승 문제
 	option = {
 		name = eafp_japan.1003.b
 
-		add_hitotsubashiha_var = {
+		add_hitotsubashiha_influence_var = {
 			VALUE = 10
 		}
 		add_bakuhantaisei_state_independency = {
@@ -1280,7 +2877,7 @@ eafp_japan.1003 = { # 계승 문제
 	option = {
 		name = eafp_japan.1003.c
 
-		add_nankiha_var = {
+		add_nankiha_influence_var = {
 			VALUE = 10
 		}
 		add_bakuhantaisei_state_independency = {
@@ -1327,14 +2924,14 @@ eafp_japan.1004 = { # 번정 개혁 논란
 
 		random_list = {
 			1 = {
-				add_hitotsubashiha_var = {
+				add_hitotsubashiha_influence_var = {
 					VALUE = 10
 				}
 			}
 			1 = {
 			}
 			1 = {
-				add_nankiha_var = {
+				add_nankiha_influence_var = {
 					VALUE = 10
 				}
 			}
@@ -1343,7 +2940,7 @@ eafp_japan.1004 = { # 번정 개혁 논란
 	option = {
 		name = eafp_japan.1004.b
 
-		add_hitotsubashiha_var = {
+		add_hitotsubashiha_influence_var = {
 			VALUE = 10
 		}
 		add_bakuhantaisei_state_independency = {
@@ -1358,7 +2955,7 @@ eafp_japan.1004 = { # 번정 개혁 논란
 	option = {
 		name = eafp_japan.1004.c
 
-		add_nankiha_var = {
+		add_nankiha_influence_var = {
 			VALUE = 10
 		}
 		add_bakuhantaisei_state_independency = {
@@ -1687,8 +3284,105 @@ eafp_japan.1010 = { # (고메이) 천황의 즉위
 	}
 }
 
+# 천황이 ruler일때 이벤트 todo
 
+eafp_japan.1012 = { # 젠코지 지진
+	type = country_event
+	placement = scope:earthquake_state
 
+	title = eafp_japan.1012.t
+	desc = eafp_japan.1012.d
+	flavor = eafp_japan.1012.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_devastation"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	trigger = {
+		exists = s:STATE_CHUBU.region_state:JAP
+	}
+
+	immediate = {
+		s:STATE_CHUBU.region_state:JAP = {
+			save_scope_as = earthquake_state
+		}
+	}
+
+	option = { #No extra help
+		name = eafp_japan.1012.a
+		default_option = yes
+		scope:earthquake_state.state_region = {
+			add_devastation = 20
+		}
+	}
+
+	option = { #Extra help
+		name = eafp_japan.1012.b
+		add_modifier = {
+			name = modifier_earthquake_relief
+			multiplier = money_amount_multiplier_medium
+			months = short_modifier_time
+		}
+		scope:earthquake_state.state_region = {
+			add_devastation = 10
+		}
+	}
+}
+
+eafp_japan.1013 = { # 에도 지진
+	type = country_event
+	placement = scope:earthquake_state
+
+	title = eafp_japan.1013.t
+	desc = eafp_japan.1013.d
+	flavor = eafp_japan.1013.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_devastation"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	trigger = {
+		exists = s:STATE_KANTO.region_state:JAP
+	}
+
+	immediate = {
+		s:STATE_KANTO.region_state:JAP = {
+			save_scope_as = earthquake_state
+		}
+	}
+
+	option = { #No extra help
+		name = eafp_japan.1013.a
+		default_option = yes
+		scope:earthquake_state.state_region = {
+			add_devastation = 20
+		}
+	}
+
+	option = { #Extra help
+		name = eafp_japan.1013.b
+		add_modifier = {
+			name = modifier_earthquake_relief
+			multiplier = money_amount_multiplier_medium
+			months = short_modifier_time
+		}
+		scope:earthquake_state.state_region = {
+			add_devastation = 10
+		}
+	}
+}
 
 eafp_japan.2001 = { # 모리슨 호
 	type = country_event
@@ -1807,7 +3501,7 @@ eafp_japan.2003 = { # 모리슨 호
 
 		default_option = yes
 		
-		add_hitotsubashiha_var = {
+		add_hitotsubashiha_influence_var = {
 			VALUE = 10
 		}
 		add_hitotsubashiha_approval = {
@@ -1845,7 +3539,7 @@ eafp_japan.2004 = { # 오고쇼의 서거
 	option = {
 		default_option = yes
 		name = eafp_japan.2004.a
-		add_hitotsubashiha_var = {
+		add_hitotsubashiha_influence_var = {
 			VALUE = 10
 		}
 	}
@@ -1929,8 +3623,8 @@ eafp_japan.2007 = {	# 아편전쟁 패배 소식
 		
 		default_option = yes
 
-		add_hitotsubashiha_var = {
-			VALUE = 20
+		add_hitotsubashiha_influence_var = {
+			VALUE = 10
 		}
 
 		ai_chance = {
@@ -1939,7 +3633,7 @@ eafp_japan.2007 = {	# 아편전쟁 패배 소식
 	}
 }
 
-# 히토츠바시 vs 난키 + 즉위 이벤트
+# 히토츠바시 vs 난키
 
 eafp_japan.2101 = { # 일엽지추 1853년 1월 1일
 	type = country_event
@@ -2186,8 +3880,6 @@ eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 	}
 }
 
-#
-
 eafp_japan.2181 = { # 히토츠바시파 정치인 암살
 	type = country_event
 	placement = root
@@ -2217,8 +3909,9 @@ eafp_japan.2181 = { # 히토츠바시파 정치인 암살
 			}
 			order_by = {
 				value = bakufu_kaikaku_bakufu_politicians_activeness
-				multiply = 1500 # TODO
+				multiply = 2000 # TODO
 				add = var:eafp_bakuhantaisei_politician_influence_max
+				add = var:eafp_bakuhantaisei_politician_influence
 			}
 			save_scope_as = target_character
 			kill_character = yes
@@ -2265,8 +3958,9 @@ eafp_japan.2182 = { # 난키파 정치인 암살
 			}
 			order_by = {
 				value = bakufu_kaikaku_bakufu_politicians_activeness
-				multiply = 1500 # TODO
+				multiply = 2000 # TODO
 				add = var:eafp_bakuhantaisei_politician_influence_max
+				add = var:eafp_bakuhantaisei_politician_influence
 			}
 			save_scope_as = target_character
 			kill_character = yes
@@ -2993,22 +4687,15 @@ eafp_japan.2301 = { # 히토츠바시파의 이국선타불령 부활 요구
 	desc = eafp_japan.2301.d
 	flavor = eafp_japan.2301.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
-
-	trigger = {
-		has_law = law_type:law_isolationism
-		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
-		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafpjap2301_cooldown }
-	}
 
 	immediate = {
 		set_variable = {
@@ -3032,7 +4719,7 @@ eafp_japan.2301 = { # 히토츠바시파의 이국선타불령 부활 요구
 			is_decaying = yes
 			multiplier = {
 				value = bakufu_hitotsubashiha_hiritsu
-				divide = 50
+				multiply = 2
 			}
 		}
 	}
@@ -3058,12 +4745,12 @@ eafp_japan.2302 = { # 난키파의 막부 개혁 시행 요구 - 새 화폐 도�
 	desc = eafp_japan.2302.d
 	flavor = eafp_japan.2302.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3105,12 +4792,12 @@ eafp_japan.2303 = { # 난키파의 막부 개혁 시행 요구 - 중농치수
 	desc = eafp_japan.2303.d
 	flavor = eafp_japan.2303.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3152,12 +4839,12 @@ eafp_japan.2304 = { # 난키파의 막부 개혁 시행 요구 - 상지령
 	desc = eafp_japan.2304.d
 	flavor = eafp_japan.2304.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3199,12 +4886,12 @@ eafp_japan.2305 = { # 난키파의 막부 개혁 시행 요구 - 강기숙정
 	desc = eafp_japan.2305.d
 	flavor = eafp_japan.2305.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3246,22 +4933,15 @@ eafp_japan.2306 = { # 난키파의 이국선타불령 폐지 요구
 	desc = eafp_japan.2306.d
 	flavor = eafp_japan.2306.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
-
-	trigger = {
-		has_law = law_type:law_isolationism
-		has_modifier = ikokusen_uchiharairei_modifier
-		#je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 25 }
-		NOT = { has_variable = eafpjap2306_cooldown }
-	}
 
 	immediate = {
 		set_variable = {
@@ -3285,7 +4965,7 @@ eafp_japan.2306 = { # 난키파의 이국선타불령 폐지 요구
 			is_decaying = yes
 			multiplier = {
 				value = bakufu_nankiha_hiritsu
-				divide = 50
+				multiply = 2
 			}
 		}
 	}
@@ -3311,12 +4991,12 @@ eafp_japan.2307 = { # 히토츠바시파의 정략결혼 요구 TODO
 	desc = eafp_japan.2307.d
 	flavor = eafp_japan.2307.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3364,12 +5044,12 @@ eafp_japan.2308 = { # 히토츠바시파의 교토 상경 요구 TODO
 	desc = eafp_japan.2308.d
 	flavor = eafp_japan.2308.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3417,12 +5097,12 @@ eafp_japan.2309 = { # 히토츠바시파의 양이 요구 TODO
 	desc = eafp_japan.2309.d
 	flavor = eafp_japan.2309.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
 
 	duration = 3
@@ -3462,315 +5142,165 @@ eafp_japan.2309 = { # 히토츠바시파의 양이 요구 TODO
 	}
 }
 
-## 900 ~ 연도 트리거
-
-eafp_japan.902 = { # 1838 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.903
-			years = 1
-		}
-		trigger_event = { #弘道館記 발간
-			id = eafp_japan.3001
-			months = 5
-		}
-	}
-}
-
-eafp_japan.903 = { # 1839 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.904
-			years = 1
-		}
-	}
-}
-
-eafp_japan.904 = { # 1840 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.905
-			years = 1
-		}
-		trigger_event = { #고카쿠덴노 사망
-			id = eafp_japan.1006
-			months = 11
-		}
-	}
-}
-
-eafp_japan.905 = { # 1841 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.906
-			years = 1
-		}
-		trigger_event = { #만지로 표류
-			id = eafp_japan.1007
-			months = 1
-		}
-	}
-}
-
-eafp_japan.906 = { # 1842 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.907
-			years = 1
-		}
-	}
-}
-
-eafp_japan.907 = { # 1843 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.908
-			years = 1
-		}
-	}
-}
-
-eafp_japan.908 = { # 1844 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.909
-			years = 1
-		}
-		trigger_event = { #네덜란드 1차 친서
-			id = eafp_japan.4008
-			months = 4
-		}
-	}
-}
-
-eafp_japan.909 = { # 1845 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.910
-			years = 1
-		}
-	}
-}
-
-eafp_japan.910 = { # 1846 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.911
-			years = 1
-		}
-		trigger_event = { #닌코 사망
-				id = eafp_japan.1008
-				days = 40
-		}
-	}
-}
-
-eafp_japan.911 = { # 1847 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.912
-			years = 1
-		}
-		trigger_event = { #요시노부 고산쿄 후계자 임명
-			id = eafp_japan.3000
-			months = 3
-		}
-	}
-}
-
-eafp_japan.912 = { # 1848 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.913
-			years = 1
-		}
-	}
-}
-
-eafp_japan.913 = { # 1849 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.914
-			years = 1
-		}
-	}
-}
-
-eafp_japan.914 = { # 1850 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.915
-			years = 1
-		}
-	}
-}
-
-eafp_japan.915 = { # 1851 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.916
-			years = 1
-		}
-	}
-}
-
-eafp_japan.916 = { # 1852 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.917
-			years = 1
-		}
-		trigger_event = { #네덜란드 국왕 친서 -> 페리 내항 정보
-			id = eafp_japan.4000
-			months = 8
-		}
-		trigger_event = { #메이지 탄생
-			id = eafp_japan.1010
-			months = 11
-		}
-	}
-}
-
-eafp_japan.917 = { # 1853 이벤트 트리거
-	type = country_event
-	hidden = yes
-
-	trigger = {}
-
-	immediate = {
-		trigger_event = { #페리 오키나와 내항
-			id = eafp_japan.5000
-			months = 5
-		}
-		trigger_event = { #페리 내항
-			id = eafp_japan.5001
-			months = 7
-		}
-		trigger_event = { #러시아 내항
-			id = eafp_japan.5002
-			months = 8
-		}
-	}
-}
-		
-
-
-
-	
-
-
-eafp_japan.4000 = { #개항 알림
+eafp_japan.2310 = { # 히토츠바시파 정치인 사임 요구
 	type = country_event
 	placement = root
 
-	title = eafp_japan.4000.t
-	desc = eafp_japan.4000.d
-	flavor = eafp_japan.4000.f
+	title = eafp_japan.2310.t
+	desc = eafp_japan.2310.d
+	flavor = eafp_japan.2310.f
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto"
+		video = "europenorthamerica_capitalists_meeting"
 	}
-	
-	duration = 3
-	
-	immediate = {}
 
-	trigger = {}
-	
-	option = {
+	duration = 1
+
+	immediate = {
+		ordered_scope_character = {
+			limit = {
+				has_variable = eafp_bakuhantaisei_politician_influence
+				is_hitotsubashiha = yes
+			}
+			order_by = {
+				value = bakufu_kaikaku_bakufu_politicians_activeness
+				multiply = 2000 # TODO
+				add = var:eafp_bakuhantaisei_politician_influence_max
+				add = var:eafp_bakuhantaisei_politician_influence
+			}
+			save_scope_as = target_character
+		}
+	}
+
+	option = { # ㅇㅇ
+		name = eafp_japan.2310.a
 		default_option = yes
-		name = eafp_japan.4000.a
+
 		add_journal_entry = {
-			type = japan_kaikou_je
+			type = je_eafpjap2310
+			target = scope:target_character
+		}
+		
+	}
+
+	option = { # ㄴㄴ
+		name = eafp_japan.2310.b
+		default_option = yes
+		add_nankiha_approval = {
+			VALUE = -10
 		}
 	}
 }
 
-eafp_japan.4001 = { # 류큐의 개항
+eafp_japan.2311 = { # 난키파 정치인 사임 요구
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2311.t
+	desc = eafp_japan.2311.d
+	flavor = eafp_japan.2311.f
+
+	icon = "gfx/interface/icons/event_icons/event_scale.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "europenorthamerica_capitalists_meeting"
+	}
+
+	duration = 1
+
+	immediate = {
+		ordered_scope_character = {
+			limit = {
+				has_variable = eafp_bakuhantaisei_politician_influence
+				is_nankiha = yes
+			}
+			order_by = {
+				value = bakufu_kaikaku_bakufu_politicians_activeness
+				multiply = 2000 # TODO
+				add = var:eafp_bakuhantaisei_politician_influence_max
+				add = var:eafp_bakuhantaisei_politician_influence
+			}
+			save_scope_as = target_character
+		}
+	}
+
+	option = { # ㅇㅇ
+		name = eafp_japan.2311.a
+		default_option = yes
+
+		add_journal_entry = {
+			type = je_eafpjap2311
+			target = scope:target_character
+		}
+		
+	}
+
+	option = { # ㄴㄴ
+		name = eafp_japan.2311.b
+		default_option = yes
+		add_hitotsubashiha_approval = {
+			VALUE = -10
+		}
+	}
+}
+
+
+eafp_japan.4001 = { # 개항 요구
 	type = country_event
 	placement = root
 	title = eafp_japan.4001.t
 	desc = eafp_japan.4001.d
 	flavor = eafp_japan.4001.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_westerners_arriving"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		c:JAP ?= THIS
+		has_law = law_type:law_isolationism
+		NOT = { has_variable = eafpjap2008 }
+		any_diplomatic_play = {
+			any_scope_play_involved = {
+				ROOT = THIS
+			}
+			OR = {
+				has_play_goal = open_market
+				has_play_goal = foreign_investment_rights
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = eafpjap2008
+	}
+
+	option = {
+		name = eafp_japan.4001.a
+		default_option = yes
+	}
+}
+
+eafp_japan.4002 = { # 류큐의 개항
+	type = country_event
+	placement = root
+	title = eafp_japan.4002.t
+	desc = eafp_japan.4002.d
+	flavor = eafp_japan.4002.f
 
 	duration = 3
 
@@ -3788,19 +5318,25 @@ eafp_japan.4001 = { # 류큐의 개항
 	}
 
 	immediate = {
+		c:RYU = {
+			save_scope_as = ryu_scope
+		}
 	}
 
 	option = {
-		name = eafp_japan.4001.a
+		name = eafp_japan.4002.a
+		c:RYU = {
+			activate_law = law_type:law_free_trade
+		}
 	}
 }
 
-eafp_japan.4002 = { # 천황의 밀칙
+eafp_japan.4003 = { # 천황의 밀칙
 	type = country_event
 	placement = root
-	title = eafp_japan.4002.t
-	desc = eafp_japan.4002.d
-	flavor = eafp_japan.4002.f
+	title = eafp_japan.4003.t
+	desc = eafp_japan.4003.d
+	flavor = eafp_japan.4003.f
 
 	duration = 3
 
@@ -3821,7 +5357,64 @@ eafp_japan.4002 = { # 천황의 밀칙
 	}
 
 	option = {
-		name = eafp_japan.4002.a
+		name = eafp_japan.4003.a
+		add_nankiha_approval = {
+			VALUE = -15
+		}
+	}
+}
+
+eafp_japan.4004 = { # 외국인의 후지산 등반
+	type = country_event
+	placement = root
+	title = eafp_japan.4004.t
+	desc = eafp_japan.4004.d
+	flavor = eafp_japan.4004.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "asia_westerners_arriving"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				any_country = {
+					country_rank >= rank_value:great_power
+					has_strategy = ai_strategy_economic_imperialism
+				}
+			}
+			random_country = {
+				limit = {
+					country_rank >= rank_value:great_power
+					has_strategy = ai_strategy_economic_imperialism
+				}
+				save_scope_as = country_scope
+			}
+		}
+		else = {
+			random_country = {
+				limit = { country_rank >= rank_value:great_power }
+				save_scope_as = country_scope
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.4004.a
+		add_radicals = {
+			value = small_radicals
+		}
 	}
 }
 

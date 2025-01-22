@@ -1,10 +1,10 @@
 ﻿hitotsubashiha_vs_nankiha_start_effect = {
 	change_variable = {
-		name = hitotsubashiha_var
+		name = hitotsubashiha_influence_var
 		add = 20
 	}
 	change_variable = {
-		name = nankiha_var
+		name = nankiha_influence_var
 		add = 20
 	}
 	set_variable = hitotsubashiha_vs_nankiha_start
@@ -193,6 +193,10 @@ assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = { # 막부 정치인이기만 �
 }
 
 remove_bakufu_politician_role = { # scope = character
+	if = {
+		limit = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		remove_bakufu_politician_mission = yes
+	}
 	remove_variable = eafp_bakuhantaisei_politician_influence
 	remove_variable = eafp_bakuhantaisei_politician_influence_max
 	remove_variable = CHARACTER_LIFE_EXPECTANCY_STDDEV_value
@@ -224,8 +228,98 @@ remove_bakufu_politician_role = { # scope = character
 	set_character_busy_and_immortal = no
 }
 
+remove_bakufu_politician_mission = { # scope = character
+	custom_tooltip = {
+		text = remove_bakufu_politician_mission_tt
+		switch = {
+			trigger = var:eafp_bakuhantaisei_politician_current_mission
+			flag:eafp_oversee_daimyo_domains = {
+				var:eafp_bakuhantaisei_politician_current_mission_location = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				switch = {
+					trigger = var:eafp_bakuhantaisei_politician_current_mission_location
+					s:STATE_TOHOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_TOHOKU }
+					}
+					s:STATE_KANTO.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_KANTO }
+					}
+					s:STATE_CHUBU.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_CHUBU }
+					}
+					s:STATE_KANSAI.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_KANSAI }
+					}
+					s:STATE_KYUSHU.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_KYUSHU }
+					}
+					s:STATE_CHUGOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_CHUGOKU }
+					}
+					s:STATE_SHIKOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_oversee_daimyo_domains_SHIKOKU }
+					}
+				}
+				remove_variable = eafp_bakuhantaisei_politician_current_mission
+				remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+			}
+			flag:eafp_reaffirm_daimyos_loyalty = {
+				var:eafp_bakuhantaisei_politician_current_mission_location = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+                switch = {
+					trigger = var:eafp_bakuhantaisei_politician_current_mission_location
+					s:STATE_TOHOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_TOHOKU }
+					}
+					s:STATE_KANTO.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_KANTO }
+					}
+					s:STATE_CHUBU.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_CHUBU }
+					}
+					s:STATE_KANSAI.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_KANSAI }
+					}
+					s:STATE_KYUSHU.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_KYUSHU }
+					}
+					s:STATE_CHUGOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_CHUGOKU }
+					}
+					s:STATE_SHIKOKU.region_state:JAP = {
+						owner = { remove_modifier = modifier_reaffirm_daimyos_loyalty_SHIKOKU }
+					}
+				}
+				remove_variable = eafp_bakuhantaisei_politician_current_mission
+				remove_variable = eafp_bakuhantaisei_politician_current_mission_location
+			}
+			flag:eafp_improve_relation_with_court = {
+				owner = {
+					remove_modifier = modifier_improve_relation_with_court
+				}
+				remove_variable = eafp_bakuhantaisei_politician_current_mission
+			}
+			flag:eafp_focus_on_administration = {
+				owner = {
+					remove_modifier = modifier_focus_on_administration
+				}
+				remove_variable = eafp_bakuhantaisei_politician_current_mission
+			}
+			flag:eafp_bill_review = {
+				owner = {
+					remove_modifier = modifier_bill_review
+				}
+				remove_variable = eafp_bakuhantaisei_politician_current_mission
+			}
+
+		}
+	}
+}
+
 add_bakuhantaisei_politician_influence = {
-	if = {
+	if = { # 평소
 		limit = {
 			var:eafp_bakuhantaisei_politician_influence_max >= {
 				value = var:eafp_bakuhantaisei_politician_influence
@@ -241,11 +335,31 @@ add_bakuhantaisei_politician_influence = {
 			value = $VALUE$
 		}
 	}
-	else = {
+	else_if = { # 합이 음수
+		limit = {
+			0 >= {
+				value = var:eafp_bakuhantaisei_politician_influence
+				add = $VALUE$
+			}
+		}
+		set_local_variable = {
+			name = temp
+			value = {
+				value = var:add_bakuhantaisei_politician_influence
+				multiply = -1
+			}
+		}
+		custom_description = {
+			text = add_bakuhantaisei_politician_influence
+			value = local_var:temp
+		}
+		remove_local_variable = temp
 		set_variable = {
 			name = eafp_bakuhantaisei_politician_influence
-			value = var:eafp_bakuhantaisei_politician_influence_max
+			value = 0
 		}
+	}
+	else = { # 합이 최대치 이상
 		set_local_variable = {
 			name = temp
 			value = {
@@ -258,6 +372,10 @@ add_bakuhantaisei_politician_influence = {
 			value = local_var:temp
 		}
 		remove_local_variable = temp
+		set_variable = {
+			name = eafp_bakuhantaisei_politician_influence
+			value = var:eafp_bakuhantaisei_politician_influence_max
+		}
 	}
 }
 
@@ -348,42 +466,81 @@ add_bakuhantaisei_politician_influence_calc_moderate = { # 중도파 등용
 	}
 }
 
+bakufu_kaikaku_progress_bar_monthly_calc = {
+	set_local_variable = {
+		name = sum
+		value = {
+			value = var:hitotsubashiha_influence_var
+			add = var:nankiha_influence_var
+		}
+	}
+	set_variable = {
+		name = hitotsubashiha_influence_var
+		value = {
+			value = var:hitotsubashiha_influence_var
+			multiply = 0.9
+			add = {
+				value = var:hitotsubashiha_influence_var
+				divide = local_var:sum
+				multiply = 100
+				multiply = 0.1
+			}
+		}
+	}
+	set_variable = {
+		name = nankiha_influence_var
+		value = {
+			value = var:nankiha_influence_var
+			multiply = 0.9
+			add = {
+				value = var:nankiha_influence_var
+				divide = local_var:sum
+				multiply = 100
+				multiply = 0.1
+			}
+		}
+	}
+	remove_local_variable = sum
+}
+
 bakufu_kaikaku_progress_bar_calc = {
 	je:je_bakufu_kaikaku = {
 		add_progress = {
 			name = bakufu_kaikaku_progress_bar
 			value = {
-				value = ROOT.var:hitotsubashiha_var
+				value = ROOT.var:hitotsubashiha_influence_var
 				divide = {
-					value = ROOT.var:hitotsubashiha_var
-					add = ROOT.var:nankiha_var
+					value = ROOT.var:hitotsubashiha_influence_var
+					add = ROOT.var:nankiha_influence_var
 				}
+				multiply = 100
 				subtract = "scripted_bar_progress(bakufu_kaikaku_progress_bar)"
+				multiply = -1
 			}
 		}
 	}
 }
 
-add_hitotsubashiha_var = {
+add_hitotsubashiha_influence_var = {
 	change_variable = {
-		name = hitotsubashiha_var
+		name = hitotsubashiha_influence_var
 		add = $VALUE$
 	}
 	bakufu_kaikaku_progress_bar_calc = yes
 	custom_description = {
-		text = add_hitotsubashiha_var
+		text = add_hitotsubashiha_influence_var
 		value = $VALUE$
 	}
 }
 
-add_nankiha_var = {
+add_nankiha_influence_var = {
 	change_variable = {
-		name = nankiha_var
+		name = nankiha_influence_var
 		add = $VALUE$
 	}
 	bakufu_kaikaku_progress_bar_calc = yes
 	custom_description = {
-		text = add_nankiha_var
+		text = add_nankiha_influence_var
 		value = $VALUE$
 	}
 }
@@ -416,11 +573,11 @@ add_nankiha_approval = {
 
 weekly_pulse_bakufu_kaikaku_progress_bar_faction = { 
 	set_variable = {
-		name = hitotsubashiha_var_monthly_add
+		name = hitotsubashiha_influence_var_monthly_add
 		value = 0
 	}
 	set_variable = {
-		name = nankiha_var_monthly_add
+		name = nankiha_influence_var_monthly_add
 		value = 0
 	}
 	# 인물에 따른 파벌 변수 변화
@@ -446,11 +603,11 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character multiply = 0.1 } # 수치조정 TODO
 	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_character multiply = 0.1 } # 수치조정 TODO
 	change_variable = {
-		name = hitotsubashiha_var_monthly_add
+		name = hitotsubashiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
 	}
 	change_variable = {
-		name = nankiha_var_monthly_add
+		name = nankiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_nankiha_from_character
 	}
 
@@ -485,22 +642,22 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs multiply = 1 } # 수치조정 TODO
 	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_igs multiply = 1 } # 수치조정 TODO
 	change_variable = {
-		name = hitotsubashiha_var_monthly_add
+		name = hitotsubashiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_igs
 	}
 	change_variable = {
-		name = nankiha_var_monthly_add
+		name = nankiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_nankiha_from_igs
 	}
 
 	# 변동치
 	change_variable = {
-		name = hitotsubashiha_var_monthly_add
-		add = modifier:country_hitotsubashiha_var_monthly_add
+		name = hitotsubashiha_influence_var_monthly_add
+		add = modifier:country_hitotsubashiha_influence_var_monthly_add
 	}
 	change_variable = {
-		name = nankiha_var_monthly_add
-		add = modifier:country_nankiha_var_monthly_add
+		name = nankiha_influence_var_monthly_add
+		add = modifier:country_nankiha_influence_var_monthly_add
 	}
 }
 
@@ -518,6 +675,7 @@ je_bakuhantaisei_STATE_weekly_pulse = {
 			multiply = { # 다이묘 땅에선 독립도에 따라 걷음
 				value = bakuhantaisei_$STATE$_independency_progress_bar_value
 				divide = 100
+				multiply = 0.5
 			}
 		}
 	}
@@ -750,7 +908,3 @@ tobaku_tokuritsu_third = {
 #		add_technology_researched = general_staff
 #	}
 #}
-
-japan_create_character = {
-	create_character = { template = eafp_shimazu_nariakira on_created = { set_variable = figure_var place_character_in_void = 1200 } }
-}

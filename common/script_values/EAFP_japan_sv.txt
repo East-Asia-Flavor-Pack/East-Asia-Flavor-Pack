@@ -270,24 +270,90 @@ bakufu_kaikaku_bakufu_politicians_activeness = { # 인물들이 행동을 취하
 	max = 1
 }
 
-bakufu_hitotsubashiha_hiritsu = {
-	value = var:hitotsubashiha_var
-	divide = {
-		value = var:hitotsubashiha_var
-		add = var:nankiha_var
+eafp_bakuhantaisei_politician_influence_monthly_add = { # 월마다 정치적 영향력 상승량
+	value = 2
+	if = {
+		limit = { is_hitotsubashiha = yes }
+		add = { # 0-0.5
+			value = owner.var:hitotsubashiha_influence_var
+			multiply = 0.005
+		}
 	}
-	multiply = 100
-	round = yes
+	else_if = {
+		limit = { is_nankiha = yes }
+		add = { # 0-0.5
+			value = owner.var:nankiha_influence_var
+			multiply = 0.005
+		}
+	}
+	else = {
+		add = 0.25
+	}
+	# skill traits의 interest_group_pol_str_mult 값 * 20
+	if = {
+		limit = { has_trait = popular_commander }
+		add = 0.4
+	}
+	if = {
+		limit = { has_trait = celebrity_commander }
+		add = 1
+	}
+	if = {
+		limit = { has_trait = basic_political_operator }
+		add = 1
+	}
+	if = {
+		limit = { has_trait = experienced_political_operator }
+		add = 2
+	}
+	if = {
+		limit = { has_trait = expert_political_operator }
+		add = 4
+	}
+	if = {
+		limit = { has_trait = inspirational_orator }
+		add = 1
+	}
+	if = {
+		limit = { has_trait = demagogue }
+		add = 2
+	}
+	if = {
+		limit = { has_trait = firebrand }
+		add = 3
+	}
+	if = {
+		limit = { has_trait = master_bureaucrat }
+		add = 1
+	}
+	if = {
+		limit = { has_trait = political_appointee }
+		add = -1
+	}
+	if = {
+		limit = { has_trait = inept }
+		add = -2
+	}
+	if = {
+		limit = { has_trait = inexperienced }
+		add = -1
+	}
+}
+
+bakufu_hitotsubashiha_hiritsu = {
+	value = var:hitotsubashiha_influence_var
+	divide = {
+		value = var:hitotsubashiha_influence_var
+		add = var:nankiha_influence_var
+	}
 }
 
 bakufu_nankiha_hiritsu = {
-	value = var:nankiha_var
+	value = var:nankiha_influence_var
 	divide = {
-		value = var:hitotsubashiha_var
-		add = var:nankiha_var
+		value = var:hitotsubashiha_influence_var
+		add = var:nankiha_influence_var
 	}
-	multiply = 100
-	round = yes
 }
 
 tobaku_army_size = {
