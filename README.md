@@ -11,6 +11,6 @@
 
 ## 참여하기
 
-- 디스코드 링크: https://discord.gg/jN7YJB3b
+- 디스코드 링크: [https://discord.gg/hTc8JAAc]
 - `메인` - `깃허브` 채널 들어가서 깃허브 닉네임 적으면 보고 초대함
 - https://github.com/East-Asia-Flavor-Pack 들어가서 초대 수락할 것
