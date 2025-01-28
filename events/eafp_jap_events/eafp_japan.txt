@@ -3384,6 +3384,62 @@ eafp_japan.1013 = { # 에도 지진
 	}
 }
 
+eafp_japan.1014 = { # 존 만지로
+	type = country_event
+	placement = ROOT
+
+	title = eafp_japan.1014.t
+	desc = eafp_japan.1014.d
+	flavor = eafp_japan.1014.f
+
+	duration = 3
+
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:manjiro_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+		create_character = {		
+			save_scope_as = manjiro_scope
+			on_created = {
+				place_character_in_void = 10000
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.1014.a
+		default_option = yes
+		
+		if = {
+			limit = { NOT = { has_technology_researched = paddle_steamer } }
+			add_technology_progress = {
+				technology = paddle_steamer
+				progress = 3500
+			}
+		}
+		else = {
+			add_technology_progress = {
+				technology = screw_frigate
+				progress = 3500
+			}
+		}
+
+		scope:manjiro_scope = {
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+
+}
+
 eafp_japan.2001 = { # 모리슨 호
 	type = country_event
 	placement = root
@@ -3608,7 +3664,6 @@ eafp_japan.2007 = {	# 아편전쟁 패배 소식
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
@@ -3629,6 +3684,56 @@ eafp_japan.2007 = {	# 아편전쟁 패배 소식
 
 		ai_chance = {
 			base = 100
+		}
+	}
+}
+
+eafp_japan.2008 = { # 쇼군과 내친왕의 결혼
+	type = country_event
+	placement = ROOT
+
+	title = eafp_japan.2008.t
+	desc = eafp_japan.2008.d
+	flavor = eafp_japan.2008.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:royal_marriage_character
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	
+	duration = 3
+	
+	trigger = {
+		ruler = {
+			age > 16
+			NOT = { has_variable = is_married }
+		}
+	}
+
+	immediate = {
+		capital = {
+			save_scope_as = capital_scope
+		}
+		ruler = {
+			save_scope_as = royal_marriage_character
+			set_variable = getting_married # for clothing script
+		}
+		# wedding_daughter_sister 커스텀 로컬 만들기 TODO
+	}
+
+	option = {
+		name = eafp_japan.2008.a
+		default_option = yes
+		add_modifier = { # influence mult
+			name = royal_marriage
+			months = normal_modifier_time
+		}
+		hidden_effect = {
+			remove_variable = getting_married
 		}
 	}
 }
@@ -3893,7 +3998,7 @@ eafp_japan.2181 = { # 히토츠바시파 정치인 암살
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto" # TODO
+		video = "gfx/event_pictures/eafp_sakuradamon_incident.bik"
 	}
 
 	duration = 3
@@ -3942,7 +4047,7 @@ eafp_japan.2182 = { # 난키파 정치인 암살
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	event_image = { 
-		video = "asia_confucianism_shinto" # TODO
+		video = "gfx/event_pictures/eafp_sakuradamon_incident.bik"
 	}
 
 	duration = 3
@@ -3977,8 +4082,6 @@ eafp_japan.2182 = { # 난키파 정치인 암살
 		}
 	}
 }
-
-# TODO 사임 강요 요구, 타협으로 중도파 등용, 낭인의 서양인 습격 등.
 
 # 막부 정책
 # 새 화폐 도입
@@ -5089,7 +5192,7 @@ eafp_japan.2308 = { # 히토츠바시파의 교토 상경 요구 TODO
 	}
 }
 
-eafp_japan.2309 = { # 히토츠바시파의 양이 요구 TODO
+eafp_japan.2309 = { # 조정의 양이 요구 TODO
 	type = country_event
 	placement = root
 
@@ -5250,6 +5353,324 @@ eafp_japan.2311 = { # 난키파 정치인 사임 요구
 	}
 }
 
+eafp_japan.3001 = { # 대정봉환
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3001.t
+	desc = eafp_japan.3001.d
+	flavor = eafp_japan.3001.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		trigger_event = {
+			id = eafp_japan.3002
+			days = { 15 30 }
+		}
+		trigger_event = {
+			id = eafp_japan.3003
+			days = { 30 60 }
+			popup = yes
+		}
+		trigger_event = {
+			id = eafp_japan.3004
+			days = { 45 60 }
+		}
+		trigger_event = {
+			id = eafp_japan.3005
+			days = { 60 75 }
+			popup = yes
+		}
+	}
+
+	option = {
+		name = eafp_japan.3001.a
+		default_option = yes
+	}
+}
+
+eafp_japan.3002 = { # 도막파의 폭동
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3002.t
+	desc = eafp_japan.3002.d
+	flavor = eafp_japan.3002.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_japan.3002.a
+		default_option = yes
+
+		capital.state_region = {
+			add_devastation = 10
+		}
+	}
+}
+
+eafp_japan.3003 = { # 왕정복고 쿠데타
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3003.t
+	desc = eafp_japan.3003.d
+	flavor = eafp_japan.3003.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		create_country = {
+			tag = NIP
+			origin = this
+			province = p:x8EC4C9
+			on_created = {
+				change_relations = {
+					country = c:JAP
+					value = -50
+				}
+			}
+		}
+		c:NIP = {
+			random_scope_state = {
+				create_building={
+					building="building_barracks"
+					level=2
+					reserves=1
+				}
+			}
+			create_bidirectional_truce = {
+				country = c:JAP
+				months = 36
+			}
+			#ig:ig_landowners = {
+			#	set_interest_group_name = ig_daimyo
+			#}
+			#ig:ig_devout = {
+			#	set_interest_group_name = ig_kokugakusha
+			#}
+			#ig:ig_intelligentsia = {
+			#	set_interest_group_name = ig_rangakusha
+			#}
+			#ig:ig_petty_bourgeoisie = {
+			#	set_interest_group_name = ig_kashin
+			#}
+			#ig:ig_trade_unions = {
+			#	set_interest_group_name = ig_shokunin
+			#}
+			#ig:ig_industrialists = {
+			#	set_interest_group_name = ig_shonin
+			#}
+		}
+	}
+
+	option = {
+		name = eafp_japan.3003.a
+		default_option = yes
+	}
+}
+
+eafp_japan.3004 = { # 저택에서의 전투
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3004.t
+	desc = eafp_japan.3004.d
+	flavor = eafp_japan.3004.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_japan.3004.a
+		default_option = yes
+	}
+}
+
+eafp_japan.3005 = { # 막부 타도 선언
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3005.t
+	desc = eafp_japan.3005.d
+	flavor = eafp_japan.3005.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		assign_tobaku_hans = yes
+		set_variable = assign_tobaku_hans_var
+		c:NIP = { trigger_event = { id = eafp_japan.3006 days = 15 } }
+		trigger_event = { id = eafp_japan.3007 days = 30 }
+		c:NIP = { trigger_event = { id = eafp_japan.3008 days = 30 } }
+	}
+
+	option = {
+		name = eafp_japan.3005.a
+		default_option = yes
+	}
+
+	option = {
+		name = eafp_japan.3005.b
+
+		play_as = c:NIP
+	}
+}
+
+eafp_japan.3006 = { # 의견일치
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3006.t
+	desc = eafp_japan.3006.d
+	flavor = eafp_japan.3006.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	event_image = {
+		video = "gfx/event_pictures/eafp_taisei_hokan.bik"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		every_country = {
+			limit = {
+				has_variable = tobaku_han_var
+			}
+			c:NIP = {
+				annex = PREV
+			}
+		}
+		c:NIP = {
+			add_technology_researched = napoleonic_warfare
+			add_technology_researched = general_staff
+		}
+	}
+
+	option = {
+		name = eafp_japan.3006.a
+		default_option = yes
+	}
+}
+
+eafp_japan.3007 = { # 전쟁의 시작
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3007.t
+	desc = eafp_japan.3007.d
+	flavor = eafp_japan.3007.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	event_image = {
+		video = "europenorthamerica_before_the_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		create_diplomatic_play = {
+			target_country = c:NIP
+			type = dp_annex_war
+			escalation = 80
+			add_war_goal = { holder = c:NIP target_country = c:JAP type = annex_country }
+		}
+		change_infamy = -200
+	}
+
+	option = {
+		name = eafp_japan.3007.a
+		default_option = yes
+
+		add_journal_entry = { type = je_boshin_war_sabaku }
+	}
+}
+
+eafp_japan.3008 = { # 전쟁의 시작
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3008.t
+	desc = eafp_japan.3008.d
+	flavor = eafp_japan.3008.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	event_image = {
+		video = "europenorthamerica_before_the_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_japan.3008.a
+		default_option = yes
+
+		add_journal_entry = { type = je_boshin_war_tobaku }
+	}
+}
+
+
 
 eafp_japan.4001 = { # 개항 요구
 	type = country_event
@@ -5260,12 +5681,10 @@ eafp_japan.4001 = { # 개항 요구
 
 	duration = 3
 
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
 
 	event_image = {
-		video = "asia_westerners_arriving"
+		video = "votp_gunboat_diplomacy"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -5305,8 +5724,6 @@ eafp_japan.4002 = { # 류큐의 개항
 	duration = 3
 
 	icon = "gfx/interface/icons/event_icons/event_trade.dds"
-
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
 	
 	event_image = {
 		video = "asia_westerners_arriving"
@@ -5342,8 +5759,6 @@ eafp_japan.4003 = { # 천황의 밀칙
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
-
 	event_image = {
 		video = "asia_confucianism_shinto"
 	}
@@ -5375,8 +5790,6 @@ eafp_japan.4004 = { # 외국인의 후지산 등반
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
-
 	event_image = {
 		video = "asia_westerners_arriving"
 	}
@@ -5384,29 +5797,19 @@ eafp_japan.4004 = { # 외국인의 후지산 등반
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	trigger = {
+		any_country = {
+			country_rank >= rank_value:great_power
+			has_interest_marker_in_region = region_japan
+		}
 	}
 
 	immediate = {
-		if = {
+		random_country = {
 			limit = {
-				any_country = {
-					country_rank >= rank_value:great_power
-					has_strategy = ai_strategy_economic_imperialism
-				}
+				country_rank >= rank_value:great_power
+				has_interest_marker_in_region = region_japan
 			}
-			random_country = {
-				limit = {
-					country_rank >= rank_value:great_power
-					has_strategy = ai_strategy_economic_imperialism
-				}
-				save_scope_as = country_scope
-			}
-		}
-		else = {
-			random_country = {
-				limit = { country_rank >= rank_value:great_power }
-				save_scope_as = country_scope
-			}
+			save_scope_as = country_scope
 		}
 	}
 
@@ -5414,6 +5817,394 @@ eafp_japan.4004 = { # 외국인의 후지산 등반
 		name = eafp_japan.4004.a
 		add_radicals = {
 			value = small_radicals
+		}
+	}
+}
+
+eafp_japan.4005 = { # 외국인 살해
+	type = country_event
+	placement = scope:state_scope
+
+	duration = 3
+
+	title = eafp_japan.4005.t
+	desc = eafp_japan.4005.d
+	flavor = eafp_japan.4005.f
+
+	event_image = {
+		video = "southamerica_public_figure_assassination"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_bakufu_kaikaku
+		any_scope_state = {
+			state_is_in_japan = yes
+			has_port = yes
+			radical_fraction = {
+				value >= 0.1
+			}
+		}
+		any_country = {
+			country_rank >= rank_value:major_power
+			has_interest_marker_in_region = region_japan
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	cooldown =  { months = 12 }
+	
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_japan = yes
+				has_port = yes
+				radical_fraction = {
+					value >= 0.1
+				}
+			}
+			save_scope_as = state_scope
+		}
+		random_country = {
+			limit = {
+				country_rank >= rank_value:great_power
+				has_interest_marker_in_region = region_japan
+				NOT = { has_war_with = ROOT }
+			}
+			save_scope_as = country_scope
+		}
+	}
+	
+	option = {
+		name = eafp_japan.4005.a
+		default_option = yes
+
+		add_treasury = {
+			value = money_amount_multiplier_medium
+			multiply = -1
+		}
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = -10
+		}
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = 15
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.4005.b
+
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = 5
+		}
+		hidden_effect = {
+			random_list = {
+				10 = {
+					trigger_event = { # 돈 빌려줘
+						id = eafp_japan.4006
+						days = { 10 30 }
+					}
+				}
+				10 = {
+					trigger_event = { # 포격
+						id = eafp_japan.4007
+						days = { 10 30 }
+					}
+				}
+				10 = { }
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.4005.c
+
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = -35
+			}
+		}
+		scope:state_scope = {
+			add_loyalists_in_state = {
+				value = small_radicals
+			}
+		}
+	}
+}
+
+eafp_japan.4006 = { # 외국인 살해 - 번의 반응
+	type = country_event
+	placement = scope:state_scope
+
+	duration = 3
+
+	title = eafp_japan.4006.t
+	desc = eafp_japan.4006.d
+	flavor = eafp_japan.4006.f
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		
+	}
+	
+	option = {
+		name = eafp_japan.4006.a
+		default_option = yes
+
+		add_treasury = {
+			value = money_amount_multiplier_medium
+			multiply = -1
+		}
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = -15
+		}
+	}
+
+	option = {
+		name = eafp_japan.4006.b
+
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = 10
+		}
+		add_bakuhantaisei_state_loyalty = {
+			TARGET = scope:state_scope
+			VALUE = -10
+		}
+	}
+}
+
+eafp_japan.4007 = { # 외국인 살해 - 포격전
+	type = country_event
+	placement = scope:state_scope
+
+	duration = 3
+
+	title = eafp_japan.4007.t
+	desc = eafp_japan.4007.d
+	flavor = eafp_japan.4007.f
+
+	event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	immediate = {
+		
+	}
+	
+	option = {
+		name = eafp_japan.4007.a
+		default_option = yes
+
+		scope:state_scope.state_region = {
+			add_devastation = 10
+		}
+	}
+}
+
+eafp_japan.4008 = { # 낭인들의 외국인 습격
+	type = country_event
+	placement = scope:state_scope
+
+	duration = 3
+
+	title = eafp_japan.4008.t
+	desc = eafp_japan.4008.d
+	flavor = eafp_japan.4008.f
+
+	event_image = {
+		video = "southamerica_public_figure_assassination"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		any_scope_state = {
+			state_is_in_japan = yes
+			has_port = yes
+			radical_fraction = {
+				value >= 0.1
+			}
+		}
+		any_country = {
+			country_rank >= rank_value:major_power
+			has_interest_marker_in_region = region_japan
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	cooldown =  { months = 6 }
+	
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_japan = yes
+				has_port = yes
+				radical_fraction = {
+					value >= 0.1
+				}
+			}
+			save_scope_as = state_scope
+		}
+		random_country = {
+			limit = {
+				country_rank >= rank_value:great_power
+				has_interest_marker_in_region = region_japan
+				NOT = { has_war_with = ROOT }
+			}
+			save_scope_as = country_scope
+		}
+	}
+	
+	option = {
+		name = eafp_japan.4008.a
+		default_option = yes
+
+		add_treasury = {
+			value = money_amount_multiplier_medium
+			multiply = -1
+		}
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = -10
+		}
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = 15
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.4008.b
+
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = -35
+			}
+		}
+		scope:state_scope = {
+			add_loyalists_in_state = {
+				value = small_radicals
+			}
+		}
+	}
+}
+
+eafp_japan.4009 = { # 공사관 방화
+	type = country_event
+	placement = scope:state_scope
+
+	duration = 3
+
+	title = eafp_japan.4009.t
+	desc = eafp_japan.4009.d
+	flavor = eafp_japan.4009.f
+
+	event_image = {
+		video = "unspecific_fire"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		any_scope_state = {
+			state_is_in_japan = yes
+			has_port = yes
+			radical_fraction = {
+				value >= 0.1
+			}
+		}
+		any_country = {
+			country_rank >= rank_value:major_power
+			has_interest_marker_in_region = region_japan
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	cooldown =  { months = 12 }
+	
+	immediate = {
+		random_scope_state = {
+			limit = {
+				state_is_in_japan = yes
+				has_port = yes
+				radical_fraction = {
+					value >= 0.1
+				}
+			}
+			save_scope_as = state_scope
+		}
+		random_country = {
+			limit = {
+				country_rank >= rank_value:great_power
+				has_interest_marker_in_region = region_japan
+				NOT = { has_war_with = ROOT }
+			}
+			save_scope_as = country_scope
+		}
+	}
+	
+	option = {
+		name = eafp_japan.4009.a
+		default_option = yes
+
+		add_treasury = {
+			value = money_amount_multiplier_medium
+			multiply = -1
+		}
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:state_scope
+			VALUE = -10
+		}
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = 15
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.4009.b
+
+		scope:country_scope = {
+			change_relations = {
+				country = ROOT
+				value = -35
+			}
+		}
+		scope:state_scope = {
+			add_loyalists_in_state = {
+				value = small_radicals
+			}
 		}
 	}
 }
