@@ -102,7 +102,7 @@ je_bakuhantaisei = {
 
 	on_yearly_pulse = {
 		effect = {
-			every_scope_character = { # 막부 정치인이기만 한 인물 사망 판정
+			every_scope_character = { # 막부 정치인 인물 사망 판정
 				limit = {
 					has_variable = eafp_bakuhantaisei_politician_influence
 					is_busy = yes # immortal 판정 trigger는 없음. (원래)
@@ -111,6 +111,7 @@ je_bakuhantaisei = {
 						limit = { modifier:character_health_add >= 1 }
 						age >= {
 							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
+							add = -10 # 그냥 임의로 넣음
 							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
 							add = {
 								value = modifier:character_health_add
@@ -122,6 +123,7 @@ je_bakuhantaisei = {
 					trigger_else = {
 						age >= {
 							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
+							add = -10 # 그냥 임의로 넣음
 							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
 							add = {
 								value = modifier:character_health_add
@@ -133,7 +135,7 @@ je_bakuhantaisei = {
 				}
 				trigger_event = {
 					id = eafp_japan.9
-					days = { 30 364 }
+					days = { 0 364 }
 				}
 			}
 		}
@@ -678,12 +680,6 @@ je_bakufu_kaikaku = {
 	scripted_button = bakufu_seisaku_junochisui_start_button
 	scripted_button = bakufu_seisaku_agechirei_start_button
 	scripted_button = bakufu_seisaku_kokishukusei_start_button
-
-
-	#scripted_button = japan_bakufu_kaikaku_button
-	#scripted_button = japan_hitotsubashiha_phase_1_button
-	#scripted_button = japan_hitotsubashiha_phase_2_button
-	#scripted_button = japan_hitotsubashiha_phase_3_button
 	
 	status_desc = {
 		
@@ -879,6 +875,7 @@ je_bakufu_kaikaku = {
 									trigger = {
 										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
 										NOT = { has_variable = eafpjap2302_cooldown }
+										has_technology_researched = currency_standards
 									}
 									trigger_event = {
 										id = eafp_japan.2302
@@ -890,6 +887,8 @@ je_bakufu_kaikaku = {
 									trigger = {
 										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
 										NOT = { has_variable = eafpjap2302_cooldown }
+										exists = s:STATE_KANTO.region_state:JAP
+										exists = s:STATE_KANSAI.region_state:JAP
 									}
 									trigger_event = {
 										id = eafp_japan.2303
@@ -901,6 +900,8 @@ je_bakufu_kaikaku = {
 									trigger = {
 										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
 										NOT = { has_variable = eafpjap2302_cooldown }
+										exists = s:STATE_KANTO.region_state:JAP
+										exists = s:STATE_KANSAI.region_state:JAP
 									}
 									trigger_event = {
 										id = eafp_japan.2304
@@ -912,6 +913,7 @@ je_bakufu_kaikaku = {
 									trigger = {
 										NOT = { has_variable = je_bakufu_seisaku_new_currency_start }
 										NOT = { has_variable = eafpjap2302_cooldown }
+										has_technology_researched = mass_communication
 									}
 									trigger_event = {
 										id = eafp_japan.2305
@@ -1148,10 +1150,13 @@ je_eafpjap2310 = {
 
 	group = je_group_internal_affairs
 
-	complete = { 
-		OR = {
-			NOT = { exists = scope:target }
-			NOT = { has_variable = eafp_bakuhantaisei_politician_influence }
+	complete = {
+		custom_tooltip = {
+			text = target_character_resigned_tt
+			OR = {
+				NOT = { exists = scope:target }
+				NOT = { scope:target = { has_variable = eafp_bakuhantaisei_politician_influence } }
+			}
 		}
 	}
 
@@ -1187,10 +1192,13 @@ je_eafpjap2311 = {
 
 	group = je_group_internal_affairs
 
-	complete = { 
-		OR = {
-			NOT = { exists = scope:target }
-			NOT = { has_variable = eafp_bakuhantaisei_politician_influence }
+	complete = {
+		custom_tooltip = {
+			text = target_character_resigned_tt
+			OR = {
+				NOT = { exists = scope:target }
+				NOT = { scope:target = { has_variable = eafp_bakuhantaisei_politician_influence } }
+			}
 		}
 	}
 
