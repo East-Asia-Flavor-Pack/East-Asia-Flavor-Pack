@@ -64,7 +64,7 @@ je_bakuhantaisei = {
 
 	complete = { 
 		custom_tooltip = {
-			text = je_bakuhantaisei_complete_tt
+			text = bakufu_kaikaku_complete_tt
 			has_variable = bakufu_kaikaku_complete_var
 		}
 	}
@@ -87,16 +87,13 @@ je_bakuhantaisei = {
 	}
 
 	on_monthly_pulse = {
-		effect = {
-			every_scope_character = {
-				limit = {
-					has_variable = eafp_bakuhantaisei_politician_influence
-				}
-				change_variable = {
-					name = eafp_bakuhantaisei_politician_influence
-					add = eafp_bakuhantaisei_politician_influence_monthly_add
-				}
-			}
+		random_events = {
+			250 = 0
+			10 = eafp_japan.1003
+			10 = eafp_japan.1004
+			10 = eafp_japan.1005
+			10 = eafp_japan.1006
+			10 = eafp_japan.1015
 		}
 	}
 
@@ -186,6 +183,17 @@ je_bakuhantaisei_TOHOKU = {
 		je_bakuhantaisei_STATE_clear = { STATE = TOHOKU }
 	}
 
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
+		je_bakuhantaisei_STATE_clear = { STATE = TOHOKU }
+	}
+
 	invalid = {
 		NOT = { exists = s:STATE_TOHOKU.region_state:JAP }
 	}
@@ -237,6 +245,17 @@ je_bakuhantaisei_KANTO = {
 	}
 
 	on_fail = {
+		je_bakuhantaisei_STATE_clear = { STATE = KANTO }
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
 		je_bakuhantaisei_STATE_clear = { STATE = KANTO }
 	}
 
@@ -294,6 +313,17 @@ je_bakuhantaisei_CHUBU = {
 		je_bakuhantaisei_STATE_clear = { STATE = CHUBU }
 	}
 
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
+		je_bakuhantaisei_STATE_clear = { STATE = CHUBU }
+	}
+
 	invalid = {
 		NOT = { exists = s:STATE_CHUBU.region_state:JAP }
 	}
@@ -345,6 +375,17 @@ je_bakuhantaisei_KANSAI = {
 	}
 
 	on_fail = {
+		je_bakuhantaisei_STATE_clear = { STATE = KANSAI }
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
 		je_bakuhantaisei_STATE_clear = { STATE = KANSAI }
 	}
 
@@ -402,6 +443,17 @@ je_bakuhantaisei_KYUSHU = {
 		je_bakuhantaisei_STATE_clear = { STATE = KYUSHU }
 	}
 
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
+		je_bakuhantaisei_STATE_clear = { STATE = KYUSHU }
+	}
+
 	invalid = {
 		NOT = { exists = s:STATE_KYUSHU.region_state:JAP }
 	}
@@ -456,6 +508,17 @@ je_bakuhantaisei_CHUGOKU = {
 		je_bakuhantaisei_STATE_clear = { STATE = CHUGOKU }
 	}
 
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
+		je_bakuhantaisei_STATE_clear = { STATE = CHUGOKU }
+	}
+
 	invalid = {
 		NOT = { exists = s:STATE_CHUGOKU.region_state:JAP }
 	}
@@ -507,6 +570,17 @@ je_bakuhantaisei_SHIKOKU = {
 	}
 
 	on_fail = {
+		je_bakuhantaisei_STATE_clear = { STATE = SHIKOKU }
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = bakufu_kaikaku_complete_tt
+			has_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
+	on_complete = {
 		je_bakuhantaisei_STATE_clear = { STATE = SHIKOKU }
 	}
 
@@ -672,6 +746,7 @@ je_bakufu_kaikaku = {
 
 	scripted_button = japan_kaikakuha_button
 	scripted_button = japan_hoshuha_button
+	scripted_button = japan_bakufu_kaikaku_button
 	
 	scripted_button = repeal_ikokusen_uchiharairei_button
 	scripted_button = reenact_ikokusen_uchiharairei_button
@@ -693,6 +768,7 @@ je_bakufu_kaikaku = {
 
 	immediate = {
 		# hitotsubashiha_influence_var와 nankiha_influence_var는 history에서 설정
+
 		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 	}
 
@@ -717,18 +793,58 @@ je_bakufu_kaikaku = {
 		}
 	}
 
-	on_complete = { 
-		remove_variable = hitotsubashiha_influence_var_monthly_add
-		remove_variable = nankiha_influence_var_monthly_add
-		set_variable = bakufu_kaikaku_complete_var
+	on_complete = {
+		# 파벌에 따른 다이묘 approval
+		hidden_effect = {
+			remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
+			remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
+			set_local_variable = {
+				name = modifier_multiplier
+				value = {
+					je:je_bakufu_kaikaku = {
+						value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
+						subtract = 50
+						multiply = ROOT.bakufu_hitotsubashiha_hiritsu
+						add = {
+							value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
+							subtract = 50
+							multiply = ROOT.bakufu_nankiha_hiritsu
+						}
+						divide = 50
+					}
+				}
+			}
+			if = {
+				limit = { local_var:modifier_multiplier >= 0 }
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_positive_modifier
+					multiplier = local_var:modifier_multiplier
+					months = 24
+					is_decaying = yes
+				}
+			}
+			else = {
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_negative_modifier
+					multiplier = {
+						value = local_var:modifier_multiplier
+						multiply = -1
+					}
+					months = 24
+					is_decaying = yes
+				}
+			}
+			remove_variable = hitotsubashiha_influence_var_monthly_add
+			remove_variable = nankiha_influence_var_monthly_add
+			set_variable = bakufu_kaikaku_complete_var
+		}
+
+		trigger_event = eafp_japan.2999
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			change_variable = { name = hitotsubashiha_influence_var add = var:hitotsubashiha_influence_var_monthly_add } 
-			change_variable = { name = nankiha_influence_var add = var:nankiha_influence_var_monthly_add } 
 			bakufu_kaikaku_progress_bar_monthly_calc = yes
-			bakufu_kaikaku_progress_bar_calc = yes
 
 			# 히토츠바시 vs 난키 대립 이벤트
 			random_list = {
@@ -926,6 +1042,8 @@ je_bakufu_kaikaku = {
 					}
 				}
 			}
+
+			weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 		}
 
 		random_events = {
@@ -939,6 +1057,41 @@ je_bakufu_kaikaku = {
 	on_weekly_pulse = {
 		effect = {
 			weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
+			# 파벌에 따른 다이묘 approval - 초기 설정은 history에서 함
+			remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
+			remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
+			set_local_variable = {
+				name = modifier_multiplier
+				value = {
+					je:je_bakufu_kaikaku = {
+						value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
+						subtract = 50
+						multiply = ROOT.bakufu_hitotsubashiha_hiritsu
+						add = {
+							value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
+							subtract = 50
+							multiply = ROOT.bakufu_nankiha_hiritsu
+						}
+						divide = 50
+					}
+				}
+			}
+			if = {
+				limit = { local_var:modifier_multiplier >= 0 }
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_positive_modifier
+					multiplier = local_var:modifier_multiplier
+				}
+			}
+			else = {
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_negative_modifier
+					multiplier = {
+						value = local_var:modifier_multiplier
+						multiply = -1
+					}
+				}
+			}
 		}
 	}
 
@@ -947,8 +1100,8 @@ je_bakufu_kaikaku = {
 	should_be_pinned_by_default = yes
 }
 
-je_bakufu_kaikoku = {
-	icon = "gfx/interface/icons/goods_icons/man_o_wars.dds"
+je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
+	icon = "gfx/interface/icons/goods_icons/event_trade.dds"
 
 	group = je_group_historical_content
 
@@ -956,6 +1109,7 @@ je_bakufu_kaikoku = {
 		NOT = { has_law = law_type:law_isolationism }
 		NOT = { has_law = law_type:law_traditionalism }
 		NOT = { has_law = law_type:law_closed_borders }
+		is_subject = no
 	}
 
 	on_complete = { 
@@ -970,15 +1124,25 @@ je_bakufu_kaikoku = {
 		}
 	}
 
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = meiji.5
+			10 = meiji.11
+			10 = meiji.12
+		}
+	}
+
 	weight = 10000
 }
 
-je_bakufu_guntai = {
+je_bakufu_guntai = { # je_meiji_army에 대응
 	icon = "gfx/interface/icons/war_goals/conquer_state.dds"
 
 	group = je_group_historical_content
 
-	complete = { 
+	complete = {
+		NOT = { has_law = law_type:law_serfdom }
 		army_size >= 100
 		navy_size >= 10
 		has_technology_researched = napoleonic_warfare
@@ -1022,13 +1186,26 @@ je_bakufu_guntai = {
 			name = modifier_bakufu_guntai_complete
 			months = 60
 		}
+		trigger_event = {
+			id = meiji.3
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			50 = 0
+			10 = meiji.4
+			10 = meiji.9
+			10 = meiji.10
+			50 = eafp_japan.2401
+		}
 	}
 
 	weight = 10000
 
 }
 
-je_bakufu_naibu = {
+je_bakufu_naibu = { # je_meiji_restoration에 대응
 	icon = "gfx/interface/icons/pops_icons/bureaucrats.dds"
 
 	group = je_group_historical_content
@@ -1042,9 +1219,14 @@ je_bakufu_naibu = {
 
 	complete = { 
 		scope:journal_entry = { is_goal_complete = yes }
+
+		has_law = law_type:law_monarchy
+		NOT = { has_modifier = declared_bankruptcy }
 		ig:ig_landowners = {
 			is_in_government = yes
 		}
+		has_insurrectionary_interest_groups = no
+		is_at_war = no
 		government_legitimacy >= 80
 		bureaucracy >= 0
 		any_scope_building = {
@@ -1067,15 +1249,43 @@ je_bakufu_naibu = {
 		}
 	}
 
+	is_progressing = {
+		has_law = law_type:law_monarchy
+		NOT = { has_modifier = declared_bankruptcy }
+		ig:ig_landowners = {
+			is_in_government = yes
+		}
+		has_insurrectionary_interest_groups = no
+		is_at_war = no
+		government_legitimacy >= 80
+		bureaucracy >= 0
+		any_scope_building = {
+			is_building_type = building_university
+			occupancy > 0.9
+			level >= 5
+		}
+		literacy_rate >= 0.25
+	}
+
 	on_monthly_pulse = {
 		effect = {
 			if = {
 				limit = {
+					has_law = law_type:law_monarchy
+					NOT = { has_modifier = declared_bankruptcy }
 					ig:ig_landowners = {
 						is_in_government = yes
 					}
 					has_insurrectionary_interest_groups = no
 					is_at_war = no
+					government_legitimacy >= 80
+					bureaucracy >= 0
+					any_scope_building = {
+						is_building_type = building_university
+						occupancy > 0.9
+						level >= 5
+					}
+					literacy_rate >= 0.25
 				}
 				change_variable = {
 					name = shogunate_var
@@ -1094,11 +1304,9 @@ je_bakufu_naibu = {
 	}
 
 	weight = 10000
-
-	
 }
 
-je_bakufu_zaisei = {
+je_bakufu_zaisei = { # je_meiji_economy에 대응
 	icon = "gfx/interface/icons/event_icons/event_industry.dds"
 
 	group = je_group_historical_content
@@ -1108,7 +1316,7 @@ je_bakufu_zaisei = {
 			is_goal_complete = yes
 		}
 		gold_reserves > 0
-		s:STATE_KANTO.region_state:JAP = {
+		any_scope_state = {
 			is_incorporated = yes
 			any_scope_building = {
 				is_building_type = building_urban_center
@@ -1126,6 +1334,15 @@ je_bakufu_zaisei = {
 		add_modifier = {
 			name = modifier_bakufu_zaisei_complete
 			months = 60
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = meiji.6
+			10 = meiji.7
+			10 = meiji.8
 		}
 	}
 

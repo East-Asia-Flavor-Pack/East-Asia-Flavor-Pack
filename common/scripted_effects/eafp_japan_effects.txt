@@ -42,6 +42,7 @@ create_bakufu_politician_character = {
 			create_character = {
 				age = { 40 60 }
 				ideology = $IDEOLOGY$
+				religion = rel:confucian
 				on_created = {
 					set_character_busy_and_immortal = yes
 					set_variable = {
@@ -73,6 +74,7 @@ create_bakufu_politician_character = {
 			create_character = {
 				age = { 40 60 }
 				ideology = $IDEOLOGY$
+				religion = rel:confucian
 				on_created = {
 					set_character_busy_and_immortal = yes
 					set_variable = {
@@ -106,6 +108,7 @@ create_bakufu_politician_character = {
 					create_character = {
 						age = { 40 60 }
 						ideology = $IDEOLOGY$
+						religion = rel:confucian
 						last_name = Ii
 						on_created = {
 							set_character_busy_and_immortal = yes
@@ -138,6 +141,7 @@ create_bakufu_politician_character = {
 					create_character = {
 						age = { 40 60 }
 						ideology = $IDEOLOGY$
+						religion = rel:confucian
 						last_name = Sakai
 						on_created = {
 							set_character_busy_and_immortal = yes
@@ -210,7 +214,7 @@ remove_bakufu_politician_role = { # scope = character
 		limit = { c:JAP = { var:rojushuza_var ?= PREV } }
 		c:JAP = {
 			remove_variable = rojushuza_var
-			trigger_event = eafp_japan.3
+			trigger_event = eafp_japan.4
 		}
 	}
 	else_if = {
@@ -467,6 +471,8 @@ add_bakuhantaisei_politician_influence_calc_moderate = { # 중도파 등용
 }
 
 bakufu_kaikaku_progress_bar_monthly_calc = {
+	change_variable = { name = hitotsubashiha_influence_var add = var:hitotsubashiha_influence_var_monthly_add } 
+	change_variable = { name = nankiha_influence_var add = var:nankiha_influence_var_monthly_add }
 	set_local_variable = {
 		name = sum
 		value = {
@@ -501,6 +507,17 @@ bakufu_kaikaku_progress_bar_monthly_calc = {
 		}
 	}
 	remove_local_variable = sum
+	clamp_variable = {
+		name = hitotsubashiha_influence_var
+		max = 10000
+		min = 5
+	}
+	clamp_variable = {
+		name = nankiha_influence_var
+		max = 10000
+		min = 5
+	}
+	bakufu_kaikaku_progress_bar_calc = yes
 }
 
 bakufu_kaikaku_progress_bar_calc = {
@@ -591,17 +608,23 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 	}
 	every_scope_character = {
 		if = {
-			limit = { is_hitotsubashiha = yes }
+			limit = {
+				is_hitotsubashiha = yes
+				popularity > 0
+			}
 			ROOT = { change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character add = PREV.popularity } }
 		}
 		if = {
-			limit = { is_nankiha = yes }
+			limit = {
+				is_nankiha = yes
+				popularity > 0
+			}
 			ROOT = { change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_character add = PREV.popularity } }
 		}
 		
 	}
-	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character multiply = 0.1 } # 수치조정 TODO
-	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_character multiply = 0.1 } # 수치조정 TODO
+	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_character multiply = 0.02 } # 수치조정 TODO
+	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_character multiply = 0.02 } # 수치조정 TODO
 	change_variable = {
 		name = hitotsubashiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_character
@@ -695,16 +718,20 @@ je_bakuhantaisei_STATE_weekly_pulse = {
 		}
 	}
 	if = {
-		limit = { bakuhantaisei_$STATE$_independency_progress_bar_value >= 50 }
+		limit = { bakuhantaisei_$STATE$_loyalty_progress_bar_value >= 50 }
 		ig:ig_landowners = {
 			remove_modifier = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
 			remove_modifier = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
 			add_modifier = {
 				name = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
 				multiplier = {
-					value = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+					value = ROOT.bakuhantaisei_$STATE$_loyalty_progress_bar_value
 					subtract = 50
-					divide = 50
+					multiply = {
+						value = 100
+						subtract = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+					}
+					divide = 5000
 				}
 			}
 		}
@@ -717,8 +744,12 @@ je_bakuhantaisei_STATE_weekly_pulse = {
 				name = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
 				multiplier = {
 					value = 50
-					subtract = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
-					divide = 50
+					subtract = ROOT.bakuhantaisei_$STATE$_loyalty_progress_bar_value
+					multiply = {
+						value = 100
+						subtract = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+					}
+					divide = 5000
 				}
 			}
 		}
@@ -726,15 +757,84 @@ je_bakuhantaisei_STATE_weekly_pulse = {
 }
 je_bakuhantaisei_STATE_clear = {
 	hidden_effect = {
-		remove_variable = bakuhantaisei_tax_collection_lose_$STATE$_var
+		# je_bakuhantaisei_STATE_weekly_pulse와 비슷한데 감쇠 붙음
+		set_variable = {
+			name = bakuhantaisei_tax_collection_lose_$STATE$_var # 몇%의 세금 걷지 못하는지 계산
+			value = {
+				value = 1
+				subtract = { # 막부 직할령에선 완전히 걷음
+					value = bakuhantaisei_$STATE$_goryo_progress_bar_value
+					divide = 100
+				}
+				multiply = { # 다이묘 땅에선 독립도에 따라 걷음
+					value = bakuhantaisei_$STATE$_independency_progress_bar_value
+					divide = 100
+					multiply = 0.5
+				}
+			}
+		}
 		s:STATE_$STATE$.region_state:JAP = {
 			remove_modifier = bakuhantaisei_tax_collection_lose_modifier
 			remove_modifier = bakuhantaisei_han_independency_modifier
+			add_modifier = {
+				name = bakuhantaisei_tax_collection_lose_modifier
+				multiplier = ROOT.var:bakuhantaisei_tax_collection_lose_$STATE$_var
+				months = 24
+				is_decaying = yes
+			}
+			add_modifier = {
+				name = bakuhantaisei_han_independency_modifier
+				multiplier = {
+					value = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+					divide = 100
+				}
+				months = 24
+					is_decaying = yes
+			}
 		}
-		ig:ig_landowners = {
-			remove_modifier = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
-			remove_modifier = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
+		if = {
+			limit = { bakuhantaisei_$STATE$_loyalty_progress_bar_value >= 50 }
+			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
+				add_modifier = {
+					name = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
+					multiplier = {
+						value = ROOT.bakuhantaisei_$STATE$_loyalty_progress_bar_value
+						subtract = 50
+						multiply = {
+							value = 100
+							subtract = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+						}
+						divide = 5000
+					}
+					months = 24
+					is_decaying = yes
+				}
+			}
 		}
+		else = {
+			ig:ig_landowners = {
+				remove_modifier = bakuhantaisei_daimyo_approval_positive_$STATE$_modifier
+				remove_modifier = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
+				add_modifier = {
+					name = bakuhantaisei_daimyo_approval_negative_$STATE$_modifier
+					multiplier = {
+						value = 50
+						subtract = ROOT.bakuhantaisei_$STATE$_loyalty_progress_bar_value
+						multiply = {
+							value = 100
+							subtract = ROOT.bakuhantaisei_$STATE$_independency_progress_bar_value
+						}
+						divide = 5000
+					}
+					months = 24
+					is_decaying = yes
+				}
+			}
+		}
+		
+		remove_variable = bakuhantaisei_tax_collection_lose_$STATE$_var
 	}
 }
 

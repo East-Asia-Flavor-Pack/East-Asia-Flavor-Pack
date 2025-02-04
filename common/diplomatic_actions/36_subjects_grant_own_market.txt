@@ -28,6 +28,9 @@
 				is_direct_subject_of = root
 			}
 		}
+		NOT = { # 추가
+			scope:target_country = { is_subject_type = subject_type_military_headquarters_china }
+		}
 	}
 	
 	pact = {
@@ -118,33 +121,33 @@
 		will_propose = {
 			NOT = { is_adjacent_to_country = scope:target_country }
 			scope:target_country.capital = { is_isolated_from_market = yes }						
+			
+			AND = { # 추가
+				is_power_bloc_leader = yes
+				power_bloc = { has_identity = identity:identity_eafp_mandate_of_heaven }
+				scope:target_country = { is_in_same_power_bloc = ROOT }
+			}
 		}
 		
 		will_break = {
-			#OR = {
-			#	is_adjacent_to_country = scope:target_country
-			#	AND = {
-			#		supply_network_strength >= 0.75
-			#		has_port = yes
-			#		scope:target_country = { has_port = yes }
-			#	}
-			#}
-			##청이 자꾸 조선 시장 독립권 회수하는걸 제한하기 위한 수정 사항, 더 좋은 방법으로 바꿀 수 있으면 바꿀 것. TODO
-			OR = { # 추가
-				AND = {
-					is_adjacent_to_country = scope:target_country
-					scope:target_country = {
-						NOT = { has_modifier = kor_chi_trade_license }
-					}
-				}
+			OR = {
+				is_adjacent_to_country = scope:target_country
 				AND = {
 					supply_network_strength >= 0.75
 					has_port = yes
 					scope:target_country = { has_port = yes }
-					scope:target_country = {
-						NOT = { has_modifier = kor_chi_trade_license }
-					}
 				}
+			}
+
+			NAND = { # 추가
+				is_power_bloc_leader = yes
+				power_bloc = { has_identity = identity:identity_eafp_mandate_of_heaven }
+				scope:target_country = { is_in_same_power_bloc = ROOT }
+			}
+
+			NAND = { # 추가
+				c:JAP ?= THIS
+				has_law = law_type:law_isolationism
 			}
 		}		
 	}

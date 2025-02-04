@@ -48,37 +48,6 @@
 				}
 			}
 		}
-		OR = { # 추가
-			power_bloc ?= {	#파워블록이 천명 유형으로 존재하지 않거나.
-				custom_tooltip = {
-					text = "POWER_BLOC_TRIGGER_EAFP_LEADER_CANNOT_ANNEX_NOT"
-					NOT = { modifier:power_bloc_eafp_leader_cannot_annex_bool = yes }
-				}
-			}
-			is_power_bloc_leader = no	#내가 파워블록의 리더가 아니거나,
-			AND = {
-				NOT = { scope:target_country = { is_subject_type = subject_type_tributary } }	#현재 대상국이 조공국 등급이 아니고
-				NOT = { scope:target_country = { is_subject_type = subject_type_dominion } }	#자치령 등급도 아니거나,
-			}
-			AND = {
-				power_bloc ?= {	#세계의 중심 퍽을 찍고서,
-					custom_tooltip = {
-						text = "POWER_BLOC_TRIGGER_EAFP_LEADER_ALLOW_ANNEX"
-						modifier:power_bloc_eafp_leader_allow_annex_bool = yes
-					}
-				}
-				custom_tooltip = {
-					text = "POWER_BLOC_TRIGGER_EAFP_TARGET_IS_IN_EASTASIA"
-					scope:target_country = {	#대상국의 수도가 위치한 전략지역이
-						OR = {
-							capital.region = sr:region_north_china	#북중국이거나
-							capital.region = sr:region_south_china	#남중국이거나
-							capital.region = sr:region_manchuria	#만주 라면.
-						}
-					}
-				}
-			}
-		}
 	}
 
 	accept_effect = {
@@ -155,6 +124,16 @@
 				}
 			}			
 			scope:target_country = { "potential_diplomatic_play_power_ratio(root)" <= 1.0 }
+			
+			NAND = { # 추가
+				is_power_bloc_leader = yes
+				power_bloc = { has_identity = identity:identity_eafp_mandate_of_heaven }
+				scope:target_country = {
+					is_in_same_power_bloc = ROOT
+					is_subject_type = subject_type_tributary
+					is_subject_of = ROOT
+				}
+			}
 		}	
 	}
 }

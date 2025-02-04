@@ -2693,6 +2693,10 @@ eafp_japan.1001 = { # 밀무역 적발
 				value = 0.05
 			}
 		}
+
+		ai_chance = {
+			base = 1
+		}
 	}
 	option = {
 		name = eafp_japan.1001.b
@@ -2703,6 +2707,10 @@ eafp_japan.1001 = { # 밀무역 적발
 		add_modifier = {
 			name = smuggling_continues_modifier
 			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 	option = {
@@ -2720,6 +2728,10 @@ eafp_japan.1001 = { # 밀무역 적발
 			add_radicals_in_state = {
 				value = 0.1
 			}
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -2770,6 +2782,10 @@ eafp_japan.1002 = { # 밀무역 적발
 				value = 0.05
 			}
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 	option = {
 		name = eafp_japan.1002.b
@@ -2780,6 +2796,10 @@ eafp_japan.1002 = { # 밀무역 적발
 		add_modifier = {
 			name = smuggling_continues_modifier
 			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 	option = {
@@ -2810,6 +2830,10 @@ eafp_japan.1002 = { # 밀무역 적발
 			add_radicals_in_state = {
 				value = 0.15
 			}
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -3014,6 +3038,10 @@ eafp_japan.1005 = { # 밀무역 적발
 				value = 0.05
 			}
 		}
+
+		ai_chance = {
+			base = 1
+		}
 	}
 	option = {
 		name = eafp_japan.1005.b
@@ -3024,6 +3052,10 @@ eafp_japan.1005 = { # 밀무역 적발
 		add_modifier = {
 			name = smuggling_continues_modifier
 			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 	option = {
@@ -3041,6 +3073,10 @@ eafp_japan.1005 = { # 밀무역 적발
 			add_radicals_in_state = {
 				value = 0.1
 			}
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -3155,9 +3191,11 @@ eafp_japan.1007 = { # 국회도 작성 완료
 		}
 		every_scope_state = {
 			limit = { state_is_in_japan = yes }
-			add_bakuhantaisei_state_independency = {
-				TARGET = THIS
-				VALUE = -10
+			ROOT = {
+				add_bakuhantaisei_state_independency = {
+					TARGET = PREV
+					VALUE = -10
+				}
 			}
 		}
 	}
@@ -3438,6 +3476,64 @@ eafp_japan.1014 = { # 존 만지로
 		}
 	}
 
+}
+
+eafp_japan.1015 = { # 위조화폐 제조
+	type = country_event
+	placement = scope:scope_state
+
+	title = eafp_japan.1015.t
+	desc = eafp_japan.1015.d
+	flavor = eafp_japan.1015.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "votp_prison"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		random_scope_state = {
+			limit = { state_is_in_japan = yes }
+			save_scope_as = scope_state
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		name = eafp_japan.1015.a
+		default_option = yes
+
+		add_bakuhantaisei_state_independency = {
+			TARGET = scope:scope_state
+			VALUE = -5
+		}
+		add_bakuhantaisei_state_loyalty = {
+			TARGET = scope:scope_state
+			VALUE = -2.5
+		}
+
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = {
+		name = eafp_japan.1015.b
+
+		add_bakuhantaisei_state_loyalty = {
+			TARGET = scope:scope_state
+			VALUE = 2.5
+		}
+
+		ai_chance = {
+			base = 0
+		}
+	}
 }
 
 eafp_japan.2001 = { # 모리슨 호
@@ -3805,12 +3901,7 @@ eafp_japan.2102 = { # 후계자 결정 1858년 1월 1일
 	duration = 3
 	
 	immediate = {
-		ruler = {
-			save_scope_as = ieyoshi_character
-		}
-		heir = {
-			save_scope_as = iesada_character
-		}
+		
 	}
 
 	trigger = {}
@@ -3820,6 +3911,15 @@ eafp_japan.2102 = { # 후계자 결정 1858년 1월 1일
 		custom_tooltip = {
 			text = eafp_japan.2102.tta
 			set_variable = shogun_support_hitotsubashiha
+		}
+		add_hitotsubashiha_influence_var = {
+			VALUE = 10
+		}
+		add_hitotsubashiha_approval = {
+			VALUE = 10
+		}
+		add_nankiha_approval = {
+			VALUE = -10
 		}
 		ai_chance = {
 			base = 0
@@ -3833,22 +3933,39 @@ eafp_japan.2102 = { # 후계자 결정 1858년 1월 1일
 			text = eafp_japan.2102.ttb
 			set_variable = shogun_support_nankiha
 		}
+		add_nankiha_influence_var = {
+			VALUE = 10
+		}
+		add_hitotsubashiha_approval = {
+			VALUE = -10
+		}
+		add_nankiha_approval = {
+			VALUE = 10
+		}
 		ai_chance = {
 			base = 100
 		}
 	}
+
+	after = {
+		trigger_event = {
+			id = eafp_japan.2103
+			days = { 100 300 }
+		}
+	}
 }
 
-eafp_japan.2103 = {  # 이에모치 or 요시노부 즉위 용 히든 이벤트
+eafp_japan.2103 = { # 이에사다 & 이에모치 사망용 히든 이벤트
 	hidden = yes
 	immediate = {
 		ruler = {
+			set_character_busy_and_immortal = no
 			kill_character = yes
 		}
 	}
 }
 
-eafp_japan.2104 = { # 이에모치의 즉위
+eafp_japan.2104 = { # 이에사다 -> 이에모치의 즉위
 	type = country_event
 	placement = root
 
@@ -3871,7 +3988,10 @@ eafp_japan.2104 = { # 이에모치의 즉위
 	}
 
 	immediate = {
-		
+		trigger_event = {
+			id = eafp_japan.2107
+			months = 90
+		}
 	}
 
 	option = {
@@ -3894,7 +4014,7 @@ eafp_japan.2104 = { # 이에모치의 즉위
 	}
 }
 
-eafp_japan.2105 = { # 요시노부의 즉위
+eafp_japan.2105 = { # 이에사다 -> 요시노부의 즉위
 	type = country_event
 	placement = root
 
@@ -3970,7 +4090,7 @@ eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 		name = eafp_japan.2106.a
 		default_option = yes
 		add_bakuhantaisei_bakufu_authority = {
-			VALUE = -200
+			VALUE = -250
 		}
 	}
 
@@ -3981,6 +4101,208 @@ eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 		}
 		else = {
 			remove_variable = shogun_support_hitotsubashiha
+		}
+	}
+}
+
+eafp_japan.2107 = { # 후계자 결정, 이에모치가 쇼군일때
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2107.t
+	desc = eafp_japan.2107.d
+	flavor = eafp_japan.2107.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		
+	}
+
+	trigger = {}
+	
+	option = {
+		name = eafp_japan.2107.a
+		custom_tooltip = {
+			text = eafp_japan.2102.tta
+			set_variable = shogun_support_hitotsubashiha
+		}
+		add_hitotsubashiha_influence_var = {
+			VALUE = 10
+		}
+		add_hitotsubashiha_approval = {
+			VALUE = 10
+		}
+		add_nankiha_approval = {
+			VALUE = -10
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
+
+	option = {
+		name = eafp_japan.2107.b
+		default_option = yes
+		custom_tooltip = {
+			text = eafp_japan.2102.ttb
+			set_variable = shogun_support_nankiha
+		}
+		add_nankiha_influence_var = {
+			VALUE = 10
+		}
+		add_hitotsubashiha_approval = {
+			VALUE = -10
+		}
+		add_nankiha_approval = {
+			VALUE = 10
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	after = {
+		trigger_event = {
+			id = eafp_japan.2103
+			days = { 100 300 }
+		}
+	}
+}
+
+eafp_japan.2108 = { # 이에모치 -> 이에사토의 즉위
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2108.t
+	desc = eafp_japan.2108.d
+	flavor = eafp_japan.2108.f
+
+	gui_window = event_window_1char_tabloid
+	
+	left_icon = scope:iesato_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/law_icons/monarchy.dds"
+
+	duration = 3
+
+	trigger = {
+		#Fired by on_action
+	}
+
+	immediate = {
+
+	}
+
+	option = {
+		name = eafp_japan.2108.a
+		default_option = yes
+		show_as_tooltip = {
+			scope:iesato_scope = {
+				set_character_as_ruler = yes
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = { has_variable = shogun_support_hitotsubashiha }
+				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
+			}
+			else = {
+				remove_variable = shogun_support_nankiha
+			}
+		}
+	}
+}
+
+eafp_japan.2109 = { # 이에모치 -> 요시노부의 즉위
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2109.t
+	desc = eafp_japan.2109.d
+	flavor = eafp_japan.2109.f
+
+	gui_window = event_window_1char_tabloid
+	
+	left_icon = scope:yoshinobu_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/law_icons/monarchy.dds"
+
+	duration = 3
+
+	trigger = {
+		#Fired by on_action
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_japan.2109.a
+		default_option = yes
+		show_as_tooltip = {
+			scope:yoshinobu_scope = {
+				set_character_as_ruler = yes
+			}
+		}
+		hidden_effect = {
+			if = {
+				limit = { has_variable = shogun_support_nankiha }
+				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
+			}
+			else = {
+				remove_variable = shogun_support_hitotsubashiha
+			}
+		}
+	}
+}
+
+eafp_japan.2110 = { # 요시노부 -> 이에사토의 즉위
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2110.t
+	desc = eafp_japan.2110.d
+	flavor = eafp_japan.2110.f
+
+	gui_window = event_window_1char_tabloid
+	
+	left_icon = scope:iesato_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/law_icons/monarchy.dds"
+
+	duration = 3
+
+	trigger = {
+		#Fired by on_action
+	}
+
+	immediate = {
+
+	}
+
+	option = {
+		name = eafp_japan.2110.a
+		default_option = yes
+		show_as_tooltip = {
+			scope:iesato_scope = {
+				set_character_as_ruler = yes
+			}
 		}
 	}
 }
@@ -5357,6 +5679,92 @@ eafp_japan.2311 = { # 난키파 정치인 사임 요구
 	}
 }
 
+# 막부 개혁
+eafp_japan.2401 = { # 전습대
+	type = country_event
+	placement = root
+	title = eafp_japan.2401.t
+	desc = eafp_japan.2401.d
+	flavor = eafp_japan.2401.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	event_image = {
+		video = "unspecific_military_parade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		has_modifier = western_military_consultant
+		ig:ig_armed_forces = {
+			OR = {
+				has_ideology = ideology_stratocratic
+				NOT = { has_ideology = ideology_loyalist }
+			}
+		}
+	}
+
+	immediate = {
+		ig:ig_armed_forces = {
+			save_scope_as = samurai_ig
+		}
+	}
+
+	option = {
+		name = eafp_japan.2401.a
+		default_option = yes
+		scope:samurai_ig = {
+			if = {
+				limit = { has_ideology = ideology_stratocratic }
+				remove_ideology = ideology_stratocratic
+			}
+			if = {
+				limit = { NOT = { has_ideology = ideology_loyalist } }
+				add_ideology = ideology_loyalist
+			}
+		}
+	}
+}
+
+eafp_japan.2999 = { # 쇼군의 꼭두각시
+	type = country_event
+	placement = root
+
+	title = eafp_japan.2999.t
+	desc = eafp_japan.2999.d
+	flavor = eafp_japan.2999.f
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_japan.2999.a
+		default_option = yes
+		add_modifier = {
+			name = japan_diplomatic_reward
+			months = normal_modifier_time
+		}
+		add_modifier = {
+			name = japan_production_reward
+			months = normal_modifier_time
+		}
+
+	}
+}
+
 eafp_japan.3001 = { # 대정봉환
 	type = country_event
 	placement = root
@@ -5693,21 +6101,6 @@ eafp_japan.4001 = { # 개항 요구
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	trigger = {
-		c:JAP ?= THIS
-		has_law = law_type:law_isolationism
-		NOT = { has_variable = eafpjap2008 }
-		any_diplomatic_play = {
-			any_scope_play_involved = {
-				ROOT = THIS
-			}
-			OR = {
-				has_play_goal = open_market
-				has_play_goal = foreign_investment_rights
-			}
-		}
-	}
-
 	immediate = {
 		set_variable = eafpjap2008
 	}
@@ -5777,8 +6170,24 @@ eafp_japan.4003 = { # 천황의 밀칙
 
 	option = {
 		name = eafp_japan.4003.a
+		every_scope_state = {
+			limit = { state_is_in_japan = yes }
+			ROOT = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = PREV
+					VALUE = -10
+				}
+			}
+		}
 		add_nankiha_approval = {
-			VALUE = -15
+			VALUE = -10
+		}
+	}
+
+	option = {
+		name = eafp_japan.4003.b
+		add_nankiha_approval = {
+			VALUE = -25
 		}
 	}
 }
@@ -5918,7 +6327,7 @@ eafp_japan.4005 = { # 외국인 살해
 						days = { 10 30 }
 					}
 				}
-				10 = {
+				20 = {
 					trigger_event = { # 포격
 						id = eafp_japan.4007
 						days = { 10 30 }

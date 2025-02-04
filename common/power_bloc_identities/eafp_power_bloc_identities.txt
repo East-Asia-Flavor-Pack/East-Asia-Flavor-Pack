@@ -1,16 +1,15 @@
 ﻿identity_eafp_mandate_of_heaven = {
 	power_bloc_modifier = {
 		power_bloc_leader_can_make_subjects_bool = yes
-		power_bloc_eafp_leader_cannot_annex_bool = yes
-		#power_bloc_leader_can_force_state_religion_bool = yes	#이건 일단은 막자
-		#power_bloc_eafp_leader_allow_annex_bool = yes
 		power_bloc_mandate_progress_per_great_power_member_add = 10
 		power_bloc_mandate_progress_per_major_power_member_add = 5
 		power_bloc_mandate_progress_per_minor_power_member_add = 2
 		power_bloc_mandate_progress_per_unrecognized_major_power_member_add = 2
 		power_bloc_mandate_progress_per_unrecognized_regional_power_member_add = 1
-		power_bloc_invite_acceptance_great_power_add = -10
-		power_bloc_invite_acceptance_major_power_add = -5
+		power_bloc_invite_acceptance_great_power_add = -20
+		power_bloc_invite_acceptance_major_power_add = -10
+		power_bloc_invite_acceptance_unrecognized_major_power_add = -10
+		power_bloc_invite_acceptance_add = -30
 		power_bloc_cohesion_per_member_add = -2
 	}
 
@@ -78,7 +77,7 @@
 				add = power_bloc_share_prestige
 			}
 			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
-			desc = POWER_BLOC_COHESION_SHARE_PRESTIGE
+			desc = POWER_BLOC_COHESION_EAFP_SHARE_PRESTIGE_MANDATE_Of_HEAVEN
 		}
 		
 		add = {
@@ -118,19 +117,72 @@
 			desc = POWER_BLOC_COHESION_WORST_LIBERTY_DESIRE
 		}
 		
-		add = {	#유교국가가 많을수록 보너스
+		add = {	# 유교 국가
 			scope:power_bloc = {
 				every_power_bloc_member = {
 					if = {
 						limit = { 
 							country_has_state_religion = rel:confucian
 						}
-						add = 0.02
+						add = 0.01
 					}
 				}
 			}
 			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
-			desc = POWER_BLOC_COHESION_EAFP_CONFUCIAN_COUNTRY
+			desc = POWER_BLOC_COHESION_EAFP_SAME_STATE_RELIGION
+		}
+
+		add = {	# 자신만의 시장을 소유하지 않는 국가
+			scope:power_bloc = {
+				every_power_bloc_member = {
+					if = {
+						limit = {
+							is_direct_subject_of = PREV.power_bloc_leader
+							NOT = {
+								has_diplomatic_pact = {
+									who = PREV.power_bloc_leader
+									type = grant_own_market
+									is_initiator = no
+								}
+							}
+						}
+						add = -0.2
+					}
+				}
+			}
+			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
+			desc = POWER_BLOC_COHESION_EAFP_DEPENDENT_MARKET
+		}
+
+		add = {	# 장군부
+			scope:power_bloc = {
+				every_power_bloc_member = {
+					if = {
+						limit = {
+							is_subject_type = subject_type_military_headquarters_china
+						}
+						add = 0.2
+					}
+				}
+			}
+			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
+			desc = POWER_BLOC_COHESION_EAFP_MILITARY_HEADQUARTERS_CHINA
+		}
+
+		add = {	# 조공국
+			scope:power_bloc = {
+				every_power_bloc_member = {
+					if = {
+						limit = {
+							is_subject_type = subject_type_tributary
+							is_subject_of = PREV.power_bloc_leader
+						}
+						add = 0.01
+					}
+				}
+			}
+			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
+			desc = POWER_BLOC_COHESION_EAFP_LEADER_TRIBUTARY
 		}
 	}
 	
