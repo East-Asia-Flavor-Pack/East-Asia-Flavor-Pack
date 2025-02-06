@@ -1,21 +1,36 @@
-﻿japan_on_monthly_pulse_country = {
+﻿japan_on_yearly_pulse_country = {
+	random_events = {
+		chance_of_no_event = 50
+		10 = eafp_japan.1018 # 사치노미야의 탄생, 천황이 ruler일 때
+		10 = eafp_japan.1019 # 하루노미야의 탄생, 천황이 ruler일 때
+		10 = eafp_japan.1020 # 미치노미야의 탄생, 천황이 ruler일 때
+	}
+}
+
+japan_on_monthly_pulse_country = {
 	effect = {
 		if = {
 			limit = {
 				c:JAP ?= THIS
 				has_law = law_type:law_isolationism
 				NOT = { has_variable = eafpjap2008 }
-				OR = {
-					any_diplomatic_play = {
-						any_scope_play_involved = {
-							ROOT = THIS
-						}
-						OR = {
-							has_play_goal = open_market
-							has_play_goal = foreign_investment_rights
-						}
+				any_diplomatic_play = {
+					target_is = c:JAP
+					OR = {
+						has_play_goal = open_market
+						has_play_goal = foreign_investment_rights
 					}
 				}
+			}
+			random_diplomatic_play = {
+				limit = {
+					target_is = c:JAP
+					OR = {
+						has_play_goal = open_market
+						has_play_goal = foreign_investment_rights
+					}
+				}
+				initiator = { save_scope_as = country_scope }
 			}
 			trigger_event = eafp_japan.4001
 		}
@@ -237,18 +252,69 @@ japan_on_character_death = {
 					}
 				}
 			}
-			else_if = {
-				limit = { # 천황이 지배자인 조건으로 효과 넣기 TODO
-					is_ruler = yes
-					owner = { has_journal_entry = je_bakuhantaisei } # '막번체제' 저널 있음
-				}
-			}
 			else_if = { # 대로, 노중수좌, 노중
 				limit = {
 					owner = { has_journal_entry = je_bakuhantaisei }
 					has_variable = eafp_bakuhantaisei_politician_influence
 				}
 				remove_bakufu_politician_role = yes
+			}
+		}
+	}
+}
+
+on_new_ruler = {
+	effect = {
+		if = {
+			limit = {
+				owner = {
+					NOT = {
+						has_variable = hide_ruler_change_notification
+					}
+				}
+			}
+			post_notification = new_ruler
+		}
+		if = {
+			limit = {
+				owner = {
+					c:JAP ?= this
+					has_law = law_type:law_monarchy
+				}
+				is_ruler = yes
+				NOT = { owner = { has_journal_entry = je_bakuhantaisei } } # 임시, TODO
+			}
+			if = {
+				limit = {
+					has_template = eafp_jap_komei_template
+				}
+				owner = {
+					trigger_event = { id = eafp_japan.1011 popup = yes }
+				}
+			}
+			else_if = {
+				limit = {
+					has_template = eafp_jap_meiji_template
+				}
+				owner = {
+					trigger_event = { id = eafp_japan.1017 popup = yes }
+				}
+			}
+			else_if = {
+				limit = {
+					has_template = eafp_jap_taisho_template
+				}
+				owner = {
+					trigger_event = { id = russia_monarchy.4 popup = yes }
+				}
+			}
+			else_if = {
+				limit = {
+					has_template = eafp_jap_showa_template
+				}
+				owner = {
+					trigger_event = { id = russia_monarchy.5 popup = yes }
+				}
 			}
 		}
 	}
@@ -963,6 +1029,7 @@ japan_on_diplomatic_demand = {
 					NOT = { has_variable = eafpjap2008 }
 				}
 			}
+			scope:actor = { save_scope_as = country_scope }
 			scope:recipient = {
 				trigger_event = eafp_japan.4001
 			}
