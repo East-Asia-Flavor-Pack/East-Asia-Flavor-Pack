@@ -74,15 +74,34 @@ je_bakuhantaisei = {
 	}
 
 	fail = {
-		scope:journal_entry = {
-			"scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0
-		}
+		
 	}
 
 	on_fail = {
 		custom_tooltip = {
 			text = je_bakuhantaisei_on_fail_tt
-			trigger_event = eafp_japan.3001 # 대정봉환
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = { # 왠진 모르지만 막부 정치인 자리 비었을때 강제 활성화
+			if = {
+				limit = {
+					NOT = { has_variable = rojushuza_var }
+				}
+				trigger_event = eafp_japan.4
+			}
+			if = {
+				limit = {
+					variable_list_size = { name = roju_varlist value < 4 }
+				}
+				trigger_event = eafp_japan.6
+			}
+			if = {
+				limit = { scope:journal_entry = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0 } }
+				trigger_event = eafp_japan.3001 # 대정봉환
+				scope:journal_entry = { set_bar_progress = { value = 4000 name = bakuhantaisei_bakufu_authority_progress_bar } }
+			}
 		}
 	}
 
@@ -103,6 +122,8 @@ je_bakuhantaisei = {
 				limit = {
 					has_variable = eafp_bakuhantaisei_politician_influence
 					is_busy = yes # immortal 판정 trigger는 없음. (원래)
+
+					NOT = { has_modifier = modifier_bakufu_recently_appointed } # 최근 임명된 놈 제외
 
 					trigger_if = {
 						limit = { modifier:character_health_add >= 1 }
@@ -172,17 +193,6 @@ je_bakuhantaisei_TOHOKU = {
 		}
 	}
 
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = TOHOKU }
-	}
-
 	complete = {
 		custom_tooltip = {
 			text = bakufu_kaikaku_complete_tt
@@ -235,17 +245,6 @@ je_bakuhantaisei_KANTO = {
 		effect = {
 			je_bakuhantaisei_STATE_weekly_pulse = { STATE = KANTO }
 		}
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = KANTO }
 	}
 
 	complete = {
@@ -302,17 +301,6 @@ je_bakuhantaisei_CHUBU = {
 		}
 	}
 
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = CHUBU }
-	}
-
 	complete = {
 		custom_tooltip = {
 			text = bakufu_kaikaku_complete_tt
@@ -365,17 +353,6 @@ je_bakuhantaisei_KANSAI = {
 		effect = {
 			je_bakuhantaisei_STATE_weekly_pulse = { STATE = KANSAI }
 		}
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = KANSAI }
 	}
 
 	complete = {
@@ -432,17 +409,6 @@ je_bakuhantaisei_KYUSHU = {
 		}
 	}
 
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = KYUSHU }
-	}
-
 	complete = {
 		custom_tooltip = {
 			text = bakufu_kaikaku_complete_tt
@@ -497,17 +463,6 @@ je_bakuhantaisei_CHUGOKU = {
 		}
 	}
 
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = CHUGOKU }
-	}
-
 	complete = {
 		custom_tooltip = {
 			text = bakufu_kaikaku_complete_tt
@@ -560,17 +515,6 @@ je_bakuhantaisei_SHIKOKU = {
 		effect = {
 			je_bakuhantaisei_STATE_weekly_pulse = { STATE = SHIKOKU }
 		}
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_STATE_fail_tt
-			has_variable = assign_tobaku_hans_var
-		}
-	}
-
-	on_fail = {
-		je_bakuhantaisei_STATE_clear = { STATE = SHIKOKU }
 	}
 
 	complete = {
@@ -1145,11 +1089,8 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 		has_technology_researched = napoleonic_warfare
 		NOR = {
 			any_scope_building = {
-				is_building_type = building_barracks				
-				OR = {
-					building_has_goods_shortage = yes
-					has_active_production_method = pm_no_organization
-				}
+				is_building_type = building_barracks
+				has_active_production_method = pm_no_organization
 			}
 			any_military_formation = {
 				filter = {
@@ -1451,13 +1392,14 @@ je_boshin_war_sabaku = {
 	group = je_group_historical_content
 
 	complete = {
-		owns_entire_state_region = STATE_KYUSHU
-		owns_entire_state_region = STATE_KANSAI
-		owns_entire_state_region = STATE_CHUGOKU
-		owns_entire_state_region = STATE_SHIKOKU
-		owns_entire_state_region = STATE_CHUBU
-		owns_entire_state_region = STATE_KANTO
 		NOT = { exists = c:NIP }
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = eafp_japan.3009
+			popup = yes
+		}
 	}
 
 	weight = 20000
@@ -1470,23 +1412,231 @@ je_boshin_war_tobaku = {
 
 	group = je_group_historical_content
 
+
+
 	complete = {
-		owns_entire_state_region = STATE_KYUSHU
-		owns_entire_state_region = STATE_KANSAI
-		owns_entire_state_region = STATE_CHUGOKU
-		owns_entire_state_region = STATE_SHIKOKU
-		owns_entire_state_region = STATE_CHUBU
-		owns_entire_state_region = STATE_KANTO
 		NOT = { exists = c:JAP }
 	}
 
 	on_complete = {
-		#trigger_event = {
-		#	id = new_meiji.1
-		#}
+		trigger_event = {
+			id = meiji.1
+			popup = yes
+		}
+		change_tag = JAP
+		hidden_effect = {
+			set_variable = meiji_var
+			remove_modifier = modifier_japan_hiring_bonus
+		}
 	}
 
 	weight = 20000
 
+	should_be_pinned_by_default = yes
+}
+
+# 자유민권운동
+
+je_liberty_civil_right_movement = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		has_modifier = meiji_var
+	}
+
+	possible = {
+		AND = {
+			custom_tooltip = {
+				text = liberty_civil_right_support_above_5_tt
+				any_political_movement = {
+					is_political_movement_type = movement_liberty_civil_right
+					political_movement_identity_support >= 0.05
+				}
+			}
+			custom_tooltip = {
+				text = liberty_civil_right_movement_above_25_tt
+				any_political_movement = {
+					is_political_movement_type = movement_liberty_civil_right
+					political_movement_radicalism >= 0.25
+				}
+			}
+		}
+	}
+
+	immediate = {
+		
+	}
+
+	modifiers_while_active = {
+		
+	}
+
+	complete = {
+		has_law = law_type:law_universal_suffrage
+		has_law = law_type:law_no_migration_controls
+		has_law = law_type:law_protected_speech
+		NOT = { has_law = law_type:law_no_womens_rights }
+	}
+
+	on_complete = {
+		trigger_event = { id = liberty_civil_right_movement_events.1 popup = yes }
+	}
+
+	invalid = {
+
+	}
+
+	fail = {
+		AND = {
+			custom_tooltip = {
+				text = liberty_civil_right_support_below_5_tt
+				any_political_movement = {
+					is_political_movement_type = movement_liberty_civil_right
+					political_movement_identity_support <= 0.05
+				}
+			}
+			custom_tooltip = {
+				text = liberty_civil_right_movement_below_15_tt
+				any_political_movement = {
+					is_political_movement_type = movement_liberty_civil_right
+					political_movement_radicalism <= 0.05
+				}
+			}
+		}
+		NOT = {
+			any_political_movement = {
+				is_insurrectionary = yes
+			}
+		}
+	}
+
+	on_fail = {
+		trigger_event = { id = liberty_civil_right_movement_events.2 popup = yes }
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = liberty_civil_right_movement_events.3
+			10 = liberty_civil_right_movement_events.4
+			10 = liberty_civil_right_movement_events.5
+			10 = liberty_civil_right_movement_events.6
+			10 = liberty_civil_right_movement_events.7
+			10 = liberty_civil_right_movement_events.8
+			10 = liberty_civil_right_movement_events.9
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+# 정한론
+
+je_seikanron = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	#scripted_button = je_communal_divides_federal_solution
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		# 임시, 나중에 조건 바꾸기 TODO
+		has_modifier = meiji_var
+	}
+
+	possible = {
+		any_political_lobby = {
+			is_political_lobby_type = lobby_anti_country
+			target = c:KOR
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				ig:ig_armed_forces = {
+					NOT = {
+						any_political_lobby = {
+							is_political_lobby_type = lobby_anti_country
+							target = c:KOR
+						}
+					}
+				}
+			}
+			random_political_lobby = {
+				limit = {
+					any_political_lobby = {
+						is_political_lobby_type = lobby_anti_country
+						target = c:KOR
+					}
+				}
+				add_lobby_member = ig:ig_armed_forces
+			}
+		}
+	}
+
+	modifiers_while_active = {
+		
+	}
+
+	complete = {
+		NOT = { exists = c:KOR }
+	}
+
+	on_complete = {
+		trigger_event = seikanron_events.99
+	}
+
+	invalid = {
+		NOT = {
+			any_political_lobby = {
+				is_political_lobby_type = lobby_anti_country
+				target = c:KOR
+			}
+		}
+	}
+
+	fail = {
+		any_political_lobby = {
+			is_political_lobby_type = lobby_anti_country
+			target = c:KOR
+			appeasement <= -8
+		}
+	}
+
+	on_fail = {
+		
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			200 = 0
+			10 = seikanron_events.2
+			10 = seikanron_events.3
+			10 = seikanron_events.4
+			10 = seikanron_events.5
+			10 = seikanron_events.6
+			10 = seikanron_events.7
+			10 = seikanron_events.8
+			10 = seikanron_events.9
+			10 = seikanron_events.10
+			10 = seikanron_events.13
+			10 = seikanron_events.14
+			10 = seikanron_events.15
+		}
+	}
+
+	on_weekly_pulse = {
+		events = {
+			seikanron_events.1
+		}
+	}
+
+	weight = 1000
 	should_be_pinned_by_default = yes
 }

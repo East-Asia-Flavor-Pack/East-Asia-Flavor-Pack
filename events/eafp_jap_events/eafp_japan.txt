@@ -121,7 +121,7 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 	duration = 1
 
 	immediate = {
-		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 100 5명, 강한 지지 = 기본 인물 정치력 100 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -130,6 +130,19 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		set_variable = {
 			name = nankiha_invested_influence
 			value = 0
+		}
+		if = { # 랜덤 요소
+			limit = { is_ai = yes }
+			save_scope_value_as = {
+				name = random_influence
+				value = { -200 200 }
+			}
+		}
+		else = {
+			save_scope_value_as = {
+				name = random_influence
+				value = { -100 100 }
+			}
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -176,6 +189,17 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 				}
 			}
 		}
+		# 변수 정리
+		save_scope_value_as = {
+			name = nankiha_invested_influence
+			value = var:nankiha_invested_influence
+		}
+		save_scope_value_as = {
+			name = hitotsubashiha_invested_influence
+			value = var:hitotsubashiha_invested_influence
+		}
+		remove_variable = hitotsubashiha_invested_influence
+		remove_variable = nankiha_invested_influence
 	}
 
 	option = { # 히토츠바시파를 강하게 지지
@@ -183,57 +207,76 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		trigger = {
 			authority >= 200
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -25
+				value = -50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.2.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
@@ -253,57 +296,76 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		trigger = {
 			authority >= 100
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -12.5
+				value = -25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.2.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
@@ -322,57 +384,76 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		trigger = {
 			authority >= 100
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 12.5
+				value = 25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.2.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
@@ -391,57 +472,76 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		trigger = {
 			authority >= 200
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 25
+				value = 50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.2.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.2.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.2.hitotsubashiha.tt
@@ -466,13 +566,17 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 				value = 0
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -480,11 +584,15 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -492,11 +600,15 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -504,11 +616,15 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -519,8 +635,25 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		}
 	}
 
+	option = { # 취소
+		name = eafp_japan.2.zz
+
+		hidden_effect = {
+			# 변수 정리
+			remove_variable = recruiting_bakufu_politicians
+			every_scope_character = {
+				limit = { has_variable = invested_influence }
+				remove_variable = invested_influence
+			}
+			save_scope_as = cancel
+		}
+	}
+
 	after = {
-		trigger_event = eafp_japan.3
+		if = {
+			limit = { NOT = { exists = scope:cancel } }
+			trigger_event = eafp_japan.3
+		}
 	}
 }
 
@@ -547,11 +680,15 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				70 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
@@ -563,7 +700,10 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
 			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
@@ -571,11 +711,15 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-70 >= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
@@ -587,7 +731,10 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
 			}
-			add_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
@@ -605,8 +752,6 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 
 		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
-		remove_variable = hitotsubashiha_invested_influence
-		remove_variable = nankiha_invested_influence
 		every_scope_character = {
 			limit = { has_variable = invested_influence }
 			remove_variable = invested_influence
@@ -657,7 +802,7 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 	duration = 1
 
 	immediate = {
-		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 100 5명, 강한 지지 = 기본 인물 정치력 100 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -666,6 +811,19 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		set_variable = {
 			name = nankiha_invested_influence
 			value = 0
+		}
+		if = { # 랜덤 요소
+			limit = { is_ai = yes }
+			save_scope_value_as = {
+				name = random_influence
+				value = { -200 200 }
+			}
+		}
+		else = {
+			save_scope_value_as = {
+				name = random_influence
+				value = { -100 100 }
+			}
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -757,6 +915,17 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 				save_scope_as = moderate_candidate
 			}
 		}
+		# 변수 정리
+		save_scope_value_as = {
+			name = nankiha_invested_influence
+			value = var:nankiha_invested_influence
+		}
+		save_scope_value_as = {
+			name = hitotsubashiha_invested_influence
+			value = var:hitotsubashiha_invested_influence
+		}
+		remove_variable = hitotsubashiha_invested_influence
+		remove_variable = nankiha_invested_influence
 	}
 
 	trigger = {
@@ -769,57 +938,76 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			authority >= 200
 			exists = scope:hitotsubashiha_candidate
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -25
+				value = -50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.4.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
@@ -832,6 +1020,10 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			name = modifier_political_influence_for_rojushuza
 			months = normal_modifier_time
 			multiplier = 2
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 
@@ -841,57 +1033,76 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			authority >= 100
 			exists = scope:hitotsubashiha_candidate
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -12.5
+				value = -25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.4.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
@@ -904,6 +1115,10 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			name = modifier_political_influence_for_rojushuza
 			months = normal_modifier_time
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 
 	option = { # 난키파를 지지
@@ -912,57 +1127,76 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			authority >= 100
 			exists = scope:nankiha_candidate
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 12.5
+				value = 25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.4.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
@@ -975,6 +1209,10 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			name = modifier_political_influence_for_rojushuza
 			months = normal_modifier_time
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 
 	option = { # 난키파를 강하게 지지
@@ -983,57 +1221,76 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			authority >= 200
 			exists = scope:nankiha_candidate
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 25
+				value = 50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.4.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.4.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.4.hitotsubashiha.tt
@@ -1046,6 +1303,10 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 			name = modifier_political_influence_for_rojushuza
 			months = normal_modifier_time
 			multiplier = 2
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 
@@ -1059,13 +1320,17 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 				value = 0
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1073,11 +1338,15 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1085,11 +1354,15 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1097,11 +1370,15 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1109,6 +1386,10 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		}
 		else = {
 			custom_tooltip = eafp_japan.4.hitotsubashiha2.tt
+		}
+
+		ai_chance = {
+			base = 1
 		}
 	}
 
@@ -1140,41 +1421,83 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				70 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
 			# 난키파 등용
 			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
 			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
-			add_bakuhantaisei_politician_influence_calc_nankiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
+			}
+			scope:nankiha_candidate = {
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = 75
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					add = 50
+				}
+				add_modifier = {
+					name = modifier_bakufu_recently_appointed
+					months = { 12 36 }
+				}
 			}
 		}
 		else_if = {
 			limit = {
 				exists = scope:hitotsubashiha_candidate
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-70 >= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
 			# 히토츠바시파 등용
 			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
 			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
-			add_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
+			}
+			scope:hitotsubashiha_candidate = {
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = 75
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					add = 50
+				}
+				add_modifier = {
+					name = modifier_bakufu_recently_appointed
+					months = { 12 36 }
+				}
 			}
 		}
 		else_if = {
@@ -1187,46 +1510,94 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				name = new_politician
 				value = 3
 			}
+			scope:moderate_candidate = {
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = 75
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					add = 50
+				}
+				add_modifier = {
+					name = modifier_bakufu_recently_appointed
+					months = { 12 36 }
+				}
+			}
 		}
 		else_if = {
 			limit = {
 				exists = scope:nankiha_candidate
 				0 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
 			# 난키파 등용
 			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
 			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
-			add_bakuhantaisei_politician_influence_calc_nankiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
+			}
+			scope:nankiha_candidate = {
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = 75
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					add = 50
+				}
+				add_modifier = {
+					name = modifier_bakufu_recently_appointed
+					months = { 12 36 }
+				}
 			}
 		}
 		else = {
 			# 히토츠바시파 등용
 			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
 			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
-			add_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
+			}
+			scope:hitotsubashiha_candidate = {
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					add = 75
+				}
+				change_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					add = 50
+				}
 			}
 		}
 
 		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
-		remove_variable = hitotsubashiha_invested_influence
-		remove_variable = nankiha_invested_influence
 		every_scope_character = {
 			limit = { has_variable = invested_influence }
 			remove_variable = invested_influence
 		}
+
+		trigger_event = eafp_japan.6 # 노중 자리 비었으니까 다시 뽑음
 	}
 
 	option = { # 난키파
@@ -1273,7 +1644,7 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 	duration = 1
 
 	immediate = {
-		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 50 5명, 강한 지지 = 기본 인물 정치력 50 2.5명
+		# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 100 5명, 강한 지지 = 기본 인물 정치력 100 2.5명
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
@@ -1282,6 +1653,19 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		set_variable = {
 			name = nankiha_invested_influence
 			value = 0
+		}
+		if = { # 랜덤 요소
+			limit = { is_ai = yes }
+			save_scope_value_as = {
+				name = random_influence
+				value = { -200 200 }
+			}
+		}
+		else = {
+			save_scope_value_as = {
+				name = random_influence
+				value = { -100 100 }
+			}
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -1328,6 +1712,17 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 				}
 			}
 		}
+		# 변수 정리
+		save_scope_value_as = {
+			name = nankiha_invested_influence
+			value = var:nankiha_invested_influence
+		}
+		save_scope_value_as = {
+			name = hitotsubashiha_invested_influence
+			value = var:hitotsubashiha_invested_influence
+		}
+		remove_variable = hitotsubashiha_invested_influence
+		remove_variable = nankiha_invested_influence
 	}
 
 	trigger = {
@@ -1339,57 +1734,76 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		trigger = {
 			authority >= 200
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -25
+				value = -50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.6.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -50
 				}
 			}
 			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
@@ -1403,6 +1817,10 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 			months = normal_modifier_time
 			multiplier = 2
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 
 	option = { # 히토츠바시파를 지지
@@ -1410,57 +1828,76 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		trigger = {
 			authority >= 100
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = -12.5
+				value = -25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.6.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = -12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = -25
 				}
 			}
 			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
@@ -1472,6 +1909,10 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		add_modifier = {
 			name = modifier_political_influence_for_roju
 			months = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 
@@ -1480,57 +1921,76 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		trigger = {
 			authority >= 100
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 12.5
+				value = 25
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.6.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 12.5
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 25
 				}
 			}
 			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
@@ -1543,6 +2003,10 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 			name = modifier_political_influence_for_roju
 			months = normal_modifier_time
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 
 	option = { # 난키파를 강하게 지지
@@ -1550,57 +2014,76 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		trigger = {
 			authority >= 200
 		}
+		show_as_unavailable = {
+			always = yes
+		}
 
 		hidden_effect = {
 			save_scope_value_as = {
 				name = shogun_influence
-				value = 25
+				value = 50
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha2.tt
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.6.nankiha.tt
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.6.moderate.tt
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
-					add = 25
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
+					add = 50
 				}
 			}
 			custom_tooltip = eafp_japan.6.hitotsubashiha.tt
@@ -1614,6 +2097,10 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 			months = normal_modifier_time
 			multiplier = 2
 		}
+
+		ai_chance = {
+			base = 0
+		}
 	}
 
 	option = { # 알빠노?
@@ -1626,13 +2113,17 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 				value = 0
 			}
 		}
-		if = { # 결과 미리 보여줌 -35 -15 15 35
+		if = { # 결과 미리 보여줌 -90 -30 30 90
 			limit = {
-				35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1640,11 +2131,15 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1652,11 +2147,15 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-15 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-30 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1664,11 +2163,15 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-35 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-90 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = 0
 				}
 			}
@@ -1676,6 +2179,10 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		}
 		else = {
 			custom_tooltip = eafp_japan.6.hitotsubashiha2.tt
+		}
+
+		ai_chance = {
+			base = 1
 		}
 	}
 
@@ -1706,11 +2213,15 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		# 누가 뽑힐까?
 		if = {
 			limit = { 
-				25 <= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				70 <= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
@@ -1722,7 +2233,10 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
 			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
@@ -1730,11 +2244,15 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		}
 		else_if = {
 			limit = { 
-				-25 >= {
-					value = var:nankiha_invested_influence
-					add = var:nankiha_influence_var
-					subtract = -50
-					subtract = var:hitotsubashiha_invested_influence
+				-70 >= {
+					value = scope:nankiha_invested_influence
+					add = {
+						value = bakufu_nankiha_hiritsu
+						multiply = 200
+					}
+					subtract = -100
+					subtract = scope:hitotsubashiha_invested_influence
+					add = scope:random_influence
 					add = scope:shogun_influence
 				}
 			}
@@ -1746,7 +2264,10 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
 			}
-			add_bakuhantaisei_politician_influence_calc_hitotsubashiha = yes
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
@@ -1764,8 +2285,6 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		
 		# 변수 정리
 		remove_variable = recruiting_bakufu_politicians
-		remove_variable = hitotsubashiha_invested_influence
-		remove_variable = nankiha_invested_influence
 		every_scope_character = {
 			limit = { has_variable = invested_influence }
 			remove_variable = invested_influence
@@ -2234,7 +2753,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 	}
 }
 
-eafp_japan.12 = { # 다이묘들의 충성심을 재확인
+eafp_japan.12 = { # 다이묘 충성심 재확인
 	type = character_event
 	placement = ROOT
 
@@ -3019,7 +3538,9 @@ eafp_japan.1005 = { # 밀무역 적발
 		}
 	}
 
-	trigger = {}
+	trigger = {
+		has_law = law_type:law_isolationism
+	}
 	
 	option = {
 		name = eafp_japan.1005.a
@@ -6069,20 +6590,20 @@ eafp_japan.3001 = { # 대정봉환
 	immediate = {
 		trigger_event = {
 			id = eafp_japan.3002
-			days = { 15 30 }
+			days = { 7 15 }
 		}
 		trigger_event = {
 			id = eafp_japan.3003
-			days = { 30 60 }
+			days = { 15 30 }
 			popup = yes
 		}
 		trigger_event = {
 			id = eafp_japan.3004
-			days = { 45 60 }
+			days = { 15 30 }
 		}
 		trigger_event = {
 			id = eafp_japan.3005
-			days = { 60 75 }
+			days = { 30 45 }
 			popup = yes
 		}
 	}
@@ -6106,21 +6627,25 @@ eafp_japan.3002 = { # 도막파의 폭동
 	icon = "gfx/interface/icons/event_icons/event_default.dds"
 
 	event_image = {
-		video = "eafp_taisei_hokan"
+		video = "unspecific_fire"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	immediate = {
-		
+		capital.state_region = {
+			add_devastation = 10
+		}
 	}
 
 	option = {
 		name = eafp_japan.3002.a
 		default_option = yes
 
-		capital.state_region = {
-			add_devastation = 10
+		show_as_tooltip = {
+			capital.state_region = {
+				add_devastation = 10
+			}
 		}
 	}
 }
@@ -6207,7 +6732,7 @@ eafp_japan.3004 = { # 저택에서의 전투
 	icon = "gfx/interface/icons/event_icons/event_default.dds"
 
 	event_image = {
-		video = "eafp_taisei_hokan"
+		video = "unspecific_fire"
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
@@ -6242,7 +6767,6 @@ eafp_japan.3005 = { # 막부 타도 선언
 
 	immediate = {
 		assign_tobaku_hans = yes
-		set_variable = assign_tobaku_hans_var
 		c:NIP = { trigger_event = { id = eafp_japan.3006 days = 15 } }
 		trigger_event = { id = eafp_japan.3007 days = 30 }
 		c:NIP = { trigger_event = { id = eafp_japan.3008 days = 30 } }
@@ -6257,6 +6781,15 @@ eafp_japan.3005 = { # 막부 타도 선언
 		name = eafp_japan.3005.b
 
 		play_as = c:NIP
+	}
+
+	after = {
+		c:NIP = {
+			trigger_event = {
+				id = eafp_japan.5001
+				popup = yes
+			}
+		}
 	}
 }
 
@@ -6287,9 +6820,28 @@ eafp_japan.3006 = { # 의견일치
 				annex = PREV
 			}
 		}
+		every_scope_state = {
+			limit = {
+				state_is_in_japan = yes
+			}
+			set_state_type = incorporated
+		}
 		c:NIP = {
 			add_technology_researched = napoleonic_warfare
 			add_technology_researched = general_staff
+		}
+		add_modifier = {
+			name = modifier_japan_hiring_bonus
+			months = 6
+		}
+		while = {
+			count = 10
+			create_character = {
+				culture = cu:japanese
+				is_general = yes
+				hq = region_japan
+				commander_rank = commander_rank_1
+			}
 		}
 	}
 
@@ -6354,7 +6906,6 @@ eafp_japan.3008 = { # 전쟁의 시작
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	immediate = {
-		
 	}
 
 	option = {
@@ -6362,6 +6913,596 @@ eafp_japan.3008 = { # 전쟁의 시작
 		default_option = yes
 
 		add_journal_entry = { type = je_boshin_war_tobaku }
+	}
+}
+
+eafp_japan.3009 = { # 신정부의 항복
+	type = country_event
+	placement = root
+
+	title = eafp_japan.3009.t
+	desc = eafp_japan.3009.d
+	flavor = eafp_japan.3009.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+			save_scope_value_as = {
+				name = bakuhantaisei_TOHOKU_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_TOHOKU_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_TOHOKU_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_TOHOKU_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_TOHOKU_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_TOHOKU_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANTO }
+			save_scope_value_as = {
+				name = bakuhantaisei_KANTO_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KANTO_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KANTO_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_KANTO_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KANTO_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KANTO_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUBU }
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUBU_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_CHUBU_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUBU_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_CHUBU_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUBU_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_CHUBU_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KANSAI }
+			save_scope_value_as = {
+				name = bakuhantaisei_KANSAI_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KANSAI_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KANSAI_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_KANSAI_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KANSAI_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KANSAI_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+			save_scope_value_as = {
+				name = bakuhantaisei_KYUSHU_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KYUSHU_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KYUSHU_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_KYUSHU_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_KYUSHU_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_KYUSHU_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUGOKU_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_CHUGOKU_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUGOKU_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_CHUGOKU_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_CHUGOKU_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_CHUGOKU_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+			save_scope_value_as = {
+				name = bakuhantaisei_SHIKOKU_loyalty_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_SHIKOKU_loyalty_progress_bar_value
+					multiply = 0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_SHIKOKU_independency_progress_bar_added
+				value = {
+					value = bakuhantaisei_SHIKOKU_independency_progress_bar_value
+					multiply = -0.5
+				}
+			}
+			save_scope_value_as = {
+				name = bakuhantaisei_SHIKOKU_goryo_progress_bar_added
+				value = {
+					value = 100
+					subtract = bakuhantaisei_SHIKOKU_goryo_progress_bar_value
+					multiply = 0.5
+				}
+			}
+		}
+	}
+
+	option = {
+		name = eafp_japan.3009.a
+		default_option = yes
+		if = {
+			limit = { exists = scope:bakuhantaisei_TOHOKU_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_TOHOKU_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_TOHOKU_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_TOHOKU_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_TOHOKU.region_state:JAP }
+			save_scope_value_as = {
+				name = TOHOKU_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_TOHOKU
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_TOHOKU.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_TOHOKU.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_TOHOKU.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_KANTO_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANTO_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANTO_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANTO_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_KANTO.region_state:JAP }
+			save_scope_value_as = {
+				name = KANTO_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_KANTO
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_KANTO.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_CHUBU_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUBU_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUBU_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUBU_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_CHUBU.region_state:JAP }
+			save_scope_value_as = {
+				name = CHUBU_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_CHUBU
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_CHUBU.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_CHUBU.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_CHUBU.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_KANSAI_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANSAI_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANSAI_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = scope:bakuhantaisei_KANSAI_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_KANSAI.region_state:JAP }
+			save_scope_value_as = {
+				name = KANSAI_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_KANSAI
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_KANSAI.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_KYUSHU_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = scope:bakuhantaisei_KYUSHU_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = scope:bakuhantaisei_KYUSHU_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = scope:bakuhantaisei_KYUSHU_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_KYUSHU.region_state:JAP }
+			save_scope_value_as = {
+				name = KYUSHU_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_KYUSHU
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_KYUSHU.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_KYUSHU.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_KYUSHU.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_CHUGOKU_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUGOKU_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUGOKU_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_CHUGOKU_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_CHUGOKU.region_state:JAP }
+			save_scope_value_as = {
+				name = CHUGOKU_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_CHUGOKU
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_CHUGOKU.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_CHUGOKU.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_CHUGOKU.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+		if = {
+			limit = { exists = scope:bakuhantaisei_SHIKOKU_loyalty_progress_bar_added }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_SHIKOKU_loyalty_progress_bar_added
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_SHIKOKU_independency_progress_bar_added
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = scope:bakuhantaisei_SHIKOKU_goryo_progress_bar_added
+			}
+		}
+		else_if = {
+			limit = { exists = s:STATE_SHIKOKU.region_state:JAP }
+			save_scope_value_as = {
+				name = SHIKOKU_not_exist
+				value = 1
+			}
+			add_journal_entry = je_bakuhantaisei_SHIKOKU
+			show_as_tooltip = {
+				add_bakuhantaisei_state_loyalty = {
+					TARGET = s:STATE_SHIKOKU.region_state:JAP
+					VALUE = 50
+				}
+				add_bakuhantaisei_state_independency = {
+					TARGET = s:STATE_SHIKOKU.region_state:JAP
+					VALUE = -50
+				}
+				add_bakuhantaisei_state_goryo = {
+					TARGET = s:STATE_SHIKOKU.region_state:JAP
+					VALUE = 40
+				}
+			}
+		}
+	}
+
+	after = {
+		trigger_event = {
+			id = eafp_japan.3010
+			days = 1
+		}
+	}
+}
+
+
+eafp_japan.3010 = { # eafp_japan.3009 이후 막번체제 값 조절용 히든 이벤트
+	type = country_event
+
+	hidden = yes
+
+	immediate = {
+		if = {
+			limit = { exists = scope:TOHOKU_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_TOHOKU.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:KANTO_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KANTO.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:CHUBU_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_CHUBU.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:KANSAI_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KANSAI.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:KYUSHU_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_KYUSHU.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:CHUGOKU_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_CHUGOKU.region_state:JAP
+				VALUE = 40
+			}
+		}
+		if = {
+			limit = { exists = scope:SHIKOKU_not_exist }
+			add_bakuhantaisei_state_loyalty = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = 50
+			}
+			add_bakuhantaisei_state_independency = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = -50
+			}
+			add_bakuhantaisei_state_goryo = {
+				TARGET = s:STATE_SHIKOKU.region_state:JAP
+				VALUE = 40
+			}
+		}
 	}
 }
 
@@ -6465,6 +7606,9 @@ eafp_japan.4003 = { # 천황의 밀칙
 		add_hitotsubashiha_approval = {
 			VALUE = -10
 		}
+		add_hitotsubashiha_influence_var = {
+			VALUE = 30
+		}
 		add_nankiha_approval = {
 			VALUE = -10
 		}
@@ -6472,6 +7616,9 @@ eafp_japan.4003 = { # 천황의 밀칙
 
 	option = {
 		name = eafp_japan.4003.b
+		add_hitotsubashiha_influence_var = {
+			VALUE = 30
+		}
 		add_nankiha_approval = {
 			VALUE = -30
 		}
@@ -6916,14 +8063,295 @@ eafp_japan.4009 = { # 공사관 방화
 }
 
 
-
-eafp_japan.5005 = {
+eafp_japan.5001 = { # 오개조의 어서문
 	type = country_event
 	placement = root
 
-	title = eafp_japan.5005.t
-	desc = eafp_japan.5005.d
-	flavor = eafp_japan.5005.f
+	title = eafp_japan.5001.t
+	desc = eafp_japan.5001.d
+	flavor = eafp_japan.5001.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+		if = {
+			limit = {
+				year < 1852
+			}
+			create_character = { # 수정
+				template = eafp_jap_ninko_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_komei_template
+				heir = yes
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1852
+				year < 1879
+			}
+			create_character = { # 수정
+				template = eafp_jap_komei_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_meiji_template
+				heir = yes
+			}
+			set_variable = meiji_born
+		}
+		else_if = {
+			limit = {
+				year >= 1879
+				year < 1912
+			}
+			create_character = { # 수정
+				template = eafp_jap_meiji_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_taisho_template
+				heir = yes
+			}
+			set_variable = meiji_born
+			set_variable = taisho_born
+		}
+		else_if = {
+			limit = {
+				year >= 1912
+				year < 1928
+			}
+			create_character = { # 수정
+				template = eafp_jap_taisho_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_showa_template
+				heir = yes
+			}
+			set_variable = meiji_born
+			set_variable = taisho_born
+			set_variable = showa_born
+		}
+		else_if = {
+			limit = {
+				year >= 1928
+				year < 1989
+			}
+			create_character = { # 수정
+				template = eafp_jap_showa_template
+				ruler = yes
+			}
+			set_variable = meiji_born
+			set_variable = taisho_born
+			set_variable = showa_born
+		}
+	}
+
+	trigger = {}
+	
+	option = {
+		name = eafp_japan.5001.a
+		default_option = yes
+
+		custom_tooltip = shogunate_rename.tt
+		hidden_effect = {
+			scope:shogunate_ig = {
+				set_interest_group_name = ig_landowners
+			}
+		}
+	}
+}
+
+eafp_japan.5002 = { 
+	type = country_event
+	placement = root
+
+	title = eafp_japan.5002.t
+	desc = eafp_japan.5002.d
+	flavor = eafp_japan.5002.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+	}
+
+	trigger = {
+	}
+	
+	option = {
+		name = eafp_japan.5002.a
+		default_option = yes
+
+		set_capital = STATE_KANTO
+		s:STATE_KANTO = {
+			random_scope_state = {
+				set_hub_name = {
+					type = city
+					name = HUB_NAME_STATE_KANTO_city_meiji
+				}
+			}
+		}
+	}
+	option = {
+		name = eafp_japan.5002.b
+
+		set_capital = STATE_KANSAI
+	}
+
+	after = {
+		trigger_event = eafp_japan.5003
+	}
+}
+
+eafp_japan.5003 = { 
+	type = country_event
+	placement = root
+
+	title = eafp_japan.5003.t
+	desc = eafp_japan.5003.d
+	flavor = eafp_japan.5003.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	 event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+	
+	immediate = {
+	}
+
+	trigger = {
+		
+	}
+	
+	option = {
+		name = eafp_japan.5003.a
+		default_option = yes
+
+		activate_law = law_type:law_oligarchy
+		activate_law = law_type:law_tenant_farmers
+		activate_law = law_type:law_protectionism
+		activate_law = law_type:law_interventionism
+		activate_law = law_type:law_professional_army
+
+		# 저널 건너뛰는 문제 때문에 일일히 조건 박아야 함
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_economy }
+				in_default = no
+				any_scope_state = {
+					filter = {
+						is_incorporated = yes
+					}
+					any_scope_building = {
+						is_building_type = building_urban_center
+						level >= 5
+					}
+					has_building = building_railway
+					percent > 0.7
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_economy # If the player manages to skip je_meiji_economy we still need to set the variable
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_economy
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_army }
+				NOT = { has_law = law_type:law_serfdom }
+				ig:ig_armed_forces = {
+					is_in_government = no
+				}
+				has_technology_researched = napoleonic_warfare
+				NOR = {
+					any_scope_building = {
+						is_building_type = building_barracks
+						has_active_production_method = pm_no_organization
+					}
+					any_military_formation = {
+						filter = {
+							is_army = yes
+						}
+						any_combat_unit = {
+							has_unit_type = unit_type:combat_unit_type_irregular_infantry
+						}
+						percent >= 0.25
+					}
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_army
+			trigger_event = {
+				id = meiji.3
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_army
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_diplomacy }
+				NOT = { has_law = law_type:law_isolationism }
+				NOT = { has_law = law_type:law_traditionalism }
+				NOT = { has_law = law_type:law_closed_borders }
+				is_subject = no
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_diplomacy # If the player manages to skip je_meiji_diplomacy we still need to set the variable
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_diplomacy
+			}
+		}
+	}
+}
+
+eafp_japan.5004 = {
+	type = country_event
+	placement = root
+
+	title = eafp_japan.5004.t
+	desc = eafp_japan.5004.d
+	flavor = eafp_japan.5004.f
 
 	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
 
@@ -6936,6 +8364,13 @@ eafp_japan.5005 = {
 	duration = 3
 
 	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = eafp_japan.5004.a
+		
 		set_state_religion = rel:shinto
 		state_religion_switch_effect = yes
 		ig:ig_devout = {
@@ -6968,48 +8403,6 @@ eafp_japan.5005 = {
 			convert_population = {
 				target = rel:shinto
 				value = 0.2
-			}
-		}
-	}
-
-	option = {
-		default_option = yes
-		name = eafp_japan.5005.a
-		
-		show_as_tooltip = {
-			set_state_religion = rel:shinto
-			state_religion_switch_effect = yes
-			ig:ig_devout = {
-				hidden_effect = { set_interest_group_name = ig_shinto_monks }
-				remove_ideology = ideology_buddhist_moralist
-				add_ideology = ideology_shinto_moralist
-				set_ig_trait = ig_trait:ig_trait_haibutsu_kishaku
-				set_ig_trait = ig_trait:ig_trait_secular_shrine_theory
-				set_ig_trait = ig_trait:ig_trait_heavenly_sovereign
-				leader ?= {
-					change_character_religion = rel:shinto
-				}
-			}
-			random_scope_state = {
-				limit = {
-					owner = ROOT
-					is_capital = yes
-				}
-				convert_population = {
-					target = rel:shinto
-					value = 0.4
-				}
-			}
-			every_scope_state = {
-				limit = {
-					owner = ROOT
-					is_incorporated = yes
-					NOT = { is_capital = yes }
-				}
-				convert_population = {
-					target = rel:shinto
-					value = 0.2
-				}
 			}
 		}
 	}
