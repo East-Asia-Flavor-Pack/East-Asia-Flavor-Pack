@@ -421,6 +421,8 @@ je_taiping = {
 		}
 	}
 
+	progress_desc = je_taiping_progress # 추가
+
 	weight = 1000
 	should_be_pinned_by_default = yes
 
@@ -557,7 +559,7 @@ je_taiping_revolution = {
 			limit = { NOT = { has_variable = taiping_fervor_var } }
 			set_variable = {
 				name = taiping_fervor_var
-				value = 0
+				value = -1
 			}
 		}
 		else = {
@@ -567,13 +569,26 @@ je_taiping_revolution = {
 			}
 			clamp_variable = {
 				name = taiping_fervor_var
-				max = 2
-				min = 0
+				max = 1
+				min = -1
 			}
 		}
-		add_modifier = {
-			name = taiping_fervor_low_modifier
-			multiplier = var:taiping_fervor_var
+		if = {
+			limit = { var:taiping_fervor_var = -1 }
+			add_modifier = {
+				name = taiping_fervor_high_modifier
+			}
+		}
+		else_if = {
+			limit = { var:taiping_fervor_var = 0 }
+			add_modifier = {
+				name = taiping_fervor_middle_modifier
+			}
+		}
+		else = {
+			add_modifier = {
+				name = taiping_fervor_low_modifier
+			}
 		}
 	}
 
@@ -594,6 +609,8 @@ je_taiping_revolution = {
 			remove_variable = num_unincorporated_states_in_china_proper # 추가
 			remove_modifier = taiping_unincorporated_states_modifier2 # 추가
 			remove_variable = num_claimed_states_in_china_proper # 추가
+			remove_modifier = taiping_fervor_high_modifier # 추가
+			remove_modifier = taiping_fervor_middle_modifier # 추가
 			remove_modifier = taiping_fervor_low_modifier # 추가
 		}
 		
@@ -617,6 +634,8 @@ je_taiping_revolution = {
 			remove_variable = num_unincorporated_states_in_china_proper
 			remove_modifier = taiping_unincorporated_states_modifier2
 			remove_variable = num_claimed_states_in_china_proper
+			remove_modifier = taiping_fervor_high_modifier
+			remove_modifier = taiping_fervor_middle_modifier
 			remove_modifier = taiping_fervor_low_modifier
 		}
 	}

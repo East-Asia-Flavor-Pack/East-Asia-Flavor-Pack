@@ -2847,6 +2847,7 @@ eafp_kor_mainline.105 = {	#순원왕후 수렴청정 끝
 				limit = {
 					has_template = eafp_kor_kim_juagun_character_template
 				}
+				set_character_busy_and_immortal = no
 				kill_character = yes
 			}
 		}
@@ -3076,13 +3077,6 @@ eafp_kor_mainline.111 = {	#헌종사망후 대왕대비2
 				save_scope_as = eafp_char_yangban_leader
 			}
 		}
-		create_character = {
-			template = eafp_kor_yi_byeon_character_template
-			on_created = {
-				save_scope_as = eafp_char_yi_wonbeom
-				set_character_busy_and_immortal = yes
-			}
-		}
 	}
 
 	option = {
@@ -3155,7 +3149,9 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 					limit = {
 						has_template = eafp_kor_myeonggyeongbi_kim_character_template
 					}
-					kill_character = yes
+					kill_character = {
+						hidden = yes
+					}
 				}
 			}
 			custom_tooltip = {
@@ -3176,26 +3172,12 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 				}
 			}
 		}
-		if = {
-			limit = {
-				any_scope_character = {
-					has_template = eafp_kor_yi_byeon_character_template
-				}
-			}
-			random_scope_character = {
-				limit = {
-					has_template = eafp_kor_yi_byeon_character_template
-				}
-				set_character_as_ruler = yes
-			}
-		}
-		else = {
-			create_character = {
-				template = eafp_kor_yi_byeon_character_template
-				on_created = {
-					save_scope_as = eafp_char_yi_wonbeom
-					set_character_busy_and_immortal = yes
-				}
+		create_character = {
+			template = eafp_kor_yi_byeon_character_template
+			ruler = yes
+			save_scope_as = eafp_char_yi_wonbeom
+			on_created = {
+				set_character_busy_and_immortal = yes
 			}
 		}
 		set_global_variable = {
@@ -3263,6 +3245,7 @@ eafp_kor_mainline.113 = {	#순원왕후 수렴청정 끝 - 철종
 				limit = {
 					has_template = eafp_kor_kim_juagun_character_template
 				}
+				set_character_busy_and_immortal = no
 				kill_character = yes
 			}
 		}
@@ -6249,20 +6232,21 @@ eafp_kor_mainline.221 = {	#안핵사 파견
 		if = {
 			limit = {
 				NOT = {
-					any_scope_character = {
+					any_character = {
 						has_template = eafp_kor_park_gyusu_character_template
 					}
 				}
 			}
 			create_character = {	#박규수
 				template = eafp_kor_park_gyusu_character_template
+				save_scope_as = eafp_char_park_gyusu
 				on_created = {
-					save_scope_as = eafp_char_park_gyusu
+					place_character_in_void = 10000
 				}
 			}
 		}
 		else = {
-			random_scope_character = {
+			random_character = {
 				limit = {
 					has_template = eafp_kor_park_gyusu_character_template
 				}
@@ -6273,10 +6257,7 @@ eafp_kor_mainline.221 = {	#안핵사 파견
 	
 	option = {
 		name = eafp_kor_mainline.221.oa
-		every_scope_character = {
-			limit = {
-				has_template = eafp_kor_park_gyusu_character_template
-			}
+		scope:eafp_char_park_gyusu = {
 			add_modifier = {
 				name = eafp_modi_chusa_early_game
 				months = 12
@@ -6315,9 +6296,9 @@ eafp_kor_mainline.221 = {	#안핵사 파견
 		}
 		
 		default_option = yes
-		every_scope_character = {
-			limit = {
-				has_template = eafp_kor_park_gyusu_character_template
+		scope:eafp_char_park_gyusu = {
+			hidden_effect = {
+				free_character_from_void = yes
 			}
 			set_as_interest_group_leader = yes
 			add_modifier = {
@@ -7942,8 +7923,9 @@ eafp_kor_mainline.316 = {	#김흥근
 		create_character = {
 			# 김흥근. https://encykorea.aks.ac.kr/Article/E0011168 참조 바람.
 			template = eafp_kor_kim_heunggeun_character_template
+			save_scope_as = eafp_char_sedo_heunggeun
 			on_created = {
-				save_scope_as = eafp_char_sedo_heunggeun
+				place_character_in_void = 10000
 			}
 			
 		}
@@ -7954,7 +7936,9 @@ eafp_kor_mainline.316 = {	#김흥근
 		name = eafp_kor_mainline.316.oa
 		default_option = yes
 		scope:eafp_char_sedo_heunggeun = {
-			exile_character = yes
+			show_as_tooltip = {
+				exile_character = yes
+			}
 		}
 	}
 }
@@ -8216,6 +8200,7 @@ eafp_kor_mainline.322 = {	#이원경 사사
 				reserved
 			}
 			on_created = {
+				place_character_in_void = 10000
 				add_modifier = {
 					name = eafp_modi_revolt_king
 					months = 12
@@ -8230,6 +8215,14 @@ eafp_kor_mainline.322 = {	#이원경 사사
 		name = eafp_kor_mainline.322.oa
 		default_option = yes
 		scope:eafp_char_yi_wongyeong = {
+			hidden_effect = {
+				if = {
+					limit = {
+						is_in_void = yes
+					}
+					free_character_from_void = yes
+				}
+			}
 			kill_character = yes
 		}
 	}
@@ -8415,8 +8408,9 @@ eafp_kor_mainline.326 = {	#조병현 사사
 		create_character = {
 			# 조병현
 			template = eafp_kor_jo_byeonghyeon_character_template
+			save_scope_as = eafp_char_sedo_byeonghyeon
 			on_created = {
-				save_scope_as = eafp_char_sedo_byeonghyeon
+				place_character_in_void = 10000
 			}
 		}
 	}
@@ -8436,6 +8430,14 @@ eafp_kor_mainline.326 = {	#조병현 사사
 			BALANCE = 20
 		}
 		scope:eafp_char_sedo_byeonghyeon = {
+			hidden_effect = {
+				if = {
+					limit = {
+						is_in_void = yes
+					}
+					free_character_from_void = yes
+				}
+			}
 			kill_character = yes
 		}
 		default_option = yes
@@ -8470,6 +8472,10 @@ eafp_kor_mainline.326 = {	#조병현 사사
 			STRESS = 5
 		}
 		scope:eafp_char_sedo_byeonghyeon = {
+			hidden_effect = {
+				free_character_from_void = yes
+				add_character_role = agitator
+			}
 			exile_character = yes
 		}
 		default_option = yes
@@ -8551,10 +8557,10 @@ eafp_kor_mainline.327 = {	#김흥근 부활
 			create_character = {
 				# 김흥근. https://encykorea.aks.ac.kr/Article/E0011168 참조 바람.
 				template = eafp_kor_kim_heunggeun_character_template
+				save_scope_as = eafp_char_sedo_heunggeun
 				on_created = {
-					save_scope_as = eafp_char_sedo_heunggeun
+					place_character_in_void = 10000
 				}
-				
 			}
 		}
 	}
@@ -8562,7 +8568,9 @@ eafp_kor_mainline.327 = {	#김흥근 부활
 	option = {
 		name = eafp_kor_mainline.327.oa
 		scope:eafp_char_sedo_heunggeun = {
-			transfer_character = ROOT
+			show_as_tooltip = {
+				transfer_character = ROOT
+			}
 		}
 		eafp_effect_option_gain_balance = {
 			BALANCE = 20
@@ -8653,8 +8661,9 @@ eafp_kor_mainline.329 = {	#김흥근 정승
 			create_character = {
 				# 김흥근. https://encykorea.aks.ac.kr/Article/E0011168 참조 바람.
 				template = eafp_kor_kim_heunggeun_character_template
+				save_scope_as = eafp_char_sedo_heunggeun
 				on_created = {
-					save_scope_as = eafp_char_sedo_heunggeun
+					place_character_in_void = 10000
 				}
 			}
 		}
@@ -8663,6 +8672,14 @@ eafp_kor_mainline.329 = {	#김흥근 정승
 	option = {
 		name = eafp_kor_mainline.329.oa
 		scope:eafp_char_sedo_heunggeun = {
+			hidden_effect = {
+				if = {
+					limit = {
+						is_in_void = yes
+					}
+					free_character_from_void = yes
+				}
+			}
 			add_experience = 1.0
 			set_as_interest_group_leader = yes
 		}
@@ -8732,8 +8749,9 @@ eafp_kor_mainline.330 = {	#신해조천의
 		create_character = {
 			# 권돈인
 			template = eafp_kor_gwon_donin_character_template
+			save_scope_as = eafp_char_sedo_donin
 			on_created = {
-				save_scope_as = eafp_char_sedo_donin
+				place_character_in_void = 10000
 			}
 		}
 	}
@@ -8756,6 +8774,15 @@ eafp_kor_mainline.330 = {	#신해조천의
 			}
 		}
 		scope:eafp_char_sedo_donin = {
+			hidden_effect = {
+				if = {
+					limit = {
+						is_in_void = yes
+					}
+					free_character_from_void = yes
+				}
+				add_character_role = agitator
+			}
 			exile_character = yes
 		}
 		eafp_effect_option_gain_balance = {
