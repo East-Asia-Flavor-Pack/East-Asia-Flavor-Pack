@@ -678,14 +678,10 @@ je_korean_imsul_uprising = {
 
 	on_monthly_pulse = {
 		effect = {
-			#개선 진행도 자연증가
-			#eafp_land_problem_expup = yes
-			#AI 조율
-			if = {
-				limit = {
-					is_ai = yes
-				}
-				#eafp_land_problem_expup_ai = yes
+			#전국 합산 개선진행도 체크
+			change_variable = {
+				name = eafp_var_je_imsul_uprising
+				add = eafp_val_total_land_level
 			}
 			##역사적 이벤트
 			if = {	#재정구멍
@@ -838,6 +834,53 @@ je_korean_imsul_boom = {
 	}
 	
 	immediate = {
+		##대상 주 선정
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
+			}
+			order_by = eafp_val_imsul_uprising_risk
+			position = 0
+			save_scope_as = eafp_imsul_rising_target_state
+		}
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
+			}
+			order_by = eafp_val_imsul_uprising_risk
+			position = 1
+			save_scope_as = eafp_imsul_rising_target_state_2nd
+		}
+		ordered_scope_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_PYONGYANG
+					state_region = s:STATE_SARIWON
+				}
+			}
+			order_by = eafp_val_imsul_uprising_risk
+			position = 2
+			save_scope_as = eafp_imsul_rising_target_state_3rd
+		}
+		set_variable = { # 로컬용
+			name = eafp_imsul_rising_target_state
+			value = scope:eafp_imsul_rising_target_state
+		}
 		scope:eafp_imsul_rising_target_state = {
 			set_variable = {	#확산여부. 값 1은 해당 주의 중심고을만, 해당 지역 인근고을 전파시마다 +1, 최대 3
 				name = eafp_var_imsul_on_state
@@ -860,6 +903,7 @@ je_korean_imsul_boom = {
 			remove_modifier = eafp_modi_imsul_state_zero
 			remove_modifier = eafp_modi_imsul_state_lockdown
 		}
+		remove_variable = eafp_imsul_rising_target_state
 	}
 	
 	fail = {
@@ -870,6 +914,7 @@ je_korean_imsul_boom = {
 		custom_tooltip = {
 			text = je_korean_imsul_boom_fail_tt
 		}
+		remove_variable = eafp_imsul_rising_target_state
 	}
 	
 	#progress_desc = {
@@ -1279,6 +1324,23 @@ je_korean_regent = {
 				set_variable = {
 					name = eafp_var_regent_type
 					value = 0
+				}
+			}
+			#개인 계좌 없으면 만듦
+			if = {
+				limit = {
+					has_variable = eafp_var_regent_type
+					var:eafp_var_regent_type >= 1
+					var:eafp_var_regent_type <= 3
+					heir ?= {
+						NOT = { has_variable = eafp_var_personal_account }
+					}
+				}
+				heir = {
+					set_variable = {
+						name = eafp_var_personal_account
+						value = 150000
+					}
 				}
 			}
 			#사익추구 활동 굴림
