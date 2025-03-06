@@ -281,51 +281,7 @@ bakufu_seisaku_junochisui_reclaiming_swamp_button = {
 	}
 }
 
-
-
-repeal_ikokusen_uchiharairei_button = { # 이국선 타불령 폐지
-	name = "repeal_ikokusen_uchiharairei_button"
-	desc = "repeal_ikokusen_uchiharairei_button_desc"
-
-	visible = {
-		has_modifier = ikokusen_uchiharairei_modifier
-	}
-
-	possible = {
-		hidden_trigger = { NOT = { has_variable = eafpjap2306_ing } }
-	}
-
-	effect = {
-		remove_modifier = ikokusen_uchiharairei_modifier
-	}
-
-	ai_chance = {
-		base = 100
-	}
-}
-
-reenact_ikokusen_uchiharairei_button = { # 이국선 타불령 부활
-	name = "reenact_ikokusen_uchiharairei_button"
-	desc = "reenact_ikokusen_uchiharairei_button_desc"
-
-	visible = {
-		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
-		has_law = law_type:law_isolationism
-	}
-
-	possible = {
-		authority >= 50
-		hidden_trigger = { NOT = { has_variable = eafpjap2301_ing } }
-	}
-
-	effect = {
-		add_modifier = ikokusen_uchiharairei_modifier
-	}
-
-	ai_chance = {
-		base = 0
-	}
-}
+# 막부 개혁
 
 japan_kaikakuha_button = {
 	name = "japan_kaikakuha_button"
@@ -352,7 +308,13 @@ japan_kaikakuha_button = {
 	}
 
 	ai_chance = {
-		base = 100
+		base = 0
+		modifier = {
+			trigger = {
+				bakufu_hitotsubashiha_hiritsu <= 0.5
+			}
+			add = 50
+		}
 	}
 }
 
@@ -382,6 +344,12 @@ japan_hoshuha_button = {
 
 	ai_chance = {
 		base = 0
+		modifier = {
+			trigger = {
+				bakufu_nankiha_hiritsu <= 0.4
+			}
+			add = 50
+		}
 	}
 }
 
@@ -415,5 +383,75 @@ japan_bakufu_kaikaku_button = {
 		add_journal_entry = {
 			type = je_bakufu_zaisei
 		}
+	}
+}
+
+repeal_ikokusen_uchiharairei_button = { # 이국선 타불령 폐지
+	name = "repeal_ikokusen_uchiharairei_button"
+	desc = "repeal_ikokusen_uchiharairei_button_desc"
+
+	visible = {
+		has_modifier = ikokusen_uchiharairei_modifier
+	}
+
+	possible = {
+		authority >= 100
+		hidden_trigger = { NOT = { has_variable = eafpjap2306_ing } }
+	}
+
+	effect = {
+		remove_modifier = ikokusen_uchiharairei_modifier
+	}
+
+	ai_chance = {
+		base = 100
+	}
+}
+
+reenact_ikokusen_uchiharairei_button = { # 이국선 타불령 부활
+	name = "reenact_ikokusen_uchiharairei_button"
+	desc = "reenact_ikokusen_uchiharairei_button_desc"
+
+	visible = {
+		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+		has_law = law_type:law_isolationism
+	}
+
+	possible = {
+		hidden_trigger = { NOT = { has_variable = eafpjap2301_ing } }
+	}
+
+	effect = {
+		add_modifier = ikokusen_uchiharairei_modifier
+	}
+
+	ai_chance = {
+		base = 0
+	}
+}
+
+shogun_marry_with_princess_button = { # 내친왕과의 혼인
+	name = "shogun_marry_with_princess_button"
+	desc = "shogun_marry_with_princess_button_desc"
+
+	visible = {
+		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+		has_law = law_type:law_isolationism
+	}
+
+	possible = {
+		ruler = {
+			age > 16
+			NOT = { has_variable = is_married }
+		}
+		hidden_trigger = { NOT = { has_variable = eafpjap2307_ing } }
+	}
+
+	effect = {
+		trigger_event = eafp_japan.2008
+	}
+
+	ai_chance = {
+		base = 0
 	}
 }
