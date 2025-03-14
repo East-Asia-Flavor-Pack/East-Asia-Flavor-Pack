@@ -3412,12 +3412,13 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
+		
 	}
 
 	option = {
 		name = eafp_kor_mainline.120.oa
 		custom_tooltip = {
-			text = eafp_kor_mainline.120.ta
+			text = eafp_kor_mainline.120.tt
 		}
 		hidden_effect = {
 			ig:ig_landowners = {
@@ -3442,7 +3443,7 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 				has_ideology = ideology:ideology_eafp_missionary
 				OR = {
 					NOT = { has_modifier = eafp_modi_missionary_stealth }
-					template = eafp_kor_laurent_joseph_marius_imbert_character_template
+					has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
 					has_template = eafp_kor_pierre_maubant_character_template
 				}
 			}
@@ -3455,7 +3456,7 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 					is_incorporated = yes
 				}
 				kill_population_percent_in_state = {
-					percent = 0.15
+					percent = 0.10
 					religion = rel:catholic
 				}
 			}
@@ -3466,8 +3467,18 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 					}
 					change_pop_religion = {
 						target = rel:confucian
-						value = 0.50
+						value = 0.10
 					}
+				}
+			}
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
 				}
 			}
 		}
@@ -3478,11 +3489,23 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 		eafp_effect_option_gain_balance = {
 			BALANCE = -30
 		}
+		c:FRA ?= {
+			create_diplomatic_catalyst = {
+				type = catalyst_event_negative
+				target = ROOT
+			}
+		}
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.125
+				years = 7
+			}
+		}
 	}
 	option = {
 		name = eafp_kor_mainline.120.ob
 		custom_tooltip = {
-			text = eafp_kor_mainline.120.tb
+			text = eafp_kor_mainline.120.tt
 		}
 		default_option = yes
 		hidden_effect = {
@@ -3520,7 +3543,7 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 					is_incorporated = yes
 				}
 				kill_population_percent_in_state = {
-					percent = 0.15
+					percent = 0.10
 					religion = rel:catholic
 				}
 			}
@@ -3531,8 +3554,18 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 					}
 					change_pop_religion = {
 						target = rel:confucian
-						value = 0.50
+						value = 0.10
 					}
+				}
+			}
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
 				}
 			}
 		}
@@ -3540,26 +3573,24 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 			id = eafp_kor_mainline.121
 			days = { 150 210 }
 		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -40
+		c:FRA ?= {
+			create_diplomatic_catalyst = {
+				type = catalyst_event_negative
+				target = ROOT
+			}
 		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
+		hidden_effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.125
+				years = 7
+			}
 		}
 	}
 	option = {
 		name = eafp_kor_mainline.120.oc
-		custom_tooltip = {
-			text = eafp_kor_mainline.120.tc
-		}
-		eafp_effect_option_gain_stress = {
-			STRESS = 10
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = 10
-		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = 1
+		add_modifier = {
+			name = ruler_protect_christians_modifier
+			months = normal_modifier_time
 		}
 	}
 }
@@ -3725,75 +3756,31 @@ eafp_kor_mainline.124 = {	#병오박해 시작-김대건 발각
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
+		random_scope_character = {
+			limit = { has_template = eafp_kor_daegeon_kim_character_template }
+			save_scope_as = prisoner_scope
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.124.oa
-		custom_tooltip = {
-			text = eafp_kor_mainline.124.ta
+		scope:prisoner_scope = {
+			custom_tooltip = {
+				text = to_jail_10_tt
+				set_variable = { name = prison_time_var value = 120 }
+				set_variable = { name = prison_country value = owner }
+				place_character_in_void = 132
+			}
 		}
 		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					if = {
-						limit = {
-							has_template = eafp_kor_kim_juagun_character_template
-						}
-						set_character_immortal = yes
-						place_character_in_void = 60
-					}
-				}
+			trigger_event = {
+				id = eafp_kor_mainline.126
+				months = 1
 			}
-		}
-		create_character = {
-			# 이지연. 기해박해때 천주교 탄압 주장 상소문을 올린 우의정. 역사 루트 선택시 김좌근을 잠시 대체하는 양반리더로써 있을것이나, 1년뒤 탄핵을 받아 유배를 떠날 것. 24.07.19 추가.
-			template = eafp_kor_yi_jiyeon_character_template
-		}
-		every_scope_character = {
-			limit = {
-				has_role = agitator
-				has_ideology = ideology:ideology_eafp_missionary
-				OR = {
-					NOT = { has_modifier = eafp_modi_missionary_stealth }
-					template = eafp_kor_laurent_joseph_marius_imbert_character_template
-					has_template = eafp_kor_pierre_maubant_character_template
-				}
-			}
-			kill_character = yes
-		}
-		custom_tooltip = {
-			text = eafp_catholic_purge_1_tt
-			every_scope_state = {
-				limit = {
-					is_incorporated = yes
-				}
-				kill_population_percent_in_state = {
-					percent = 0.15
-					religion = rel:catholic
-				}
-			}
-			every_scope_state = {
-				every_scope_pop = {
-					limit = {
-						has_pop_religion = catholic
-					}
-					change_pop_religion = {
-						target = rel:confucian
-						value = 0.50
-					}
-				}
-			}
-		}
-		trigger_event = {	#척사윤음 반포
-			id = eafp_kor_mainline.121
-			days = { 150 210 }
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -30
 		}
 	}
 }
-eafp_kor_mainline.125 = {	#병오박해
+eafp_kor_mainline.125 = {	#프랑스 배
 	type = country_event
 	placement = ROOT
 
@@ -3821,35 +3808,6 @@ eafp_kor_mainline.125 = {	#병오박해
 		custom_tooltip = {
 			text = eafp_kor_mainline.125.ta
 		}
-		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					if = {
-						limit = {
-							has_template = eafp_kor_kim_juagun_character_template
-						}
-						set_character_immortal = yes
-						place_character_in_void = 60
-					}
-				}
-			}
-		}
-		create_character = {
-			# 이지연. 기해박해때 천주교 탄압 주장 상소문을 올린 우의정. 역사 루트 선택시 김좌근을 잠시 대체하는 양반리더로써 있을것이나, 1년뒤 탄핵을 받아 유배를 떠날 것. 24.07.19 추가.
-			template = eafp_kor_yi_jiyeon_character_template
-		}
-		every_scope_character = {
-			limit = {
-				has_role = agitator
-				has_ideology = ideology:ideology_eafp_missionary
-				OR = {
-					NOT = { has_modifier = eafp_modi_missionary_stealth }
-					template = eafp_kor_laurent_joseph_marius_imbert_character_template
-					has_template = eafp_kor_pierre_maubant_character_template
-				}
-			}
-			kill_character = yes
-		}
 		custom_tooltip = {
 			text = eafp_catholic_purge_1_tt
 			every_scope_state = {
@@ -3857,7 +3815,7 @@ eafp_kor_mainline.125 = {	#병오박해
 					is_incorporated = yes
 				}
 				kill_population_percent_in_state = {
-					percent = 0.15
+					percent = 0.10
 					religion = rel:catholic
 				}
 			}
@@ -3868,7 +3826,7 @@ eafp_kor_mainline.125 = {	#병오박해
 					}
 					change_pop_religion = {
 						target = rel:confucian
-						value = 0.50
+						value = 0.10
 					}
 				}
 			}
@@ -3897,6 +3855,87 @@ eafp_kor_mainline.125 = {	#병오박해
 		}
 	}
 }
+eafp_kor_mainline.126 = {	#김대건 판결
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.126.mt
+	desc = eafp_kor_mainline.126.md
+	flavor = eafp_kor_mainline.126.mf
+
+	duration = 2
+	
+
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+
+	}
+
+	option = {
+		name = eafp_kor_mainline.126.oa
+		scope:prisoner_scope = {
+			hidden_effect = {
+				free_character_from_void = yes
+			}
+			kill_character = yes
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
+				}
+			}
+		}
+		c:FRA ?= {
+			create_diplomatic_catalyst = {
+				type = catalyst_event_negative
+				target = ROOT
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.126.ob
+		scope:prisoner_scope = {
+			remove_variable = prison_time_var
+			remove_variable = prison_country
+			place_character_in_void = 132
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
+					multiplier = 0.5
+				}
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.126.oc
+		scope:prisoner_scope = {
+			free_character_from_void = yes
+		}
+		add_modifier = {
+			name = ruler_protect_christians_modifier
+			months = normal_modifier_time
+		}
+	}
+}
 
 #서원 철폐 이벤트(임시)
 #이벤트 이미지(기본 열차 이미지) 수정 요망
@@ -3917,16 +3956,11 @@ eafp_kor_mainline.150 = {
 	duration = 2
 
 	immediate = {
-		set_variable = eafp_kor_mainline.150_var
 	}
 
 	option = {
 		name = eafp_kor_mainline.150.a
 		default_option = yes
-		trigger_event = {
-			id = eafp_kor_mainline.151
-			days = 120
-		}
 	}
 }
 
@@ -3947,19 +3981,18 @@ eafp_kor_mainline.151 = {
 	duration = 2
 
 	immediate = {
-		set_variable = eafp_kor_mainline.151_var
+		je:je_korean_seowon = {
+			add_progress = { value = 10 name = eafp_progress_bar_seowon_backlash }
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.151.a
 		default_option = yes
-		trigger_event = {
-			id = eafp_kor_mainline.152
-			days = 30
-		}
+
+		custom_tooltip = eafp_progress_bar_seowon_abolish_advance_tt
 	}
 }
-
 eafp_kor_mainline.152 = {
 	type = country_event
 	placement = root
@@ -3977,19 +4010,18 @@ eafp_kor_mainline.152 = {
 	duration = 2
 
 	immediate = {
-		set_variable = eafp_kor_mainline.152_var
+		je:je_korean_seowon = {
+			add_progress = { value = 30 name = eafp_progress_bar_seowon_backlash }
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.152.a
 		default_option = yes
-		trigger_event = {
-			id = eafp_kor_mainline.153
-			days = 30
-		}
+
+		custom_tooltip = eafp_progress_bar_seowon_abolish_advance_tt
 	}
 }
-
 eafp_kor_mainline.153 = {
 	type = country_event
 	placement = root
@@ -4007,19 +4039,18 @@ eafp_kor_mainline.153 = {
 	duration = 2
 
 	immediate = {
-		set_variable = eafp_kor_mainline.153_var
+		je:je_korean_seowon = {
+			add_progress = { value = 30 name = eafp_progress_bar_seowon_backlash }
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.153.a
 		default_option = yes
-		trigger_event = {
-			id = eafp_kor_mainline.154
-			days = 180
-		}
+
+		custom_tooltip = eafp_progress_bar_seowon_abolish_advance_tt
 	}
 }
-
 eafp_kor_mainline.154 = {
 	type = country_event
 	placement = root
@@ -4037,12 +4068,75 @@ eafp_kor_mainline.154 = {
 	duration = 2
 
 	immediate = {
-		set_variable = eafp_kor_mainline.154_var
+		je:je_korean_seowon = {
+			add_progress = { value = 30 name = eafp_progress_bar_seowon_backlash }
+		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.154.a
 		default_option = yes
+
+		custom_tooltip = eafp_progress_bar_seowon_abolish_advance_tt
+	}
+}
+eafp_kor_mainline.155 = {
+	type = country_event
+	placement = root
+
+	title = eafp_kor_mainline.155.t
+	desc = eafp_kor_mainline.155.d
+	flavor = eafp_kor_mainline.155.f
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_trains.bk2"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/unspecific/trains"
+
+	duration = 2
+
+	immediate = {
+		je:je_korean_seowon = {
+			add_progress = { value = 30 name = eafp_progress_bar_seowon_backlash }
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.155.a
+		default_option = yes
+
+		custom_tooltip = eafp_progress_bar_seowon_abolish_advance_tt
+	}
+}
+eafp_kor_mainline.159 = {
+	type = country_event
+	placement = root
+
+	title = eafp_kor_mainline.159.t
+	desc = eafp_kor_mainline.159.d
+	flavor = eafp_kor_mainline.159.f
+
+	event_image = {
+		video = "gfx/event_pictures/unspecific_trains.bk2"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/unspecific/trains"
+
+	duration = 2
+
+	immediate = {
+	}
+
+	option = {
+		name = eafp_kor_mainline.159.a
+		default_option = yes
+
+		remove_modifier = eafp_modi_seowon_problem_complete
+		add_modifier = {
+			name = eafp_modi_seowon_problem_complete
+			months = normal_modifier_time
+		}
 	}
 }
 
@@ -4076,13 +4170,16 @@ eafp_kor_mainline.170 = {	#임의적 박해 발동
 	option = {
 		name = eafp_kor_mainline.170.oa
 		default_option = yes
-		every_scope_character = {
-			limit = {
-				has_role = agitator
-				has_ideology = ideology:ideology_eafp_missionary
-				NOT = { has_modifier = eafp_modi_missionary_stealth }
+		custom_tooltip = {
+			text = eafp_kor_mainline.170.tt
+			every_scope_character = {
+				limit = {
+					has_role = agitator
+					has_ideology = ideology:ideology_eafp_missionary
+					NOT = { has_modifier = eafp_modi_missionary_stealth }
+				}
+				kill_character = yes
 			}
-			kill_character = yes
 		}
 		custom_tooltip = {
 			text = eafp_catholic_purge_0_tt
@@ -4091,7 +4188,7 @@ eafp_kor_mainline.170 = {	#임의적 박해 발동
 					is_incorporated = yes
 				}
 				kill_population_percent_in_state = {
-					percent = 0.10
+					percent = 0.5
 					religion = rel:catholic
 				}
 			}
@@ -4102,7 +4199,7 @@ eafp_kor_mainline.170 = {	#임의적 박해 발동
 					}
 					change_pop_religion = {
 						target = rel:confucian
-						value = 0.40
+						value = 0.10
 					}
 				}
 			} 
@@ -4380,7 +4477,8 @@ eafp_kor_mainline.206 = {	#봉기 전조
 	option = {
 		name = eafp_kor_mainline.206.oa
 		default_option = yes
-		#
+		
+		custom_tooltip = eafp_kor_mainline.206.tt
 	}
 }
 eafp_kor_mainline.207 = {	#봉기 전조

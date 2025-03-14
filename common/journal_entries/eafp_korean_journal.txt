@@ -410,7 +410,7 @@ je_korean_land_problem = {
 	complete = {	#중기적 개혁
 		custom_tooltip = {
 			text = je_condition_placeholder_tt
-			has_global_variable = eafp_global_var_sam_all_clear
+			has_variable = eafp_var_sam_all_clear
 		}
 	}
 
@@ -1698,8 +1698,8 @@ je_korean_seowon = {
 
 	group = je_group_historical_content
 	
-	scripted_progress_bar = eafp_progress_bar_seowon_power
 	scripted_progress_bar = eafp_progress_bar_seowon_abolish
+	scripted_progress_bar = eafp_progress_bar_seowon_backlash
 	
 	modifiers_while_active = {
 		eafp_modi_seowon_problem_base
@@ -1709,23 +1709,19 @@ je_korean_seowon = {
 		country_has_primary_culture = cu:korean
 		any_scope_state = {
 			any_scope_building = {
-				has_active_production_method = pm_eafp_seowon
+				has_active_production_method = pm_manor_house_seowon_ownership
 			}
 		}
 	}
 
 	possible = {
-		##서원 철폐 글로벌 변수가 없을 것 도 조건에 넣어두자.
 		country_has_primary_culture = cu:korean
-		NOT = { has_global_variable = eafp_kor_seowon_complete }
 		OR = {
-			any_scope_state = {
-				any_scope_building = {
-					is_building_type = building_manor_house
-					NOT = { has_active_production_method = pm_eafp_seowon }
-				}
+			any_scope_building = {
+				is_building_type = building_manor_house
+				NOT = { has_active_production_method = pm_manor_house_seowon_ownership }
 			}
-			has_global_variable = eafp_global_var_sam_all_clear
+			has_variable = eafp_var_sam_all_clear
 			any_scope_character = {
 				is_heir = yes
 				has_trait = kor_i_am_your_father
@@ -1735,89 +1731,54 @@ je_korean_seowon = {
 
 
 	immediate = {
-		#set_variable = {
-		#	name = eafp_var_je_regent
-		#	value = 100
-		#}
-		#set_variable = {
-		#	name = eafp_var_regent_type
-		#	value = 0
-		#}
-		#heir = {
-		#	save_scope_as = eafp_regent_character
-		#}
+		add_modifier = {
+			name = eafp_modi_seowon_problem_backlash
+			multiplier = 0.3
+		}
 	}
 	
-	#scripted_button = eafp_scripted_button_regent_balance
-	
-	complete = {	#상황따라 유동적
+	complete = {
 		custom_tooltip = {
-			text = je_condition_placeholder_tt
-			always = no
+			text = je_korean_seowon_complete_button_tt
+			has_variable = eafp_scripted_button_seowon1_var
+			has_variable = eafp_scripted_button_seowon2_var
+			has_variable = eafp_scripted_button_seowon3_var
+			has_variable = eafp_scripted_button_seowon4_var
+			has_variable = eafp_scripted_button_seowon5_var
+		}
+		any_scope_building = {
+			count = all
+			OR = {
+				NOT = { is_building_type = building_manor_house }
+				has_active_production_method = pm_manor_house_seowon_ownership
+			}
+		}
+		custom_tooltip = {
+			text = je_korean_seowon_complete_backlash_tt
+			scope:journal_entry = {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 0
+			}
 		}
 	}
 
 	on_complete = {
-
+		set_variable = eafp_kor_seowon_complete
+		remove_modifier = eafp_modi_seowon_problem_backlash
+		trigger_event = eafp_kor_mainline.159
 	}
-	
-	fail = {	#없음
-		custom_tooltip = {
-			text = je_condition_placeholder_tt
-			always = no
+
+	on_weekly_pulse = {
+		effect = {
+			remove_modifier = eafp_modi_seowon_problem_backlash
+			add_modifier = {
+				name = eafp_modi_seowon_problem_backlash
+				multiplier = {
+					value = eafp_progress_bar_seowon_backlash_progress_bar_value
+					divide = 100
+				}
+			}
 		}
 	}
-
-	on_fail = { # 추가
-		# trigger_event = { id = warlord_china_events.100 }
-		#hidden_effect = {
-		#}
-		#custom_tooltip = je_warlord_china_on_fail
-	}
-
-	#status_desc = {
-	#	first_valid = {
-	#		triggered_desc = {
-	#			desc = je_korean_regent_balance_2
-	#			trigger = {
-	#				root.var:eafp_var_je_regent >= 50
-	#				root.var:eafp_var_je_regent < 75
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_korean_regent_balance_1
-	#			trigger = {
-	#				root.var:eafp_var_je_regent >= 25
-	#				root.var:eafp_var_je_regent < 50
-	#			}
-	#		}
-	#		triggered_desc = {
-	#			desc = je_korean_regent_balance_0
-	#			trigger = {
-	#				root.var:eafp_var_je_regent < 25
-	#			}
-	#		}
-	#	}
-	#}
-
-	on_yearly_pulse = {
-		#effect = {
-		#	change_variable = {
-		#			name = eafp_var_je_regent
-		#			add = 0.5
-		#	}
-		#}
-	}
-
-	#current_value = {
-	#	value = root.var:eafp_var_je_regent
-	#}
-
-	#goal_add_value = {
-	#	  value = 500
-	#}
-
-	#progressbar = yes
 
 	weight = 1000
 	
@@ -1849,7 +1810,7 @@ je_rlg_seoul_gyeongbokgung_poor = {
     
 	complete = {
 		OR = {
-			has_global_variable = eafp_global_var_sam_all_clear
+			has_variable = eafp_var_sam_all_clear
 			any_scope_character = {
 				is_heir = yes
 				has_trait = kor_i_am_your_father

@@ -78,19 +78,19 @@ eafp_scripted_button_sam_jeon = {
 	desc = "eafp_scripted_button_sam_jeon_desc"
 
 	visible = {
-		NOT = { has_global_variable = eafp_global_var_sam_jeon_clear }
+		NOT = { has_variable = eafp_var_sam_jeon_clear }
 	}
 
 	possible = {
 		custom_tooltip = {
 			text = eafp_scripted_button_sam_jeon_cond_tt
-			NOT = { has_global_variable = eafp_global_var_sam_jeon_clear }
+			NOT = { has_variable = eafp_var_sam_jeon_clear }
 			eafp_kor_sam_jeon_clear_count >= 4
 		}
 	}
 
 	effect = {
-		set_global_variable = eafp_global_var_sam_jeon_clear
+		set_variable = eafp_var_sam_jeon_clear
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
@@ -188,19 +188,19 @@ eafp_scripted_button_sam_gun = {
 	desc = "eafp_scripted_button_sam_gun_desc"
 
 	visible = {
-		NOT = { has_global_variable = eafp_global_var_sam_gun_clear }
+		NOT = { has_variable = eafp_var_sam_gun_clear }
 	}
 
 	possible = {
 		custom_tooltip = {
 			text = eafp_scripted_button_sam_gun_cond_tt
-			NOT = { has_global_variable = eafp_global_var_sam_gun_clear }
+			NOT = { has_variable = eafp_var_sam_gun_clear }
 			eafp_kor_sam_gun_clear_count >= 4
 		}
 	}
 
 	effect = {
-		set_global_variable = eafp_global_var_sam_gun_clear
+		set_variable = eafp_var_sam_gun_clear
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
@@ -293,19 +293,19 @@ eafp_scripted_button_sam_hwan = {
 	desc = "eafp_scripted_button_sam_hwan_desc"
 
 	visible = {
-		NOT = { has_global_variable = eafp_global_var_sam_hwan_clear }
+		NOT = { has_variable = eafp_var_sam_hwan_clear }
 	}
 
 	possible = {
 		custom_tooltip = {
 			text = eafp_scripted_button_sam_hwan_cond_tt
-			NOT = { has_global_variable = eafp_global_var_sam_hwan_clear }
+			NOT = { has_variable = eafp_var_sam_hwan_clear }
 			eafp_kor_sam_hwan_clear_count >= 4
 		}
 	}
 
 	effect = {
-		set_global_variable = eafp_global_var_sam_hwan_clear
+		set_variable = eafp_var_sam_hwan_clear
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
@@ -404,20 +404,20 @@ eafp_scripted_button_sam_all = {
 	desc = "eafp_scripted_button_sam_all_desc"
 
 	visible = {
-		NOT = { has_global_variable = eafp_global_var_sam_all_clear }
+		NOT = { has_variable = eafp_var_sam_all_clear }
 	}
 
 	possible = {
 		custom_tooltip = {
 			text = eafp_scripted_button_sam_all_cond_tt
-			has_global_variable = eafp_global_var_sam_jeon_clear
-			has_global_variable = eafp_global_var_sam_gun_clear
-			has_global_variable = eafp_global_var_sam_hwan_clear
+			has_variable = eafp_var_sam_jeon_clear
+			has_variable = eafp_var_sam_gun_clear
+			has_variable = eafp_var_sam_hwan_clear
 		}
 	}
 
 	effect = {
-		set_global_variable = eafp_global_var_sam_all_clear
+		set_variable = eafp_var_sam_all_clear
 	}
 }
 ###아래는 봉기저널 관련 버튼
@@ -800,35 +800,192 @@ eafp_scripted_button_health_out = {
 		}
 	}
 }
-#대내활동 - 안 씀
-#eafp_scripted_button_health_in = {
-#	name = "eafp_scripted_button_health_in"
-#	desc = "eafp_scripted_button_health_in_desc"
-#
-#	visible = {
-#		always = yes
-#	}
-#
-#	possible = {
-#		ruler = {
-#			age >= 12
-#		}
-#		custom_tooltip = {
-#			text = eafp_scripted_button_health_cooltime_tt
-#			NOT = { has_variable = eafp_var_button_health_cooltime }
-#		}
-#	}
-#
-#	effect = {
-#		custom_tooltip = {
-#			text = eafp_scripted_button_health_in_tt
-#		}
-#		set_variable = {	#쿨타임 1년
-#			name = eafp_var_button_health_cooltime
-#			months = 12
-#		}
-#	}
-#}
+###아래는 서원 철폐 관련 버튼
+eafp_scripted_button_seowon1 = {
+	name = "eafp_scripted_button_seowon1"
+	desc = "eafp_scripted_button_seowon1_desc"
+
+	visible = {
+		NOT = { has_variable = eafp_scripted_button_seowon1_var }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			je:je_korean_seowon ?= {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {
+			name = eafp_scripted_button_seowon_cooltime
+			days = 30
+		}
+		set_variable = eafp_scripted_button_seowon1_var
+		trigger_event = eafp_kor_mainline.151
+		custom_tooltip = {
+			text = eafp_progress_bar_seowon_abolish_advance_tt
+			je:je_korean_seowon ?= {
+				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
+			}
+		}
+	}
+}
+eafp_scripted_button_seowon2 = {
+	name = "eafp_scripted_button_seowon2"
+	desc = "eafp_scripted_button_seowon2_desc"
+
+	visible = {
+		NOT = { has_variable = eafp_scripted_button_seowon2_var }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			je:je_korean_seowon ?= {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {
+			name = eafp_scripted_button_seowon_cooltime
+			days = 30
+		}
+		set_variable = eafp_scripted_button_seowon2_var
+		trigger_event = eafp_kor_mainline.152
+		custom_tooltip = {
+			text = eafp_progress_bar_seowon_abolish_advance_tt
+			je:je_korean_seowon ?= {
+				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
+			}
+		}
+	}
+}
+eafp_scripted_button_seowon3 = {
+	name = "eafp_scripted_button_seowon3"
+	desc = "eafp_scripted_button_seowon3_desc"
+
+	visible = {
+		NOT = { has_variable = eafp_scripted_button_seowon3_var }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			je:je_korean_seowon ?= {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {
+			name = eafp_scripted_button_seowon_cooltime
+			days = 30
+		}
+		set_variable = eafp_scripted_button_seowon3_var
+		trigger_event = eafp_kor_mainline.153
+		custom_tooltip = {
+			text = eafp_progress_bar_seowon_abolish_advance_tt
+			je:je_korean_seowon ?= {
+				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
+			}
+		}
+	}
+}
+eafp_scripted_button_seowon4 = {
+	name = "eafp_scripted_button_seowon4"
+	desc = "eafp_scripted_button_seowon4_desc"
+
+	visible = {
+		NOT = { has_variable = eafp_scripted_button_seowon4_var }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			je:je_korean_seowon ?= {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {
+			name = eafp_scripted_button_seowon_cooltime
+			days = 30
+		}
+		set_variable = eafp_scripted_button_seowon4_var
+		trigger_event = eafp_kor_mainline.154
+		custom_tooltip = {
+			text = eafp_progress_bar_seowon_abolish_advance_tt
+			je:je_korean_seowon ?= {
+				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
+			}
+		}
+	}
+}
+eafp_scripted_button_seowon5 = {
+	name = "eafp_scripted_button_seowon5"
+	desc = "eafp_scripted_button_seowon5_desc"
+
+	visible = {
+		NOT = { has_variable = eafp_scripted_button_seowon5_var }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			je:je_korean_seowon ?= {
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_seowon_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {
+			name = eafp_scripted_button_seowon_cooltime
+			days = 30
+		}
+		set_variable = eafp_scripted_button_seowon5_var
+		trigger_event = eafp_kor_mainline.155
+		custom_tooltip = {
+			text = eafp_progress_bar_seowon_abolish_advance_tt
+			je:je_korean_seowon ?= {
+				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
+			}
+		}
+	}
+}
+
+
+
+
+
 #교화
 eafp_scripted_button_educating = {
 	name = "eafp_scripted_button_educating"
@@ -853,140 +1010,18 @@ eafp_scripted_button_educating = {
 		eafp_effect_option_gain_stress = {
 			STRESS = 10
 		}
-		add_treasury = eafp_rlg_support_cost_5
+		add_treasury = {
+			value = root.gdp
+			divide = 100000
+			round = yes
+			multiply = -1000
+		}
 		set_variable = {	#쿨타임 4년
 			name = eafp_var_button_educating_cooltime
 			months = 48
 		}
 		trigger_event = {
 			id = eafp_kor_mainline.170
-		}
-	}
-}
-#외교조약 열람
-eafp_scripted_button_treaty_list = {
-	name = "eafp_scripted_button_treaty_list"
-	desc = "eafp_scripted_button_treaty_list_desc"
-
-	visible = {
-		always = yes
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_treaty_list_tt
-			OR = {
-				any_country = {
-					THIS != ROOT
-					eafp_trigger_treaty_check_simple = {
-						LIA_NATION_OTHER = ROOT
-					}
-				}
-				has_variable = eafp_var_read_treaty_list
-			}
-		}
-	}
-
-	effect = {
-		#trigger_event = {
-		#	id = eafp_kor_mainline.171
-		#}
-		if = {
-			limit = {
-				NOT = { has_variable = eafp_var_read_treaty_list }
-			}
-			#스캔!
-			set_global_variable = eafp_global_var_treaty_read_pass
-			set_global_variable = {
-				name = eafp_global_var_treaty_num
-				value = 1
-			}
-			ordered_country = {
-				limit = {
-					exists = THIS
-					eafp_trigger_treaty_check_simple = {
-						LIA_NATION_OTHER = ROOT
-					}
-				}
-				order_by = { # reverse order
-					value = 999
-					subtract = global_country_ranking
-				}
-				#order_by = global_country_ranking
-				#position = 0
-				min = 0
-				max = 300
-				check_range_bounds = no
-				#데이터 스캔.
-				while = {
-					limit = {
-						NOT = { has_variable = eafp_var_treaty_break }
-					}
-					eafp_effect_treaty_num_puzzle_3n = {	#LIA_eafp_effects.txt의 'eafp_effect_treaty_num_puzzle_comp' 참고 바람.
-						LIA_PUZZLE = 0
-					}
-				}
-				remove_variable = eafp_var_treaty_break	#쓸데없는것 지우고,
-				set_global_variable = {	#번호도 초기화 시켜서 다음번 ordered_country로 갑시다!
-					name = eafp_global_var_treaty_num
-					value = 1
-				}
-			}
-			#데이터코드 원심분리기 투입
-			#eafp_effect_treaty_data_centrifugation = yes
-			remove_global_variable = eafp_global_var_treaty_read_pass
-			#목록 ON
-			add_treasury = 1999
-			set_variable = eafp_var_read_treaty_list
-		}
-		else = {
-			remove_variable = eafp_var_read_treaty_list
-			eafp_effect_treaty_data_sterilization = yes
-		}
-	}
-}
-#조약 실험
-eafp_scripted_button_treaty_test = {
-	name = "eafp_scripted_button_treaty_test"
-	desc = "eafp_scripted_button_treaty_test_desc"
-
-	visible = {
-		always = yes
-	}
-
-	possible = {
-		always = yes
-	}
-
-	effect = {
-		add_treasury = 777
-		if = {
-			limit = { has_variable = eafp_var_random_dice }
-			add_treasury = var:eafp_var_random_dice
-		}
-		#trigger_event = eafp_kor_mainline.999
-		ordered_country = {
-			limit = {
-				exists = THIS
-				THIS != ROOT
-				NOT = {
-					eafp_trigger_treaty_check_simple = {
-						LIA_NATION_OTHER = ROOT
-					}
-				}
-			}
-			order_by = country_rank
-			eafp_effect_treaty_relation_set_full = {
-				LIA_NATION_1 = ROOT
-				LIA_NATION_2 = THIS
-				LIA_TREATY_YEAR = year
-				LIA_TREATY_COD1 = 01
-				LIA_TREATY_COD2 = 01
-				LIA_TREATY_COD3 = 00
-				LIA_TREATY_COD4 = 01
-				LIA_TREATY_GAIN = 00
-			}
-			add_treasury = 777
 		}
 	}
 }
