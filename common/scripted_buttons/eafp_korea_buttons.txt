@@ -46,33 +46,6 @@ eafp_scripted_button_dangbaek = {
 	}
 }
 ###아래는 초기 삼정개혁 버튼
-eafp_scripted_button_test = {
-	name = "eafp_scripted_button_test"
-	desc = "eafp_scripted_button_test_desc"
-
-	visible = {
-		always = yes
-	}
-
-	possible = {
-		always = yes
-	}
-
-	effect = {
-		eafp_land_problem_expup = yes
-		eafp_land_problem_expup = yes
-		eafp_land_problem_expup = yes
-		eafp_land_problem_expup = yes
-		eafp_land_problem_expup = yes
-		eafp_land_problem_expup = yes
-		#add_treasury = eafp_val_test
-		#change_global_variable = {
-		#	name = eafp_kor_landexp_SEOUL_civ
-		#	add = 15
-		#}
-	}
-}
-
 eafp_scripted_button_sam_jeon = {
 	name = "eafp_scripted_button_sam_jeon"
 	desc = "eafp_scripted_button_sam_jeon_desc"
@@ -398,7 +371,6 @@ eafp_scripted_button_sam_hwan = {
 		}
 	}
 }
-
 eafp_scripted_button_sam_all = {
 	name = "eafp_scripted_button_sam_all"
 	desc = "eafp_scripted_button_sam_all_desc"
@@ -723,16 +695,16 @@ eafp_scripted_button_imsul_final = {
 	}
 }
 ###아래는 섭정 관련 버튼
-eafp_scripted_button_regent_balance = {
-	name = "eafp_scripted_button_regent_balance"
-	desc = "eafp_scripted_button_regent_balance_desc"
+eafp_scripted_button_regent_balance_authority = {
+	name = "eafp_scripted_button_regent_balance_authority"
+	desc = "eafp_scripted_button_regent_balance_authority_desc"
 
 	visible = {
 		always = yes
 	}
 
 	possible = {
-		always = yes
+		authority >= 100
 		custom_tooltip = {
 			text = eafp_scripted_button_regent_balance_cooltime_tt
 			NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
@@ -740,31 +712,89 @@ eafp_scripted_button_regent_balance = {
 	}
 
 	effect = {
-		#if = {
-		#	limit = {
-		#		exists = heir
-		#	}
-		#	heir = {
-		#		save_scope_as = eafp_regent_character
-		#	}
-		#	if = {
-		#		limit = {
-		#			exists = scope:eafp_regent_character
-		#		}
-		#		set_variable = {
-		#			name = eafp_var_regent_character
-		#			value = scope:eafp_regent_character
-		#		}
-		#	}
-		#}
 		eafp_effect_option_gain_balance = {
-			BALANCE = 20
+			BALANCE = -20
 		}
-		set_variable = {	#쿨타임 3개월
+		eafp_effect_option_gain_attitude = {
+			ATTITUDE = -1
+		}
+		add_modifier = {
+			name = eafp_modi_regent_balance_authority
+			months = 12
+		}
+		set_variable = {	#쿨타임 6개월
 			name = eafp_var_button_regent_balance_cooltime
-			months = 3
+			months = 6
 		}
-		trigger_event = eafp_kor_mainline.300
+	}
+}
+eafp_scripted_button_regent_balance_bureaucracy = {
+	name = "eafp_scripted_button_regent_balance_bureaucracy"
+	desc = "eafp_scripted_button_regent_balance_bureaucracy_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_regent_balance_cooltime_tt
+			NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+		}
+	}
+
+	effect = {
+		eafp_effect_option_gain_balance = {
+			BALANCE = -20
+		}
+		eafp_effect_option_gain_attitude = {
+			ATTITUDE = -1
+		}
+		add_modifier = {
+			name = eafp_modi_regent_balance_bureaucracy
+			months = 12
+		}
+		set_variable = {	#쿨타임 6개월
+			name = eafp_var_button_regent_balance_cooltime
+			months = 6
+		}
+	}
+}
+eafp_scripted_button_regent_balance_money = {
+	name = "eafp_scripted_button_regent_balance_money"
+	desc = "eafp_scripted_button_regent_balance_money_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		scaled_gold_reserves >= 0.10
+		custom_tooltip = {
+			text = eafp_scripted_button_regent_balance_cooltime_tt
+			NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+		}
+	}
+
+	effect = {
+		eafp_effect_option_gain_balance = {
+			BALANCE = -20
+		}
+		eafp_effect_option_gain_attitude = {
+			ATTITUDE = -1
+		}
+		add_treasury = {
+			value = gold_reserves_limit
+			multiply = -0.10
+		}
+		add_modifier = {
+			name = eafp_modi_regent_balance_bureaucracy
+			months = 12
+		}
+		set_variable = {	#쿨타임 6개월
+			name = eafp_var_button_regent_balance_cooltime
+			months = 6
+		}
 	}
 }
 ###아래는 건강저널 관련 버튼
@@ -981,9 +1011,103 @@ eafp_scripted_button_seowon5 = {
 		}
 	}
 }
+###아래는 삼정이정청 관련 버튼
 
+eafp_scripted_button_samjeong_ijeongcheong_add_timer = {
+	name = "eafp_scripted_button_samjeong_ijeongcheong_add_timer"
+	desc = "eafp_scripted_button_samjeong_ijeongcheong_add_timer_desc"
 
+	visible = {
+		always = yes
+	}
 
+	possible = {
+		je:je_samjeong_ijeongcheong ?= {
+			"scripted_bar_progress(eafp_progress_bar_samjeong_ijeongcheong_timer)" <= 16
+		}
+		authority >= 50
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_scripted_button_samjeong_ijeongcheong_add_timer_tt
+			je:je_samjeong_ijeongcheong ?= {
+				add_progress = {
+					name = eafp_progress_bar_samjeong_ijeongcheong_timer
+					value = 4
+				}
+			}
+		}
+		custom_tooltip = {
+			text = add_eafp_modi_samjeong_ijeongcheong_tt
+			change_variable = {
+				name = samjeong_ijeongcheong_var
+				add = 1
+			}
+			remove_modifier = eafp_modi_samjeong_ijeongcheong
+			add_modifier = {
+				name = eafp_modi_samjeong_ijeongcheong
+				multiplier = var:samjeong_ijeongcheong_var
+			}
+		}
+		eafp_effect_option_gain_stress = {
+			STRESS = 20
+		}
+	}
+}
+eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness = {
+	name = "eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness"
+	desc = "eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		je:je_samjeong_ijeongcheong ?= {
+			"scripted_bar_progress(eafp_progress_bar_samjeong_ijeongcheong_progressiveness)" < 10
+		}
+		authority >= 50
+		custom_tooltip = {
+			text = eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness_cooltime_tt
+			NOT = { has_variable = eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness_cooltime_var }
+		}
+	}
+
+	effect = {
+		custom_tooltip = {
+			text = eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness_tt
+			je:je_samjeong_ijeongcheong ?= {
+				add_progress = {
+					name = eafp_progress_bar_samjeong_ijeongcheong_progressiveness
+					value = 1
+				}
+			}
+		}
+		custom_tooltip = {
+			text = add_eafp_modi_samjeong_ijeongcheong_tt
+			change_variable = {
+				name = samjeong_ijeongcheong_var
+				add = 1
+			}
+			remove_modifier = eafp_modi_samjeong_ijeongcheong
+			add_modifier = {
+				name = eafp_modi_samjeong_ijeongcheong
+				multiplier = var:samjeong_ijeongcheong_var
+			}
+		}
+		set_variable = {
+			name = eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness_cooltime_var
+			weeks = 4
+		}
+		eafp_effect_option_gain_attitude = {
+			ATTITUDE = -1
+		}
+		eafp_effect_option_gain_stress = {
+			STRESS = 20
+		}
+	}
+}
 
 
 #교화

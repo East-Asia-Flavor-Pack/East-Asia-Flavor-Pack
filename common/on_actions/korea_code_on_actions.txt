@@ -1,4 +1,54 @@
-﻿korea_on_character_death = {	#24.07.17 추가
+﻿korea_on_acquired_technology = {
+	effect = {
+		eafp_effect_option_gain_blossom = {
+			BLOSSOM = 20
+		}
+	}
+}
+
+
+korea_on_monthly_pulse_character = {
+	effect = {
+		if = {
+			limit = {
+				has_template = eafp_kor_yi_hwan_character_template
+				age >= define:NCharacters|ADULT_AGE
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type ?= 1
+			}
+			trigger_event = {
+				id = eafp_kor_mainline.105
+				days = { 1 30 }
+			}
+		}
+		if = {
+			limit = {
+				has_template = eafp_kor_yi_byeon_character_template
+				age >= define:NCharacters|ADULT_AGE
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type ?= 1
+			}
+			trigger_event = {
+				id = eafp_kor_mainline.106
+				days = { 1 30 }
+			}
+		}
+		if = {
+			limit = {
+				has_template = eafp_kor_yi_hyeong_character_template
+				age >= define:NCharacters|ADULT_AGE
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type ?= 1
+			}
+			trigger_event = {
+				id = eafp_kor_mainline.107
+				days = { 1 30 }
+			}
+		}
+	}
+}
+
+korea_on_character_death = {
 	effect = {
 		##군주
 		if = {
@@ -6,43 +56,48 @@
 				has_template = eafp_kor_yi_hwan_character_template
 				is_ruler = yes
 			}
-			owner = { 
-				trigger_event = eafp_kor_mainline.100	#으앙주금
-				random_scope_character = {
-					limit = {
-						has_template = eafp_kor_myeonggyeongbi_kim_character_template
+			owner = {
+				every_scope_character = {
+					limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
+					set_character_busy_and_immortal = no
+					kill_character = {
+						hidden = yes
 					}
-					set_character_as_ruler = yes
 				}
-				#create_character = {
-				#	template = eafp_kor_yi_byeon_character_template
-				#}
-				#trigger_event = { id = eafp_kor_mainline.101 days = 7 }	#철종 즉위
+				create_character = {
+					template = eafp_kor_myeonggyeongbi_kim_character_template
+					ruler = yes
+					on_created = {
+						set_character_busy_and_immortal = yes
+					}
+				}
+				trigger_event = eafp_kor_mainline.100
+			}
+		}
+		if = {
+			limit = {	#철종
+				has_template = eafp_kor_yi_byeon_character_template
+				is_ruler = yes
+			}
+			owner = {
+				every_scope_character = {
+					limit = { has_template = eafp_kor_hyoyubi_jo_character_template }
+					set_character_busy_and_immortal = no
+					kill_character = {
+						hidden = yes
+					}
+				}
+				create_character = {
+					template = eafp_kor_hyoyubi_jo_character_template
+					ruler = yes
+					on_created = {
+						set_character_busy_and_immortal = yes
+					}
+				}
+				trigger_event = eafp_kor_mainline.102
 			}
 		}
 		##
-		if = {
-			limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }	#순원왕후
-			owner = { 
-				trigger_event = eafp_kor_mainline.105	#으앙주금
-			}
-			if = {
-				limit = { is_heir = yes }	#사망시점에 권력공유자였다면?
-				owner = {
-					create_character = {
-						# 신정왕후
-						template = eafp_kor_hyoyubi_jo_character_template
-						on_created = {
-							set_variable = {	#개인계좌
-								name = eafp_var_personal_account
-								value = 150000
-							}
-						}
-					}
-					trigger_event = eafp_kor_mainline.106	#
-				}
-			}
-		}
 		if = {
 			limit = { has_template = eafp_kor_kim_yugun_character_template }	#김유근
 			if = {
@@ -51,12 +106,6 @@
 					create_character = {
 						# 김좌근. 김조순의 삼남. 김유근 사망 후 양반 리더 이어받게 할 예정. 24.07.19 추가.
 						template = eafp_kor_kim_juagun_character_template
-						on_created = {
-							set_variable = {	#개인계좌
-								name = eafp_var_personal_account
-								value = 150000
-							}
-						}
 					}
 				}
 			}
@@ -95,7 +144,7 @@ korea_on_mobilized_army = {
 			limit = {
 				owner = {
 					has_journal_entry = je_korean_regent
-					global_var:eafp_global_var_je_regent >= 200
+					var:eafp_var_je_regent >= 200
 				}
 			}
 			owner = {
@@ -113,7 +162,7 @@ korea_on_diplo_play_start = {
 			limit = {
 				initiator = {
 					has_journal_entry = je_korean_regent
-					global_var:eafp_global_var_je_regent >= 300
+					var:eafp_var_je_regent >= 300
 				}
 			}
 			initiator = {
