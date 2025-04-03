@@ -10,14 +10,6 @@ je_korean_kings_health = {
 		ruler = {
 			set_character_busy_and_immortal = yes
 		}
-		trigger_event = {
-			id = eafp_kor_mainline.4
-			days = 4800
-		}
-		trigger_event = {
-			id = eafp_kor_mainline.5
-			days = 10327
-		}
 	}
 	
 	scripted_progress_bar = eafp_progress_bar_kings_health
@@ -25,15 +17,24 @@ je_korean_kings_health = {
 	scripted_button = eafp_scripted_button_health_out
 	#scripted_button = eafp_scripted_button_health_in
 	
-	#complete = { # 차후 개발 예정
-	#	always = no
-	#}
+	complete = {
+		has_technology_researched = quinine
+	}
 
-	#on_complete = {
-	#	custom_tooltip = {
-	#		text = je_condition_placeholder_tt
-	#	}
-	#}
+	on_complete = {
+		ruler = {
+			hidden_effect = {
+				set_character_busy_and_immortal = no
+			}
+		}
+		every_interest_group = {
+			leader = {
+				hidden_effect = {
+					set_character_busy_and_immortal = no
+				}
+			}
+		}
+	}
 	
 	fail = {	#급사
 		custom_tooltip = {
@@ -54,19 +55,13 @@ je_korean_kings_health = {
 			}
 			kill_character = yes
 		}
-	}
-
-	invalid = {
-		has_variable = je_korean_kings_health_invalid_var
-	}
-
-	on_invalid = {
-		ruler = {
-			hidden_effect = {
-				set_character_busy_and_immortal = no
+		every_interest_group = {
+			leader = {
+				hidden_effect = {
+					set_character_busy_and_immortal = no
+				}
 			}
 		}
-		remove_variable = je_korean_kings_health_invalid_var
 	}
 
 	status_desc = {
@@ -746,7 +741,7 @@ je_korean_imsul_uprising = {
 			}
 			if = {	#비밀스런 움직임
 				limit = {
-					NOT = { hasvariable = eafp_check_evt_k210 }
+					NOT = { has_variable = eafp_check_evt_k210 }
 					var:eafp_var_je_imsul_uprising >= 275
 					has_variable = eafp_var_je_regent_type
 				}
@@ -1497,8 +1492,6 @@ je_korean_confu = {
 	scripted_progress_bar = eafp_progress_bar_confu
 	
 	scripted_button = eafp_scripted_button_educating
-	scripted_button = eafp_scripted_button_realize_plus
-	scripted_button = eafp_scripted_button_realize_minus
 	
 	modifiers_while_active = {
 		eafp_modi_confucian_state
@@ -1592,17 +1585,28 @@ je_korean_confu = {
 			}
 			if = {	#병오박해-김대건 발각
 				limit = {
-					NOT = { has_variable = eafp_check_evt_k120 }
+					NOT = { has_variable = eafp_check_evt_k124 }
 					game_date > 1846.4.1
 					any_scope_character = {
 						has_template = eafp_kor_daegeon_kim_character_template
 					}
 				}
 				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.120
+					id = eafp_kor_mainline.124
 					days = { 1 30 }
 				}
-				set_variable = eafp_check_evt_k120
+				set_variable = eafp_check_evt_k124
+			}
+			if = {	#경신박해
+				limit = {
+					NOT = { has_variable = eafp_check_evt_k127 }
+					year >= 1860
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.127
+					days = { 1 180 }
+				}
+				set_variable = eafp_check_evt_k127
 			}
 		}
 	}
@@ -1655,6 +1659,7 @@ je_korean_seowon = {
 			name = eafp_modi_seowon_problem_backlash
 			multiplier = 0.3
 		}
+		trigger_event = eafp_kor_mainline.150
 	}
 	
 	complete = {
