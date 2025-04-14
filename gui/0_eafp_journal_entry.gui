@@ -11,8 +11,7 @@
 @panel_width_plus_30 = 570			# used to be 490
 @panel_width_plus_70 = 610			# used to be 530
 
-types journal_entry_panel_types
-{
+types eafp_journal_entry_panel_types {
 	type journal_entry_panel = default_block_window {
 		name = "journal_entry_panel"
 		datacontext = "[JournalEntryPanel.AccessJournalEntry]"
@@ -60,6 +59,16 @@ types journal_entry_panel_types
 					minimumsize = { @panel_width_minus_30 -1 }
 					parentanchor = hcenter
 					eafp_council_of_elders = {}
+				}
+				container = { # 추가
+					visible = "[ObjectsEqual(GetPlayerJournalEntry('je_korean_regent').GetName, JournalEntry.GetName)]"
+					background = {
+						alpha = 0.5
+						using = entry_bg_fancy_dark
+					}
+					minimumsize = { @panel_width_minus_30 -1 }
+					parentanchor = hcenter
+					eafp_korean_regent = {}
 				}
 				widget  = {
 					size = { @panel_width_plus_20 120 }
@@ -133,6 +142,10 @@ types journal_entry_panel_types
 					}
 				}
 				
+				###############################
+				### Journal Entry Character ###
+				###############################
+				com_journal_entry_characters = {}
 
 				# time out info
 				flowcontainer = {
@@ -698,39 +711,6 @@ types journal_entry_panel_types
 			visible = "[Not(JournalEntry.IsPinnedInOutliner)]"
 			onclick = "[JournalEntry.TogglePinInOutliner]"
 			tooltip = "PIN_JOURNAL_ENTRY"
-		}
-	}
-
-	type scripted_journal_entry_button = button {
-		using = default_button_action
-		tooltip = "SCRIPTED_ACTION_TOOLTIP"
-		enabled = "[IsValid( ScriptedButton.ExecuteEffect )]"
-		onclick = "[Execute( ScriptedButton.ExecuteEffect )]"
-		size = { 250 50 }
-		margin = { 20 20 }
-
-		widget = {
-			visible = "[ScriptedButton.IsSelected]"
-			size = { 100% 100% }
-
-			background = {
-				using = paper_bg
-			}
-		}
-
-		textbox = {
-			parentanchor = center
-			align = nobaseline
-			autoresize = yes
-			max_width = 230
-			elide = right
-			fontsize_min = 14
-			text = "[ScriptedButton.GetName]"
-		}
-
-		icon = {
-			visible = "[ScriptedButton.IsSelected]"
-			using = highlighted_square_selection
 		}
 	}
 }

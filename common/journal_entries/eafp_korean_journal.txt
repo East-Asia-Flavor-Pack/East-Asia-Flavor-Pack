@@ -1198,6 +1198,8 @@ je_korean_regent = {
 				value = 1
 			}
 		}
+		
+		# eafp_var_je_regent_character는 인물 히스토리에서
 	}
 	
 	scripted_button = eafp_scripted_button_regent_balance_authority
@@ -1224,12 +1226,13 @@ je_korean_regent = {
 		remove_variable = eafp_var_je_regent_type
 		remove_variable = eafp_var_je_regent_account
 		remove_variable = eafp_var_je_regent_regnal_year
+		remove_variable = eafp_var_je_regent_character
 	}
 
 	complete = {
 		custom_tooltip = {
 			text = je_korean_regent_complete_tt
-			var:eafp_var_je_regent = 0
+			var:eafp_var_je_regent <= 0
 		}
 	}
 
@@ -1239,6 +1242,7 @@ je_korean_regent = {
 		remove_variable = eafp_var_je_regent_type
 		remove_variable = eafp_var_je_regent_account
 		remove_variable = eafp_var_je_regent_regnal_year
+		remove_variable = eafp_var_je_regent_character
 	}
 
 	status_desc = {
@@ -1368,18 +1372,24 @@ je_korean_regent = {
 
 	on_weekly_pulse = {
 		effect = {
-			#후계자 슬롯이 비어있다면?
+			#권력공유자 슬롯이 비어있다면?
 			if = {
 				limit = {
-					any_scope_character = {
-						is_heir = no
-						count = all
+					NOT = {
+						has_variable = eafp_var_je_regent_character
 					}
+				}
+				set_variable = {
+					name = eafp_var_je_regent_character
+					value = ruler
 				}
 				set_variable = {
 					name = eafp_var_je_regent_type
 					value = 0
 				}
+			}
+			var:eafp_var_je_regent_character ?= {
+				set_character_busy_and_immortal = yes
 			}
 			#권력공유 타입별 매주 힘의균형도 자연증가량
 			if = {
@@ -1633,6 +1643,12 @@ je_korean_seowon = {
 	
 	scripted_progress_bar = eafp_progress_bar_seowon_abolish
 	scripted_progress_bar = eafp_progress_bar_seowon_backlash
+
+	scripted_button = eafp_scripted_button_seowon1
+	scripted_button = eafp_scripted_button_seowon2
+	scripted_button = eafp_scripted_button_seowon3
+	scripted_button = eafp_scripted_button_seowon4
+	scripted_button = eafp_scripted_button_seowon5
 	
 	modifiers_while_active = {
 		eafp_modi_seowon_problem_base
@@ -1656,12 +1672,11 @@ je_korean_seowon = {
 			}
 			has_variable = eafp_var_sam_all_clear
 			any_scope_character = {
-				is_heir = yes
+				ROOT.var:eafp_var_je_regent_character ?= THIS
 				has_trait = kor_i_am_your_father
 			}
 		}
 	}
-
 
 	immediate = {
 		add_modifier = {
@@ -1746,7 +1761,7 @@ je_rlg_seoul_gyeongbokgung_poor = {
 		OR = {
 			has_variable = eafp_var_sam_all_clear
 			any_scope_character = {
-				is_heir = yes
+				ROOT.var:eafp_var_je_regent_character ?= THIS
 				has_trait = kor_i_am_your_father
 			}
 		}
