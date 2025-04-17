@@ -11,6 +11,7 @@
 	}
 
 	possible = {
+		NOT = { has_global_variable = heavenly_kingdom_start_var }
 		OR = {
 			has_modifier = opium_wars_lost
 			NOT = {
@@ -336,17 +337,36 @@ je_taiping_timer = { # 추가
 	timeout = 720
 
 	on_timeout = {
-		custom_tooltip = {
-			text = taiping_time_attack
-		}
-		custom_tooltip = {
-			text = warlord_china_explosion_point_remove_5_tt
-			post_notification = warlord_china_explosion_point_remove
-			change_variable = {
-				name = china_warlord_explosion
-				subtract = 0.25    #10%에서 5%로 수정
+		#custom_tooltip = {
+		#	text = taiping_time_attack
+		#}
+		show_as_tooltip = {
+			custom_tooltip = {
+				text = warlord_china_explosion_point_remove_5_tt
+				post_notification = warlord_china_explosion_point_remove
+				change_variable = {
+					name = china_warlord_explosion
+					subtract = 0.25
+				}
+			}
+			every_subject_or_below = {
+				if = {
+					limit = {
+						is_direct_subject_of = c:CHI
+						NOT = {
+							any_primary_culture = {
+								OR = {
+									has_discrimination_trait = east_asian_heritage
+									has_discrimination_trait = sinosphere
+								}
+							}
+						}
+					}
+					make_independent = yes
+				}
 			}
 		}
+		trigger_event = heavenly.103
 	}
 	
 	on_complete = {

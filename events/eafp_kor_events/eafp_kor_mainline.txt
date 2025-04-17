@@ -2641,24 +2641,32 @@ eafp_kor_mainline.100 = {	#헌종사망
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		every_scope_character = {
+		random_scope_character = {
 			limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
-			set_character_busy_and_immortal = no
-			kill_character = {
-				hidden = yes
-			}
+			ave_scope_as = regent
+			set_character_as_ruler = yes
 		}
 		create_character = {
 			template = eafp_kor_myeonggyeongbi_kim_character_template
 			ruler = yes
+			save_scope_as = regent
 			on_created = {
 				set_character_busy_and_immortal = yes
-				save_scope_as = regent
 			}
 		}
 		set_variable = {
 			name = eafp_var_je_regent_character
 			value = scope:regent
+		}
+		if = {
+			limit = { exists = heir }
+			random_scope_character = {
+				limit = { is_heir = yes }
+				kill_character = {
+					value  = yes
+					hidden = yes
+				}
+			}
 		}
 	}
 
@@ -2815,14 +2823,24 @@ eafp_kor_mainline.102 = {	#철종사망
 		create_character = {
 			template = eafp_kor_hyoyubi_jo_character_template
 			ruler = yes
+			save_scope_as = regent
 			on_created = {
 				set_character_busy_and_immortal = yes
-				save_scope_as = regent
 			}
 		}
 		set_variable = {
 			name = eafp_var_je_regent_character
 			value = scope:regent
+		}
+		if = {
+			limit = { exists = heir }
+			random_scope_character = {
+				limit = { is_heir = yes }
+				kill_character = {
+					value  = yes
+					hidden = yes
+				}
+			}
 		}
 	}
 
@@ -2896,6 +2914,10 @@ eafp_kor_mainline.103 = {	#고종즉위
 			trigger_event = {	#역사 이벤트 점화
 				id = eafp_kor_mainline.342
 				days = { 45 90 }
+			}
+			trigger_event = {	#역사 이벤트 점화
+				id = eafp_kor_mainline.346
+				days = { 3285 4380 }
 			}
 		}
 	}
@@ -2989,9 +3011,9 @@ eafp_kor_mainline.105 = {	#순원왕후 수렴청정 끝
 		create_character = {
 			# 김좌근. 김조순의 삼남. 수렴청정 종료 후 진정한 권력공유자로써 대립할 것.
 			template = eafp_kor_kim_juagun_character_template
+			save_scope_as = regent
 			on_created = {
 				set_character_busy_and_immortal = yes
-				save_scope_as = regent
 			}
 		}
 		set_variable = {
@@ -3075,9 +3097,9 @@ eafp_kor_mainline.106 = {	#순원왕후 수렴청정 끝 - 철종
 		create_character = {
 			# 김좌근. 김조순의 삼남. 수렴청정 종료 후 진정한 권력공유자로써 대립할 것. 24.08.20 추가.
 			template = eafp_kor_kim_juagun_character_template
+			save_scope_as = regent
 			on_created = {
 				set_character_busy_and_immortal = yes
-				save_scope_as = regent
 			}
 		}
 		set_variable = {
@@ -3134,9 +3156,9 @@ eafp_kor_mainline.107 = {	#신정왕후 수렴청정 끝
 		create_character = {
 			# 이하응
 			template = eafp_kor_yi_haeung_character_template
+			save_scope_as = regent
 			on_created = {
 				set_character_busy_and_immortal = yes
-				save_scope_as = regent
 			}
 		}
 		set_variable = {
@@ -3334,21 +3356,11 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 				set_character_busy_and_immortal = yes
 			}
 		}
-		every_scope_character = {
-			limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
-			set_character_busy_and_immortal = no
-			kill_character = {
-				hidden = yes
-			}
-		}
 		custom_tooltip = {
 			text = eafp_k112_event_tt
-			create_character = {
-				template = eafp_kor_myeonggyeongbi_kim_character_template
-				on_created = {
-					set_character_busy_and_immortal = yes
-					save_scope_as = regent
-				}
+			random_scope_character = {
+				limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
+				save_scope_as = regent
 			}
 			set_variable = {
 				name = eafp_var_je_regent_character
@@ -3433,21 +3445,11 @@ eafp_kor_mainline.115 = {
 				set_character_busy_and_immortal = yes
 			}
 		}
-		every_scope_character = {
-			limit = { has_template = eafp_kor_hyoyubi_jo_character_template }
-			set_character_busy_and_immortal = no
-			kill_character = {
-				hidden = yes
-			}
-		}
 		custom_tooltip = {
 			text = eafp_k112_event_tt
-			create_character = {
-				template = eafp_kor_hyoyubi_jo_character_template
-				on_created = {
-					set_character_busy_and_immortal = yes
-					save_scope_as = regent
-				}
+			random_scope_character = {
+				limit = { has_template = eafp_kor_hyoyubi_jo_character_template }
+				save_scope_as = regent
 			}
 			set_variable = {
 				name = eafp_var_je_regent_character
@@ -4148,6 +4150,111 @@ eafp_kor_mainline.127 = {	#서학도 색출
 		}
 	}
 }
+eafp_kor_mainline.128 = {	#대남의 비보
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.128.mt
+	desc = eafp_kor_mainline.128.md
+	flavor = eafp_kor_mainline.128.mf
+
+	duration = 2
+	
+
+	event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+
+	}
+
+	option = {
+		name = eafp_kor_mainline.128.oa
+		every_scope_character = {
+			limit = {
+				has_role = agitator
+				has_ideology = ideology:ideology_eafp_missionary
+				OR = {
+					NOT = { has_modifier = eafp_modi_missionary_stealth }
+					has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
+					has_template = eafp_kor_pierre_maubant_character_template
+				}
+			}
+			kill_character = yes
+		}
+		custom_tooltip = {
+			text = eafp_catholic_purge_1_tt
+			every_scope_state = {
+				limit = {
+					is_incorporated = yes
+				}
+				kill_population_percent_in_state = {
+					percent = 0.10
+					religion = rel:catholic
+				}
+			}
+			every_scope_state = {
+				every_scope_pop = {
+					limit = {
+						has_pop_religion = catholic
+					}
+					change_pop_religion = {
+						target = rel:confucian
+						value = 0.10
+					}
+				}
+			}
+		}
+		set_variable = {	#쿨타임 4년
+			name = eafp_var_button_educating_cooltime
+			months = 48
+		}
+		every_country = {
+			limit = {
+				OR = {
+					country_has_state_religion = rel:catholic
+					country_has_state_religion = rel:protestant
+				}
+			}
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+			create_diplomatic_catalyst = {  
+				type = catalyst_event_negative
+				target = ROOT
+			}
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
+				}
+			}
+		}
+		eafp_effect_option_gain_balance = {
+			BALANCE = -30
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type = 3
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -1
+			}
+		}
+	}
+}
 
 #서원 철폐 이벤트(임시)
 eafp_kor_mainline.150 = {
@@ -4480,6 +4587,41 @@ eafp_kor_mainline.170 = {	#임의적 박해 발동
 					target = ROOT
 				}
 			}
+		}
+	}
+}
+eafp_kor_mainline.171 = {	#
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.171.mt
+	desc = eafp_kor_mainline.171.md
+	flavor = eafp_kor_mainline.171.mf
+
+	duration = 2
+	
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_kor_mainline.171.oa
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_confucian_state_reverse
+			months = normal_modifier_time
+		}
+		ai_chance = {
+			base = 1
 		}
 	}
 }
@@ -9086,6 +9228,52 @@ eafp_kor_mainline.345 = {
 		}
 	}
 }
+eafp_kor_mainline.346 = {	#원자 탄생
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.346.mt
+	desc = eafp_kor_mainline.346.md
+	flavor = eafp_kor_mainline.346.mf
+
+	duration = 2
+	
+
+	event_image = {
+		texture = "gfx/event_pictures/novel.png"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		ruler = {
+			has_template = eafp_kor_yi_hyeong_character_template
+		}
+	}
+	
+	immediate = {
+		remove_variable = no_heirs
+		create_character = {
+			template = eafp_kor_yi_cheok_character_template
+			heir = yes
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.336.oa
+		default_option = yes
+
+		show_as_tooltip = {
+			create_character = {
+				template = eafp_kor_yi_cheok_character_template
+				heir = yes
+			}
+		}
+	}
+}
 
 #399까지 - 힘의공유 저널에서 점화하는 임의 이벤트 영역
 eafp_kor_mainline.370 = {	#권력공유자 상호작용 - 관찰사 임명 이벤트
@@ -9691,7 +9879,7 @@ eafp_kor_mainline.1507 = {	#상소문
 			limit = {
 				is_ruler = no
 				NOT = {
-					ROOT.var:eafp_var_je_regent_character ?= THIS
+					owner.var:eafp_var_je_regent_character ?= THIS
 				}
 				is_busy = no
 				has_role = politician

@@ -1398,7 +1398,7 @@ je_korean_regent = {
 				}
 				change_variable = {
 					name = eafp_var_je_regent
-					add = 0.5
+					add = 0.25
 				}
 			}
 			#사익추구 활동 굴림
@@ -1524,19 +1524,37 @@ je_korean_confu = {
 	}
 	
 	complete = {
-		
+		custom_tooltip = {
+			text = je_korean_imsul_uprising_goal
+			scope:journal_entry = {
+				"scripted_bar_progress(eafp_progress_bar_confu)" >= 1000
+			}
+		}
 	}
 
 	on_complete = {
 		remove_modifier = eafp_modi_catholic_plague
+		remove_variable = eafp_progress_bar_confu_from_trade_var
+		trigger_event = eafp_kor_mainline.171
 	}
 	
 	fail = {
-		NOT = { country_has_state_religion = rel:confucian }
+		always = no
+		has_law = law_type:law_total_separation
 	}
 
 	on_fail = {
 		remove_modifier = eafp_modi_catholic_plague
+		remove_variable = eafp_progress_bar_confu_from_trade_var
+	}
+
+	invalid = {
+		NOT = { country_has_state_religion = rel:confucian }
+	}
+
+	on_invalid = {
+		remove_modifier = eafp_modi_catholic_plague
+		remove_variable = eafp_progress_bar_confu_from_trade_var
 	}
 
 	on_weekly_pulse = {
@@ -1546,6 +1564,7 @@ je_korean_confu = {
 				value = 0
 			}
 			every_country = {
+				limit = { NOT = { THIS = ROOT } }
 				change_local_variable = {
 					name = eafp_progress_bar_confu_from_trade_locvar
 					add = "num_mutual_trade_route_levels_with_country(root)"
@@ -1555,7 +1574,7 @@ je_korean_confu = {
 				name = eafp_progress_bar_confu_from_trade_var
 				value = {
 					value = local_var:eafp_progress_bar_confu_from_trade_locvar
-					multiply = 0.1
+					multiply = 0.05
 					max = 20
 				}
 			}
@@ -1627,6 +1646,25 @@ je_korean_confu = {
 				}
 				set_variable = eafp_check_evt_k127
 			}
+			if = {	#
+				limit = {
+					NOT = { has_variable = eafp_check_evt_k128 }
+					exists = c:DAI
+					any_country = {
+						OR = {
+							country_has_state_religion = rel:protestant
+							country_has_state_religion = rel:catholic
+							country_has_state_religion = rel:orthodox
+						}
+						has_war_with = c:DAI
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.128
+					days = { 1 180 }
+				}
+				set_variable = eafp_check_evt_k128
+			}
 		}
 	}
 
@@ -1670,9 +1708,15 @@ je_korean_seowon = {
 				is_building_type = building_manor_house
 				NOT = { has_active_production_method = pm_manor_house_seowon_ownership }
 			}
-			has_variable = eafp_var_sam_all_clear
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
 			any_scope_character = {
-				ROOT.var:eafp_var_je_regent_character ?= THIS
+				custom_tooltip = {
+					text = is_regent_tt
+					ROOT.var:eafp_var_je_regent_character ?= THIS
+				}
 				has_trait = kor_i_am_your_father
 			}
 		}
@@ -1759,9 +1803,15 @@ je_rlg_seoul_gyeongbokgung_poor = {
     
 	complete = {
 		OR = {
-			has_variable = eafp_var_sam_all_clear
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
 			any_scope_character = {
-				ROOT.var:eafp_var_je_regent_character ?= THIS
+				custom_tooltip = {
+					text = is_regent_tt
+					ROOT.var:eafp_var_je_regent_character ?= THIS
+				}
 				has_trait = kor_i_am_your_father
 			}
 		}

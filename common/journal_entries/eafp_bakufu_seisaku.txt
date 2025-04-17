@@ -418,12 +418,12 @@ je_bakufu_seisaku_kokishukusei = {
 			value = 0
 		}
 		set_variable = {
-			name = radical_loyalist_0p2
-			value = {
-				value = ROOT.radical_fraction
-				subtract = ROOT.loyalist_fraction
-				subtract = 0.2
-			}
+			name = radical_fraction_var
+			value = radical_fraction
+		}
+		set_variable = {
+			name = loyalist_fraction_var
+			value = loyalist_fraction
 		}
 	}
 
@@ -431,13 +431,19 @@ je_bakufu_seisaku_kokishukusei = {
 		effect = {
 			if = {
 				limit = {
-					0.2 >= {
-						value = ROOT.radical_fraction
-						subtract = ROOT.loyalist_fraction
+					radical_fraction = {
+						value <= {
+							value = var:radical_fraction_var
+							add = -0.15
+							min = 0.05
+						}
 					}
-					var:radical_loyalist_0p2 >= {
-						value = ROOT.radical_fraction
-						subtract = ROOT.loyalist_fraction
+					loyalist_fraction = {
+						value >= {
+							value = var:loyalist_fraction_var
+							add = 0.15
+							max = 0.95
+						}
 					}
 				}
 				change_variable = {
@@ -460,13 +466,19 @@ je_bakufu_seisaku_kokishukusei = {
 	}
 
 	is_progressing = { # TODO 툴팁 만들것
-		0.2 >= {
-			value = ROOT.radical_fraction
-			subtract = ROOT.loyalist_fraction
+		radical_fraction = {
+			value <= {
+				value = var:radical_fraction_var
+				add = -0.15
+				min = 0.05
+			}
 		}
-		var:radical_loyalist_0p2 >= {
-			value = ROOT.radical_fraction
-			subtract = ROOT.loyalist_fraction
+		loyalist_fraction = {
+			value >= {
+				value = var:loyalist_fraction_var
+				add = 0.15
+				max = 0.95
+			}
 		}
 	}
 
@@ -475,13 +487,19 @@ je_bakufu_seisaku_kokishukusei = {
 			text = je_bakufu_seisaku_goal
 			scope:journal_entry = { is_goal_complete = yes }
 		}
-		0.2 >= {
-			value = ROOT.radical_fraction
-			subtract = ROOT.loyalist_fraction
+		radical_fraction = {
+			value <= {
+				value = var:radical_fraction_var
+				add = -0.15
+				min = 0.05
+			}
 		}
-		var:radical_loyalist_0p2 >= {
-			value = ROOT.radical_fraction
-			subtract = ROOT.loyalist_fraction
+		loyalist_fraction = {
+			value >= {
+				value = var:loyalist_fraction_var
+				add = 0.15
+				max = 0.95
+			}
 		}
 	}
 
@@ -510,7 +528,8 @@ je_bakufu_seisaku_kokishukusei = {
 		}
 		set_variable = je_bakufu_seisaku_kokishukusei_complete
 		remove_variable = je_bakufu_seisaku_kokishukusei_var
-		remove_variable = radical_loyalist_0p2
+		remove_variable = radical_fraction_var
+		remove_variable = loyalist_fraction_var
 	}
 
 	invalid = {
@@ -519,7 +538,8 @@ je_bakufu_seisaku_kokishukusei = {
 
 	on_invalid = {
 		remove_variable = je_bakufu_seisaku_kokishukusei_var
-		remove_variable = radical_loyalist_0p2
+		remove_variable = radical_fraction_var
+		remove_variable = loyalist_fraction_var
 	}
 
 	on_monthly_pulse = {
@@ -552,7 +572,8 @@ je_bakufu_seisaku_kokishukusei = {
 			}
 		}
 		remove_variable = je_bakufu_seisaku_kokishukusei_var
-		remove_variable = radical_loyalist_0p2
+		remove_variable = radical_fraction_var
+		remove_variable = loyalist_fraction_var
 	}
 
 	current_value = {
