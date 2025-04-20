@@ -49,6 +49,9 @@ eafp_kor_mainline.1 = {	#수렴청정
 		eafp_effect_option_gain_stress = {
 			STRESS = 10
 		}
+		eafp_effect_option_gain_balance = {
+			BALANCE = 40
+		}
 		ai_chance = {
 			base = 1
 		}
@@ -56,7 +59,7 @@ eafp_kor_mainline.1 = {	#수렴청정
 	option = {
 		name = eafp_kor_mainline.1.ob
 		eafp_effect_option_gain_balance = {
-			BALANCE = 10
+			BALANCE = 50
 		}
 		ai_chance = {
 			base = 1
@@ -2675,10 +2678,12 @@ eafp_kor_mainline.100 = {	#헌종사망
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		random_scope_character = {
+		every_scope_character = {
 			limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
-			ave_scope_as = regent
-			set_character_as_ruler = yes
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
 		}
 		create_character = {
 			template = eafp_kor_myeonggyeongbi_kim_character_template
@@ -3042,6 +3047,13 @@ eafp_kor_mainline.105 = {	#순원왕후 수렴청정 끝
 			}
 			set_character_busy_and_immortal = no
 		}
+		every_scope_character = {
+			limit = { has_template = eafp_kor_kim_juagun_character_template }
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
 		create_character = {
 			# 김좌근. 김조순의 삼남. 수렴청정 종료 후 진정한 권력공유자로써 대립할 것.
 			template = eafp_kor_kim_juagun_character_template
@@ -3127,6 +3139,13 @@ eafp_kor_mainline.106 = {	#순원왕후 수렴청정 끝 - 철종
 				has_template = eafp_kor_myeonggyeongbi_kim_character_template
 			}
 			set_character_busy_and_immortal = no
+		}
+		every_scope_character = {
+			limit = { has_template = eafp_kor_kim_juagun_character_template }
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
 		}
 		create_character = {
 			# 김좌근. 김조순의 삼남. 수렴청정 종료 후 진정한 권력공유자로써 대립할 것. 24.08.20 추가.
@@ -3390,6 +3409,14 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 				set_character_busy_and_immortal = yes
 			}
 		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_korean_regent }
+			}
+			add_journal_entry = {
+				type = je_korean_regent
+			}
+		}
 		custom_tooltip = {
 			text = eafp_k112_event_tt
 			random_scope_character = {
@@ -3406,6 +3433,47 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 			}
 		}
 		trigger_event = eafp_kor_mainline.101	#철종
+		hidden_effect = {
+			if = {
+				limit = { has_variable = eafp_var_je_regent_complete }
+				trigger_event = {
+					id = eafp_kor_mainline.113
+					days = 30
+				}
+			}
+		}
+		default_option = yes
+	}
+}
+eafp_kor_mainline.113 = {	#헌종 때 권력 공유 저널 완료 했을 때의 보상
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.113.mt
+	desc = eafp_kor_mainline.113.md
+	flavor = eafp_kor_mainline.113.mf
+
+	duration = 2
+	
+
+	event_image = {
+		texture = "gfx/event_pictures/sendball.dds"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+				
+	}
+
+	option = {
+		name = eafp_kor_mainline.113.oa
+		eafp_effect_option_gain_balance = {
+			BALANCE = -50
+		}
 		default_option = yes
 	}
 }
@@ -3479,8 +3547,16 @@ eafp_kor_mainline.115 = {
 				set_character_busy_and_immortal = yes
 			}
 		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_korean_regent }
+			}
+			add_journal_entry = {
+				type = je_korean_regent
+			}
+		}
 		custom_tooltip = {
-			text = eafp_k112_event_tt
+			text = eafp_k115_event_tt
 			random_scope_character = {
 				limit = { has_template = eafp_kor_hyoyubi_jo_character_template }
 				save_scope_as = regent

@@ -680,7 +680,7 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
-				30 <= {
+				moderate_margin_value <= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -693,16 +693,16 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 				}
 			}
 			# 난키파 등용
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			if = {
 				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_nankiha }
 			}
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hoshuha }
-			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = {
-				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
-				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
 			save_scope_value_as = {
 				name = new_politician
@@ -711,7 +711,7 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 		}
 		else_if = {
 			limit = {
-				-30 >= {
+				moderate_margin_value_2 >= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -724,16 +724,16 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 				}
 			}
 			# 히토츠바시파 등용
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			if = {
 				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_hitotsubashiha }
 			}
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_kaikakuha }
-			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = {
-				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
-				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
 			save_scope_value_as = {
 				name = new_politician
@@ -742,8 +742,8 @@ eafp_japan.3 = { # 대로 임명용 이벤트
 		}
 		else = {
 			# 중도파 등용
-			create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
 			add_bakuhantaisei_politician_influence_calc_moderate = yes
+			create_bakufu_politician_character = { POSITION = flag:tairo IDEOLOGY = ideology_moderate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 3
@@ -1422,7 +1422,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 		if = {
 			limit = {
 				exists = scope:nankiha_candidate
-				30 <= {
+				moderate_margin_value <= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -1435,12 +1435,12 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				}
 			}
 			# 난키파 등용
-			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
 			add_bakuhantaisei_politician_influence_calc_nankiha = {
 				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
 				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
+			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
@@ -1463,7 +1463,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 		else_if = {
 			limit = {
 				exists = scope:hitotsubashiha_candidate
-				-30 >= {
+				moderate_margin_value_2 >= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -1476,12 +1476,12 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				}
 			}
 			# 히토츠바시파 등용
-			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
 			add_bakuhantaisei_politician_influence_calc_nankiha = {
 				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
 				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
+			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
@@ -1504,9 +1504,9 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 		else_if = {
 			limit = { exists = scope:moderate_candidate }
 			# 중도파 등용
+			add_bakuhantaisei_politician_influence_calc_moderate = yes
 			set_variable = { name = rojushuza_var value = scope:moderate_candidate }
 			remove_list_variable = { name = roju_varlist target = scope:moderate_candidate }
-			add_bakuhantaisei_politician_influence_calc_moderate = yes
 			save_scope_value_as = {
 				name = new_politician
 				value = 3
@@ -1542,12 +1542,12 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 				}
 			}
 			# 난키파 등용
-			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
-			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
 			add_bakuhantaisei_politician_influence_calc_nankiha = {
 				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
 				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
+			set_variable = { name = rojushuza_var value = scope:nankiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:nankiha_candidate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 1
@@ -1569,12 +1569,12 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 		}
 		else = {
 			# 히토츠바시파 등용
-			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
-			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
 			add_bakuhantaisei_politician_influence_calc_nankiha = {
 				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
 				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
+			set_variable = { name = rojushuza_var value = scope:hitotsubashiha_candidate }
+			remove_list_variable = { name = roju_varlist target = scope:hitotsubashiha_candidate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 2
@@ -2215,7 +2215,7 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		# 누가 뽑힐까?
 		if = {
 			limit = { 
-				30 <= {
+				moderate_margin_value <= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -2228,16 +2228,16 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 				}
 			}
 			# 난키파 등용
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			if = {
 				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
 			}
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = {
-				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
-				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
 			save_scope_value_as = {
 				name = new_politician
@@ -2246,7 +2246,7 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		}
 		else_if = {
 			limit = { 
-				-30 >= {
+				moderate_margin_value_2 >= {
 					value = scope:nankiha_invested_influence
 					add = {
 						value = bakufu_nankiha_hiritsu
@@ -2259,16 +2259,16 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 				}
 			}
 			# 히토츠바시파 등용
+			add_bakuhantaisei_politician_influence_calc_nankiha = {
+				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
+				nankiha_invested_influence = scope:nankiha_invested_influence
+			}
 			if = {
 				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
 			}
 			else = {
 				create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-			}
-			add_bakuhantaisei_politician_influence_calc_nankiha = {
-				hitotsubashiha_invested_influence = scope:hitotsubashiha_invested_influence
-				nankiha_invested_influence = scope:nankiha_invested_influence
 			}
 			save_scope_value_as = {
 				name = new_politician
@@ -2277,8 +2277,8 @@ eafp_japan.7 = { # 노중 임명용 이벤트
 		}
 		else = {
 			# 중도파 등용
-			create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
 			add_bakuhantaisei_politician_influence_calc_moderate = yes
+			create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
 			save_scope_value_as = {
 				name = new_politician
 				value = 3
