@@ -4922,8 +4922,17 @@ eafp_kor_mainline.126 = {	#김대건 판결
 			}
 		}
 	}
+	
+	hidden_effect = { # 경신박해 선행퀘인 호열자 이벤트를 쿨타임 끝나기 직전에 트리거
+		trigger_event = {
+			id = eafp_kor_mainline.127
+			months = 42 #교화 쿨타임 끝나기 6개월전
+			popup = yes
+		}
+	}
 }
-eafp_kor_mainline.127 = {	#서학도 색출
+
+eafp_kor_mainline.127 = {	#호열자. 경신박해 선행퀘
 	type = country_event
 	placement = ROOT
 
@@ -4949,24 +4958,43 @@ eafp_kor_mainline.127 = {	#서학도 색출
 
 	option = {
 		name = eafp_kor_mainline.127.oa
-		default_option = yes
-		add_modifier = {
-			name = ruler_protect_christians_modifier
-			months = normal_modifier_time
-		}
-		if = {
+		every_scope_state = {
 			limit = {
-				has_journal_entry = je_korean_regent
-				var:eafp_var_je_regent_type = 3
+				is_incorporated = yes
 			}
-			eafp_effect_option_gain_attitude = {
-				ATTITUDE = 1
+			kill_population	 = {
+				value = 2000
 			}
 		}
 	}
+}
+
+eafp_kor_mainline.128 = {	#대남의 비보
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.128.mt
+	desc = eafp_kor_mainline.128.md
+	flavor = eafp_kor_mainline.128.mf
+
+	duration = 2
+	
+
+	event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+
+	}
 
 	option = {
-		name = eafp_kor_mainline.127.ob
+		name = eafp_kor_mainline.128.oa
 		every_scope_character = {
 			limit = {
 				has_role = agitator
@@ -5046,7 +5074,128 @@ eafp_kor_mainline.127 = {	#서학도 색출
 		}
 	}
 }
-eafp_kor_mainline.128 = {	#대남의 비보
+
+
+eafp_kor_mainline.129 = {	#서학도 색출/경신박해 베이스
+	type = country_event
+	placement = ROOT
+
+	title = eafp_kor_mainline.129.mt
+	desc = eafp_kor_mainline.129.md
+	flavor = eafp_kor_mainline.129.mf
+
+	duration = 2
+	
+
+	event_image = {
+		video = "votp_prison"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eafp_kor_mainline.129.oa
+		default_option = yes
+		add_modifier = {
+			name = ruler_protect_christians_modifier
+			months = normal_modifier_time
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type = 3
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = 1
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_mainline.129.ob
+		every_scope_character = {
+			limit = {
+				has_role = agitator
+				has_ideology = ideology:ideology_eafp_missionary
+				OR = {
+					NOT = { has_modifier = eafp_modi_missionary_stealth }
+					has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
+					has_template = eafp_kor_pierre_maubant_character_template
+				}
+			}
+			kill_character = yes
+		}
+		custom_tooltip = {
+			text = eafp_catholic_purge_1_tt
+			every_scope_state = {
+				limit = {
+					is_incorporated = yes
+				}
+				kill_population_percent_in_state = {
+					percent = 0.10
+					religion = rel:catholic
+				}
+			}
+			every_scope_state = {
+				every_scope_pop = {
+					limit = {
+						has_pop_religion = catholic
+					}
+					change_pop_religion = {
+						target = rel:confucian
+						value = 0.10
+					}
+				}
+			}
+		}
+		every_country = {
+			limit = {
+				OR = {
+					country_has_state_religion = rel:catholic
+					country_has_state_religion = rel:protestant
+				}
+			}
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+			create_diplomatic_catalyst = {  
+				type = catalyst_event_negative
+				target = ROOT
+			}
+		}
+		if = {
+			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+			every_political_movement = {
+				limit = { is_political_movement_type = eafp_movement_rel_catholic }
+				add_modifier = {
+					name = large_scale_christian_persecution_modifier
+					months = normal_modifier_time
+				}
+			}
+		}
+		eafp_effect_option_gain_balance = {
+			BALANCE = -30
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_korean_regent
+				var:eafp_var_je_regent_type = 3
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -1
+			}
+		}
+	}
+}
+eafp_kor_mainline.129 = {	#대남의 비보
 	type = country_event
 	placement = ROOT
 
