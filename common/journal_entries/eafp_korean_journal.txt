@@ -53,13 +53,6 @@ je_korean_kings_health = {
 			}
 			kill_character = yes
 		}
-		every_interest_group = {
-			leader = {
-				hidden_effect = {
-					set_character_busy_and_immortal = no
-				}
-			}
-		}
 	}
 
 	status_desc = {
@@ -481,6 +474,7 @@ je_korean_land_problem = {
 				}
 				eafp_land_problem_expup_ai = yes
 			}
+			eafp_land_problem_levelup = yes
 			#모디파이어 업데이트
 			eafp_land_problem_add_modifier = yes
 			remove_modifier = eafp_modi_land_problem_mil_country
@@ -1180,6 +1174,8 @@ je_king_cheoljong_education = {
 
 	scripted_button = eafp_scripted_button_royal_lecture
 	scripted_button = eafp_scripted_button_royal_lecture2
+	scripted_button = eafp_scripted_button_royal_lecture3
+	scripted_button = eafp_scripted_button_royal_lecture4
 
 	immediate = {
 		
@@ -1189,14 +1185,24 @@ je_king_cheoljong_education = {
 		custom_tooltip = {
 			text = je_king_cheoljong_education_complete_tt
 			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_king_cheoljong_education)" >= 100
+				"scripted_bar_progress(eafp_progress_bar_king_cheoljong_education)" >= 200
 			}
 		}
 	}
 
 	on_complete = {
 		trigger_event = eafp_kor_mainline.89
+		show_as_tooltip = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -50
+			}
+			ruler = {
+				add_trait = erudite
+				remove_modifier = eafp_modi_puppet_king
+			}
+		}
 		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
+		remove_modifier = eafp_modi_cheoljong_royal_lecture
 	}
 	
 	fail = {
@@ -1207,6 +1213,7 @@ je_king_cheoljong_education = {
 
 	on_fail = {
 		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
+		remove_modifier = eafp_modi_cheoljong_royal_lecture
 	}
 
 	on_monthly_pulse = {
@@ -1305,13 +1312,34 @@ je_korean_regent = {
 	}
 
 	on_complete = {
-		remove_variable = eafp_var_je_regent
-		remove_variable = eafp_var_je_regent_attitude
-		remove_variable = eafp_var_je_regent_type
-		remove_variable = eafp_var_je_regent_account
-		remove_variable = eafp_var_je_regent_regnal_year
-		remove_variable = eafp_var_je_regent_character
-		set_variable = eafp_var_je_regent_complete
+		hidden_effect = {
+			var:eafp_var_je_regent_character = {
+				set_character_busy_and_immortal = no
+			}
+			ig:ig_landowners = {
+				leader = {
+					set_character_busy_and_immortal = no
+				}
+			}
+			if = {
+				limit = { ruler = { has_template = eafp_kor_yi_hwan_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_hwan
+			}
+			else_if = {
+				limit = { ruler = { has_template = eafp_kor_yi_byeon_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_byeon
+			}
+			else_if = {
+				limit = { ruler = { has_template = eafp_kor_yi_hyeong_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_hyeong
+			}
+			remove_variable = eafp_var_je_regent
+			remove_variable = eafp_var_je_regent_attitude
+			remove_variable = eafp_var_je_regent_type
+			remove_variable = eafp_var_je_regent_account
+			remove_variable = eafp_var_je_regent_regnal_year
+			remove_variable = eafp_var_je_regent_character
+		}
 	}
 
 	status_desc = {
@@ -1794,7 +1822,7 @@ je_korean_seowon = {
 	immediate = {
 		add_modifier = {
 			name = eafp_modi_seowon_problem_backlash
-			multiplier = 0.3
+			multiplier = 30
 		}
 		trigger_event = eafp_kor_mainline.150
 	}
@@ -1812,7 +1840,7 @@ je_korean_seowon = {
 			count = all
 			OR = {
 				NOT = { is_building_type = building_manor_house }
-				has_active_production_method = pm_manor_house_seowon_ownership
+				NOT = { has_active_production_method = pm_manor_house_seowon_ownership }
 			}
 		}
 		custom_tooltip = {
@@ -1834,10 +1862,7 @@ je_korean_seowon = {
 			remove_modifier = eafp_modi_seowon_problem_backlash
 			add_modifier = {
 				name = eafp_modi_seowon_problem_backlash
-				multiplier = {
-					value = eafp_progress_bar_seowon_backlash_progress_bar_value
-					divide = 100
-				}
+				multiplier = eafp_progress_bar_seowon_backlash_progress_bar_value
 			}
 		}
 	}
@@ -1858,17 +1883,14 @@ je_rlg_seoul_gyeongbokgung_poor = {
 	is_shown_when_inactive = {
 		exists = c:KOR
 		THIS = c:KOR
-		NOT = { has_variable = eafp_var_rlg_gbg_poor_ok }
+		NOT = { has_variable = eafp_var_gbg_poor_ok }
 	}
 
 	possible = {
 		exists = c:KOR
 		THIS = c:KOR
-		NOT = { has_variable = eafp_var_rlg_gbg_poor_ok }
+		NOT = { has_variable = eafp_var_gbg_poor_ok }
 	}
-    
-	#immediate = {
-	#}
     
 	complete = {
 		OR = {
@@ -1887,10 +1909,7 @@ je_rlg_seoul_gyeongbokgung_poor = {
 	}
 
 	on_complete = {
-		#trigger_event = {
-		#	id = eafp_modern_events.1
-		#}
-		set_variable = eafp_var_rlg_gbg_poor_ok
+		set_variable = eafp_var_gbg_poor_ok
 		add_journal_entry = {
 			type = je_rlg_seoul_gyeongbokgung_rebuild
 		}
@@ -1906,9 +1925,6 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	group = je_group_historical_content
 
 	complete = {
-		exists = c:KOR
-		this = c:KOR
-		#owns_entire_state_region = STATE_LIA_SEOUL	##수정요함
 		owns_entire_state_region = STATE_SEOUL
 		s:STATE_SEOUL = {
 			region_state:KOR = {
@@ -1927,10 +1943,10 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 
 	immediate = {
 		set_variable = {
-			name = eafp_var_rlg_gyeongbokgung_rebuild
+			name = eafp_var_gyeongbokgung_rebuild
 			value = 0
 		}
-		set_variable = eafp_var_rlg_wonnap_possible
+		set_variable = eafp_var_wonnap_possible
 		trigger_event = {
 			id = eafp_kor_mainline.1500
 		}
@@ -1940,7 +1956,7 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 		trigger_event = {
 			id = eafp_kor_mainline.1510
 		}
-		random_scope_state = {
+		every_scope_state = {
 			limit = {
 				has_building = building_dangbaek
 			}
@@ -1951,87 +1967,78 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	on_weekly_pulse = {
 		random_events = {
 			100 = 0
-			10 = eafp_kor_mainline.1504	#화재
 			10 = eafp_kor_mainline.1507	#상소
 		}
 		effect = {
 			if = {
 				limit = {
-					var:eafp_var_rlg_gyeongbokgung_rebuild >= 500
+					var:eafp_var_gyeongbokgung_rebuild >= 500
+					NOT = { has_variable = eafp_var_gbg_rebuild_1504 }
 				}
-				trigger_event = {
-					id = eafp_kor_mainline.1504
-				}
+				trigger_event = eafp_kor_mainline.1504
 			}
 			if = {
 				limit = {
 					is_ai = yes
 				}
 				change_variable = {
-					name = eafp_var_rlg_gyeongbokgung_rebuild
-					add = 2
+					name = eafp_var_gyeongbokgung_rebuild
+					add = 2.5
 				}
 			}
-		}
-	}
-	
-	on_monthly_pulse = {
-		effect = {
-			hidden_effect = {
-				if = {
-					limit = {
-						any_scope_building = {
-							is_building_type = building_gyeongbokgung_poor
-							has_active_production_method = pm_rebuild_gyeongbokgung_1
-						}
-					}
-					change_variable = {
-						name = eafp_var_rlg_gyeongbokgung_rebuild
-						add = 20
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_gyeongbokgung_poor
+						has_active_production_method = pm_rebuild_gyeongbokgung_1
 					}
 				}
-				if = {
-					limit = {
-						any_scope_building = {
-							is_building_type = building_gyeongbokgung_poor
-							has_active_production_method = pm_rebuild_gyeongbokgung_2
-						}
-					}
-					change_variable = {
-						name = eafp_var_rlg_gyeongbokgung_rebuild
-						add = 30
+				change_variable = {
+					name = eafp_var_gyeongbokgung_rebuild
+					add = 5
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_gyeongbokgung_poor
+						has_active_production_method = pm_rebuild_gyeongbokgung_2
 					}
 				}
-				if = {
-					limit = {
-						any_scope_building = {
-							is_building_type = building_gyeongbokgung_poor
-							has_active_production_method = pm_rebuild_gyeongbokgung_3
-						}
-					}
-					change_variable = {
-						name = eafp_var_rlg_gyeongbokgung_rebuild
-						add = 40
+				change_variable = {
+					name = eafp_var_gyeongbokgung_rebuild
+					add = 7.5
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_gyeongbokgung_poor
+						has_active_production_method = pm_rebuild_gyeongbokgung_3
 					}
 				}
-				if = {
-					limit = {
-						any_scope_building = {
-							is_building_type = building_gyeongbokgung_poor
-							has_active_production_method = pm_rebuild_gyeongbokgung_4
-						}
+				change_variable = {
+					name = eafp_var_gyeongbokgung_rebuild
+					add = 10
+				}
+			}
+			if = {
+				limit = {
+					any_scope_building = {
+						is_building_type = building_gyeongbokgung_poor
+						has_active_production_method = pm_rebuild_gyeongbokgung_4
 					}
-					change_variable = {
-						name = eafp_var_rlg_gyeongbokgung_rebuild
-						add = 50
-					}
+				}
+				change_variable = {
+					name = eafp_var_gyeongbokgung_rebuild
+					add = 12.5
 				}
 			}
 		}
 	}
     
 	current_value = {
-		value = root.var:eafp_var_rlg_gyeongbokgung_rebuild
+		value = root.var:eafp_var_gyeongbokgung_rebuild
 	}
 
 	goal_add_value = {
@@ -2066,7 +2073,7 @@ je_rlg_seoul_dangbaek = {
 
 	immediate = {
 		set_variable = {
-			name = eafp_var_rlg_dangbaek_inflation
+			name = eafp_var_dangbaek_inflation
 			value = 0
 		}
 	}
@@ -2109,40 +2116,40 @@ je_rlg_seoul_dangbaek = {
 		effect = {
 			if = {
 				limit = {
-					var:eafp_var_rlg_dangbaek_inflation <= 100
+					var:eafp_var_dangbaek_inflation <= 100
 					any_scope_building = {
 						is_building_type = building_dangbaek
 						has_active_production_method = pm_base_dangbaek_1
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					add = 1
 				}
 			}
 			if = {
 				limit = {
-					var:eafp_var_rlg_dangbaek_inflation <= 100
+					var:eafp_var_dangbaek_inflation <= 100
 					any_scope_building = {
 						is_building_type = building_dangbaek
 						has_active_production_method = pm_base_dangbaek_2
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					add = 2
 				}
 			}
 			if = {
 				limit = {
-					var:eafp_var_rlg_dangbaek_inflation <= 100
+					var:eafp_var_dangbaek_inflation <= 100
 					any_scope_building = {
 						is_building_type = building_dangbaek
 						has_active_production_method = pm_base_dangbaek_3
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					add = 3
 				}
 			}
@@ -2160,7 +2167,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.3
 				}
 			}
@@ -2173,7 +2180,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.6
 				}
 			}
@@ -2186,7 +2193,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.9
 				}
 			}
@@ -2200,7 +2207,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.6
 				}
 			}
@@ -2213,7 +2220,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.2
 				}
 			}
@@ -2226,7 +2233,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.8
 				}
 			}
@@ -2240,7 +2247,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.3
 				}
 			}
@@ -2253,7 +2260,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.6
 				}
 			}
@@ -2266,7 +2273,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.9
 				}
 			}
@@ -2280,7 +2287,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.5
 				}
 			}
@@ -2293,7 +2300,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.0
 				}
 			}
@@ -2306,7 +2313,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.5
 				}
 			}
@@ -2320,7 +2327,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.7
 				}
 			}
@@ -2333,7 +2340,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.4
 				}
 			}
@@ -2346,7 +2353,7 @@ je_rlg_seoul_dangbaek = {
 					}
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 2.1
 				}
 			}
@@ -2356,7 +2363,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 5000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.2
 				}
 			}
@@ -2365,7 +2372,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 7000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.4
 				}
 			}
@@ -2374,7 +2381,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 9000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.6
 				}
 			}
@@ -2383,7 +2390,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 12000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 0.8
 				}
 			}
@@ -2392,7 +2399,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 15000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.0
 				}
 			}
@@ -2401,7 +2408,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 20000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.2
 				}
 			}
@@ -2410,7 +2417,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 25000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.4
 				}
 			}
@@ -2419,7 +2426,7 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 35000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.6
 				}
 			}
@@ -2428,13 +2435,13 @@ je_rlg_seoul_dangbaek = {
 					THIS.GDP <= 50000000
 				}
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 1.8
 				}
 			}
 			else_if = {
 				change_variable = {
-					name = eafp_var_rlg_dangbaek_inflation
+					name = eafp_var_dangbaek_inflation
 					subtract = 2.0
 				}
 			}
@@ -2442,7 +2449,7 @@ je_rlg_seoul_dangbaek = {
 			remove_modifier = eafp_modi_dangbaek_inflation
 			add_modifier = {
 				name = eafp_modi_dangbaek_inflation
-				multiplier = root.var:eafp_var_rlg_dangbaek_inflation
+				multiplier = root.var:eafp_var_dangbaek_inflation
 				months = 36
 				is_decaying = yes
 			}
@@ -2450,7 +2457,7 @@ je_rlg_seoul_dangbaek = {
 	}
 	
 	current_value = {
-		value = root.var:eafp_var_rlg_dangbaek_inflation
+		value = root.var:eafp_var_dangbaek_inflation
 	}
 
 	goal_add_value = {

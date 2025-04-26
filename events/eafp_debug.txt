@@ -11,6 +11,58 @@
 # - 북-흑: 만주
 # - 중-황: 일본 열도
 eafp_debug.1 = {
+	orphan = yes
+
+	hidden = yes
+
+	immediate = {
+		if = {
+			limit = {
+				exists = c:KOR
+				exists = cu:japanese
+				exists = cu:ainu
+			}
+			c:KOR = {
+				set_variable = national_flag
+				# make_independent = yes
+			}
+			every_country = {
+				limit = {
+					NOT = {
+						is_country_type = decentralized
+					}
+					OR = {
+						capital = {
+							OR = {
+								region = sr:region_japan
+								region = sr:region_indochina
+								region = sr:region_indonesia
+								region = sr:region_oceania
+							}
+						}
+						this = c:MAD
+					}
+				}
+				save_scope_as = target_country
+				c:KOR = {
+					create_diplomatic_pact = {
+						country = scope:target_country
+						type = vassal
+					}
+					set_relations = {
+						country = scope:target_country
+						value = 100
+					}
+				}
+			}
+		}
+	}
+}
+
+# 에러 제거용
+eafp_debug.2 = {
+	orphan = yes
+
 	hidden = yes
 
 	immediate = {

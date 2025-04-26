@@ -243,8 +243,54 @@ boshin_war.6 = { # 의견일치
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	immediate = {
+		if = { # 신정부 사라지는 버그 방지용
+			limit = { NOT = { exists = c:NIP } }
+			create_country = {
+				tag = NIP
+				origin = this
+				province = p:x8EC4C9
+				on_created = {
+					change_relations = {
+						country = c:JAP
+						value = -50
+					}
+				}
+			}
+			c:NIP = {
+				random_scope_state = {
+					create_building={
+						building="building_barracks"
+						level=2
+						reserves=1
+					}
+				}
+				create_bidirectional_truce = {
+					country = c:JAP
+					months = 36
+				}
+				#ig:ig_landowners = {
+				#	set_interest_group_name = ig_daimyo
+				#}
+				#ig:ig_devout = {
+				#	set_interest_group_name = ig_kokugakusha
+				#}
+				#ig:ig_intelligentsia = {
+				#	set_interest_group_name = ig_rangakusha
+				#}
+				#ig:ig_petty_bourgeoisie = {
+				#	set_interest_group_name = ig_kashin
+				#}
+				#ig:ig_trade_unions = {
+				#	set_interest_group_name = ig_shokunin
+				#}
+				#ig:ig_industrialists = {
+				#	set_interest_group_name = ig_shonin
+				#}
+			}
+		}
 		every_country = {
 			limit = {
+				NOT = { THIS = c:NIP }
 				has_variable = tobaku_han_var
 			}
 			c:NIP = {
