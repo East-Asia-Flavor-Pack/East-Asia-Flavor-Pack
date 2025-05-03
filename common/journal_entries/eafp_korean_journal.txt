@@ -531,6 +531,51 @@ je_korean_land_problem = {
 
 	can_revolution_inherit = yes
 }
+##양전
+je_yangjeon = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_historical_content
+
+	scripted_progress_bar = eafp_progress_bar_yangjeon
+
+	scripted_button = eafp_scripted_button_yangjeon
+	scripted_button = eafp_scripted_button_yangjeon2
+
+	immediate = {
+		set_variable = {
+			name = eafp_var_yangjeon_weekly
+			value = 1
+		}
+		add_modifier = {
+			name = eafp_modi_yangjeon_cost
+			multiplier = 3000
+		}
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_korean_imsul_uprising_goal
+			scope:journal_entry = {
+				"scripted_bar_progress(eafp_progress_bar_yangjeon)" > 360
+			}
+		}
+	}
+
+	on_complete = {
+		set_variable = eafp_var_sam_jeon_clear
+		remove_variable = eafp_var_yangjeon_weekly
+		remove_modifier = eafp_modi_yangjeon_cost
+		
+		trigger_event = eafp_kor_mainline.298
+	}
+
+	weight = 2000
+	
+	should_be_pinned_by_default = yes
+
+	can_revolution_inherit = yes
+}
 ##임술농민봉기 - 철종5년에 준비
 je_korean_imsul_uprising = {
 	icon = "gfx/interface/icons/pops_icons/peasants.dds"
@@ -1742,7 +1787,7 @@ je_korean_confu = {
 				}
 				set_variable = eafp_check_evt_k127
 			}
-			if = {	#
+			if = {	#병인박해
 				limit = {
 					NOT = { has_variable = eafp_check_evt_k128 }
 					exists = c:DAI

@@ -52,6 +52,7 @@ eafp_scripted_button_sam_jeon = {
 
 	visible = {
 		NOT = { has_variable = eafp_var_sam_jeon_clear }
+		NOT = { has_journal_entry = je_yangjeon }
 	}
 
 	possible = {
@@ -62,109 +63,91 @@ eafp_scripted_button_sam_jeon = {
 				amount >= 4
 				AND = {
 					owns_entire_state_region = STATE_SEOUL
-					var:eafp_kor_landlvl_SEOUL_adm >= 2
-					var:eafp_kor_landexp_SEOUL_adm >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SEOUL_adm >= 2
+							var:eafp_kor_landexp_SEOUL_adm >= 120
+						}
+						var:eafp_kor_landlvl_SEOUL_adm >= 3
+					}
 					var:eafp_kor_landlvl_SEOUL_civ >= 2
 				}
 				AND = {
+					owns_entire_state_region = STATE_YANGHO
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_YANGHO_adm >= 2
+							var:eafp_kor_landexp_YANGHO_adm >= 120
+						}
+						var:eafp_kor_landlvl_YANGHO_adm >= 3
+					}
+					var:eafp_kor_landlvl_YANGHO_civ >= 2
+				}
+				AND = {
+					owns_entire_state_region = STATE_BUSAN
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_BUSAN_adm >= 2
+							var:eafp_kor_landexp_BUSAN_adm >= 120
+						}
+						var:eafp_kor_landlvl_BUSAN_adm >= 3
+					}
+					var:eafp_kor_landlvl_BUSAN_civ >= 2
+				}
+				AND = {
 					owns_entire_state_region = STATE_PYONGYANG
-					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-					var:eafp_kor_landexp_PYONGYANG_adm >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_PYONGYANG_adm >= 2
+							var:eafp_kor_landexp_PYONGYANG_adm >= 120
+						}
+						var:eafp_kor_landlvl_PYONGYANG_adm >= 3
+					}
 					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
 				}
 				AND = {
 					owns_entire_state_region = STATE_SARIWON
-					var:eafp_kor_landlvl_SARIWON_adm >= 2
-					var:eafp_kor_landexp_SARIWON_adm >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SARIWON_adm >= 2
+							var:eafp_kor_landexp_SARIWON_adm >= 120
+						}
+						var:eafp_kor_landlvl_SARIWON_adm >= 3
+					}
 					var:eafp_kor_landlvl_SARIWON_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_BUSAN
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-					var:eafp_kor_landexp_BUSAN_adm >= 120
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_YANGHO
-					var:eafp_kor_landlvl_YANGHO_adm >= 2
-					var:eafp_kor_landexp_YANGHO_adm >= 120
-					var:eafp_kor_landlvl_YANGHO_civ >= 2
 				}
 			}
 		}
 	}
 
 	effect = {
-		set_variable = eafp_var_sam_jeon_clear
+		add_journal_entry = {
+			type = je_yangjeon
+		}
+		show_as_tooltip = {
+			add_modifier = {
+				name = eafp_modi_yangjeon_cost
+				multiplier = 3000
+			}
+		}
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
 				NAND = {
-					var:eafp_kor_landlvl_SEOUL_adm >= 2
-					var:eafp_kor_landexp_SEOUL_adm >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SEOUL_adm >= 2
+							var:eafp_kor_landexp_SEOUL_adm >= 120
+						}
+						var:eafp_kor_landlvl_SEOUL_adm >= 3
+					}
 					var:eafp_kor_landlvl_SEOUL_civ >= 2
 				}
 			}
-			s:STATE_SEOUL = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_jeon_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NAND = {
-					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-					var:eafp_kor_landexp_PYONGYANG_adm >= 120
-					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-				}
-			}
-			s:STATE_PYONGYANG = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_jeon_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NAND = {
-					var:eafp_kor_landlvl_SARIWON_adm >= 2
-					var:eafp_kor_landexp_SARIWON_adm >= 120
-					var:eafp_kor_landlvl_SARIWON_civ >= 2
-				}
-			}
-			s:STATE_SARIWON = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_jeon_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NAND = {
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-					var:eafp_kor_landexp_BUSAN_adm >= 120
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-				}
-			}
-			s:STATE_BUSAN = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_jeon_failstate
-						months = 120
-					}
+			s:STATE_SEOUL.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_jeon_failstate
+					months = 120
 				}
 			}
 		}
@@ -172,17 +155,83 @@ eafp_scripted_button_sam_jeon = {
 			limit = {
 				owns_entire_state_region = STATE_YANGHO
 				NAND = {
-					var:eafp_kor_landlvl_YANGHO_adm >= 2
-					var:eafp_kor_landexp_YANGHO_adm >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_YANGHO_adm >= 2
+							var:eafp_kor_landexp_YANGHO_adm >= 120
+						}
+						var:eafp_kor_landlvl_YANGHO_adm >= 3
+					}
 					var:eafp_kor_landlvl_YANGHO_civ >= 2
 				}
 			}
-			s:STATE_YANGHO = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_jeon_failstate
-						months = 120
+			s:STATE_YANGHO.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_jeon_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_BUSAN
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_BUSAN_adm >= 2
+							var:eafp_kor_landexp_BUSAN_adm >= 120
+						}
+						var:eafp_kor_landlvl_BUSAN_adm >= 3
 					}
+					var:eafp_kor_landlvl_BUSAN_civ >= 2
+				}
+			}
+			s:STATE_BUSAN.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_jeon_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_PYONGYANG
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_PYONGYANG_adm >= 2
+							var:eafp_kor_landexp_PYONGYANG_adm >= 120
+						}
+						var:eafp_kor_landlvl_PYONGYANG_adm >= 3
+					}
+					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
+				}
+			}
+			s:STATE_PYONGYANG.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_jeon_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_SARIWON
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SARIWON_adm >= 2
+							var:eafp_kor_landexp_SARIWON_adm >= 120
+						}
+						var:eafp_kor_landlvl_SARIWON_adm >= 3
+					}
+					var:eafp_kor_landlvl_SARIWON_civ >= 2
+				}
+			}
+			s:STATE_SARIWON.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_jeon_failstate
+					months = 120
 				}
 			}
 		}
@@ -204,28 +253,53 @@ eafp_scripted_button_sam_gun = {
 				amount >= 4
 				AND= {
 					owns_entire_state_region = STATE_SEOUL
-					var:eafp_kor_landlvl_SEOUL_mil >= 2
-					var:eafp_kor_landexp_SEOUL_mil >= 120
-				}
-				AND= {
-					owns_entire_state_region = STATE_PYONGYANG
-					var:eafp_kor_landlvl_PYONGYANG_mil >= 2
-					var:eafp_kor_landexp_PYONGYANG_mil >= 120
-				}
-				AND= {
-					owns_entire_state_region = STATE_SARIWON
-					var:eafp_kor_landlvl_SARIWON_mil >= 2
-					var:eafp_kor_landexp_SARIWON_mil >= 120
-				}
-				AND= {
-					owns_entire_state_region = STATE_BUSAN
-					var:eafp_kor_landlvl_BUSAN_mil >= 2
-					var:eafp_kor_landexp_BUSAN_mil >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SEOUL_mil >= 2
+							var:eafp_kor_landexp_SEOUL_mil >= 120
+						}
+						var:eafp_kor_landlvl_SEOUL_mil >= 3
+					}
 				}
 				AND= {
 					owns_entire_state_region = STATE_YANGHO
-					var:eafp_kor_landlvl_YANGHO_mil >= 2
-					var:eafp_kor_landexp_YANGHO_mil >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_YANGHO_mil >= 2
+							var:eafp_kor_landexp_YANGHO_mil >= 120
+						}
+						var:eafp_kor_landlvl_YANGHO_mil >= 3
+					}
+				}
+				AND= {
+					owns_entire_state_region = STATE_BUSAN
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_BUSAN_mil >= 2
+							var:eafp_kor_landexp_BUSAN_mil >= 120
+						}
+						var:eafp_kor_landlvl_BUSAN_mil >= 3
+					}
+				}
+				AND= {
+					owns_entire_state_region = STATE_PYONGYANG
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_PYONGYANG_mil >= 2
+							var:eafp_kor_landexp_PYONGYANG_mil >= 120
+						}
+						var:eafp_kor_landlvl_PYONGYANG_mil >= 3
+					}
+				}
+				AND= {
+					owns_entire_state_region = STATE_SARIWON
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SARIWON_mil >= 2
+							var:eafp_kor_landexp_SARIWON_mil >= 120
+						}
+						var:eafp_kor_landlvl_SARIWON_mil >= 3
+					}
 				}
 			}
 		}
@@ -238,85 +312,90 @@ eafp_scripted_button_sam_gun = {
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
-				NAND = {
-					var:eafp_kor_landlvl_SEOUL_mil >= 2
-					var:eafp_kor_landexp_SEOUL_mil >= 120
-				}
-			}
-			s:STATE_SEOUL = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_gun_failstate
-						months = 120
+				NOR = {
+					AND = {
+						var:eafp_kor_landlvl_SEOUL_mil >= 2
+						var:eafp_kor_landexp_SEOUL_mil >= 120
 					}
+					var:eafp_kor_landlvl_SEOUL_mil >= 3
 				}
 			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NAND = {
-					var:eafp_kor_landlvl_PYONGYANG_mil >= 2
-					var:eafp_kor_landexp_PYONGYANG_mil >= 120
-				}
-			}
-			s:STATE_PYONGYANG = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_gun_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NAND = {
-					var:eafp_kor_landlvl_SARIWON_mil >= 2
-					var:eafp_kor_landexp_SARIWON_mil >= 120
-				}
-			}
-			s:STATE_SARIWON = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_gun_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NAND = {
-					var:eafp_kor_landlvl_BUSAN_mil >= 2
-					var:eafp_kor_landexp_BUSAN_mil >= 120
-				}
-			}
-			s:STATE_BUSAN = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_gun_failstate
-						months = 120
-					}
+			s:STATE_SEOUL.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_gun_failstate
+					months = 120
 				}
 			}
 		}
 		if = {
 			limit = {
 				owns_entire_state_region = STATE_YANGHO
-				NAND = {
-					var:eafp_kor_landlvl_YANGHO_mil >= 2
-					var:eafp_kor_landexp_YANGHO_mil >= 120
+				NOR = {
+					AND = {
+						var:eafp_kor_landlvl_YANGHO_mil >= 2
+						var:eafp_kor_landexp_YANGHO_mil >= 120
+					}
+					var:eafp_kor_landlvl_YANGHO_mil >= 3
 				}
 			}
-			s:STATE_YANGHO = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_gun_failstate
-						months = 120
+			s:STATE_YANGHO.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_gun_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_BUSAN
+				NOR = {
+					AND = {
+						var:eafp_kor_landlvl_BUSAN_mil >= 2
+						var:eafp_kor_landexp_BUSAN_mil >= 120
 					}
+					var:eafp_kor_landlvl_BUSAN_mil >= 3
+				}
+			}
+			s:STATE_BUSAN.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_gun_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_PYONGYANG
+				NOR = {
+					AND = {
+						var:eafp_kor_landlvl_PYONGYANG_mil >= 2
+						var:eafp_kor_landexp_PYONGYANG_mil >= 120
+					}
+					var:eafp_kor_landlvl_PYONGYANG_mil >= 3
+				}
+			}
+			s:STATE_PYONGYANG.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_gun_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_SARIWON
+				NOR = {
+					AND = {
+						var:eafp_kor_landlvl_SARIWON_mil >= 2
+						var:eafp_kor_landexp_SARIWON_mil >= 120
+					}
+					var:eafp_kor_landlvl_SARIWON_mil >= 3
+				}
+			}
+			s:STATE_SARIWON.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_gun_failstate
+					months = 120
 				}
 			}
 		}
@@ -338,33 +417,58 @@ eafp_scripted_button_sam_hwan = {
 				amount >= 4
 				AND= {
 					owns_entire_state_region = STATE_SEOUL
-					var:eafp_kor_landlvl_SEOUL_civ >= 2
-					var:eafp_kor_landexp_SEOUL_civ >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SEOUL_civ >= 2
+							var:eafp_kor_landexp_SEOUL_civ >= 120
+						}
+						var:eafp_kor_landlvl_SEOUL_civ >= 3
+					}
 					var:eafp_kor_landlvl_SEOUL_adm >= 2
 				}
 				AND= {
+					owns_entire_state_region = STATE_YANGHO
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_YANGHO_civ >= 2
+							var:eafp_kor_landexp_YANGHO_civ >= 120
+						}
+						var:eafp_kor_landlvl_YANGHO_civ >= 3
+					}
+					var:eafp_kor_landlvl_YANGHO_adm >= 2
+				}
+				AND= {
+					owns_entire_state_region = STATE_BUSAN
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_BUSAN_civ >= 2
+							var:eafp_kor_landexp_BUSAN_civ >= 120
+						}
+						var:eafp_kor_landlvl_BUSAN_civ >= 3
+					}
+					var:eafp_kor_landlvl_BUSAN_adm >= 2
+				}
+				AND= {
 					owns_entire_state_region = STATE_PYONGYANG
-					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-					var:eafp_kor_landexp_PYONGYANG_civ >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_PYONGYANG_civ >= 2
+							var:eafp_kor_landexp_PYONGYANG_civ >= 120
+						}
+						var:eafp_kor_landlvl_PYONGYANG_civ >= 3
+					}
 					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
 				}
 				AND= {
 					owns_entire_state_region = STATE_SARIWON
-					var:eafp_kor_landlvl_SARIWON_civ >= 2
-					var:eafp_kor_landexp_SARIWON_civ >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SARIWON_civ >= 2
+							var:eafp_kor_landexp_SARIWON_civ >= 120
+						}
+						var:eafp_kor_landlvl_SARIWON_civ >= 3
+					}
 					var:eafp_kor_landlvl_SARIWON_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_BUSAN
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-					var:eafp_kor_landexp_BUSAN_civ >= 120
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_YANGHO
-					var:eafp_kor_landlvl_YANGHO_civ >= 2
-					var:eafp_kor_landexp_YANGHO_civ >= 120
-					var:eafp_kor_landlvl_YANGHO_adm >= 2
 				}
 			}
 		}
@@ -376,71 +480,20 @@ eafp_scripted_button_sam_hwan = {
 			limit = {
 				owns_entire_state_region = STATE_SEOUL
 				NAND = {
-					var:eafp_kor_landlvl_SEOUL_civ >= 2
-					var:eafp_kor_landexp_SEOUL_civ >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SEOUL_civ >= 2
+							var:eafp_kor_landexp_SEOUL_civ >= 120
+						}
+						var:eafp_kor_landlvl_SEOUL_civ >= 3
+					}
 					var:eafp_kor_landlvl_SEOUL_adm >= 2
 				}
 			}
-			s:STATE_SEOUL = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_hwan_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NAND = {
-					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-					var:eafp_kor_landexp_PYONGYANG_civ >= 120
-					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-				}
-			}
-			s:STATE_PYONGYANG = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_hwan_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NAND = {
-					var:eafp_kor_landlvl_SARIWON_civ >= 2
-					var:eafp_kor_landexp_SARIWON_civ >= 120
-					var:eafp_kor_landlvl_SARIWON_adm >= 2
-				}
-			}
-			s:STATE_SARIWON = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_hwan_failstate
-						months = 120
-					}
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NAND = {
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-					var:eafp_kor_landexp_BUSAN_civ >= 120
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-				}
-			}
-			s:STATE_BUSAN = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_hwan_failstate
-						months = 120
-					}
+			s:STATE_SEOUL.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_hwan_failstate
+					months = 120
 				}
 			}
 		}
@@ -448,17 +501,83 @@ eafp_scripted_button_sam_hwan = {
 			limit = {
 				owns_entire_state_region = STATE_YANGHO
 				NAND = {
-					var:eafp_kor_landlvl_YANGHO_civ >= 2
-					var:eafp_kor_landexp_YANGHO_civ >= 120
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_YANGHO_civ >= 2
+							var:eafp_kor_landexp_YANGHO_civ >= 120
+						}
+						var:eafp_kor_landlvl_YANGHO_civ >= 3
+					}
 					var:eafp_kor_landlvl_YANGHO_adm >= 2
 				}
 			}
-			s:STATE_YANGHO = {
-				region_state:KOR = {
-					add_modifier = {
-						name = eafp_modi_sam_hwan_failstate
-						months = 120
+			s:STATE_YANGHO.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_hwan_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_BUSAN
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_BUSAN_civ >= 2
+							var:eafp_kor_landexp_BUSAN_civ >= 120
+						}
+						var:eafp_kor_landlvl_BUSAN_civ >= 3
 					}
+					var:eafp_kor_landlvl_BUSAN_adm >= 2
+				}
+			}
+			s:STATE_BUSAN.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_hwan_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_PYONGYANG
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_PYONGYANG_civ >= 2
+							var:eafp_kor_landexp_PYONGYANG_civ >= 120
+						}
+						var:eafp_kor_landlvl_PYONGYANG_civ >= 3
+					}
+					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
+				}
+			}
+			s:STATE_PYONGYANG.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_hwan_failstate
+					months = 120
+				}
+			}
+		}
+		if = {
+			limit = {
+				owns_entire_state_region = STATE_SARIWON
+				NAND = {
+					OR = {
+						AND = {
+							var:eafp_kor_landlvl_SARIWON_civ >= 2
+							var:eafp_kor_landexp_SARIWON_civ >= 120
+						}
+						var:eafp_kor_landlvl_SARIWON_civ >= 3
+					}
+					var:eafp_kor_landlvl_SARIWON_adm >= 2
+				}
+			}
+			s:STATE_SARIWON.region_state:KOR = {
+				add_modifier = {
+					name = eafp_modi_sam_hwan_failstate
+					months = 120
 				}
 			}
 		}
@@ -483,6 +602,75 @@ eafp_scripted_button_sam_all = {
 
 	effect = {
 		set_variable = eafp_var_sam_all_clear
+	}
+}
+# 양전
+eafp_scripted_button_yangjeon = {
+	name = "eafp_scripted_button_yangjeon"
+	desc = "eafp_scripted_button_yangjeon_desc"
+
+	visible = {
+		var:eafp_var_yangjeon_weekly <= 4
+	}
+
+	possible = {
+		var:eafp_var_yangjeon_weekly <= 4
+	}
+
+	effect = {
+		remove_modifier = eafp_modi_yangjeon_cost
+		add_modifier = {
+			name = eafp_modi_yangjeon_cost
+			multiplier = {
+				value = var:eafp_var_yangjeon_weekly
+				multiply = var:eafp_var_yangjeon_weekly
+				multiply = root.gdp
+				divide = 600000
+				round = yes
+				multiply = -1000
+				add = 3000
+			}
+		}
+		change_variable = {
+			name = eafp_var_yangjeon_weekly
+			add = 1
+		}
+	}
+}
+eafp_scripted_button_yangjeon2 = {
+	name = "eafp_scripted_button_yangjeon2"
+	desc = "eafp_scripted_button_yangjeon2_desc"
+
+	visible = {
+		var:eafp_var_yangjeon_weekly > 1
+	}
+
+	possible = {
+		var:eafp_var_yangjeon_weekly > 1
+	}
+
+	effect = {
+		remove_modifier = eafp_modi_yangjeon_cost
+		add_modifier = {
+			name = eafp_modi_yangjeon_cost
+			multiplier = {
+				value = var:eafp_var_yangjeon_weekly
+				subtract = 2
+				multiply = {
+					value = var:eafp_var_yangjeon_weekly
+					subtract = 2
+				}
+				multiply = root.gdp
+				divide = 600000
+				round = yes
+				multiply = -1000
+				add = 3000
+			}
+		}
+		change_variable = {
+			name = eafp_var_yangjeon_weekly
+			subtract = 1
+		}
 	}
 }
 ###아래는 봉기저널 관련 버튼
@@ -1071,9 +1259,9 @@ eafp_scripted_button_seowon1 = {
 
 	possible = {
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			text = eafp_scripted_button_seowon_backlash_below_80_tt
 			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
 			}
 		}
 		custom_tooltip = {
@@ -1111,9 +1299,9 @@ eafp_scripted_button_seowon2 = {
 
 	possible = {
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			text = eafp_scripted_button_seowon_backlash_below_80_tt
 			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
 			}
 		}
 		custom_tooltip = {
@@ -1151,9 +1339,9 @@ eafp_scripted_button_seowon3 = {
 
 	possible = {
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			text = eafp_scripted_button_seowon_backlash_below_80_tt
 			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
 			}
 		}
 		custom_tooltip = {
@@ -1191,9 +1379,9 @@ eafp_scripted_button_seowon4 = {
 
 	possible = {
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			text = eafp_scripted_button_seowon_backlash_below_80_tt
 			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
 			}
 		}
 		custom_tooltip = {
@@ -1231,9 +1419,9 @@ eafp_scripted_button_seowon5 = {
 
 	possible = {
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_70_tt
+			text = eafp_scripted_button_seowon_backlash_below_80_tt
 			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 70
+				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
 			}
 		}
 		custom_tooltip = {
