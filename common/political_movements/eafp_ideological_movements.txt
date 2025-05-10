@@ -1,4 +1,619 @@
-﻿movement_liberty_civil_right = {
+﻿# 조선
+
+eafp_movement_rel_catholic = {
+	category = eafp_movement_category_propagation
+	#category = movement_category_religious
+	
+	ideology = ideology_eafp_catholic_movement
+	
+	character_ideologies = {
+		ideology_eafp_missionary
+	}
+	
+	creation_trigger = {
+		NOT = { country_has_state_religion = rel:catholic }	#활약국의 국교가 캣홀릭이면 의미가 없음
+		NOT = { has_law = law_type:law_freedom_of_conscience }	#활약국이 이미 신앙의 자유가 있다면 의미가 없음
+		NOT = { has_law = law_type:law_total_separation }
+	}	
+	creation_weight = {
+		value = 200
+	}	
+	on_created = {}
+
+	disband_trigger = {
+		rel:catholic = {
+			is_state_religion = root
+		}
+	}
+	
+	#일단 보존처리!
+	#religion_selection_trigger = {
+	#	NOT = { is_state_religion = scope:country }
+	#	NOT = { rel:atheist = this }
+	#	rel:catholic = this
+	#	#유학 저널 클리어시 보상으로 포교운동을 꺼버리는것을 고려해봐.
+	#}
+	#religion_selection_weight = {
+	#	value = 200
+	#}
+	
+	character_support_trigger = {
+		religion = rel:catholic
+		#OR = {
+		#	is_interest_group_type = ig_devout
+		#	has_ideology = ideology:ideology_traditionalist
+		#	has_ideology = ideology:ideology_theocrat
+		#	has_ideology = ideology:ideology_integralist
+		#	has_ideology = ideology:ideology_eafp_missionary
+		#}		
+	}
+	character_support_weight = {
+		value = 100
+		if = {
+			limit = {
+				interest_group ?= {
+					is_interest_group_type = ig_devout
+				}
+			}
+			multiply = {
+				value = 5
+			}
+		}
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_eafp_missionary
+			}
+			add = {
+				value = 100
+			}
+		}
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_eafp_missionary
+			}
+			multiply = {
+				value = 10
+			}
+		}
+	}
+	
+	pop_support_trigger = {
+		religion = rel:catholic
+	}
+
+	pop_support_factors = {
+		movement_support_poverty
+		movement_support_low_literacy
+		movement_support_religious_discrimination
+		movement_support_clergymen
+		movement_support_aristocrats
+		movement_support_peasants
+		movement_support_corporatism_tech
+		movement_support_eafp_catholic
+	}
+
+	pop_support_weight = {
+		add = {
+			value = 10
+			desc = "POP_BASE_SUPPORT"
+		}	
+		
+		if = {
+			limit = { 
+				religion = rel:catholic
+			}
+			
+			add = {
+				value = 25
+				desc = "EAFP_POP_CATHOLIC"
+			}
+		}
+		
+		if = {
+			limit = { 
+				standard_of_living < 15
+			}
+			
+			add = {
+				value =	standard_of_living
+				subtract = 15
+				multiply = -5
+				desc = "POP_POVERTY"
+			}
+		}	
+
+		if = {
+			limit = {
+				is_pop_type = clergymen
+			}
+			add = {
+				value = 45
+				desc = "POP_CLERGYMEN"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = aristocrats
+			}
+			add = {
+				value = 10
+				desc = "POP_ARISTOCRATS"
+			}
+		}	
+		else_if = {
+			limit = {
+				is_pop_type = peasants
+			}
+			add = {
+				value = 10
+				desc = "POP_PEASANTS"
+			}
+		}	
+
+		add = { # Weakened by increasing literacy rates
+			desc = "POP_LITERACY"
+			this = {
+				value = literacy_rate
+				multiply = -2
+			}
+		}
+		
+		if = {
+			limit = {
+				state = {
+					state_religious_acceptance = {  
+						target = PREV.religion
+						value < religious_acceptance_high
+					}
+				}
+			}
+			multiply = {
+				desc = "POP_RELIGIOUS_DISCRIMINATION"
+				value = 100
+				subtract = pop_acceptance
+				divide = 25 # Maxes out at 4x at 0% acceptance, starts being a liability at 75% acceptance
+			}		
+		}
+		
+		if = {
+			limit = {
+				owner ?= {
+					has_technology_researched = corporatism
+				}
+			}
+			multiply = {
+				value = 1.5
+				desc = "CORPORATISM_TECH"
+			}
+		}
+
+		# Favor cultural movement if necessary
+		if = {
+			limit = {
+				owner = { 
+					any_political_movement = {
+						is_political_movement_type = movement_cultural_minority
+						this.culture ?= root.culture
+					} 
+				}
+			}
+			if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_1 } }
+				}
+				multiply = 0.1
+			}
+			else_if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_2 } }
+				}
+				multiply = 0.25	
+			}
+			else_if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_3 } }
+				}
+				multiply = 0.5	
+			}
+		}	
+	}	
+	
+	secession = {
+		possible = {
+			political_movement_identity_support >= 0.25
+			owner ?= {
+				any_scope_state = {
+					religion_percent_state = {
+						target = scope:political_movement.religion
+						value >= 0.10
+					}
+				}
+			}
+		}
+	
+		weight = {
+			value = 1000
+		}	
+		
+		state_weight = {
+			value = 0
+		
+			if = {
+				limit = { 
+					is_capital = no
+				}
+
+				if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.75
+						}
+					}
+					add = 250
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.5
+						}
+					}
+					add = 150
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.25
+						}
+					}
+					add = 50
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.1
+						}
+					}
+					add = 10
+				}
+			}			
+		}	
+
+		target_fraction_of_states = {
+			value = political_movement_identity_support
+			add = scope:clout
+			multiply = 3
+			min = 0.15
+			max = 0.75
+		}		
+	}
+	
+	additional_radicalism_factors = {
+		add = {
+			value = "owner.average_sol"
+			subtract = "owner.average_sol_for_religion(scope:religion)"
+			multiply = 0.05
+			max = 0.5
+			min = 0
+			desc = "STANDARD_OF_LIVING_FOR_RELIGION"
+		}
+		add = {
+			value = -0.2
+			desc = "EAFP_FACTOR_SECRET_COMMUNITY"
+		}
+	}
+}
+eafp_movement_rel_donghak = {
+	category = movement_category_religious
+	
+	ideology = ideology_eafp_donghak_movement	
+	character_ideologies = {
+		ideology_eafp_missionary_donghak
+	}
+	
+	creation_trigger = {
+		NOT = { country_has_state_religion = rel:donghak }	#활약국의 국교가 캣홀릭이면 의미가 없음
+		NOT = { has_law = law_type:law_freedom_of_conscience }	#활약국이 이미 신앙의 자유가 있다면 의미가 없음
+		NOT = { has_law = law_type:law_total_separation }
+	}	
+	creation_weight = {
+		value = 200
+	}	
+	on_created = {}
+
+	disband_trigger = {
+		rel:donghak = {
+			is_state_religion = root
+		}
+	}
+	
+	#일단 보존처리!
+	#religion_selection_trigger = {
+	#	NOT = { is_state_religion = scope:country }
+	#	NOT = { rel:atheist = this }
+	#	rel:donghak = this
+	#	#유학 저널 클리어시 보상으로 포교운동을 꺼버리는것을 고려해봐.
+	#}
+	#religion_selection_weight = {
+	#	value = 200
+	#}
+	
+	character_support_trigger = {
+		religion = rel:donghak
+		#OR = {
+		#	is_interest_group_type = ig_devout
+		#	has_ideology = ideology:ideology_traditionalist
+		#	has_ideology = ideology:ideology_theocrat
+		#	has_ideology = ideology:ideology_integralist
+		#	has_ideology = ideology:ideology_eafp_missionary
+		#}		
+	}
+	character_support_weight = {
+		value = 100
+		if = {
+			limit = {
+				interest_group ?= {
+					is_interest_group_type = ig_devout
+				}
+			}
+			multiply = {
+				value = 5
+			}
+		}
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_eafp_missionary_donghak
+			}
+			add = {
+				value = 100
+			}
+		}
+		if = {
+			limit = {
+				has_ideology = ideology:ideology_eafp_missionary_donghak
+			}
+			multiply = {
+				value = 10
+			}
+		}
+	}
+	
+	pop_support_trigger = {
+		religion = rel:donghak
+	}
+
+	pop_support_factors = {
+		movement_support_poverty
+		movement_support_low_literacy
+		movement_support_religious_discrimination
+		movement_support_clergymen
+		movement_support_aristocrats
+		movement_support_peasants
+		movement_support_corporatism_tech
+		movement_support_eafp_donghak
+	}
+
+	pop_support_weight = {
+		add = {
+			value = 10
+			desc = "POP_BASE_SUPPORT"
+		}	
+		
+		if = {
+			limit = { 
+				religion = rel:donghak
+			}
+			
+			add = {
+				value = 25
+				desc = "EAFP_POP_DONGHAK"
+			}
+		}
+		
+		if = {
+			limit = { 
+				standard_of_living < 15
+			}
+			
+			add = {
+				value =	standard_of_living
+				subtract = 15
+				multiply = -5
+				desc = "POP_POVERTY"
+			}
+		}	
+
+		if = {
+			limit = {
+				is_pop_type = clergymen
+			}
+			add = {
+				value = 45
+				desc = "POP_CLERGYMEN"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = aristocrats
+			}
+			add = {
+				value = 10
+				desc = "POP_ARISTOCRATS"
+			}
+		}	
+		else_if = {
+			limit = {
+				is_pop_type = peasants
+			}
+			add = {
+				value = 10
+				desc = "POP_PEASANTS"
+			}
+		}	
+
+		add = { # Weakened by increasing literacy rates
+			desc = "POP_LITERACY"
+			this = {
+				value = literacy_rate
+				multiply = -2
+			}
+		}
+		
+		if = {
+			limit = {
+				state = {
+					state_religious_acceptance = {  
+						target = PREV.religion
+						value < religious_acceptance_high
+					}
+				}
+			}
+			multiply = {
+				desc = "POP_RELIGIOUS_DISCRIMINATION"
+				value = 100
+				subtract = pop_acceptance
+				divide = 25 # Maxes out at 4x at 0% acceptance, starts being a liability at 75% acceptance
+			}		
+		}
+		
+		if = {
+			limit = {
+				owner ?= {
+					has_technology_researched = corporatism
+				}
+			}
+			multiply = {
+				value = 1.5
+				desc = "CORPORATISM_TECH"
+			}
+		}
+
+		# Favor cultural movement if necessary
+		if = {
+			limit = {
+				owner = { 
+					any_political_movement = {
+						is_political_movement_type = movement_cultural_minority
+						this.culture ?= root.culture
+					} 
+				}
+			}
+			if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_1 } }
+				}
+				multiply = 0.1
+			}
+			else_if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_2 } }
+				}
+				multiply = 0.25	
+			}
+			else_if = {
+				limit = {
+					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_3 } }
+				}
+				multiply = 0.5	
+			}
+		}	
+	}	
+	
+	secession = {
+		possible = {
+			political_movement_identity_support >= 0.25
+			owner ?= {
+				any_scope_state = {
+					religion_percent_state = {
+						target = scope:political_movement.religion
+						value >= 0.10
+					}
+				}
+			}
+		}
+	
+		weight = {
+			value = 1000
+		}	
+		
+		state_weight = {
+			value = 0
+		
+			if = {
+				limit = { 
+					is_capital = no
+				}
+
+				if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.75
+						}
+					}
+					add = 250
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.5
+						}
+					}
+					add = 150
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.25
+						}
+					}
+					add = 50
+				}
+				else_if = {
+					limit = {
+						religion_percent_state = {
+							target = scope:political_movement.religion
+							value >= 0.1
+						}
+					}
+					add = 10
+				}
+			}			
+		}	
+
+		target_fraction_of_states = {
+			value = political_movement_identity_support
+			add = scope:clout
+			multiply = 3
+			min = 0.15
+			max = 0.75
+		}		
+	}
+	
+	additional_radicalism_factors = {
+		add = {
+			value = "owner.average_sol"
+			subtract = "owner.average_sol_for_religion(scope:religion)"
+			multiply = 0.05
+			max = 0.5
+			min = 0
+			desc = "STANDARD_OF_LIVING_FOR_RELIGION"
+		}
+		add = {
+			value = -0.2
+			desc = "EAFP_FACTOR_SECRET_COMMUNITY"
+		}
+	}
+}
+
+# 일본
+
+eafp_movement_liberty_civil_right = {
 	category = movement_category_ideological
 	
 	ideology = ideology_liberal_movement
@@ -312,614 +927,3 @@
 
 ####
 
-eafp_movement_rel_catholic = {
-	category = eafp_movement_category_propagation
-	#category = movement_category_religious
-	
-	ideology = ideology_eafp_catholic_movement
-	
-	character_ideologies = {
-		ideology_eafp_missionary
-	}
-	
-	creation_trigger = {
-		NOT = { country_has_state_religion = rel:catholic }	#활약국의 국교가 캣홀릭이면 의미가 없음
-		NOT = { has_law = law_type:law_freedom_of_conscience }	#활약국이 이미 신앙의 자유가 있다면 의미가 없음
-		NOT = { has_law = law_type:law_total_separation }
-	}	
-	creation_weight = {
-		value = 200
-	}	
-	on_created = {}
-
-	disband_trigger = {
-		rel:catholic = {
-			is_state_religion = root
-		}
-	}
-	
-	#일단 보존처리!
-	#religion_selection_trigger = {
-	#	NOT = { is_state_religion = scope:country }
-	#	NOT = { rel:atheist = this }
-	#	rel:catholic = this
-	#	#유학 저널 클리어시 보상으로 포교운동을 꺼버리는것을 고려해봐.
-	#}
-	#religion_selection_weight = {
-	#	value = 200
-	#}
-	
-	character_support_trigger = {
-		religion = rel:catholic
-		#OR = {
-		#	is_interest_group_type = ig_devout
-		#	has_ideology = ideology:ideology_traditionalist
-		#	has_ideology = ideology:ideology_theocrat
-		#	has_ideology = ideology:ideology_integralist
-		#	has_ideology = ideology:ideology_eafp_missionary
-		#}		
-	}
-	character_support_weight = {
-		value = 100
-		if = {
-			limit = {
-				interest_group ?= {
-					is_interest_group_type = ig_devout
-				}
-			}
-			multiply = {
-				value = 5
-			}
-		}
-		if = {
-			limit = {
-				has_ideology = ideology:ideology_eafp_missionary
-			}
-			add = {
-				value = 100
-			}
-		}
-		if = {
-			limit = {
-				has_ideology = ideology:ideology_eafp_missionary
-			}
-			multiply = {
-				value = 10
-			}
-		}
-	}
-	
-	pop_support_trigger = {
-		religion = rel:catholic
-	}
-
-	pop_support_factors = {
-		movement_support_poverty
-		movement_support_low_literacy
-		movement_support_religious_discrimination
-		movement_support_clergymen
-		movement_support_aristocrats
-		movement_support_peasants
-		movement_support_corporatism_tech
-		movement_support_eafp_catholic
-	}
-
-	pop_support_weight = {
-		add = {
-			value = 10
-			desc = "POP_BASE_SUPPORT"
-		}	
-		
-		if = {
-			limit = { 
-				religion = rel:catholic
-			}
-			
-			add = {
-				value = 25
-				desc = "EAFP_POP_CATHOLIC"
-			}
-		}
-		
-		if = {
-			limit = { 
-				standard_of_living < 15
-			}
-			
-			add = {
-				value =	standard_of_living
-				subtract = 15
-				multiply = -5
-				desc = "POP_POVERTY"
-			}
-		}	
-
-		if = {
-			limit = {
-				is_pop_type = clergymen
-			}
-			add = {
-				value = 45
-				desc = "POP_CLERGYMEN"
-			}
-		}
-		else_if = {
-			limit = {
-				is_pop_type = aristocrats
-			}
-			add = {
-				value = 10
-				desc = "POP_ARISTOCRATS"
-			}
-		}	
-		else_if = {
-			limit = {
-				is_pop_type = peasants
-			}
-			add = {
-				value = 10
-				desc = "POP_PEASANTS"
-			}
-		}	
-
-		add = { # Weakened by increasing literacy rates
-			desc = "POP_LITERACY"
-			this = {
-				value = literacy_rate
-				multiply = -2
-			}
-		}
-		
-		if = {
-			limit = {
-				state = {
-					state_religious_acceptance = {  
-						target = PREV.religion
-						value < religious_acceptance_high
-					}
-				}
-			}
-			multiply = {
-				desc = "POP_RELIGIOUS_DISCRIMINATION"
-				value = 100
-				subtract = pop_acceptance
-				divide = 25 # Maxes out at 4x at 0% acceptance, starts being a liability at 75% acceptance
-			}		
-		}
-		
-		if = {
-			limit = {
-				owner ?= {
-					has_technology_researched = corporatism
-				}
-			}
-			multiply = {
-				value = 1.5
-				desc = "CORPORATISM_TECH"
-			}
-		}
-
-		# Favor cultural movement if necessary
-		if = {
-			limit = {
-				owner = { 
-					any_political_movement = {
-						is_political_movement_type = movement_cultural_minority
-						this.culture ?= root.culture
-					} 
-				}
-			}
-			if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_1 } }
-				}
-				multiply = 0.1
-			}
-			else_if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_2 } }
-				}
-				multiply = 0.25	
-			}
-			else_if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_3 } }
-				}
-				multiply = 0.5	
-			}
-		}	
-	}	
-	
-	secession = {
-		possible = {
-			political_movement_identity_support >= 0.25
-			owner ?= {
-				any_scope_state = {
-					religion_percent_state = {
-						target = scope:political_movement.religion
-						value >= 0.10
-					}
-				}
-			}
-		}
-	
-		weight = {
-			value = 1000
-		}	
-		
-		state_weight = {
-			value = 0
-		
-			if = {
-				limit = { 
-					is_capital = no
-				}
-
-				if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.75
-						}
-					}
-					add = 250
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.5
-						}
-					}
-					add = 150
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.25
-						}
-					}
-					add = 50
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.1
-						}
-					}
-					add = 10
-				}
-			}			
-		}	
-
-		target_fraction_of_states = {
-			value = political_movement_identity_support
-			add = scope:clout
-			multiply = 3
-			min = 0.15
-			max = 0.75
-		}		
-	}
-	
-	additional_radicalism_factors = {
-		add = {
-			value = "owner.average_sol"
-			subtract = "owner.average_sol_for_religion(scope:religion)"
-			multiply = 0.05
-			max = 0.5
-			min = 0
-			desc = "STANDARD_OF_LIVING_FOR_RELIGION"
-		}
-		add = {
-			value = -0.2
-			desc = "EAFP_FACTOR_SECRET_COMMUNITY"
-		}
-	}
-}
-
-eafp_movement_rel_donghak = {
-	category = movement_category_religious
-	
-	ideology = ideology_eafp_donghak_movement	
-	character_ideologies = {
-		ideology_eafp_missionary_donghak
-	}
-	
-	creation_trigger = {
-		NOT = { country_has_state_religion = rel:donghak }	#활약국의 국교가 캣홀릭이면 의미가 없음
-		NOT = { has_law = law_type:law_freedom_of_conscience }	#활약국이 이미 신앙의 자유가 있다면 의미가 없음
-		NOT = { has_law = law_type:law_total_separation }
-	}	
-	creation_weight = {
-		value = 200
-	}	
-	on_created = {}
-
-	disband_trigger = {
-		rel:donghak = {
-			is_state_religion = root
-		}
-	}
-	
-	#일단 보존처리!
-	#religion_selection_trigger = {
-	#	NOT = { is_state_religion = scope:country }
-	#	NOT = { rel:atheist = this }
-	#	rel:donghak = this
-	#	#유학 저널 클리어시 보상으로 포교운동을 꺼버리는것을 고려해봐.
-	#}
-	#religion_selection_weight = {
-	#	value = 200
-	#}
-	
-	character_support_trigger = {
-		religion = rel:donghak
-		#OR = {
-		#	is_interest_group_type = ig_devout
-		#	has_ideology = ideology:ideology_traditionalist
-		#	has_ideology = ideology:ideology_theocrat
-		#	has_ideology = ideology:ideology_integralist
-		#	has_ideology = ideology:ideology_eafp_missionary
-		#}		
-	}
-	character_support_weight = {
-		value = 100
-		if = {
-			limit = {
-				interest_group ?= {
-					is_interest_group_type = ig_devout
-				}
-			}
-			multiply = {
-				value = 5
-			}
-		}
-		if = {
-			limit = {
-				has_ideology = ideology:ideology_eafp_missionary_donghak
-			}
-			add = {
-				value = 100
-			}
-		}
-		if = {
-			limit = {
-				has_ideology = ideology:ideology_eafp_missionary_donghak
-			}
-			multiply = {
-				value = 10
-			}
-		}
-	}
-	
-	pop_support_trigger = {
-		religion = rel:donghak
-	}
-
-	pop_support_factors = {
-		movement_support_poverty
-		movement_support_low_literacy
-		movement_support_religious_discrimination
-		movement_support_clergymen
-		movement_support_aristocrats
-		movement_support_peasants
-		movement_support_corporatism_tech
-		movement_support_eafp_donghak
-	}
-
-	pop_support_weight = {
-		add = {
-			value = 10
-			desc = "POP_BASE_SUPPORT"
-		}	
-		
-		if = {
-			limit = { 
-				religion = rel:donghak
-			}
-			
-			add = {
-				value = 25
-				desc = "EAFP_POP_DONGHAK"
-			}
-		}
-		
-		if = {
-			limit = { 
-				standard_of_living < 15
-			}
-			
-			add = {
-				value =	standard_of_living
-				subtract = 15
-				multiply = -5
-				desc = "POP_POVERTY"
-			}
-		}	
-
-		if = {
-			limit = {
-				is_pop_type = clergymen
-			}
-			add = {
-				value = 45
-				desc = "POP_CLERGYMEN"
-			}
-		}
-		else_if = {
-			limit = {
-				is_pop_type = aristocrats
-			}
-			add = {
-				value = 10
-				desc = "POP_ARISTOCRATS"
-			}
-		}	
-		else_if = {
-			limit = {
-				is_pop_type = peasants
-			}
-			add = {
-				value = 10
-				desc = "POP_PEASANTS"
-			}
-		}	
-
-		add = { # Weakened by increasing literacy rates
-			desc = "POP_LITERACY"
-			this = {
-				value = literacy_rate
-				multiply = -2
-			}
-		}
-		
-		if = {
-			limit = {
-				state = {
-					state_religious_acceptance = {  
-						target = PREV.religion
-						value < religious_acceptance_high
-					}
-				}
-			}
-			multiply = {
-				desc = "POP_RELIGIOUS_DISCRIMINATION"
-				value = 100
-				subtract = pop_acceptance
-				divide = 25 # Maxes out at 4x at 0% acceptance, starts being a liability at 75% acceptance
-			}		
-		}
-		
-		if = {
-			limit = {
-				owner ?= {
-					has_technology_researched = corporatism
-				}
-			}
-			multiply = {
-				value = 1.5
-				desc = "CORPORATISM_TECH"
-			}
-		}
-
-		# Favor cultural movement if necessary
-		if = {
-			limit = {
-				owner = { 
-					any_political_movement = {
-						is_political_movement_type = movement_cultural_minority
-						this.culture ?= root.culture
-					} 
-				}
-			}
-			if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_1 } }
-				}
-				multiply = 0.1
-			}
-			else_if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_2 } }
-				}
-				multiply = 0.25	
-			}
-			else_if = {
-				limit = {
-					owner = { cultural_acceptance_base = { target = culture value <= acceptance_status_3 } }
-				}
-				multiply = 0.5	
-			}
-		}	
-	}	
-	
-	secession = {
-		possible = {
-			political_movement_identity_support >= 0.25
-			owner ?= {
-				any_scope_state = {
-					religion_percent_state = {
-						target = scope:political_movement.religion
-						value >= 0.10
-					}
-				}
-			}
-		}
-	
-		weight = {
-			value = 1000
-		}	
-		
-		state_weight = {
-			value = 0
-		
-			if = {
-				limit = { 
-					is_capital = no
-				}
-
-				if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.75
-						}
-					}
-					add = 250
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.5
-						}
-					}
-					add = 150
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.25
-						}
-					}
-					add = 50
-				}
-				else_if = {
-					limit = {
-						religion_percent_state = {
-							target = scope:political_movement.religion
-							value >= 0.1
-						}
-					}
-					add = 10
-				}
-			}			
-		}	
-
-		target_fraction_of_states = {
-			value = political_movement_identity_support
-			add = scope:clout
-			multiply = 3
-			min = 0.15
-			max = 0.75
-		}		
-	}
-	
-	additional_radicalism_factors = {
-		add = {
-			value = "owner.average_sol"
-			subtract = "owner.average_sol_for_religion(scope:religion)"
-			multiply = 0.05
-			max = 0.5
-			min = 0
-			desc = "STANDARD_OF_LIVING_FOR_RELIGION"
-		}
-		add = {
-			value = -0.2
-			desc = "EAFP_FACTOR_SECRET_COMMUNITY"
-		}
-	}
-}

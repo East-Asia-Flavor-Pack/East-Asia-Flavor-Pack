@@ -1,0 +1,690 @@
+﻿je_korean_reformation = {
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+        c:KOR ?= THIS
+    }
+
+	possible = {
+        OR = {
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
+			any_scope_character = {
+				custom_tooltip = {
+					text = is_regent_tt
+					ROOT.var:eafp_var_je_regent_character ?= THIS
+				}
+				has_trait = kor_i_am_your_father
+			}
+		}
+    }
+
+    immediate = {
+        set_variable = {
+            name = korean_reformation_var
+            value = 0
+        }
+		hidden_effect = {
+			trigger_event = {
+				id = gunmin_dongchi_events.1
+				months = { 6 12 }
+			}
+		}
+		add_journal_entry = {
+			type = je_korean_reformation_society
+		}
+		add_journal_entry = {
+			type = je_korean_reformation_military
+		}
+		add_journal_entry = {
+			type = je_korean_reformation_economy
+		}
+		add_journal_entry = {
+			type = je_korean_reformation_diplomacy
+		}
+    }
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+		custom_tooltip = {
+			text = has_completed_korean_reformation_society_je_tt
+			has_variable = completed_je_korean_reformation_society
+		}
+		custom_tooltip = {
+			text = has_completed_korean_reformation_military_je_tt
+			has_variable = completed_je_korean_reformation_military
+		}
+        custom_tooltip = {
+			text = has_completed_korean_reformation_economy_je_tt
+			has_variable = completed_je_korean_reformation_economy
+		}custom_tooltip = {
+			text = has_completed_korean_reformation_diplomacy_je_tt
+			has_variable = completed_je_korean_reformation_diplomacy
+		}
+	}
+	
+	on_complete = {
+        set_variable = korean_reformation_complete_var
+	}
+
+    current_value = {
+		value = var:korean_reformation_var
+	}
+
+	goal_add_value = {
+		add = 4
+	}
+
+    progressbar = yes
+
+	should_be_pinned_by_default = yes
+
+	weight = 10000
+}
+je_korean_reformation_society = {
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	group = je_group_historical_content
+	
+	immediate = {
+		set_variable = {
+			name = korref103_delay
+			months = { 6 30 }
+		}
+		set_variable = {
+			name = korref104_delay
+			months = { 6 30 }
+		}
+		trigger_event = {
+			id = eafp_korean_reformation_events.506
+			months = { 6 12 }
+		}
+	}
+
+	complete = {
+		NOR = { 
+			has_law = law_type:law_hereditary_bureaucrats
+			has_law = law_type:law_serfdom
+			has_law = law_type:law_traditionalism
+			has_law = law_type:law_closed_borders
+			has_law = law_type:law_isolationism
+			has_law = law_type:law_land_based_taxation
+			has_law = law_type:law_consumption_based_taxation
+			has_law = law_type:law_no_police
+			has_law = law_type:law_no_schools
+
+			any_civil_war = {
+				civil_war_progress > 0.1
+				is_civil_war_type = revolution
+			}
+		}
+		bureaucracy > 0
+	}
+
+	on_complete = {
+		change_variable = {
+			name = korean_reformation_var
+			add = 1
+		}
+		trigger_event = {
+			id = eafp_korean_reformation_events.199
+		}
+		set_variable = completed_je_korean_reformation_society
+
+		hidden_effect = {
+			trigger_event = { id = eafp_korean_reformation_events.101 }
+			trigger_event = { id = eafp_korean_reformation_events.102 }
+			trigger_event = { id = eafp_korean_reformation_events.103 }
+			trigger_event = { id = eafp_korean_reformation_events.104 }
+			trigger_event = { id = eafp_korean_reformation_events.105 }
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			eafp_korean_reformation_events.101 # 경무청
+			eafp_korean_reformation_events.102 # 소학교령
+			eafp_korean_reformation_events.103 # 문관전고소
+			eafp_korean_reformation_events.104 # 국문이냐 한문이냐
+			eafp_korean_reformation_events.105 # 노비들의 운명
+		}
+	}
+
+	weight = 8000
+
+	should_be_pinned_by_default = yes
+}
+je_korean_reformation_military = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_historical_content
+
+
+	complete = {
+		has_law = law_type:law_professional_army
+		any_scope_building = {
+			is_building_type = building_arms_industry
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_arms_industry }
+			percent >= 0.75
+			level >= 5
+			OR = {
+				has_active_production_method = pm_rifles
+				has_active_production_method = pm_repeaters
+				has_active_production_method = pm_bolt_action_rifles
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+		}
+		any_scope_building = {
+			count = all
+			NOT = { has_active_production_method = pm_no_organization }
+		}
+		NOT = {
+			any_military_formation = {
+				filter = {
+					is_army = yes
+				}
+				any_combat_unit = {
+					has_unit_type = unit_type:combat_unit_type_irregular_infantry
+				}
+				percent >= 0.25
+			}
+		}
+		has_technology_researched = electric_telegraph
+	}
+
+	on_complete = {
+		change_variable = {
+			name = korean_reformation_var
+			add = 1
+		}
+		#trigger_event = {
+		#	id = eafp_korean_reformation_events.199
+		#}
+		set_variable = completed_je_korean_reformation_military
+
+		hidden_effect = {
+			trigger_event = { id = eafp_korean_reformation_events.201 }
+			trigger_event = { id = eafp_korean_reformation_events.202 }
+			trigger_event = { id = eafp_korean_reformation_events.203 }
+			trigger_event = { id = eafp_korean_reformation_events.204 }
+			trigger_event = { id = eafp_korean_reformation_events.205 }
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			eafp_korean_reformation_events.201
+			eafp_korean_reformation_events.202
+			eafp_korean_reformation_events.203
+			eafp_korean_reformation_events.204
+			eafp_korean_reformation_events.205
+		}
+	}
+	
+	weight = 8000
+
+	should_be_pinned_by_default = yes
+}
+je_korean_reformation_economy = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	group = je_group_historical_content
+	
+	immediate = {
+	}
+
+	complete = {
+		any_scope_state = {
+			filter = {
+				is_incorporated = yes
+			}
+			percent > 0.7
+			has_building = building_railway
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+		}
+		any_scope_building = {
+			is_building_type = building_railway
+			level >= 5
+		}
+
+		any_scope_state = {
+			percent >= 0.5
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+		}
+		any_scope_state = {
+			percent >= 0.1
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 10
+			}
+		}
+
+		any_scope_building = {
+			is_building_type = building_textile_mills
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_textile_mills }
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_sewing_machines
+				has_active_production_method = pm_electric_sewing_machines
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			is_building_type = building_furniture_manufacturies
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_furniture_manufacturies }
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_lathe
+				has_active_production_method = pm_mechanized_workshops
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			is_building_type = building_tooling_workshops
+			level >= 5
+		}
+		any_scope_building = {
+			filter = { is_building_type = building_tooling_workshops }
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_steel
+				has_active_production_method = pm_rubber_grips
+			}
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		any_scope_building = {
+			OR = {
+				is_building_type = building_coal_mine
+				is_building_type = building_iron_mine
+				is_building_type = building_lead_mine
+				is_building_type = building_sulfur_mine
+			}
+			level >= 5
+		}
+		any_scope_building = {
+			filter = {
+				OR = {
+					is_building_type = building_coal_mine
+					is_building_type = building_iron_mine
+					is_building_type = building_lead_mine
+					is_building_type = building_sulfur_mine
+				}
+			}
+			percent >= 0.75
+			OR = {
+				has_active_production_method = pm_condensing_engine_pump_building_coal_mine
+				has_active_production_method = pm_condensing_engine_pump_building_iron_mine
+				has_active_production_method = pm_condensing_engine_pump_building_lead_mine
+				has_active_production_method = pm_condensing_engine_pump_building_sulfur_mine
+				has_active_production_method = pm_diesel_pump_building_coal_mine
+				has_active_production_method = pm_diesel_pump_building_iron_mine
+				has_active_production_method = pm_diesel_pump_building_lead_mine
+				has_active_production_method = pm_diesel_pump_building_sulfur_mine
+            }
+			weekly_profit > 0
+			cash_reserves_ratio >= 0.25
+			occupancy >= 0.75
+			is_subsidized = no
+		}
+
+		has_technology_researched = central_banking
+	}
+
+	on_complete = {
+		change_variable = {
+			name = korean_reformation_var
+			add = 1
+		}
+		#trigger_event = {
+		#	id = eafp_korean_reformation_events.199
+		#}
+		set_variable = completed_je_korean_reformation_economy
+
+		hidden_effect = {
+			trigger_event = { id = eafp_korean_reformation_events.301 }
+			trigger_event = { id = eafp_korean_reformation_events.302 }
+			trigger_event = { id = eafp_korean_reformation_events.303 }
+			trigger_event = { id = eafp_korean_reformation_events.304 }
+			trigger_event = { id = eafp_korean_reformation_events.305 }
+			trigger_event = { id = eafp_korean_reformation_events.306 }
+			trigger_event = { id = eafp_korean_reformation_events.307 }
+			trigger_event = { id = eafp_korean_reformation_events.308 }
+		}
+	}
+
+	on_monthly_pulse = {
+		events = {
+			eafp_korean_reformation_events.301
+			eafp_korean_reformation_events.302
+			eafp_korean_reformation_events.303
+			eafp_korean_reformation_events.304
+			eafp_korean_reformation_events.305
+			eafp_korean_reformation_events.306
+			eafp_korean_reformation_events.307
+			eafp_korean_reformation_events.308
+		}
+	}
+
+	weight = 8000
+
+	should_be_pinned_by_default = yes
+}
+je_korean_reformation_diplomacy = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	group = je_group_historical_content
+	
+	immediate = {
+	}
+
+	complete = {
+		NOT = { has_law = law_type:law_isolationism }
+		NOT = { has_law = law_type:law_traditionalism }
+		NOT = { has_law = law_type:law_closed_borders }
+		is_subject = no
+		is_country_type = recognized
+	}
+
+	on_complete = {
+		change_variable = {
+			name = korean_reformation_var
+			add = 1
+		}
+		#trigger_event = {
+		#	id = eafp_korean_reformation_events.199
+		#}
+		set_variable = completed_je_korean_reformation_diplomacy
+
+	}
+
+	weight = 8000
+
+	should_be_pinned_by_default = yes
+}
+
+je_seoul_improvement_project = {
+    icon = "gfx/interface/icons/event_icons/event_trade.dds"
+
+    group = je_group_historical_content
+
+    is_shown_when_inactive = {
+        c:KOR ?= this
+    }
+
+	possible = {
+		s:STATE_SEOUL = {
+			contains_capital_of = c:KOR
+			pollution_amount > 75
+		}
+	}
+
+	scripted_progress_bar = eafp_progress_bar_seoul_improvement_project
+
+	scripted_button = eafp_scripted_button_seoul_improvement_project
+	scripted_button = eafp_scripted_button_seoul_improvement_project2
+
+    immediate = {
+        set_variable = {
+			name = eafp_var_seoul_improvement_project_weekly
+			value = 0
+		}
+		s:STATE_SEOUL.region_state:KOR = {
+			add_modifier = {
+				name = eafp_modi_seoul_improvement_project_cost
+				multiplier = 0
+			}
+		}
+    }
+
+    complete = {
+        custom_tooltip = {
+			text = je_korean_imsul_uprising_goal
+			scope:journal_entry = {
+				"scripted_bar_progress(eafp_progress_bar_seoul_improvement_project)" >= 200
+			}
+		}
+		has_technology_researched = modern_sewerage
+		capital = {
+			has_building = building_urban_center
+			has_building = building_railway
+			NOT = {
+				any_scope_building = {
+					OR = {
+						has_active_production_method = pm_market_stalls
+						has_active_production_method = pm_market_squares
+						has_active_production_method = pm_no_street_lighting
+						has_active_production_method = pm_no_public_transport
+					}
+				}
+			}
+		}
+    }
+
+    on_complete = {
+        trigger_event = { id = seoul_improvement_project_events.1 popup = yes }
+		remove_variable = eafp_var_seoul_improvement_project_weekly
+		every_state = {
+			limit = { has_modifier = eafp_modi_seoul_improvement_project_cost }
+			remove_modifier = eafp_modi_seoul_improvement_project_cost
+		}
+    }
+
+	fail = {
+		NOT = {
+			has_state_in_state_region = STATE_SEOUL
+		}
+	}
+
+	on_fail = {
+		remove_variable = eafp_var_seoul_improvement_project_weekly
+		every_state = {
+			limit = { has_modifier = eafp_modi_seoul_improvement_project_cost }
+			remove_modifier = eafp_modi_seoul_improvement_project_cost
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+				limit = { scope:journal_entry = { "scripted_bar_progress(eafp_progress_bar_seoul_improvement_project)" >= 200 } }
+				s:STATE_SEOUL.region_state:KOR ?= {
+					remove_modifier = eafp_modi_seoul_improvement_project_cost
+					add_modifier = {
+						name = eafp_modi_seoul_improvement_project_cost
+						multiplier = 0
+					}
+				}
+			}
+		}
+	}
+
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+
+je_protect_righteousness = {
+    icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+    group = je_group_historical_content
+
+    is_shown_when_inactive = {
+        c:KOR ?= this
+		has_journal_entry = je_korean_confu
+    }
+
+	possible = {
+		has_journal_entry = je_korean_confu
+		OR = {
+			has_journal_entry = je_korean_reformation
+			AND = {
+				enacting_any_law = yes
+				OR = {
+					custom_description = {
+						text = is_same_law_group_as_currently_enacting_law_desc
+						subject = law_type:law_isolationism
+						enacting_any_law = yes
+						law_type:law_isolationism = {
+							is_same_law_group_as = PREV.currently_enacting_law.type
+						}
+					}
+					custom_description = {
+						text = is_same_law_group_as_currently_enacting_law_desc
+						subject = law_type:law_traditionalism
+						enacting_any_law = yes
+						law_type:law_traditionalism = {
+							is_same_law_group_as = PREV.currently_enacting_law.type
+						}
+					}
+					custom_description = {
+						text = is_same_law_group_as_currently_enacting_law_desc
+						subject = law_type:law_state_religion
+						enacting_any_law = yes
+						law_type:law_state_religion = {
+							is_same_law_group_as = PREV.currently_enacting_law.type
+						}
+					}
+				}
+			}
+		}
+	}
+
+    immediate = {
+		every_political_movement = {
+			limit = { is_political_movement_type = movement_religious_majority }
+			add_modifier = eafp_modi_protect_righteousness_political_movement
+		}
+    }
+
+    modifiers_while_active = {
+        eafp_modi_protect_righteousness
+    }
+
+    complete = {
+        NOT = { has_journal_entry = je_korean_confu }
+    }
+
+    on_complete = {
+        every_political_movement = {
+			limit = { has_modifier = eafp_modi_protect_righteousness_political_movement }
+			remove_modifier = eafp_modi_protect_righteousness_political_movement
+		}
+    }
+
+	on_weekly_pulse = {
+		effect = {
+			every_political_movement = {
+				limit = {
+					is_political_movement_type = movement_religious_majority
+					NOT = { has_modifier = eafp_modi_protect_righteousness_political_movement }
+				}
+				add_modifier = eafp_modi_protect_righteousness_political_movement
+			}
+		}
+	}
+
+    on_monthly_pulse = {
+        random_events = {
+            100 = 0
+			10 = protect_righteousness_events.1
+			10 = protect_righteousness_events.2
+			10 = protect_righteousness_events.3
+        }
+    }
+
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+
+je_gunmin_dongchi = {
+    icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+    group = je_group_historical_content
+
+    is_shown_when_inactive = {
+        c:KOR ?= this
+		has_law = law_type:law_monarchy
+    }
+
+	possible = {
+		hidden_trigger = {
+			has_variable = eafp_check_evt_gundon001
+		}
+	}
+
+    immediate = {
+        
+    }
+
+    modifiers_while_active = {
+        modifier_suffrage_support_socdem_party
+    }
+
+    complete = {
+        country_has_voting_franchise = yes
+    }
+
+    on_complete = {
+        trigger_event = { id = gunmin_dongchi_events.10 popup = yes }
+    }
+
+	fail = {
+		NOT = { has_law = law_type:law_monarchy }
+		custom_tooltip = {
+			text = sps_no_party_tt
+			country_has_voting_franchise = no
+		}
+	}
+
+    timeout = 7300
+
+    on_timeout = {
+        #trigger_event = { id = communal_divides_events.2 popup = yes }
+    }
+
+    on_monthly_pulse = {
+        random_events = {
+            100 = 0
+            10 = gunmin_dongchi_events.1
+            10 = gunmin_dongchi_events.2
+            10 = gunmin_dongchi_events.3
+            10 = gunmin_dongchi_events.4
+        }
+    }
+
+    weight = 1000
+    should_be_pinned_by_default = yes
+}

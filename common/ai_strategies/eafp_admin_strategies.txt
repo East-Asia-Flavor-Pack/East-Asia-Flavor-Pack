@@ -1,0 +1,156 @@
+﻿ai_strategy_industrial_expansion = {
+	icon = "gfx/interface/icons/ai_strategy_icons/industrial_expansion.dds"
+	
+	type = administrative
+	
+	subsidies = {
+		building_motor_industry = wants_to_have
+		building_tooling_workshops = wants_to_have
+		building_coal_mine = wants_to_have
+		building_iron_mine = wants_to_have
+		building_steel_mills = wants_to_have
+		building_lead_mine = wants_to_have
+		building_sulfur_mine = wants_to_have
+		building_chemical_plants = wants_to_have
+	}
+	
+	goods_stances = {
+		rubber = { 
+			stance = wants_high_supply 
+			trigger = {
+				has_technology_researched = rubber_mastication
+			}			
+		}
+		oil = { 
+			stance = wants_high_supply 
+			trigger = {
+				has_technology_researched = pumpjacks
+			}			
+		}
+		dye = { stance = wants_high_supply }
+		silk = { stance = wants_high_supply }
+		tools = { stance = wants_high_supply }
+		coal = { stance = wants_high_supply }
+		iron = { stance = wants_high_supply }
+		steel = { stance = wants_high_supply }
+		lead = { stance = wants_high_supply }
+		sulfur = { stance = wants_high_supply }
+		wood = { stance = wants_high_supply }
+		sugar = { stance = wants_high_supply }
+		explosives = { stance = wants_export }	
+		fertilizer = { stance = wants_export }
+	}
+	
+	building_group_weights = {
+		bg_manufacturing = 1.25
+		bg_rubber = 1.25
+		bg_oil_extraction = 1.25
+		bg_mining = 1.25
+		bg_logging = 1.25		
+	}
+	
+	weight = {
+		value = 10
+				
+		if = {
+			limit = { 
+				OR = {
+					country_is_in_europe = yes
+					country_is_in_north_america = yes
+				}
+			}
+			add = 20
+		}
+		
+		if = {
+			limit = {
+				OR = {
+					has_modifier = shogun_ig_forced_to_open_market
+					has_journal_entry = je_meiji_main					
+				}
+			}
+			add = 1000
+		}
+
+		if = {
+			limit = { 
+				exists = c:FRA
+				c:FRA = this
+				ruler = {
+					OR = {
+						has_variable = orleanist_leader
+						has_variable = bonapartist_leader
+					}
+				}
+			}
+			add = 20
+		}
+
+		if = {
+			limit = {
+				has_radical_leftist_government = yes
+				NOT = {
+					ig:ig_rural_folk ?= {
+						is_powerful = yes
+						is_in_government = yes
+					}
+				}
+			}
+			add = 50
+		}	
+
+		if = { # 추가
+			limit = {
+				has_journal_entry = je_korean_reformation
+			}
+			add = 1000
+		}
+		
+		if = {
+			limit = {
+				has_law = law_type:law_command_economy	
+			}
+			multiply = 2
+		}	
+		
+		if = {
+			limit = { is_country_type = unrecognized }
+			multiply = 0.25
+		}	
+		
+		if = {
+			limit = { 
+				exists = ig:ig_industrialists
+				ig:ig_industrialists = { is_powerful = yes } 
+			}
+			multiply = 2.0
+		}	
+		
+		if = { 
+			limit = { literacy_rate < 0.20 }
+			multiply = 0.5
+		}
+		
+		if = { 
+			limit = { literacy_rate < 0.40 }
+			multiply = 0.5
+		}
+
+		if = { 
+			limit = { literacy_rate >= 0.60 }
+			multiply = 1.5
+		}
+
+		if = { 
+			limit = { literacy_rate >= 0.80 }
+			multiply = 1.5
+		}			
+
+		if = {
+			limit = {
+				has_technology_researched = railways
+			}
+			multiply = 1.5
+		}		
+	}
+}
