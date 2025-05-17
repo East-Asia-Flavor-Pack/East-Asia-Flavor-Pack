@@ -38,7 +38,7 @@ eastasian_expansionism_events.1 = { # 생존의 갈림길
 	}
 }
 
-eastasian_expansionism_events.2 = { # 생존의 갈림길
+eastasian_expansionism_events.2 = { # 
 	type = country_event
 	placement = ROOT
 
@@ -68,6 +68,272 @@ eastasian_expansionism_events.2 = { # 생존의 갈림길
 
 		ai_chance = {
 			base = 100
+		}
+	}
+}
+
+eastasian_expansionism_events.102 = {
+	type = country_event
+
+	title = eastasian_expansionism_events.102.t
+	desc = eastasian_expansionism_events.102.d
+	flavor = eastasian_expansionism_events.102.f
+
+	event_image = {
+		video = "middleeast_courtroom_upheaval"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = eastasian_expansionism_events.101.a
+		default_option = yes
+
+		add_modifier = {
+			name = modifier_line_of_interest
+			months = normal_modifier_time
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.101.b
+
+		add_modifier = {
+			name = modifier_ignore_line_of_interest
+			months = normal_modifier_time
+		}
+	}
+}
+
+eastasian_expansionism_events.102 = {
+	type = country_event
+
+	title = eastasian_expansionism_events.102.t
+	desc = eastasian_expansionism_events.102.d
+	flavor = eastasian_expansionism_events.102.f
+
+	event_image = {
+		video = "middleeast_courtroom_upheaval"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		any_political_movement = {
+			is_political_movement_type = movement_fascist
+		}
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = { is_political_movement_type = movement_fascist }
+			save_scope_as = fascist_movement
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.102.a
+		default_option = yes
+
+		scope:fascist_movement = {
+			add_modifier = {
+				name = modifier_punished_terrorists
+				months = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.102.b
+
+		scope:fascist_movement = {
+			add_modifier = {
+				name = modifier_recognized_cause
+				months = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.102.c
+
+		scope:fascist_movement = {
+			add_modifier = {
+				name = modifier_policy_changed
+				months = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+}
+
+eastasian_expansionism_events.103 = {
+	type = country_event
+
+	title = eastasian_expansionism_events.103.t
+	desc = eastasian_expansionism_events.103.d
+	flavor = eastasian_expansionism_events.103.f
+
+	event_image = {
+		video = "middleeast_courtroom_upheaval"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		any_country = {
+			has_strategic_adjacency = ROOT
+			is_country_type = unrecognized
+			any_scope_state = {
+				any_neighbouring_state = {
+					owner = ROOT
+				}
+			}
+		}
+	}
+
+	immediate = {
+		random_country = {
+			limit = {
+				has_strategic_adjacency = ROOT
+				is_country_type = unrecognized
+				any_scope_state = {
+					any_neighbouring_state = {
+						owner = ROOT
+					}
+				}
+			}
+			save_scope_as = target_country
+		}
+		scope:target_country = {
+			random_scope_state = {
+				limit = {
+					any_neighbouring_state = {
+						owner = ROOT
+					}
+				}
+				save_scope_as = target_state
+			}
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.103.a
+		create_diplomatic_play = {
+			type = dp_conquer_state
+			target_state = scope:target_state
+		}
+		create_incident = {
+			country = scope:target_country
+			value = 10
+		}
+		add_modifier = {
+        	name = modifier_operation_approved
+        	months = normal_modifier_time
+        }
+	}
+
+	option = {
+		name = eastasian_expansionism_events.103.b
+        default_option = yes
+
+		add_modifier = {
+        	name = modifier_arrested_commander
+        	months = normal_modifier_time
+        }
+		add_radicals = {
+			value = medium_radicals
+			pop_type = officers
+		}
+		add_radicals = {
+			value = medium_radicals
+			pop_type = soldiers
+		}
+	}
+}
+
+eastasian_expansionism_events.104 = {
+	type = country_event
+
+	title = eastasian_expansionism_events.104.t
+	desc = eastasian_expansionism_events.104.d
+	flavor = eastasian_expansionism_events.104.f
+
+	event_image = {
+		video = "middleeast_courtroom_upheaval"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		ig:ig_armed_forces = {
+			leader = {
+				NOT = { has_ideology = ideology:ideology_fascist }
+			}
+		}
+	}
+
+	immediate = {
+		ig:ig_armed_forces = { save_scope_as = armed_forces_ig }
+	}
+
+	option = {
+		name = eastasian_expansionism_events.104.a
+		create_character = {
+			ig_leader = yes
+			interest_group = ig:ig_armed_forces
+			ideology = ideology_fascist
+		}
+	}
+
+	option = {
+		name = eastasian_expansionism_events.104.b
+        default_option = yes
+
+		create_character = {
+			is_agitator = yes
+			interest_group = ig:ig_armed_forces
+			ideology = ideology_fascist
+		}
+        ig:ig_armed_forces.leader = {
+        	add_modifier = {
+        		name = modifier_considered_weak
+        		months = normal_modifier_time
+        	}
+        }
+		add_radicals = {
+			value = medium_radicals
+			pop_type = officers
 		}
 	}
 }
