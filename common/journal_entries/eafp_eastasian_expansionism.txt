@@ -36,6 +36,19 @@
 			}
 			create_political_movement = { type = movement_fascist }
 		}
+		if = {
+			limit = {
+				NOT = { any_political_movement = { is_political_movement_type = movement_cultural_majority } }
+			}
+			create_political_movement = { type = movement_cultural_majority }
+		}
+		if = {
+			limit = {
+				NOT = { any_political_movement = { is_political_movement_type = movement_religious_majority } }
+			}
+			create_political_movement = { type = movement_religious_majority }
+		}
+		
 		add_modifier = {
 			name = modifier_extremists_complain
 			multiplier = 0.1
@@ -47,12 +60,50 @@
 	}
 
 	complete = {
-		# TODO
-		always = no
+		custom_tooltip = {
+			text = has_states_least_two_strategic_region_tt
+			any_scope_state = {
+				NOT = {
+					region = ROOT.capital.region
+				}
+			}
+		}
+
+		any_scope_state = {
+			count = all
+			region = {
+				custom_description = {
+					text = country_owns_entire_strategic_region
+					object = ROOT
+					any_scope_state = {
+						count = all
+						owner = ROOT
+					}
+				}
+			}
+		}
+
+		any_neighbouring_state = {
+			count = all
+			region = {
+				custom_description = {
+					text = country_or_subject_owns_entire_strategic_region
+					object = ROOT
+					any_scope_state = {
+						count = all
+						OR = {
+							owner = ROOT
+							owner = { is_subject_of = ROOT }
+						}
+					}
+				}
+			}
+		}
 	}
 
 	on_complete = {
-		
+		remove_modifier = modifier_extremists_complain
+		trigger_event = { id = eastasian_expansionism_events.4 popup = yes }
 	}
 
 	fail = {
@@ -95,9 +146,42 @@
 					multiply = 0.01
 				}
 			}
+			if = {
+				limit = {
+					OR = {
+						in_default = yes
+						has_modifier = declared_bankruptcy
+					}
+					NOT = { has_variable = je_eastasian_expansionism_default_point }
+				}
+				scope:journal_entry = {
+					add_progress = {
+						name = eastasian_expansionism_paranoia_progress_bar
+						value = 20
+					}
+				}
+				set_variable = { name = je_eastasian_expansionism_default_point }
+			}
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					NOT = { has_variable = je_eastasian_expansionism_gp_point }
+				}
+				scope:journal_entry = {
+					add_progress = {
+						name = eastasian_expansionism_paranoia_progress_bar
+						value = -20
+					}
+				}
+				set_variable = { name = je_eastasian_expansionism_gp_point }
+			}
 		}
 		random_events = {
-			
+			200 = 0
+			10 = eastasian_expansionism_events.101
+			10 = eastasian_expansionism_events.102
+			10 = eastasian_expansionism_events.103
+			10 = eastasian_expansionism_events.104
 		}
 	}
 

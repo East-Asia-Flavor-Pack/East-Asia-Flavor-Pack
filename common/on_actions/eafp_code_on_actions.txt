@@ -1,0 +1,84 @@
+﻿eafp_on_diplo_play_back_down = {
+	trigger = {
+		scope:actor ?= {
+			has_journal_entry = je_eastasian_expansionism
+		}
+	}
+	effect = {
+		scope:actor ?= {
+			je:je_eastasian_expansionism = {
+				add_progress = {
+					name = eastasian_expansionism_paranoia_progress_bar
+					value = 20
+				}
+			}
+		}
+	}
+}
+
+eafp_on_diplomatic_demand_accepted = {
+	trigger = {
+		scope:recipient ?= {
+			has_journal_entry = je_eastasian_expansionism
+		}
+	}
+	effect = {
+		scope:recipient ?= {
+			je:je_eastasian_expansionism = {
+				add_progress = {
+					name = eastasian_expansionism_paranoia_progress_bar
+					value = 20
+				}
+			}
+		}
+	}
+}
+
+eafp_on_wargoal_enforced = {
+	effect = {
+		if = {
+			limit = {
+				scope:target ?= {
+					has_journal_entry = je_eastasian_expansionism
+				}
+			}
+			scope:target ?= {
+				set_variable = { 
+					name = temp_wargoal_impact 
+					value = {
+						value = scope:wargoal_impact 
+						multiply = 1
+					}
+				}
+				je:je_eastasian_expansionism = {
+					add_progress = {
+						value = owner.var:temp_wargoal_impact
+						name = eastasian_expansionism_paranoia_progress_bar
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					has_journal_entry = je_eastasian_expansionism
+				}
+			}
+			owner = {
+				set_variable = { 
+					name = temp_wargoal_impact 
+					value = {
+						value = scope:wargoal_impact 
+						multiply = -1
+					}
+				}
+				je:je_eastasian_expansionism = {
+					add_progress = {
+						value = owner.var:temp_wargoal_impact
+						name = eastasian_expansionism_paranoia_progress_bar
+					}
+				}
+			}
+		}
+	}
+}
