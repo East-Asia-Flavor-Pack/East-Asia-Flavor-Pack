@@ -2006,12 +2006,6 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 		trigger_event = {
 			id = eafp_kor_mainline.1510
 		}
-		every_scope_state = {
-			limit = {
-				has_building = building_dangbaek
-			}
-			remove_building = building_dangbaek
-		}
 	}
 	
 	on_weekly_pulse = {
@@ -2114,6 +2108,11 @@ je_rlg_seoul_dangbaek = {
 
 	group = je_group_historical_content
 
+	scripted_progress_bar = eafp_progress_bar_dangbaek_inflation
+	
+	scripted_button = eafp_scripted_button_increase_dangbaek_supply
+	scripted_button = eafp_scripted_button_decrease_dangbaek_supply
+
 	complete = {
 		scope:journal_entry = {
 			is_goal_complete = yes
@@ -2123,407 +2122,39 @@ je_rlg_seoul_dangbaek = {
 
 	immediate = {
 		set_variable = {
-			name = eafp_var_dangbaek_inflation
+			name = eafp_var_dangbaek
 			value = 0
 		}
 	}
 	
 	timeout = 1460
-
-	on_timeout = {
-		every_scope_state = {
-			limit = {
-				has_building = building_dangbaek
-			}
-			remove_building = building_dangbaek
-		}
-	}
 	
 	on_complete = {
 		trigger_event = {
 			id = eafp_kor_mainline.1509
 		}
 	}
-	
-	fail = {
-		NOT = {
-			any_scope_state = {
-				has_building = building_dangbaek
-			}
-		}
-	}
 
-	on_fail = {
-		every_scope_state = {
-			limit = {
-				has_building = building_dangbaek
-			}
-			remove_building = building_dangbaek
+	on_timeout = {
+		remove_modifier = eafp_modi_dangbaek_inflation
+		add_modifier = {
+			name = eafp_modi_dangbaek_inflation
+			multiplier = eafp_progress_bar_dangbaek_inflation_progress_bar_value
+			months = 36
+			is_decaying = yes
 		}
-	}
-	
-	on_weekly_pulse = {
-		effect = {
-			if = {
-				limit = {
-					var:eafp_var_dangbaek_inflation <= 100
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					add = 1
-				}
-			}
-			if = {
-				limit = {
-					var:eafp_var_dangbaek_inflation <= 100
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					add = 2
-				}
-			}
-			if = {
-				limit = {
-					var:eafp_var_dangbaek_inflation <= 100
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					add = 3
-				}
-			}
-		}
+		remove_variable = eafp_var_dangbaek
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-						has_active_production_method = pm_tech_dangbaek_2
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.3
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-						has_active_production_method = pm_tech_dangbaek_2
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.6
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-						has_active_production_method = pm_tech_dangbaek_2
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.9
-				}
-			}
-			#
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-						has_active_production_method = pm_tech_dangbaek_3
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.6
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-						has_active_production_method = pm_tech_dangbaek_3
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.2
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-						has_active_production_method = pm_tech_dangbaek_3
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.8
-				}
-			}
-			##
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-						has_active_production_method = pm_gold_dangbaek_1_l
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.3
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-						has_active_production_method = pm_gold_dangbaek_2_l
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.6
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-						has_active_production_method = pm_gold_dangbaek_3_l
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.9
-				}
-			}
-			#
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-						has_active_production_method = pm_gold_dangbaek_1_m
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.5
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-						has_active_production_method = pm_gold_dangbaek_2_m
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.0
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-						has_active_production_method = pm_gold_dangbaek_3_m
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.5
-				}
-			}
-			#
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_1
-						has_active_production_method = pm_gold_dangbaek_1_h
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.7
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_2
-						has_active_production_method = pm_gold_dangbaek_2_h
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.4
-				}
-			}
-			if = {
-				limit = {
-					any_scope_building = {
-						is_building_type = building_dangbaek
-						has_active_production_method = pm_base_dangbaek_3
-						has_active_production_method = pm_gold_dangbaek_3_h
-					}
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 2.1
-				}
-			}
-			##
-			if = {
-				limit = {
-					THIS.GDP <= 5000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.2
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 7000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.4
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 9000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.6
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 12000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 0.8
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 15000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.0
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 20000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.2
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 25000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.4
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 35000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.6
-				}
-			}
-			else_if = {
-				limit = {
-					THIS.GDP <= 50000000
-				}
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 1.8
-				}
-			}
-			else_if = {
-				change_variable = {
-					name = eafp_var_dangbaek_inflation
-					subtract = 2.0
-				}
-			}
-			##
 			remove_modifier = eafp_modi_dangbaek_inflation
 			add_modifier = {
 				name = eafp_modi_dangbaek_inflation
-				multiplier = root.var:eafp_var_dangbaek_inflation
-				months = 36
-				is_decaying = yes
+				multiplier = eafp_progress_bar_dangbaek_inflation_progress_bar_value
 			}
 		}
 	}
-	
-	current_value = {
-		value = root.var:eafp_var_dangbaek_inflation
-	}
-
-	goal_add_value = {
-		add = 100
-	}
-    
-	progressbar = yes
-    
-	#fail = {
-	#}
-
-	#on_fail = {
-	#}
-    
-	#invalid = {
-	#}
 
 	should_be_pinned_by_default = yes
 }

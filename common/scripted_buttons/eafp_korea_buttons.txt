@@ -31,14 +31,6 @@ eafp_scripted_button_dangbaek = {
 	}
 
 	effect = {
-		s:STATE_SEOUL = {
-			region_state:KOR = {
-				create_building = {
-					building = "building_dangbaek"
-					level = 1
-				}
-			}
-		}
 		add_journal_entry = {
 			type = je_rlg_seoul_dangbaek
 		}
@@ -1608,4 +1600,64 @@ eafp_scripted_button_educating = {
 	}
 }
 
-#인식도 버튼
+## 당백전
+
+eafp_scripted_button_increase_dangbaek_supply = {
+	name = "eafp_scripted_button_increase_dangbaek_supply"
+	desc = "eafp_scripted_button_increase_dangbaek_supply_desc"
+
+	visible = {
+		has_journal_entry = je_rlg_seoul_dangbaek
+		var:eafp_var_dangbaek < 3
+	}
+
+	possible = {
+		var:eafp_var_dangbaek < 3
+		authority >= 50
+	}
+
+	effect = {
+		remove_modifier = eafp_modi_dangbaek
+		add_modifier = {
+			name = eafp_modi_dangbaek
+			multiplier = {
+				value = var:eafp_var_dangbaek
+				add = 1
+			}
+		}
+		change_variable = {
+			name = eafp_var_dangbaek
+			add = 1
+		}
+	}
+}
+eafp_scripted_button_decrease_dangbaek_supply = {
+	name = "eafp_scripted_button_decrease_dangbaek_supply"
+	desc = "eafp_scripted_button_decrease_dangbaek_supply_desc"
+
+	visible = {
+		has_journal_entry = je_rlg_seoul_dangbaek
+		var:eafp_var_dangbaek > 0
+	}
+
+	possible = {
+		var:eafp_var_dangbaek > 0
+	}
+
+	effect = {
+		s:STATE_SEOUL.region_state:KOR = {
+			remove_modifier = eafp_modi_seoul_improvement_project_cost
+			add_modifier = {
+				name = eafp_modi_seoul_improvement_project_cost
+				multiplier = {
+					value = var:eafp_var_dangbaek
+					subtract = 1
+				}
+			}
+		}
+		change_variable = {
+			name = eafp_var_dangbaek
+			subtract = 1
+		}
+	}
+}

@@ -133,12 +133,50 @@
 			value = 200			
 		}				
 	}	
+
+	wanted_construction_output = { # 추가
+		if = { # ai_strategy_default에서 깐 거 보정용
+			limit = {
+				OR = {
+					has_journal_entry = je_chinese_westernization
+					has_variable = chinese_westernization_complete
+				}
+			}
+			multiply = 5
+		}
+	}
+
+	wanted_navy_size = { # 추가
+		if = { # 용이변하 완료하면 리미트 해제함
+			limit = {
+				has_variable = chinese_westernization_complete
+			}
+			multiply = 2
+		}
+	}
+
+	wargoal_scores = { # 추가
+		annex_country = {
+			if = { # 추가
+				limit = {
+					power_bloc ?= { has_identity = identity:identity_eafp_mandate_of_heaven }
+					is_power_bloc_leader = yes
+					is_in_same_power_bloc = scope:target_country
+					scope:target_country = {
+						country_has_state_religion = rel:confucian
+					}
+				}
+				add = -100
+			}
+		}
+	}
 	
 	possible = {
 		exists = c:CHI
 		this = c:CHI
+		# is_country_type = unrecognized
 		has_law = law_type:law_monarchy
-		NOT = { has_variable = chinese_westernization_complete }
+		NOT = { has_variable = chinese_westernization_complete } # 추가
 	}
 	
 	weight = {
@@ -146,7 +184,7 @@
 	}
 }
 
-ai_strategy_meiji_restoration = {
+ai_strategy_meiji_restoration_kor = {
 	icon = "gfx/interface/icons/ai_strategy_icons/progressive_agenda.dds"
 	
 	type = political
@@ -238,24 +276,8 @@ ai_strategy_meiji_restoration = {
 	}
 
 	possible = {
-		#OR = {
-		#	has_modifier = shogun_ig_forced_to_open_market
-		#	has_journal_entry = je_meiji_main
-		#}
-
-		OR = { # 추가
-			AND = {
-				c:JAP ?= ROOT
-				OR = {
-					has_modifier = shogun_ig_forced_to_open_market
-					has_journal_entry = je_meiji_main
-				}
-			}
-			AND = {
-				c:KOR ?= ROOT
-				has_journal_entry = je_korean_reformation
-			}
-		}
+		c:KOR ?= ROOT
+		has_journal_entry = je_korean_reformation
 	}
 	
 	weight = {
