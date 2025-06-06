@@ -536,15 +536,28 @@ eafp_effect_option_gain_balance = {	#선지 누를때-힘의균형 증감
 		text = eafp_balance_gain_from_event_option_effect_loc
 	}
 }
-eafp_effect_option_gain_attitude = {	#선지 누를때-권력공유자 태도 증감
+eafp_effect_option_gain_attitude = {	#선지 누를때-권력공유자 태도 증감-그냥 변화요인으로 바꿈
 	#효과
-	change_variable = {
-		name = eafp_var_je_regent_attitude
-		add = $ATTITUDE$
+
+	if = {
+		limit = { $ATTITUDE$ >= 0 }
+		ig:ig_landowners = {
+			add_modifier = {
+				name = eafp_modi_sedo_politics_happy
+				multiplier = $ATTITUDE$
+			}
+		}
 	}
-	custom_description = {
-		value = $ATTITUDE$
-		text = eafp_attitude_gain_from_event_option_effect_loc
+	else = {
+		ig:ig_landowners = {
+			add_modifier = {
+				name = eafp_modi_sedo_politics_angry
+				multiplier = {
+					value = $ATTITUDE$
+					multiply = 1
+				}
+			}
+		}
 	}
 }
 #
@@ -752,99 +765,6 @@ eafp_effect_option_gain_blossom = {	#선지 누를때-개화도 증감
 
 
 ####
-eafp_kor_regent_attitude_roll = {	#월 권력공유자 관계도 변화 굴림
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 1
-			var:eafp_var_je_regent_attitude > 0
-		}
-		random_list = {
-			80 = {}
-			20 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = -1
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 1
-			var:eafp_var_je_regent_attitude < -5
-		}
-		random_list = {
-			90 = {}
-			10 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = 1
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 2
-			var:eafp_var_je_regent_attitude > -5
-		}
-		random_list = {
-			80 = {}
-			20 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = -1
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 2
-			var:eafp_var_je_regent_attitude < -10
-		}
-		random_list = {
-			90 = {}
-			10 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = 1
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 3
-			var:eafp_var_je_regent_attitude > -10
-		}
-		random_list = {
-			80 = {}
-			20 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = -1
-				}
-			}
-		}
-	}
-	if = {
-		limit = {
-			var:eafp_var_je_regent_type = 3
-			var:eafp_var_je_regent_attitude < -15
-		}
-		random_list = {
-			90 = {}
-			10 = {
-				change_variable = {
-					name = eafp_var_je_regent_attitude
-					add = 1
-				}
-			}
-		}
-	}
-}
-##
 eafp_kor_regent_authority_event_roll = {	#월 헌종 왕권강화책 굴림
 	random_list = {
 		160 = {	#아무일도 없었다.
@@ -1146,81 +1066,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					add = 300
 				}
 			}
-			#권력공유자 태도별 굴림 보정
-			modifier = {
-				if = {	#야심적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude < -3
-					}
-					add = -120
-				}
-				if = {	#야심적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude < -3
-						var:eafp_var_je_regent >= 100
-					}
-					add = -80
-				}
-				if = {	#야심적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude < -3
-						var:eafp_var_je_regent >= 200
-					}
-					add = -65
-				}
-				if = {	#야심적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude < -3
-						var:eafp_var_je_regent >= 300
-					}
-					add = -50
-				}
-				if = {	#야심적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude < -3
-						var:eafp_var_je_regent >= 400
-					}
-					add = -35
-				}
-			}
-			modifier = {
-				if = {	#우호적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude > 3
-					}
-					add = 120
-				}
-				if = {	#우호적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude > 3
-						var:eafp_var_je_regent >= 100
-					}
-					add = 80
-				}
-				if = {	#우호적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude > 3
-						var:eafp_var_je_regent >= 200
-					}
-					add = 65
-				}
-				if = {	#우호적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude > 3
-						var:eafp_var_je_regent >= 300
-					}
-					add = 50
-				}
-				if = {	#우호적 태도
-					limit = {
-						var:eafp_var_je_regent_attitude > 3
-						var:eafp_var_je_regent >= 400
-					}
-					add = 35
-				}
-				#테스팅용
-				#add = -400
-			}
+
 			modifier = {	#AI
 				if = {
 					limit = {
@@ -1264,18 +1110,10 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 		}
 		20 = {	#정치력 키우기
 			modifier = {
-				#양반과 성리학자 둘 다 정치력이 20% 밑이라면,
+				#세도정치 중 양반과 성리학자 둘 다 정치력이 20% 밑이라면,
 				if = {
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
-							this.interest_group = {
-								OR = {
-									is_interest_group_type = ig_landowners
-									is_interest_group_type = ig_devout
-								}
-							}
-						}
+						has_journal_entry = je_sedo_politics
 						any_interest_group = {
 							OR = {
 								is_interest_group_type = ig_landowners
@@ -1309,19 +1147,10 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 						count = all
 					}
 				}
-				#권력공유자의 IG가 양반 혹은 성리학자라면 상호 협력 가능.
+				#세도정치면 양반과 성리학자 상호 협력 가능.
 				if = {
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
-							this.interest_group = {
-								OR = {
-									is_interest_group_type = ig_landowners
-									is_interest_group_type = ig_devout
-								}
-							}
-						}
-						#always = no
+						has_journal_entry = je_sedo_politics
 					}
 					random_list = {
 						1 = {	#양반
@@ -1434,20 +1263,6 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 		#2단계
 		15 = {	#지역수탈-민
 			modifier = {
-				#권력공유 유형이 세도정치 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 3
-					}
-					add = 2
-				}
-				#권력공유 유형이 섭정(대원군) 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 2
-					}
-					add = -3
-				}
 				#암행어사가 활발히 활동중일경우,
 				if = {
 					limit = {
@@ -1679,20 +1494,6 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 		}
 		15 = {	#지역수탈-관
 			modifier = {
-				#권력공유 유형이 세도정치 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 3
-					}
-					add = 2
-				}
-				#권력공유 유형이 섭정(대원군) 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 2
-					}
-					add = -3
-				}
 				#암행어사가 활발히 활동중일경우,
 				if = {
 					limit = {
@@ -1924,20 +1725,6 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 		}
 		15 = {	#지역수탈-군
 			modifier = {
-				#권력공유 유형이 세도정치 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 3
-					}
-					add = 2
-				}
-				#권력공유 유형이 섭정(대원군) 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = 2
-					}
-					add = -3
-				}
 				#암행어사가 활발히 활동중일경우,
 				if = {
 					limit = {
@@ -2179,7 +1966,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				#권력공유 유형이 섭정(대원군) 일 경우,
 				if = {
 					limit = {
-						var:eafp_var_je_regent_type = 2
+						var:eafp_var_je_regent_type = flag:appa
 					}
 					add = -20	#아들덕에 얻은 권세에 미쳤다고 애비가?
 				}

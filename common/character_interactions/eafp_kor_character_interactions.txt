@@ -16,13 +16,11 @@
 ##***인물 상호작용 - 권력 공유자 와의 정치적 거래.
 ##이하 참고용 메모
 #돈으로 환심사기
-#내탕금 늘려주기
-#돈좀 달라고 하기
-#재롱 떨기
-#계파 사면령
 #명예 드높여주기
+#계파 사면령
 #8도 관찰사직 임명(경기,충청,전라,경상,강원,함경,평안,황해)
 #정치적 거래
+#돈좀 달라고 하기
 #####################
 eafp_interaction_buy_favor = {	#환심 구매
 	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
@@ -30,12 +28,9 @@ eafp_interaction_buy_favor = {	#환심 구매
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes
@@ -96,149 +91,15 @@ eafp_interaction_buy_favor = {	#환심 구매
 	}
 }
 #
-eafp_interaction_give_money = {	#내탕금늘려주기
-	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
-
-	potential = {
-		owner = scope:actor
-		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 2
-		}
-	}
-
-	show_requirements = yes
-
-	possible = {
-		scope:actor ?= {
-			ruler = {
-				age >= 16
-			}
-			scaled_debt < 0.75
-		}
-		OR = {
-			interest_group = {
-				is_in_government = yes
-				is_insurrectionary = no
-				#is_marginal = yes
-			}
-		}
-	}
-
-	effect = {
-		scope:actor ?= {
-			eafp_effect_option_gain_attitude = {
-				ATTITUDE = 1
-			}
-			add_treasury = eafp_val_increase_purse_cost	#내가 낼 돈
-			hidden_effect = {	#툴팁 지저분하니까
-				add_investment_pool = {	#송금
-					value = eafp_val_increase_purse_cost
-					multiply = -0.1
-				}
-			}
-			change_variable = {	#송금
-				name = eafp_var_je_regent_account
-				add = {
-					value = eafp_val_increase_purse_cost
-					multiply = -0.9	#개인자금으로 갈 90%
-				}
-			}
-		}
-		custom_tooltip = {
-			text = eafp_interaction_buy_favor_tt
-			#이펙트 = yes
-		}
-	}
-
-	cooldown = { months = 12 }
-	show_confirmation_box = yes
-
-	ai_chance = {
-		value = -10
-		if = {
-			limit = {
-				always = no
-			}
-			add = 25
-		}
-	}
-}
-#
-eafp_interaction_iam_cute = {	#재롱 떨기
-	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
-
-	potential = {
-		owner = scope:actor
-		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			OR = {
-				var:eafp_var_je_regent_type = 1
-				var:eafp_var_je_regent_type = 2
-			}
-		}
-	}
-
-	show_requirements = yes
-
-	possible = {
-		scope:actor ?= {
-			ruler = {
-				age < 16
-			}
-			#scaled_debt < 0.75
-		}
-		OR = {
-			interest_group = {
-				is_in_government = yes
-				is_insurrectionary = no
-				#is_marginal = yes
-			}
-		}
-	}
-
-	effect = {
-		scope:actor ?= {
-			eafp_effect_option_gain_attitude = {
-				ATTITUDE = 1
-			}
-			eafp_effect_option_gain_stress = {
-				STRESS = -1
-			}
-		}
-	}
-
-	cooldown = { months = 12 }
-	show_confirmation_box = yes
-
-	ai_chance = {
-		value = -10
-		if = {
-			limit = {
-				always = no
-			}
-			add = 25
-		}
-	}
-}
-#
 eafp_interaction_praise = {	#명예 높여주기
 	clicksound = "event:/SFX/DLC/1.3_ip1/UI/character_invite"
 
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes
@@ -297,12 +158,9 @@ eafp_interaction_reinstate = {	#계파 사면
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes
@@ -359,12 +217,9 @@ eafp_interaction_give_governor = {	#관찰사직 제수
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes
@@ -461,12 +316,9 @@ eafp_interaction_reconciliation = {	#정치적 거래
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes
@@ -518,12 +370,9 @@ eafp_interaction_helpme_plz = {	#돈좀
 	potential = {
 		owner = scope:actor
 		scope:actor ?= {
-			has_journal_entry = je_korean_regent
-			var:eafp_var_je_regent_character ?= ROOT
-			has_variable = eafp_var_je_regent_type
-			var:eafp_var_je_regent_type >= 1
-			var:eafp_var_je_regent_type <= 3
+			has_journal_entry = je_sedo_politics
 		}
+		THIS = scope:actor.ig:ig_landowners.leader
 	}
 
 	show_requirements = yes

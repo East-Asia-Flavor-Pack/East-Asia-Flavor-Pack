@@ -487,7 +487,7 @@ je_korean_land_problem = {
 				limit = {
 					NOT = { has_variable = eafp_check_evt_k200 }
 					game_date > 1837.3.1
-					var:eafp_var_je_regent_type = 1
+					var:eafp_var_je_regent_type = flag:halmuni
 					has_journal_entry = je_korean_regent
 					var:eafp_var_je_regent >= 100
 				}
@@ -1287,7 +1287,7 @@ je_king_cheoljong_education = {
 	
 	should_be_pinned_by_default = yes
 }
-##섭정
+##수렴청정
 je_korean_regent = {
 	icon = "gfx/interface/icons/law_icons/multicultural.dds"
 
@@ -1298,13 +1298,9 @@ je_korean_regent = {
 			name = eafp_var_je_regent
 			value = 100
 		}
-		set_variable = {
-			name = eafp_var_je_regent_attitude
-			value = 5
-		}
 		set_variable = {	#권력공유 타입
 			name = eafp_var_je_regent_type
-			value = 1	#수렴청정중으로 시작
+			value = flag:halmuni	#수렴청정중으로 시작
 		}
 		set_variable = {
 			name = eafp_var_je_regent_account
@@ -1320,10 +1316,6 @@ je_korean_regent = {
 		
 		# eafp_var_je_regent_character는 인물 히스토리에서
 	}
-	
-	scripted_button = eafp_scripted_button_regent_balance_authority
-	scripted_button = eafp_scripted_button_regent_balance_bureaucracy
-	scripted_button = eafp_scripted_button_regent_balance_money
 	
 	modifiers_while_active = {
 		eafp_modi_monarchy_power
@@ -1341,7 +1333,6 @@ je_korean_regent = {
 
 	on_invalid = {
 		remove_variable = eafp_var_je_regent
-		remove_variable = eafp_var_je_regent_attitude
 		remove_variable = eafp_var_je_regent_type
 		remove_variable = eafp_var_je_regent_account
 		remove_variable = eafp_var_je_regent_regnal_year
@@ -1378,7 +1369,6 @@ je_korean_regent = {
 				set_variable = eafp_var_je_regent_complete_yi_hyeong
 			}
 			remove_variable = eafp_var_je_regent
-			remove_variable = eafp_var_je_regent_attitude
 			remove_variable = eafp_var_je_regent_type
 			remove_variable = eafp_var_je_regent_account
 			remove_variable = eafp_var_je_regent_regnal_year
@@ -1513,7 +1503,7 @@ je_korean_regent = {
 
 	on_weekly_pulse = {
 		effect = {
-			#권력공유자 슬롯이 비어있다면?
+			#권력공유자 슬롯이 비어있다면? TODO 수정할것
 			if = {
 				limit = {
 					NOT = {
@@ -1546,8 +1536,10 @@ je_korean_regent = {
 			if = {
 				limit = {
 					has_variable = eafp_var_je_regent_type
-					var:eafp_var_je_regent_type >= 1
-					var:eafp_var_je_regent_type <= 3
+					OR = {
+						var:eafp_var_je_regent_type = flag:halmuni
+						var:eafp_var_je_regent_type = flag:appa
+					}
 				}
 				eafp_kor_regent_corruption_roll = yes
 			}
@@ -1565,14 +1557,292 @@ je_korean_regent = {
 					add = -0.5
 				}
 			}
-			#권력공유 타입별 매달 관계도 자연감소량
-			eafp_kor_regent_attitude_roll = yes
 			#힘의균형 레벨별 조건부 패시브 효과 체크
 			if = {
 				limit = {
 					has_variable = eafp_var_je_regent_type
-					var:eafp_var_je_regent_type >= 1
-					var:eafp_var_je_regent_type <= 3
+					OR = {
+						var:eafp_var_je_regent_type = flag:halmuni
+						var:eafp_var_je_regent_type = flag:appa
+					}
+				}
+				eafp_kor_regent_corruption_passive = yes
+			}
+			##역사적 이벤트
+			if = {	#민진용의 역모 - 1844
+				limit = {
+					NOT = { has_variable = eafp_check_evt_k321 }
+					game_date > 1844.8.1
+					ruler = {
+						has_template = eafp_kor_yi_hwan_character_template
+					}
+				}
+				trigger_event = {	#역사 이벤트 점화
+					id = eafp_kor_mainline.321
+					days = { 1 15 }
+				}
+				set_variable = eafp_check_evt_k321
+			}
+		}
+	}
+
+	weight = 1000
+	
+	should_be_pinned_by_default = yes
+}
+
+##세도정치
+je_sedo_politics = {
+	icon = "gfx/interface/icons/law_icons/multicultural.dds"
+
+	group = je_group_historical_content
+
+	immediate = {
+		set_variable = {
+			name = eafp_var_je_regent
+			value = 100
+		}
+		set_variable = {
+			name = eafp_var_je_regent_account
+			value = 150000
+		}
+		if = {
+			limit = { NOT = { has_variable = eafp_var_je_regent_regnal_year } }
+			set_variable = {
+				name = eafp_var_je_regent_regnal_year
+				value = 1
+			}
+		}
+	}
+	
+	scripted_button = eafp_scripted_button_sedo_politics_balance_authority
+	scripted_button = eafp_scripted_button_sedo_politics_balance_bureaucracy
+	scripted_button = eafp_scripted_button_sedo_politics_balance_money
+	
+	modifiers_while_active = {
+		eafp_modi_monarchy_power
+	}
+	
+	invalid = {
+		#always = no
+		OR = {
+			NOT = { has_law = law_type:law_monarchy }
+			has_law = law_type:law_census_voting
+			has_law = law_type:law_universal_suffrage
+			has_law = law_type:law_anarchy
+		}
+	}
+
+	on_invalid = {
+		remove_variable = eafp_var_je_regent
+		remove_variable = eafp_var_je_regent_type
+		remove_variable = eafp_var_je_regent_account
+		remove_variable = eafp_var_je_regent_regnal_year
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = je_korean_regent_complete_tt
+			var:eafp_var_je_regent <= 0
+		}
+	}
+
+	on_complete = {
+		hidden_effect = {
+			ig:ig_landowners = {
+				leader = {
+					set_character_busy_and_immortal = no
+				}
+			}
+			if = {
+				limit = { ruler = { has_template = eafp_kor_yi_hwan_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_hwan
+			}
+			else_if = {
+				limit = { ruler = { has_template = eafp_kor_yi_byeon_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_byeon
+			}
+			else_if = {
+				limit = { ruler = { has_template = eafp_kor_yi_hyeong_character_template } }
+				set_variable = eafp_var_je_regent_complete_yi_hyeong
+			}
+			remove_variable = eafp_var_je_regent
+			remove_variable = eafp_var_je_regent_type
+			remove_variable = eafp_var_je_regent_account
+			remove_variable = eafp_var_je_regent_regnal_year
+		}
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_korean_regent_balance_16
+				trigger = {
+					var:eafp_var_je_regent >= 400
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_15
+				trigger = {
+					var:eafp_var_je_regent >= 375
+					var:eafp_var_je_regent < 400
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_14
+				trigger = {
+					var:eafp_var_je_regent >= 350
+					var:eafp_var_je_regent < 375
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_13
+				trigger = {
+					var:eafp_var_je_regent >= 325
+					var:eafp_var_je_regent < 350
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_12
+				trigger = {
+					var:eafp_var_je_regent >= 300
+					var:eafp_var_je_regent < 325
+				}
+			}
+			##
+			triggered_desc = {
+				desc = je_korean_regent_balance_11
+				trigger = {
+					var:eafp_var_je_regent  >= 275
+					var:eafp_var_je_regent  < 300
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_10
+				trigger = {
+					var:eafp_var_je_regent  >= 250
+					var:eafp_var_je_regent  < 275
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_9
+				trigger = {
+					var:eafp_var_je_regent  >= 225
+					var:eafp_var_je_regent  < 250
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_8
+				trigger = {
+					var:eafp_var_je_regent >= 200
+					var:eafp_var_je_regent < 225
+				}
+			}
+			##
+			triggered_desc = {
+				desc = je_korean_regent_balance_7
+				trigger = {
+					var:eafp_var_je_regent >= 175
+					var:eafp_var_je_regent < 200
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_6
+				trigger = {
+					var:eafp_var_je_regent >= 150
+					var:eafp_var_je_regent < 175
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_5
+				trigger = {
+					var:eafp_var_je_regent >= 125
+					var:eafp_var_je_regent < 150
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_4
+				trigger = {
+					var:eafp_var_je_regent >= 100
+					var:eafp_var_je_regent < 125
+				}
+			}
+			##
+			triggered_desc = {
+				desc = je_korean_regent_balance_3
+				trigger = {
+					var:eafp_var_je_regent >= 75
+					var:eafp_var_je_regent < 100
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_2
+				trigger = {
+					var:eafp_var_je_regent >= 50
+					var:eafp_var_je_regent < 75
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_1
+				trigger = {
+					var:eafp_var_je_regent >= 25
+					var:eafp_var_je_regent < 50
+				}
+			}
+			triggered_desc = {
+				desc = je_korean_regent_balance_0
+				trigger = {
+					var:eafp_var_je_regent < 25
+				}
+			}
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			#권력공유 타입별 매주 힘의균형도 자연증가량
+			if = {
+				limit = {
+					var:eafp_var_je_regent <= eafp_val_je_regent_balance
+				}
+				change_variable = {
+					name = eafp_var_je_regent
+					add = 0.25
+				}
+			}
+			#사익추구 활동 굴림
+			if = {
+				limit = {
+					has_variable = eafp_var_je_regent_type
+					OR = {
+						var:eafp_var_je_regent_type = flag:halmuni
+						var:eafp_var_je_regent_type = flag:appa
+					}
+				}
+				eafp_kor_regent_corruption_roll = yes
+			}
+		}
+	}
+	on_monthly_pulse = {
+		effect = {
+			#AI 조정
+			if = {
+				limit = {
+					is_ai = yes
+				}
+				change_variable = {
+					name = eafp_var_je_regent
+					add = -0.5
+				}
+			}
+			#힘의균형 레벨별 조건부 패시브 효과 체크
+			if = {
+				limit = {
+					has_variable = eafp_var_je_regent_type
+					OR = {
+						var:eafp_var_je_regent_type = flag:halmuni
+						var:eafp_var_je_regent_type = flag:appa
+					}
 				}
 				eafp_kor_regent_corruption_passive = yes
 			}
