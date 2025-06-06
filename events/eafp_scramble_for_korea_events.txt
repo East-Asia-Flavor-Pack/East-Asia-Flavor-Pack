@@ -1,0 +1,575 @@
+﻿namespace = scramble_for_korea_events
+
+scramble_for_korea_events.4 = {
+	type = country_event
+	placement = ROOT
+
+	title = scramble_for_korea_events.4.t
+	desc = scramble_for_korea_events.4.d
+	flavor = scramble_for_korea_events.4.f
+
+	event_image = {
+		video = "southamerica_christianity"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		c:KOR ?= {
+			OR = {
+				has_law = law_type:law_peasant_levies
+				has_law = law_type:law_traditionalism
+				has_law = law_type:law_isolationism
+			}
+		}
+		NOR = {
+			has_law = law_type:law_peasant_levies
+			has_law = law_type:law_traditionalism
+			has_law = law_type:law_isolationism
+		}
+	}
+
+	immediate = {
+		ig:ig_intelligentsia = {
+			save_scope_as = ig_intelligentsia_scope
+			leader = {
+				save_scope_as = ig_intelligentsia_leader
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.4.a
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = modifier_korea_enlightenment_support
+				months = normal_modifier_time
+			}
+		}
+		every_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+			}
+			change_tension = {
+				country = root
+				value = 3
+			}
+		}
+		c:KOR = {
+			if = {
+				limit = {
+					any_political_movement = {
+						is_political_movement_type = movement_modernizer
+					}
+				}
+				every_political_movement = {
+					limit = { is_political_movement_type = movement_modernizer }
+					add_modifier = {
+						name = modifier_enlightenment_support_from_foreign
+						months = normal_modifier_time
+						is_decaying = yes
+					}
+				}
+			}
+			else = {
+				create_political_movement = { type = movement_modernizer }
+			}
+			add_modifier = {
+				name = modifier_kor_foreign_influence
+				months = normal_modifier_time
+			}
+		}
+		power_bloc = {
+			add_leverage = { target = c:KOR value = 10 }
+		}
+		
+	}
+
+	option = {
+		name = scramble_for_korea_events.4.b
+		default_option = yes
+
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = modifier_reject_korea_enlightenment_support
+				months = normal_modifier_time
+			}
+		}
+		every_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+			}
+			change_tension = {
+				country = root
+				value = -3
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.4.c
+		default_option = yes
+
+		ig:ig_intelligentsia = {
+			add_modifier = {
+				name = modifier_pandering_to_the_old_system
+				months = normal_modifier_time
+			}
+		}
+		every_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+			}
+			change_tension = {
+				country = root
+				value = -3
+			}
+		}
+		c:KOR = {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+	}
+}
+
+scramble_for_korea_events.5 = {
+	type = country_event
+	placement = scope:state_scope
+
+	title = scramble_for_korea_events.5.t
+	desc = scramble_for_korea_events.5.d
+	flavor = scramble_for_korea_events.5.f
+
+	event_image = {
+		video = "africa_public_protest"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	duration = 3
+
+	trigger = {
+		c:KOR = {
+			any_scope_building = { # 조선 건물 중 ROOT가 소유한 건물이 있으면.
+				levels_owned_by_country = {
+					target = ROOT
+					value != 0
+				}
+				NOT = { has_modifier = modifier_kor_improved_labor_conditions }
+			}
+		}
+	}
+
+	cooldown = { months = normal_modifier_time }
+
+	immediate = {
+		c:KOR = {
+			random_scope_building = {
+				limit = {
+					levels_owned_by_country = {
+						target = ROOT
+						value != 0
+					}
+					NOT = { has_modifier = modifier_kor_improved_labor_conditions }
+				}
+				state = {
+					save_scope_as = state_scope
+				}
+				save_scope_as = building_scope
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.5.a
+
+		scope:building_scope = {
+			add_modifier = {
+				name = modifier_kor_improved_labor_conditions
+				months = normal_modifier_time
+			}
+		}
+
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = modifier_curtailed_kor_labor_abuses
+				months = normal_modifier_time
+			}
+		}
+
+		every_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+			}
+			change_tension = {
+				country = root
+				value = 3
+			}
+		}
+
+		c:KOR = {
+			add_modifier = {
+				name = modifier_kor_foreign_influence
+				months = normal_modifier_time
+			}
+		}
+		power_bloc = {
+			add_leverage = { target = c:KOR value = 10 }
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.5.b
+		default_option = yes
+
+		every_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+			}
+			change_tension = {
+				country = root
+				value = -3
+			}
+		}
+	}
+}
+
+scramble_for_korea_events.10 = {
+	type = country_event
+	placement = ROOT
+
+	title = scramble_for_korea_events.10.t
+	desc = scramble_for_korea_events.10.d
+	flavor = scramble_for_korea_events.10.f
+
+	event_image = {
+		video = "africa_construction_colony"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+	
+	trigger = {
+		c:KOR = {
+			any_scope_pop = {
+				culture = {
+					is_primary_culture_of = ROOT
+				}
+			}
+		}
+	}
+
+	immediate = {
+		c:KOR = {
+			random_scope_pop = {
+				limit = {
+					culture = {
+						is_primary_culture_of = ROOT
+					}
+				}
+				save_scope_as = pop_scope
+				state = { save_scope_as = korea_state }
+			}
+		}
+		random_scope_state = {
+			limit = { is_incorporated = yes }
+			save_scope_as = pop_move_state_scope
+		}
+		c:KOR = {
+			save_scope_as = kor_scope
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.10.a
+		ig:ig_petty_bourgeoisie = {
+			add_modifier = {
+				name = modifier_struggling_kor_colonists
+				months = normal_modifier_time
+			}
+		}
+		ig:ig_rural_folk = {
+			add_modifier = {
+				name = modifier_struggling_kor_colonists
+				months = normal_modifier_time
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.10.b
+		trigger = {
+			bureaucracy >= 10
+			institution_investment_level = {
+				institution = institution_colonial_affairs
+				value >= 2
+			}
+		}
+		add_modifier = {
+			name = assisting_colonists
+			months = normal_modifier_time
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.10.c
+		default_option = yes
+		
+		scope:pop_scope = {
+			move_partial_pop = { state = scope:pop_move_state_scope population_ratio = 0.2 }  
+		}
+	}
+}
+
+scramble_for_korea_events.11 = {
+	type = country_event
+	placement = ROOT
+
+	title = scramble_for_korea_events.11.t
+	desc = scramble_for_korea_events.11.d
+	flavor = scramble_for_korea_events.11.f
+
+	event_image = {
+		video = "africa_construction_colony"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	duration = 3
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		NOT = { has_modifier = government_admits_failure }
+		any_country = {
+			has_journal_entry = je_scramble_for_korea
+			ROOT != THIS
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		random_country = {
+			limit = {
+				has_journal_entry = je_scramble_for_korea
+				ROOT != THIS
+				NOT = { has_war_with = ROOT }
+			}
+			save_scope_as = jingoist_officer_victim
+		}
+		c:KOR = {
+			save_scope_as = kor_scope
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.11.a
+		default_option = yes
+		scope:jingoist_officer_victim = {
+			change_tension = {
+				country = ROOT
+				value = 20
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.11.b
+		add_modifier = {
+			name = government_admits_failure
+			months = normal_modifier_time
+		}
+		ig:ig_armed_forces = {
+			add_modifier = {
+				name = government_insults_military_honor
+				months = normal_modifier_time
+			}
+		}
+		every_interest_group = {
+			limit = {
+				NOT = { is_interest_group_type = ig_armed_forces }
+				OR = {
+					has_ideology = ideology:ideology_jingoist
+					leader = {
+						has_ideology = ideology:ideology_jingoist_leader
+					}
+				}
+			}
+			add_modifier = {
+				name = government_insults_military_honor
+				months = short_modifier_time
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.11.c
+
+		trigger = {
+			ruler = { has_ideology = ideology:ideology_jingoist_leader }
+		}
+		create_character = {
+			is_general = yes
+			interest_group = ig_armed_forces
+			ig_leader = no
+			noble = no
+			traits = {
+				reckless
+			}
+		}
+		scope:jingoist_officer_victim = {
+			change_tension = {
+				country = ROOT
+				value = 20
+			}
+		}
+		if = {
+			limit = {
+				ig:ig_armed_forces = {
+					is_in_government = yes
+				}
+			}
+			add_loyalists = { # Junior officers feel like they are being rewarded
+				pop_type = officers
+				value = 0.5
+			}
+		}
+		every_interest_group = {
+			limit = {
+				OR = {
+					has_ideology = ideology:ideology_jingoist
+					leader = {
+						has_ideology = ideology:ideology_jingoist_leader
+					}
+				}
+			}
+			add_modifier = {
+				name = government_respects_the_military
+				months = short_modifier_time
+			}
+		}
+	}
+}
+
+scramble_for_korea_events.12 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = scramble_for_korea_events.12.t
+	desc = scramble_for_korea_events.12.d
+	flavor = scramble_for_korea_events.12.f
+
+	event_image = {
+		video = "ep1_octopus"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	cooldown = { months = normal_modifier_time }
+
+	trigger = {
+		c:KOR = {
+			NOT = {
+				any_political_lobby = {
+					is_political_lobby_type = lobby_pro_country
+					target = ROOT
+				}
+			}
+		}
+	}
+	
+	immediate = {
+		c:KOR = {
+			save_scope_as = kor_scope
+		}
+	}
+	
+	option = {
+		name = scramble_for_korea_events.12.a 
+		default_option = yes
+		add_treasury = {
+			value = normale_modifier_time
+			multiply = 4
+			multiply = money_amount_multiplier_medium
+		}
+		c:KOR = {
+			ig:ig_intelligentsia = {
+				
+			}
+			add_modifier = {
+				name = modifier_kor_foreign_influence
+				months = normal_modifier_time
+			}
+		}
+		power_bloc = {
+			add_leverage = { target = c:KOR value = 10 }
+		}
+		if = {
+			limit = {
+				any_interest_group = {
+					any_political_lobby = {
+						OR = {
+							is_political_lobby_type = lobby_pro_country
+							is_political_lobby_type = lobby_pro_overlord
+						}
+						target = scope:relevant_country
+					}
+				}
+			}
+			random_interest_group = {
+				limit = {
+					any_political_lobby = {
+						OR = {
+							is_political_lobby_type = lobby_pro_country
+							is_political_lobby_type = lobby_pro_overlord
+						}
+						target = scope:relevant_country
+					}
+				}
+				add_modifier = {
+					name = modifier_foreign_owned_accusations
+					months = short_modifier_time
+				}
+			}
+		}
+	}
+
+	option = {
+		name = scramble_for_korea_events.12.b
+		add_radicals = {
+			value = 0.01
+			culture = scope:primary_culture_scope
+		}
+		add_modifier = {
+			name = modifier_no_honest_politicians
+			months = short_modifier_time
+		}
+	}
+}

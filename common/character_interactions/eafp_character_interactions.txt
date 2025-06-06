@@ -16,13 +16,13 @@
 	show_requirements = yes
 
 	possible = {
-		NOT = { has_ideology = ideology:ideology_eafp_missionary } # 추가, 비밀선교사가 아니어야함
-		NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template } # 추가
+		trigger_if = { # 추가, 비밀선교사가 아니어야함
+			limit = { c:KOR ?= scope:actor }
+			NOT = { has_ideology = ideology:ideology_eafp_missionary }
+		}
 		trigger_if = { # 추가
-			limit = {
-				scope:actor ?= { has_journal_entry = je_korean_regent }
-			}
-			scope:actor.var:eafp_var_je_regent_character != ROOT
+			limit = { c:CHI ?= scope:actor }
+			NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template }
 		}
 		owner ?= {
 			NOT = {
@@ -380,10 +380,13 @@ grant_command_to_agitator = { # 수정
 		age >= define:NCharacters|ADULT_AGE
 		is_female = no
 		exists = owner.capital.land_hq
-		OR = { # 추가, 비밀선교사가 아니거나 완전분리 제정
-			NOT = { has_ideology = ideology:ideology_eafp_missionary }
-			owner = {
-				has_law = law_type:law_total_separation
+		trigger_if = { # 추가, 비밀선교사가 아니거나 완전분리 제정
+			limit = { c:KOR ?= scopa:actor }
+			OR = {
+				NOT = { has_ideology = ideology:ideology_eafp_missionary }
+				owner = {
+					has_law = law_type:law_total_separation
+				}
 			}
 		}
 	}
