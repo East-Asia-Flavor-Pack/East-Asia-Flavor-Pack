@@ -528,7 +528,7 @@ eafp_effect_option_gain_stress = {	#선지 누를때-스트레스 증감
 eafp_effect_option_gain_balance = {	#선지 누를때-힘의균형 증감
 	#효과
 	change_variable = {
-		name = eafp_var_je_regent
+		name = eafp_var_je_sedo_politics_balance
 		add = $BALANCE$
 	}
 	custom_description = {
@@ -765,7 +765,7 @@ eafp_effect_option_gain_blossom = {	#선지 누를때-개화도 증감
 
 
 ####
-eafp_kor_regent_authority_event_roll = {	#월 헌종 왕권강화책 굴림
+eafp_sedo_politics_authority_event_roll = {	#월 헌종 왕권강화책 굴림
 	random_list = {
 		160 = {	#아무일도 없었다.
 			modifier = {
@@ -1030,14 +1030,14 @@ eafp_kor_regent_authority_event_roll = {	#월 헌종 왕권강화책 굴림
 	}
 }
 ##
-eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴림
+eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 굴림
 	random_list = {
 		2000 = {	#아무일도 없었다.
 			modifier = {
 				#힘의균형 단계별 주사위 완화 보정
 				if = {
 					limit = {
-						var:eafp_var_je_regent >= 100
+						var:eafp_var_je_sedo_politics_balance >= 100
 					}
 					add = 400
 				}
@@ -1045,7 +1045,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_regent >= 200
+						var:eafp_var_je_sedo_politics_balance >= 200
 					}
 					add = 350
 				}
@@ -1053,7 +1053,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_regent >= 300
+						var:eafp_var_je_sedo_politics_balance >= 300
 					}
 					add = 300
 				}
@@ -1061,7 +1061,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_regent >= 400
+						var:eafp_var_je_sedo_politics_balance >= 400
 					}
 					add = 300
 				}
@@ -1082,8 +1082,8 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				#권력공유자의 사유재산이 낮다면
 				if = {
 					limit = {
-						NOT = { has_variable = eafp_var_je_regent_account }
-						var:eafp_var_je_regent_account <= eafp_val_embezzle_focus
+						NOT = { has_variable = eafp_var_je_sedo_politics_account }
+						var:eafp_var_je_sedo_politics_account <= eafp_val_embezzle_focus
 					}
 					add = 10
 				}
@@ -1096,7 +1096,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				}
 			}
 			change_variable = {	#송금
-				name = eafp_var_je_regent_account
+				name = eafp_var_je_sedo_politics_account
 				add = {
 					value = eafp_val_embezzle_s_cost
 					multiply = -0.9	#개인자금으로 갈 90%
@@ -1106,14 +1106,13 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				name = eafp_pocket_money_payment
 				value = eafp_val_embezzle_s_cost
 			}
-			post_notification = eafp_message_regent_embezzle_s
+			post_notification = eafp_message_sedo_politics_embezzle_s
 		}
 		20 = {	#정치력 키우기
 			modifier = {
-				#세도정치 중 양반과 성리학자 둘 다 정치력이 20% 밑이라면,
+				# 양반과 성리학자 둘 다 정치력이 20% 밑이라면,
 				if = {
 					limit = {
-						has_journal_entry = je_sedo_politics
 						any_interest_group = {
 							OR = {
 								is_interest_group_type = ig_landowners
@@ -1123,21 +1122,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							count >= 2
 						}
 					}
-					add = 5
-				}
-				#권력공유자의 IG 정치력이 20% 밑이라면,
-				if = {
-					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
-							this.interest_group = {
-								NOT = { is_interest_group_type = ig_landowners }
-								NOT = { is_interest_group_type = ig_devout }
-								is_powerful = no
-							}
-						}
-					}
-					add = 12
+					add = 15
 				}
 			}
 			if = {
@@ -1147,77 +1132,54 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 						count = all
 					}
 				}
-				#세도정치면 양반과 성리학자 상호 협력 가능.
-				if = {
-					limit = {
-						has_journal_entry = je_sedo_politics
-					}
-					random_list = {
-						1 = {	#양반
-							modifier = {
-								if = {
-									limit = {
-										any_interest_group = {
-											is_interest_group_type = ig_landowners
-											is_powerful = no
-										}
+				#양반과 성리학자 상호 협력 가능.
+				random_list = {
+					1 = {	#양반
+						modifier = {
+							if = {
+								limit = {
+									any_interest_group = {
+										is_interest_group_type = ig_landowners
+										is_powerful = no
 									}
-									add = 10
 								}
+								add = 10
 							}
-							ig:ig_landowners = {
-								add_modifier = {
-									name = eafp_modi_pp_up
-									months = 18
-								}
-								save_scope_as = eafp_message_target_ig
-							}
-							post_notification = eafp_message_regent_political_power
 						}
-						1 = {	#성리학자
-							modifier = {
-								if = {
-									limit = {
-										any_interest_group = {
-											is_interest_group_type = ig_devout
-											is_powerful = no
-										}
-									}
-									add = 10
-								}
-							}
-							ig:ig_devout = {
-								add_modifier = {
-									name = eafp_modi_pp_up
-									months = 18
-								}
-								save_scope_as = eafp_message_target_ig
-							}
-							post_notification = eafp_message_regent_political_power
-						}
-					}
-				}
-				#아니라면 그냥 소속 IG만
-				else = {
-					random_scope_character = {
-						limit = {
-							owner.var:eafp_var_je_regent_character ?= THIS
-						}
-						this.interest_group = {
+						ig:ig_landowners = {
 							add_modifier = {
 								name = eafp_modi_pp_up
 								months = 18
 							}
 							save_scope_as = eafp_message_target_ig
 						}
+						post_notification = eafp_message_sedo_politics_political_power
 					}
-					post_notification = eafp_message_regent_political_power
+					1 = {	#성리학자
+						modifier = {
+							if = {
+								limit = {
+									any_interest_group = {
+										is_interest_group_type = ig_devout
+										is_powerful = no
+									}
+								}
+								add = 10
+							}
+						}
+						ig:ig_devout = {
+							add_modifier = {
+								name = eafp_modi_pp_up
+								months = 18
+							}
+							save_scope_as = eafp_message_target_ig
+						}
+						post_notification = eafp_message_sedo_politics_political_power
+					}
 				}
-				#[SCOPE.gsInterestGroup('eafp_message_target_ig').GetName]
-				#post_notification = eafp_message_regent_political_power
 			}
 			else = {
-				eafp_kor_regent_corruption_roll = yes	#다시 굴림.
+				eafp_sedo_politics_corruption_roll = yes	#다시 굴림.
 			}
 		}
 		20 = {	#힘의균형 끌기
@@ -1226,8 +1188,8 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				if = {
 					limit = {
 						OR = {
-							NOT = { has_variable = eafp_var_je_regent_account }
-							var:eafp_var_je_regent_account <= eafp_val_pulling_balance_cost
+							NOT = { has_variable = eafp_var_je_sedo_politics_account }
+							var:eafp_var_je_sedo_politics_account <= eafp_val_pulling_balance_cost
 						}
 					}
 					add = -24
@@ -1235,20 +1197,20 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				#권력공유자의 권세가 매우 낮다면
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 100
+						var:eafp_var_je_sedo_politics_balance < 100
 					}
 					add = 4
 				}
 				#권력공유자의 권세가 낮다면
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 200
+						var:eafp_var_je_sedo_politics_balance < 200
 					}
 					add = 4
 				}
 			}
 			change_variable = {	#지출
-				name = eafp_var_je_regent_account
+				name = eafp_var_je_sedo_politics_account
 				add = eafp_val_pulling_balance_cost
 			}
 			eafp_effect_option_gain_balance = {
@@ -1258,7 +1220,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				name = eafp_pocket_money_payment
 				value = eafp_val_pulling_balance_cost
 			}
-			post_notification = eafp_message_regent_pulling_balance
+			post_notification = eafp_message_sedo_politics_pulling_balance
 		}
 		#2단계
 		15 = {	#지역수탈-민
@@ -1273,7 +1235,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 100
+						var:eafp_var_je_sedo_politics_balance < 100
 					}
 					add = -15
 				}
@@ -1292,7 +1254,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1319,7 +1281,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_civ
+					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 				#양서
 				2 = {
@@ -1334,7 +1296,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1361,7 +1323,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_civ
+					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 				#관북
 				2 = {
@@ -1376,7 +1338,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1403,7 +1365,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_civ
+					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 				#영남
 				2 = {
@@ -1418,7 +1380,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1445,7 +1407,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_civ
+					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 				#양호
 				2 = {
@@ -1460,7 +1422,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1487,10 +1449,10 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_civ
+					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 			}
-			#post_notification = eafp_message_regent_exploit_civ
+			#post_notification = eafp_message_sedo_politics_exploit_civ
 		}
 		15 = {	#지역수탈-관
 			modifier = {
@@ -1504,7 +1466,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 100
+						var:eafp_var_je_sedo_politics_balance < 100
 					}
 					add = -15
 				}
@@ -1523,7 +1485,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1550,7 +1512,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_adm
+					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 				#양서
 				2 = {
@@ -1565,7 +1527,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1592,7 +1554,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_adm
+					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 				#관북
 				2 = {
@@ -1607,7 +1569,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1634,7 +1596,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_adm
+					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 				#영남
 				2 = {
@@ -1649,7 +1611,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1676,7 +1638,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_adm
+					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 				#양호
 				2 = {
@@ -1691,7 +1653,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1718,10 +1680,10 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_adm
+					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 			}
-			#post_notification = eafp_message_regent_exploit_adm
+			#post_notification = eafp_message_sedo_politics_exploit_adm
 		}
 		15 = {	#지역수탈-군
 			modifier = {
@@ -1735,7 +1697,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 100
+						var:eafp_var_je_sedo_politics_balance < 100
 					}
 					add = -15
 				}
@@ -1754,7 +1716,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1781,7 +1743,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_mil
+					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 				#양서
 				2 = {
@@ -1796,7 +1758,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1823,7 +1785,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_mil
+					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 				#관북
 				2 = {
@@ -1838,7 +1800,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1865,7 +1827,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_mil
+					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 				#영남
 				2 = {
@@ -1880,7 +1842,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1907,7 +1869,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_mil
+					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 				#양호
 				2 = {
@@ -1922,7 +1884,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 					# 최종 착복금은 기본값인 eafp_val_land_exploit_cost 에 더하여, 지역개발도 레벨따라 (+0% ~ +100%) 까지 보정.
 					change_variable = {	#입금
-						name = eafp_var_je_regent_account
+						name = eafp_var_je_sedo_politics_account
 						add = {
 							value = eafp_val_land_exploit_cost
 							divide = 5
@@ -1949,31 +1911,17 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 							add = eafp_val_land_exploit_cost
 						}
 					}
-					post_notification = eafp_message_regent_exploit_mil
+					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 			}
-			#post_notification = eafp_message_regent_exploit_mil
+			#post_notification = eafp_message_sedo_politics_exploit_mil
 		}
 		20 = {	#정통성 하락
 			modifier = {
-				#내가 헌종일경우
-				if = {
-					limit = {
-						ruler = { has_template = eafp_kor_yi_hwan_character_template }
-					}
-					add = -10	#난 정통성 좋아!
-				}
-				#권력공유 유형이 섭정(대원군) 일 경우,
-				if = {
-					limit = {
-						var:eafp_var_je_regent_type = flag:appa
-					}
-					add = -20	#아들덕에 얻은 권세에 미쳤다고 애비가?
-				}
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 100
+						var:eafp_var_je_sedo_politics_balance < 100
 					}
 					add = -20
 				}
@@ -1986,10 +1934,10 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					name = eafp_modi_attack_legitimacy
 					months = 12
 				}
-				post_notification = eafp_message_regent_attack_legitimacy
+				post_notification = eafp_message_sedo_politics_attack_legitimacy
 			}
 			else = {
-				eafp_kor_regent_corruption_roll = yes	#다시 굴림.
+				eafp_sedo_politics_corruption_roll = yes	#다시 굴림.
 			}
 		}
 		#3단계
@@ -1999,8 +1947,8 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				if = {
 					limit = {
 						OR = {
-							NOT = { has_variable = eafp_var_je_regent_account }
-							var:eafp_var_je_regent_account <= eafp_val_embezzle_focus
+							NOT = { has_variable = eafp_var_je_sedo_politics_account }
+							var:eafp_var_je_sedo_politics_account <= eafp_val_embezzle_focus
 						}
 					}
 					add = 6
@@ -2015,7 +1963,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 200
+						var:eafp_var_je_sedo_politics_balance < 200
 					}
 					add = -46
 				}
@@ -2029,7 +1977,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 				}
 				change_variable = {	#송금
-					name = eafp_var_je_regent_account
+					name = eafp_var_je_sedo_politics_account
 					add = {
 						value = eafp_val_embezzle_m_cost
 						multiply = -0.9	#개인자금으로 갈 90%
@@ -2043,8 +1991,8 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				if = {
 					limit = {
 						OR = {
-							NOT = { has_variable = eafp_var_je_regent_account }
-							var:eafp_var_je_regent_account <= eafp_val_forced_privatization_cost
+							NOT = { has_variable = eafp_var_je_sedo_politics_account }
+							var:eafp_var_je_sedo_politics_account <= eafp_val_forced_privatization_cost
 						}
 					}
 					add = -30
@@ -2059,13 +2007,13 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 200
+						var:eafp_var_je_sedo_politics_balance < 200
 					}
 					add = -30
 				}
 			}
 			change_variable = {	#지불
-				name = eafp_var_je_regent_account
+				name = eafp_var_je_sedo_politics_account
 				subtract = eafp_val_forced_privatization_cost
 			}
 			add_investment_pool = eafp_val_forced_privatization_cost	#송금
@@ -2077,7 +2025,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				name = eafp_pocket_money_payment
 				value = eafp_val_forced_privatization_cost
 			}
-			post_notification = eafp_message_regent_forced_privatization
+			post_notification = eafp_message_sedo_politics_forced_privatization
 		}
 		#4단계
 		30 = {	#지휘관 측근임명
@@ -2113,18 +2061,13 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 300
+						var:eafp_var_je_sedo_politics_balance < 300
 					}
 					add = -30
 				}
 			}
-			random_scope_character = {	#권력공유자의 IG를 따와서...
-				limit = {
-					owner.var:eafp_var_je_regent_character ?= THIS
-				}
-				this.interest_group = {
-					save_scope_as = eafp_appoint_general_target_ig
-				}
+			ig:ig_landowners = {	#권력공유자의 IG를 따와서...
+				save_scope_as = eafp_appoint_general_target_ig
 			}
 			random_military_formation = {
 				limit = {
@@ -2155,8 +2098,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				}
 				if = {	#김씨 위세면,
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
+						ig:ig_landowners.leader = {
 							has_modifier = eafp_modi_kmsii_good
 						}
 					}
@@ -2181,8 +2123,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				}
 				else_if = {	#조씨 위세면,
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
+						ig:ig_landowners.leader = {
 							has_modifier = eafp_modi_jossi_good
 						}
 					}
@@ -2229,8 +2170,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 			else = {	#부대가 해군이면
 				if = {	#김씨 위세면,
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
+						ig:ig_landowners.leader = {
 							has_modifier = eafp_modi_kmsii_good
 						}
 					}
@@ -2255,8 +2195,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				}
 				else_if = {	#조씨 위세면,
 					limit = {
-						any_scope_character = {
-							owner.var:eafp_var_je_regent_character ?= THIS
+						ig:ig_landowners.leader = {
 							has_modifier = eafp_modi_jossi_good
 						}
 					}
@@ -2349,7 +2288,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					hidden = yes
 				}
 			}
-			post_notification = eafp_message_regent_appoint_general
+			post_notification = eafp_message_sedo_politics_appoint_general
 		}
 		30 = {	#행정력 하락
 			modifier = {
@@ -2363,7 +2302,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 300
+						var:eafp_var_je_sedo_politics_balance < 300
 					}
 					add = -30
 				}
@@ -2372,7 +2311,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				name = eafp_modi_appoint_bureaucrat
 				months = 12
 			}
-			post_notification = eafp_message_regent_appoint_bureaucrat
+			post_notification = eafp_message_sedo_politics_appoint_bureaucrat
 		}
 		#5단계
 		30 = {	#대규모 자금착복
@@ -2381,8 +2320,8 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				if = {
 					limit = {
 						OR = {
-							NOT = { has_variable = eafp_var_je_regent_account }
-							var:eafp_var_je_regent_account <= eafp_val_embezzle_focus
+							NOT = { has_variable = eafp_var_je_sedo_politics_account }
+							var:eafp_var_je_sedo_politics_account <= eafp_val_embezzle_focus
 						}
 					}
 					add = 6
@@ -2390,7 +2329,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 400
+						var:eafp_var_je_sedo_politics_balance < 400
 					}
 					add = -36
 				}
@@ -2404,7 +2343,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 					}
 				}
 				change_variable = {	#송금
-					name = eafp_var_je_regent_account
+					name = eafp_var_je_sedo_politics_account
 					add = {
 						value = eafp_val_embezzle_l_cost
 						multiply = -0.9	#개인자금으로 갈 90%
@@ -2417,7 +2356,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				#가능하다면?
 				if = {
 					limit = {
-						var:eafp_var_je_regent >= 400
+						var:eafp_var_je_sedo_politics_balance >= 400
 						NOT = { has_variable = eafp_var_snatch_law_cooltime }
 					}
 					add = 5000
@@ -2436,7 +2375,7 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				####힘의균형 등급에 의한 행동가능여부 판별!
 				if = {
 					limit = {
-						var:eafp_var_je_regent < 400
+						var:eafp_var_je_sedo_politics_balance < 400
 					}
 					add = -25
 				}
@@ -2446,22 +2385,22 @@ eafp_kor_regent_corruption_roll = {	#주 권력공유자 사익추구 행동 굴
 				name = eafp_var_snatch_law_cooltime
 				months = 48
 			}
-			post_notification = eafp_message_regent_snatch_law
+			post_notification = eafp_message_sedo_politics_snatch_law
 		}
 	}
 }
 ##
-eafp_kor_regent_corruption_passive = {
+eafp_sedo_politics_corruption_passive = {
 	#일단 매달 녹봉지급.
 	change_variable = {	#송금
-		name = eafp_var_je_regent_account
+		name = eafp_var_je_sedo_politics_account
 		add = eafp_val_regent_monthly_allowance
 	}
 	save_scope_value_as = {
 		name = eafp_pocket_money_payment
 		value = eafp_val_regent_monthly_allowance
 	}
-	post_notification = eafp_message_regent_monthly_allowance
+	post_notification = eafp_message_sedo_politics_monthly_allowance
 	add_treasury = {	#지출할 돈
 		value = eafp_val_regent_monthly_allowance
 		multiply = -1
@@ -2469,37 +2408,29 @@ eafp_kor_regent_corruption_passive = {
 	#이하 패시브 효과 체크.
 	if = {
 		limit = {
-			any_scope_character = {
-				owner.var:eafp_var_je_regent_character ?= THIS
-				interest_group = {
-					is_in_government = no
-				}
-			}
+			ig:ig_landowners = { is_in_government = no }
 		}
 		eafp_effect_option_gain_stress = {
 			STRESS = 1
 		}
-		post_notification = eafp_message_regent_non_exist
+		post_notification = eafp_message_sedo_politics_non_exist
 	}
 	if = {
 		limit = {
-			any_scope_character = {
-				owner.var:eafp_var_je_regent_character ?= THIS
-				interest_group = {
-					ig_approval <= angry
-				}
+			ig:ig_landowners = {
+				ig_approval <= angry
 			}
-			var:eafp_var_je_regent >= 300
+			var:eafp_var_je_sedo_politics_balance >= 300
 		}
 		if = {
 			limit = {
-				NOT = { has_modifier = eafp_modi_regent_they_are_angry }
+				NOT = { has_modifier = eafp_modi_sedo_they_are_angry }
 			}
-			post_notification = eafp_message_regent_they_are_angry
+			post_notification = eafp_message_sedo_politics_they_are_angry
 		}
-		remove_modifier = eafp_modi_regent_they_are_angry
+		remove_modifier = eafp_modi_sedo_they_are_angry
 		add_modifier = {
-			name = eafp_modi_regent_they_are_angry
+			name = eafp_modi_sedo_they_are_angry
 			days = 32
 		}
 	}
