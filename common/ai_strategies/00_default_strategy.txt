@@ -36,7 +36,7 @@ ai_strategy_default = {
 	# Using a different value in a strategy will override this value
 	revolution_aversion = {
 		value = 5 
-
+		
 		# Ottomans should avoid getting into revolutions before they deal with Egypt
 		if = {
 			limit = { 
@@ -81,7 +81,7 @@ ai_strategy_default = {
 	# NOTE: You need to include a description when adding values here so there are correct tooltips, this is different from most of ai strategy data!
 	diplomatic_play_support = {
 		value = 0
-
+		
 		### German Leadership War
 		if = {
 			# Non-Germans should stay out of the leadership war unless they have a good reason to intervene
@@ -512,7 +512,7 @@ ai_strategy_default = {
 				desc = "recognised_kenesary"
 			}
 		}
-
+		
 		if = { # Chinese unification warlord coalitions
 			limit = {
 				has_journal_entry = je_reunify_china
@@ -530,7 +530,7 @@ ai_strategy_default = {
 			}
 		}
 	}	
-
+	
 	# Added to base neutrality in diplomatic plays	
 	# Using this value in other strategies will function additively
 	diplomatic_play_neutrality = {
@@ -544,39 +544,13 @@ ai_strategy_default = {
 			
 			add = 50
 		}
-
-		# 추가, 청나라 조공국은 아편 전쟁 참가 안함
-	    if = {
-			limit = {
-				is_subject_type = subject_type_tributary
-				exists = c:CHI
-				top_overlord = c:CHI
-				top_overlord = {
-					has_journal_entry = je_opium_obsession
-				}
-			}
-			add = 100
-		}
-
-		# 추가, 영국 동인도 회사도
-	    if = {
-			limit = {
-				c:BIC ?= this
-				exists = c:CHI
-				top_overlord ?= {
-					has_journal_entry = je_opium_wars
-					is_diplomatic_play_enemy_of = c:CHI
-				}
-			}
-			add = 100
-		}
 	}
 	
 	# Added to base boldness in diplomatic plays	
 	# Using this value in other strategies will function additively
 	diplomatic_play_boldness = {
 		value = 50
-
+		
 		# Great Powers with the appropriate flags should get involved in Egypt vs Ottomans
 		if = {
 			limit = {
@@ -596,7 +570,7 @@ ai_strategy_default = {
 			}
 			
 			add = 100
-		}
+		}		
 		
 		if = { # Isolationist Japan should tend to back down against market opening plays
 			limit = {
@@ -621,7 +595,7 @@ ai_strategy_default = {
 			}
 			add = 1000
 		}
-		
+
 		if = { # Paraguay Should never surrender if they have the relevant JE
 			limit = {
 				c:PRG ?= this
@@ -631,7 +605,7 @@ ai_strategy_default = {
 	                    has_play_goal = conquer_state
 	                    has_play_goal = return_state
 	                    has_play_goal = make_tributary
-						has_play_goal = make_dominion
+	                    has_play_goal = make_dominion
 	                    has_play_goal = make_protectorate
 	                }
 				}
@@ -815,7 +789,7 @@ ai_strategy_default = {
 	# Using this value in other strategies will function additively
 	obligation_value = {
 		value = 5
-		
+	
 		# Compare ranks - higher rank than us has increased value, lower rank decreased value
 		if = {
 			limit = {
@@ -879,7 +853,7 @@ ai_strategy_default = {
 						has_attitude = {
 							who = root
 							attitude = domineering
-						}			
+						}	
 					}
 				}
 			}
@@ -901,7 +875,7 @@ ai_strategy_default = {
 				}			
 			}
 			add = 5
-		}	
+		}
 	
 		multiply = {
 			value = "scope:target_country.relations:root"
@@ -949,7 +923,7 @@ ai_strategy_default = {
 		if = { # Overlords care a bit more about Obligations from their Subjects, since they can use them to keep them in check
 			limit = { scope:target_country = { is_subject_of = root } }
 			add = 10
-		}			
+		}
 
 		min = 0
 		max = 30
@@ -1214,7 +1188,7 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-
+			
 			if = {
 				limit = {
 					has_journal_entry = je_unify_afghanistan
@@ -1294,7 +1268,7 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-			
+
 			if = {
 				limit = {
 					has_journal_entry = je_the_eastern_border
@@ -1309,76 +1283,6 @@ ai_strategy_default = {
 					}
 				}
 				add = 50
-			}
-
-			if = { # 추가, 러시아용
-				limit = { # 중국 또는 중국의 장군부
-					c:RUS ?= THIS
-					exists = c:CHI
-					scope:target_country = {
-						OR = {
-							THIS = c:CHI
-							AND = {
-								is_subject_of = c:CHI
-								is_subject_type = subject_type_military_headquarters_china
-							}
-						}
-					}
-				}
-				if = { # 동방의 지배자 저널을 완료하면, 만주, 중앙아시아, 울리아스타이, 우르가, 투바를 우선 먹음
-					limit = {
-						owns_entire_state_region = STATE_AMUR
-						owns_entire_state_region = STATE_OUTER_MANCHURIA
-						owns_entire_state_region = STATE_JETISY 
-						owns_entire_state_region = STATE_ALTAI
-						OR = {
-							owns_entire_state_region = STATE_KIRGHIZIA
-							any_country = {
-								is_subject_of = c:RUS
-								owns_entire_state_region = STATE_KIRGHIZIA
-							}
-						}
-					}
-					if = {
-						limit = {
-							scope:target_state = {
-								OR = {
-									region = sr:region_north_china
-									region = sr:region_south_china
-								}
-								NOR = {
-									state_region = s:STATE_ULIASTAI
-									state_region = s:STATE_URGA
-									state_region = s:STATE_TUVA
-								}
-							}
-						}
-						add = -50
-					}
-					
-				}
-				else = { # 동방의 지배자 저널을 완료할 때까지, 동방의 지배자 조건을 우선 먹음
-					if = {
-						limit = {
-							scope:target_state = {
-								OR = {
-									region = sr:region_north_china
-									region = sr:region_south_china
-									region = sr:region_manchuria
-									region = sr:region_central_asia
-								}
-								NOR = {
-									state_region = s:STATE_AMUR
-									state_region = s:STATE_OUTER_MANCHURIA
-									state_region = s:STATE_JETISY
-									state_region = s:STATE_ALTAI
-									state_region = s:STATE_KIRGHIZIA
-								}
-							}
-						}
-						add = -50
-					}
-				}
 			}
 
 			if = {
@@ -1425,7 +1329,7 @@ ai_strategy_default = {
 				}
 				add = 15
 			}
-
+			
 			if = { # Dutch East Indies wishes to consolidate Indonesia
 				limit = {
 					c:DEI ?= this
@@ -1490,7 +1394,7 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-			
+
 			if = { # Britain wants to strengthen South Africa
 				limit = {
 					any_subject_or_below = {
@@ -1541,7 +1445,7 @@ ai_strategy_default = {
 				}
 				multiply = 0
 			}
-				
+			
 			if = {
 				limit = { 
 					has_strategy = ai_strategy_armed_isolationism 
@@ -1560,12 +1464,11 @@ ai_strategy_default = {
 					country_rank >= rank_value:major_power
 					scope:target_state = {
 						owner = { has_journal_entry = je_warlord_china }
-						#OR = { # 수정
-						#	region = sr:region_north_china
-						#	region = sr:region_south_china
-						#	region = sr:region_manchuria 
-						#}
-						state_is_in_china_proper = yes # 추가
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+							region = sr:region_manchuria
+						}
 					}				
 					OR = {
 						country_is_in_north_america = yes
@@ -1575,7 +1478,6 @@ ai_strategy_default = {
 					NOR = {
 						sr:region_north_china = {
 							any_scope_state = {
-								state_is_in_china_proper = yes # 추가
 								NOT = { is_treaty_port = yes }
 								owner = {
 									NOT = { THIS = ROOT }
@@ -1590,7 +1492,6 @@ ai_strategy_default = {
 						}
 						sr:region_south_china = {
 							any_scope_state = {
-								state_is_in_china_proper = yes # 추가
 								NOT = { is_treaty_port = yes }
 								owner = {
 									NOT = { THIS = ROOT }
@@ -1603,20 +1504,20 @@ ai_strategy_default = {
 								}
 							}			 
 						}	
-						#sr:region_manchuria = { # 수정
-						#	any_scope_state = {
-						#		NOT = { is_treaty_port = yes }
-						#		owner = {
-						#			NOT = { THIS = ROOT }
-						#			country_rank >= rank_value:major_power
-						#			OR = {
-						#				country_is_in_north_america = yes
-						#				country_is_in_europe = yes
-						#				country_is_in_south_america = yes
-						#			}					
-						#		}
-						#	}			 
-						#}			
+						sr:region_manchuria = {
+							any_scope_state = {
+								NOT = { is_treaty_port = yes }
+								owner = {
+									NOT = { THIS = ROOT }
+									country_rank >= rank_value:major_power
+									OR = {
+										country_is_in_north_america = yes
+										country_is_in_europe = yes
+										country_is_in_south_america = yes
+									}					
+								}
+							}			 
+						}			
 					}
 				}
 				multiply = 0
@@ -1749,56 +1650,14 @@ ai_strategy_default = {
 			limit = {
 				should_carve_up_china = yes
 				scope:target_state = {
-					#OR = { # 수정
-					#	region = sr:region_north_china
-					#	region = sr:region_south_china
-					#	region = sr:region_manchuria
-					#}
-					state_is_in_china_proper = yes # 추가
+					OR = {
+						region = sr:region_north_china
+						region = sr:region_south_china
+						region = sr:region_manchuria
+					}
 				}
 			}
 			add = 100
-		}
-		
-		if = { # 추가, 북독일계 열강은 산둥반도에
-			limit = {
-				country_has_primary_culture = cu:north_german
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				NOT = { scope:target_state = { state_region = s:STATE_SHANDONG } }
-			}
-			multiply = 0
-		}
-		if = { # 추가, 러시아계 열강은 성경에
-			limit = {
-				any_primary_culture = { has_discrimination_trait = east_slavic }
-				country_rank >= rank_value:great_power
-				exists = c:CHI
-				NOT = { scope:target_state = { state_region = s:STATE_SHENGJING } }
-			}
-			multiply = 0
-		}
-		c:RUS ?= { # 러시아가 동방의 지배자 저널 가지거나 완료하면 발작함
-			if = {
-				limit = {
-					OR = {
-						has_journal_entry = je_the_eastern_border
-						AND = {
-							owns_entire_state_region = STATE_OUTER_MANCHURIA 
-							owns_entire_state_region = STATE_JETISY 
-							owns_entire_state_region = STATE_TOMSK
-							OR = {
-								owns_entire_state_region = STATE_KIRGHIZIA
-								any_country = {
-									is_subject_of = c:RUS
-									owns_entire_state_region = STATE_KIRGHIZIA
-								}
-							}
-						}
-					}
-				}
-				add = 100
-			}
 		}
 		
 		# Not worth doing against very small markets
@@ -1950,7 +1809,7 @@ ai_strategy_default = {
 						multiply = 0.5
 					}						
 				}
-			}								
+			}	
 
 			if = {
 				limit = {
@@ -2114,7 +1973,7 @@ ai_strategy_default = {
 				multiply = 1.5
 			}	
 		}
-
+		
 		# AI should open up large isolationist powers, not subjugate them
 		if = {
 			limit = {
@@ -2147,7 +2006,7 @@ ai_strategy_default = {
 		}
 		else = {
 			min = 0
-			max = 200		
+			max = 200
 		}
 	}
 
@@ -2454,8 +2313,8 @@ ai_strategy_default = {
 				}
 			}
 			add = 1.0
-		}
-
+		}		
+		
 		# Schleswig-Holstein question
 		if = {
 			limit = { 
@@ -2621,38 +2480,6 @@ ai_strategy_default = {
 	aggression = {
 		value = 0.5
 		
-		if = { # 추가, 태평천국 중엔 전쟁 X
-			limit = {
-				country_rank >= rank_value:major_power
-				exists = c:CHI
-				scope:target_country = c:CHI
-				exists = c:TPG
-			}
-			add = -10
-		}
-
-		if = { # 추가
-			limit = {
-				country_rank >= rank_value:major_power
-				exists = c:CHI
-				scope:target_country = c:CHI
-				# 태평천국이 끝난 후
-				has_global_variable = heavenly_kingdom_start_var
-				NOT = { exists = c:TPG }
-				trigger_if = { # 미국이면, 명백한 운명 일지 2 다 완료하거나
-					limit = { c:USA ?= THIS }
-					NOT = { has_journal_entry = je_manifest_destiny_mexico }
-					NOT = { has_journal_entry = je_manifest_destiny_frontier_wars }
-					has_variable = manifested_destiny
-				}
-				NAND = { # 러시아가 아닐 때 (동방의 지배자 저널로 따로 관리)
-					exists = c:RUS
-					ROOT = c:RUS
-				}
-			}
-			add = 10
-		}
-		
 		# More fighting between unrecognized powers
 		if = {
 			limit = {
@@ -2689,7 +2516,7 @@ ai_strategy_default = {
 				}
 			}
 			add = 100
-		}		
+		}
 		
 		# Opium wars aggressor should be very, very aggressive against target if they're banning opium
 		if = {
@@ -2715,32 +2542,8 @@ ai_strategy_default = {
 				}
 			}
 			add = 10
-		}
-
-		# 추가, 중국 선교 저널이 진행 중이면 기독교 강대국들이 정말 화냄
-		if = {
-			limit = {
-				country_rank >= rank_value:major_power
-				religion = {
-					has_discrimination_trait = christian
-				}
-				scope:target_country = {
-					has_journal_entry = je_chinese_missions
-					custom_tooltip = {
-						text = missionary_ban_tt
-						has_variable = CHI_deported_missionaries
-					}
-					OR = {
-						# is_country_type = recognized
-						has_law = law_type:law_state_atheism
-						has_law = law_type:law_isolationism
-						has_law = law_type:law_closed_borders
-					}
-				}
-			}
-			add = 50
-		}
-
+		}			
+		
 		# Schleswig-Holstein question
 		if = {
 			limit = { 
@@ -2758,12 +2561,11 @@ ai_strategy_default = {
 				scope:target_country = {
 					is_country_type = unrecognized
 					any_scope_state = {
-						#OR = { # 수정
-						#	region = sr:region_north_china
-						#	region = sr:region_south_china
-						#	region = sr:region_manchuria
-						#}
-						state_is_in_china_proper = yes # 추가
+						OR = {
+							region = sr:region_north_china
+							region = sr:region_south_china
+							region = sr:region_manchuria
+						}
 					}					
 				}
 			}
@@ -2996,7 +2798,7 @@ ai_strategy_default = {
 			}
 			add = 5
 		}
-
+		
 		if = { #Japan also wants Korea
 			limit = {
 				country_has_primary_culture = cu:japanese
@@ -3011,7 +2813,7 @@ ai_strategy_default = {
 			}
 			add = 5
 		}
-		
+
 		if = { # Britain consolidating South Africa
 			limit = {
 				country_has_primary_culture = cu:british
@@ -3106,7 +2908,7 @@ ai_strategy_default = {
 				}				
 			}
 			add = 1
-		}
+		}		
 		
 		if = { #Indian suzerain will be aggressive against Russia
 			limit = {
@@ -3169,11 +2971,11 @@ ai_strategy_default = {
 			}
 			add = 5
 		}
-
+		
 		# Russia should very aggressively go for the Caucasus if it's still a great power.
 		if = {
 			limit = {
-                exists = c:RUS
+				exists = c:RUS
                 THIS = c:RUS
                 country_rank = rank_value:great_power
                 OR = {
@@ -3226,7 +3028,7 @@ ai_strategy_default = {
 				}
 			}
 			add = 5
-		}
+		}		
 		
         # Paraguay should be highly aggressive while they have the war JE.
         if = {
@@ -3396,7 +3198,7 @@ ai_strategy_default = {
 			add = 35
 		}
 
-		# Neutral Switzerland
+        # Neutral Switzerland
         if = {
             limit = {
 				exists = c:SWI
@@ -3427,7 +3229,7 @@ ai_strategy_default = {
 				is_subject_of = scope:target_country
 			}
 			multiply = 0.0
-		}
+		}		
 
 		if = { # Likewise for the Dutch East Indies
 			limit = {
@@ -3529,13 +3331,13 @@ ai_strategy_default = {
 			divide = 100000 # 1 level of barracks per 100k incorporated population	
 			
 			max = 10
-		}			
+		}	
 	
 		add = {
 			value = cached_ai_incorporated_population
 			divide = 250000 # 1 level of barracks per 250k incorporated population	
-		}		
-		
+		}
+
 		add = {
 			value = cached_ai_unincorporated_population
 			divide = 1000000 # 1 level of barracks per 1 million unincorporated population	
@@ -3588,7 +3390,7 @@ ai_strategy_default = {
 			}
 			divide = 2500 # 1 level of barracks per 2.5k income					
 		}				
-
+		
 		# More advanced standing armies are expensive and should be smaller relative to population
 		if = {
 			limit = { has_technology_researched = general_staff }
@@ -3621,14 +3423,14 @@ ai_strategy_default = {
 				}
 			}
 			multiply = 1.25
-		}	
+		}
 		else_if = {
 			limit = {
 				has_strategy = ai_strategy_unify_germany 
 			}
 			multiply = 2.0
 		}
-
+		
 		if = {
 			limit = { has_law = law_type:law_national_militia }
 			multiply = 0.33
@@ -3653,7 +3455,7 @@ ai_strategy_default = {
 				has_journal_entry = je_sick_man_army
 			}
 			min = 125
-		}
+		}	
 		max = {
 			value = 500
 
@@ -3779,8 +3581,8 @@ ai_strategy_default = {
 		if = {
 			limit = { has_strategy = ai_strategy_maintain_mandate_of_heaven }
 			multiply = 0.25
-		}	
-
+		}		
+		
 		max = 500
 		min = 0		
 	}		
@@ -3920,7 +3722,7 @@ ai_strategy_default = {
 				has_technology_researched = war_propaganda
 			}
 			multiply = 1.25
-		}		
+		}
 	}
 	
 	# What's the base AI desire to nationalize/privatize buildings
@@ -3936,7 +3738,7 @@ ai_strategy_default = {
 			}
 			
 			add = 100
-		}		
+		}
 	}
 	
 	# Add a multiplier to the score AI assigns to particular building groups (default 1)
@@ -3958,7 +3760,7 @@ ai_strategy_default = {
 	war_subsidies = {}	
 	
 	# How should the AI plan for production and trade of specific goods
-	# Using a different value in a strategy will override this value	
+	# Using a different value in a strategy will override this value
 	goods_stances = {
 		small_arms = {
 			stance = wants_high_supply
@@ -4080,7 +3882,7 @@ ai_strategy_default = {
 				has_building = building_furniture_manufacturies
 				total_population >= 1000000
 			}
-		}	
+		}
 		grain = {
 			stance = wants_high_supply
 			trigger = {
@@ -4148,7 +3950,7 @@ ai_strategy_default = {
 				}
 				add = 500
 			}
-		}	
+		}
 		region_arabic = {
 			if = {
 				limit = { # Certain Great Powers care about Egyptian-Ottoman conflict in the early game
@@ -4186,7 +3988,7 @@ ai_strategy_default = {
 				}
 				add = 200
 			}				
-		}
+		}			
 		region_japan = {	
 			if = {
 				limit = {
@@ -4405,7 +4207,7 @@ ai_strategy_default = {
 				}
 				add = 50
 			}
-		}
+		}	
 		region_central_asia = {
 			if = {
 				limit = {
@@ -4602,17 +4404,17 @@ ai_strategy_default = {
 			if = {
 				limit = {
 					has_law = law_type:law_isolationism
-					gdp >= 5000000		
+					gdp >= 5000000	
 				}
 				add = 10000
-			}
+			}			
 			
 			if = {
 				limit = {
 					country_rank = scope:target_country.country_rank
 				}
 				multiply = 0.5
-			}	
+			}		
 		}	
 		befriend = {
 			value = 200
@@ -4631,7 +4433,7 @@ ai_strategy_default = {
 				}
 				add = 200
 			}
-
+			
 			if = { # To make Britain want to befriend an Asian major power
 				limit = {	
 					country_has_primary_culture = cu:british
@@ -4690,7 +4492,7 @@ ai_strategy_default = {
 					value = "lobby_in_government_foreign_anti_clout(scope:target_country)"
 					divide = 2
 				}				
-			}				
+			}			
 
 			if = {
 				limit = {	
@@ -4809,7 +4611,7 @@ ai_strategy_default = {
 				}
 				multiply = 1.5
 			}
-			
+
 			if = {
 				limit = {
 					OR = {
@@ -4825,11 +4627,11 @@ ai_strategy_default = {
 			
 			# Don't befriend large isolationist powers
 			if = {
-				limit = { 			
+				limit = { 	
 					scope:target_country = {
 						has_law = law_type:law_isolationism
-						gdp >= 5000000		
-					}	
+						gdp >= 5000000			
+					}
 				}
 
 				multiply = 0
@@ -4879,7 +4681,7 @@ ai_strategy_default = {
 					
 					add = 200				
 				}					
-			}
+			}		
 
 			if = {
 				limit = {
@@ -4898,7 +4700,7 @@ ai_strategy_default = {
 				}
 				add = -50
 			}
-			
+
 			multiply = {
 				value = "ai_ideological_opinion(scope:target_country)"
 				multiply = 0.05
@@ -5043,7 +4845,7 @@ ai_strategy_default = {
 				}
 				add = 200
 			}
-
+			
 			if = {
 				limit = {
 					has_je_protect_reason = { TARGET = scope:target_country }
@@ -5175,7 +4977,7 @@ ai_strategy_default = {
 					is_in_same_power_bloc = scope:target_country
 				}
 				multiply = 2.5
-			}				
+			}
 
 			if = {
 				limit = {
@@ -5225,7 +5027,7 @@ ai_strategy_default = {
 		}		
 		antagonize = {
 			value = 0
-
+			
 			if = {
 				limit = {
 					countries_are_valid_rivals = yes
@@ -5250,7 +5052,7 @@ ai_strategy_default = {
 				}
 				add = 50
 			}			
-			
+
 			if = {
 				limit = {
 					scope:target_country = {
@@ -5281,7 +5083,7 @@ ai_strategy_default = {
 				}
 				add = 100
 			}
-			
+
 			multiply = {
 				value = "ai_ideological_opinion(scope:target_country)"
 				multiply = -0.05
@@ -5300,8 +5102,8 @@ ai_strategy_default = {
 					value = "lobby_in_government_foreign_pro_clout(scope:target_country)"
 					divide = 2
 				}				
-			}							
-
+			}			
+			
 			if = {
 				limit = {
 					lenient_ai_behavior_trigger = yes
@@ -5385,7 +5187,7 @@ ai_strategy_default = {
 					
 				}
 				multiply = 1.5
-			}		
+			}			
 
 			# AI implications for Power Blocs: 'antagonize' secret goal is more likely towards the country from another Bloc
 			if = {
@@ -5491,7 +5293,7 @@ ai_strategy_default = {
 
 				if = {
 					limit = { has_technology_researched = civilizing_mission }
-					add = 200
+					add = 200		
 					
 					if = {
 						limit = {
@@ -5743,7 +5545,7 @@ ai_strategy_default = {
 					is_in_same_power_bloc = scope:target_country
 				}
 				multiply = 0.25
-			}
+			}				
 
 			if = {
 				limit = {
@@ -5762,7 +5564,7 @@ ai_strategy_default = {
 			if = {
 				limit = { scope:target_country = { is_still_learning = yes } }
 				multiply = 0
-			}
+			}		
 			
 			# Countries scripted to have a friendly pact or same power bloc shouldn't start with hostile goals
 			if = {
@@ -6127,7 +5929,7 @@ ai_strategy_default = {
 					}				
 				}
 				multiply = 0
-			}	
+			}			
 		}			
 	}
 	
@@ -6152,7 +5954,7 @@ ai_strategy_default = {
 				}
 				
 				add = scope:target_state.ai_state_value:root
-			}
+			}			
 
 			min = 0
 			max = 100				
@@ -6203,20 +6005,20 @@ ai_strategy_default = {
 					}					
 				}
 				add = 1000
-			}
+			}			
 		}
-
+		
 		transfer_subject = {
 			if = {
 				limit = {
 					has_secret_goal = {
 						who = scope:target_country
 						secret_goal = dominate
-					}						
+					}
 				}
 			
 				add = scope:target_country.ai_subject_value:root
-			}		
+			}					
 		
 			if = {
 				limit = { 
@@ -6227,7 +6029,7 @@ ai_strategy_default = {
 				}
 				add = 100
 			}			
-			
+
 			min = 0
 			max = 100			
 		}		
@@ -6293,14 +6095,14 @@ ai_strategy_default = {
 					has_secret_goal = {
 						who = scope:target_country
 						secret_goal = dominate
-					}	
+					}
 				}
 			
 				add = scope:target_country.ai_subject_value:root			
 			}	
 
 			min = 0
-			max = 100			
+			max = 100				
 		}
 		
 		make_tributary = {
@@ -6311,7 +6113,7 @@ ai_strategy_default = {
 						secret_goal = dominate
 					}	
 				}
-				
+			
 				add = scope:target_country.ai_subject_value:root			
 			}	
 
@@ -6349,19 +6151,6 @@ ai_strategy_default = {
 					}
 				}
 				add = 100
-			}
-
-			if = { # 추가
-				limit = {
-					power_bloc ?= { has_identity = identity:identity_eafp_mandate_of_heaven }
-					is_power_bloc_leader = yes
-					is_in_same_power_bloc = scope:target_country
-					scope:target_country = {
-						is_subject_type = subject_type_tributary
-						is_subject_of = ROOT
-					}
-				}
-				multiply = 0.05
 			}
 		}		
 
@@ -6407,22 +6196,6 @@ ai_strategy_default = {
 				add = 50
 			}
 
-			#### 중국대상 가중치 추가
-			if = { 
-				limit = {
-					country_rank >= rank_value:major_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						NOT = {
-							has_variable = chinese_westernization_complete
-						}
-					}
-				}
-				add = 50
-			}
-			####
-
 			min = 0
 			max = 100			
 		}	
@@ -6449,7 +6222,7 @@ ai_strategy_default = {
 
 			min = 0
 			max = 50	
-		}	
+		}
 
 		regime_change = {
 			value = 0
@@ -6529,8 +6302,8 @@ ai_strategy_default = {
 				}
 				
 				multiply = 0.5
-			}					
-		}		
+			}
+		}
 		
 		open_market = {
 			value = 0
@@ -6592,7 +6365,7 @@ ai_strategy_default = {
 					}
 				}
 				multiply = 0
-			}					
+			}				
 			
 			# Don't want to open our own market...
 			if = {
@@ -6637,9 +6410,9 @@ ai_strategy_default = {
 					}
 				}
 				multiply = 0
-			}
+			}				
 		}	
-
+		
 		ban_slavery = {
 			value = 0
 			
@@ -6700,7 +6473,7 @@ ai_strategy_default = {
 				}
 				add = 30
 			}
-			
+
 			min = 0
 			max = 100
 		}		
@@ -6791,18 +6564,6 @@ ai_strategy_default = {
 					lenient_ai_behavior_trigger = yes
 				}
 				multiply = 0.0
-			}
-
-			if = { # 추가
-				limit = {
-					power_bloc ?= { has_identity = identity:identity_eafp_mandate_of_heaven }
-					is_power_bloc_leader = yes
-					is_in_same_power_bloc = scope:target_country
-					scope:target_country = {
-						country_has_state_religion = rel:confucian
-					}
-				}
-				multiply = 0.05
 			}
 
 			min = 0
@@ -6909,22 +6670,6 @@ ai_strategy_default = {
 
 		liberate_country = {
 			value = 0
-
-			####중국상대용 가중치
-			if = {
-				limit = {
-					country_rank >= rank_value:major_power
-					exists = c:CHI
-					scope:target_country = {
-						THIS = c:CHI
-						NOT = {
-							has_variable = chinese_westernization_complete
-						}
-					}
-				}
-				add = -100
-			}
-			####중국상대용 가중치
 		
 			if = {
 				limit = {

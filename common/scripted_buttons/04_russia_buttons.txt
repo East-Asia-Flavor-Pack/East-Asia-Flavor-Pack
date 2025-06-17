@@ -22,39 +22,15 @@
 		s:STATE_OUTER_MANCHURIA = {
 			any_scope_state = {
 				is_split_state = no
-				trigger_if = { # 추가
-					limit = {
-						owner = { is_subject_type = subject_type_military_headquarters_china }
-					}
-					owner.overlord = {
-						is_player = no
-						is_country_type = unrecognized
-						OR = {
-							country_has_primary_culture = cu:manchu
-							country_has_primary_culture = cu:han
-						}
+				is_capital = no
+				owner = {
+					is_player = no
+					is_country_type = unrecognized
+					OR = {
+						country_has_primary_culture = cu:manchu
+						country_has_primary_culture = cu:han
 					}
 				}
-				trigger_else = { # 추가
-					is_capital = no
-					owner = {
-						is_player = no
-						is_country_type = unrecognized
-						OR = {
-							country_has_primary_culture = cu:manchu
-							country_has_primary_culture = cu:han
-						}
-					}
-				}
-				#is_capital = no
-				#owner = {
-				#	is_player = no
-				#	is_country_type = unrecognized
-				#	OR = {
-				#		country_has_primary_culture = cu:manchu
-				#		country_has_primary_culture = cu:han
-				#	}
-				#}
 			}
 		}
 	}
@@ -71,138 +47,47 @@
 			state_region = s:STATE_OUTER_MANCHURIA
 		}
 		any_country = {
-			trigger_if = { # 추가
-				limit = {
-					is_subject_type = subject_type_military_headquarters_china
-				}
-				overlord = {
-					OR = {
-						country_has_primary_culture = cu:manchu
-						country_has_primary_culture = cu:han
-					}
-					OR = {
-						trigger_if = {
-							limit = {
-								has_journal_entry = je_warlord_china
-							}
-							custom_tooltip = {
-								text = china_explosion_point_75_tt
-								var:china_warlord_explosion_sum <= 0.75
-							}
-						}
-						country_rank < rank_value:unrecognized_major_power
-					}
-					OR = {
-						is_subject = no
-						is_subject_of = ROOT
-					}
-					trigger_if = {
-						limit = {
-							country_rank >= rank_value:unrecognized_major_power
-						}
-						OR = {
-							custom_tooltip = {
-								text = war_with_china_not_russia_tt
-								any_enemy_in_war = {
-									NOT = {
-										c:RUS ?= this
-									}
-								}
-							}
-							custom_tooltip = {
-								text = owes_russia_obligation_tt
-								c:RUS = {
-									is_owed_obligation_by = PREV
-								}
-							}
-						}	
-					}
-				}
+			OR = {
+				country_has_primary_culture = cu:manchu
+				country_has_primary_culture = cu:han
 			}
-			trigger_else = { # 추가
-				OR = {
-					country_has_primary_culture = cu:manchu
-					country_has_primary_culture = cu:han
-				}
-				OR = {
-					trigger_if = {
-						limit = {
-							has_journal_entry = je_warlord_china
-						}
-						custom_tooltip = {
-							text = china_explosion_point_75_tt
-							var:china_warlord_explosion_sum <= 0.75
-						}
-					}
-					country_rank < rank_value:unrecognized_major_power
-				}
-				OR = {
-					is_subject = no
-					is_subject_of = ROOT
-				}
+			OR = {
 				trigger_if = {
 					limit = {
-						country_rank >= rank_value:unrecognized_major_power
+						has_journal_entry = je_warlord_china
 					}
-					OR = {
-						custom_tooltip = {
-							text = war_with_china_not_russia_tt
-							any_enemy_in_war = {
-								NOT = {
-									c:RUS ?= this
-								}
-							}
-						}
-						custom_tooltip = {
-							text = owes_russia_obligation_tt
-							c:RUS = {
-								is_owed_obligation_by = PREV
-							}
-						}
-					}	
+					custom_tooltip = {
+						text = china_explosion_point_2_tt
+						var:china_warlord_explosion <= 3
+					}
 				}
+				country_rank < rank_value:unrecognized_major_power
 			}
-			#OR = {
-			#	country_has_primary_culture = cu:manchu
-			#	country_has_primary_culture = cu:han
-			#}
-			#OR = {
-			#	trigger_if = {
-			#		limit = {
-			#			has_journal_entry = je_warlord_china
-			#		}
-			#		custom_tooltip = {
-			#			text = china_explosion_point_2_tt
-			#			var:china_warlord_explosion <= 3
-			#		}
-			#	}
-			#	country_rank < rank_value:unrecognized_major_power
-			#}
-			#OR = {
-			#	is_subject = no
-			#	is_subject_of = ROOT
-			#}
-			#trigger_if = {
-			#	limit = {
-			#		country_rank >= rank_value:unrecognized_major_power
-			#	}
-			#	OR = {
-			#		custom_tooltip = {
-			#			text = war_with_china_not_russia_tt
-			#			any_enemy_in_war = {
-			#				NOT = {
-			#					c:RUS ?= this
-			#				}
-			#			}
-			#		}
-			#		custom_tooltip = {
-			#			text = owes_russia_obligation_tt
-			#			c:RUS = {
-			#				is_owed_obligation_by = PREV
-			#			}
-			#		}
-			#	}	
-			#}
+			OR = {
+				is_subject = no
+				is_subject_of = ROOT
+			}
+			trigger_if = {
+				limit = {
+					country_rank >= rank_value:unrecognized_major_power
+				}
+				OR = {
+					custom_tooltip = {
+						text = war_with_china_not_russia_tt
+						any_enemy_in_war = {
+							NOT = {
+								c:RUS ?= this
+							}
+						}
+					}
+					custom_tooltip = {
+						text = owes_russia_obligation_tt
+						c:RUS = {
+							is_owed_obligation_by = PREV
+						}
+					}
+				}	
+			}
 		}
 	}
 
@@ -213,25 +98,12 @@
 					country_has_primary_culture = cu:manchu
 					country_has_primary_culture = cu:han
 				}
-				OR = { # 추가
-					any_scope_state = {
-						state_region = s:STATE_OUTER_MANCHURIA
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } }
-					}
-					any_subject_or_below = {
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_OUTER_MANCHURIA
-						}
-					}
+				any_scope_state = {
+					state_region = s:STATE_OUTER_MANCHURIA
+					is_split_state = no
+					is_capital = no
 				}
-				#any_scope_state = {
-				#	state_region = s:STATE_OUTER_MANCHURIA
-				#	is_split_state = no
-				#	is_capital = no
-				#}
-				#is_country_type = unrecognized
+				is_country_type = unrecognized
 				is_player = no
 			}
 			save_scope_as = donor_scope
@@ -258,7 +130,7 @@
 					country = scope:donor_scope
 					value = 10
 				}
-			}
+			}	
 			custom_tooltip = transfer_of_outer_manchuria_tt	
 		}
 		set_global_variable = rus_bought_outer_manchuria
@@ -293,118 +165,46 @@ je_the_eastern_border_russia_chuguchak_protocol = {
 				owns_entire_state_region = STATE_AKMOLINSK
 			}
 		}	
-		OR = {
+			OR = {
 			s:STATE_ALTAI = {
 				any_scope_state = {
-					trigger_if = { # 추가
-						limit = {
-							owner = { is_subject_type = subject_type_military_headquarters_china }
-						}
-						owner.overlord = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
-					}
-					trigger_else = { # 추가
-						is_capital = no
-						owner = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
-					}
-					#is_capital = no
-					#owner = {
-					#	is_player = no
-					#	is_country_type = unrecognized
-					#	OR = {
-					#		country_has_primary_culture = cu:manchu
-					#		country_has_primary_culture = cu:han
-					#	}
-					#}
+					is_capital = no
+					owner = {
+						is_player = no
+						is_country_type = unrecognized
+						OR = {
+				country_has_primary_culture = cu:manchu
+				country_has_primary_culture = cu:han
+			}
+				}
 				}
 			}
 			s:STATE_JETISY = {
 				any_scope_state = {
-					trigger_if = { # 추가
-						limit = {
-							owner = { is_subject_type = subject_type_military_headquarters_china }
-						}
-						owner.overlord = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
+					is_capital = no
+					owner = {
+						is_player = no
+						is_country_type = unrecognized
+						OR = {
+							country_has_primary_culture = cu:manchu
+							country_has_primary_culture = cu:han
+				}
 					}
-					trigger_else = { # 추가
-						is_capital = no
-						owner = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
-					}
-					#is_capital = no
-					#owner = {
-					#	is_player = no
-					#	is_country_type = unrecognized
-					#	OR = {
-					#		country_has_primary_culture = cu:manchu
-					#		country_has_primary_culture = cu:han
-					#	}
-					#}
 				}
 			}
 			s:STATE_KIRGHIZIA = {
 				any_scope_state = {
-					trigger_if = { # 추가
-						limit = {
-							owner = { is_subject_type = subject_type_military_headquarters_china }
-						}
-						owner.overlord = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
-					}
-					trigger_else = { # 추가
-						is_capital = no
-						owner = {
-							is_player = no
-							is_country_type = unrecognized
-							OR = {
-								country_has_primary_culture = cu:manchu
-								country_has_primary_culture = cu:han
-							}
-						}
-					}
-					#is_capital = no
-					#owner = {
-					#	is_player = no
-					#	is_country_type = unrecognized
-					#	OR = {
-					#		country_has_primary_culture = cu:manchu
-					#		country_has_primary_culture = cu:han
-					#	}
-					#}
+					is_capital = no
+					owner = {
+						is_player = no
+						is_country_type = unrecognized
+						OR = {
+							country_has_primary_culture = cu:manchu
+							country_has_primary_culture = cu:han
 				}
 			}
+		}
+	}
 		}
 	}
 
@@ -414,138 +214,47 @@ je_the_eastern_border_russia_chuguchak_protocol = {
 
 	possible = {
 		any_country = {
-			trigger_if = { # 추가
-				limit = {
-					is_subject_type = subject_type_military_headquarters_china
-				}
-				overlord = {
-					OR = {
-						country_has_primary_culture = cu:manchu
-						country_has_primary_culture = cu:han
-					}
-					OR = {
-						trigger_if = {
-							limit = {
-								has_journal_entry = je_warlord_china
-							}
-							custom_tooltip = {
-								text = china_explosion_point_75_tt
-								var:china_warlord_explosion_sum <= 0.75
-							}
-						}
-						country_rank < rank_value:unrecognized_major_power
-					}
-					OR = {
-						is_subject = no
-						is_subject_of = ROOT
-					}
-					trigger_if = {
-						limit = {
-							country_rank >= rank_value:unrecognized_major_power
-						}
-						OR = {
-							custom_tooltip = {
-								text = war_with_china_not_russia_tt
-								any_enemy_in_war = {
-									NOT = {
-										c:RUS ?= this
-									}
-								}
-							}
-							custom_tooltip = {
-								text = owes_russia_obligation_tt
-								c:RUS = {
-									is_owed_obligation_by = PREV
-								}
-							}
-						}	
-					}
-				}
+			OR = {
+				country_has_primary_culture = cu:manchu
+				country_has_primary_culture = cu:han
 			}
-			trigger_else = { # 추가
-				OR = {
-					country_has_primary_culture = cu:manchu
-					country_has_primary_culture = cu:han
-				}
-				OR = {
-					trigger_if = {
-						limit = {
-							has_journal_entry = je_warlord_china
-						}
-						custom_tooltip = {
-							text = china_explosion_point_75_tt
-							var:china_warlord_explosion_sum <= 0.75
-						}
-					}
-					country_rank < rank_value:unrecognized_major_power
-				}
-				OR = {
-					is_subject = no
-					is_subject_of = ROOT
-				}
+			OR = {
 				trigger_if = {
 					limit = {
-						country_rank >= rank_value:unrecognized_major_power
+						has_journal_entry = je_warlord_china
 					}
-					OR = {
-						custom_tooltip = {
-							text = war_with_china_not_russia_tt
-							any_enemy_in_war = {
-								NOT = {
-									c:RUS ?= this
-								}
-							}
-						}
-						custom_tooltip = {
-							text = owes_russia_obligation_tt
-							c:RUS = {
-								is_owed_obligation_by = PREV
-							}
-						}
-					}	
+					custom_tooltip = {
+						text = china_explosion_point_2_tt
+						var:china_warlord_explosion <= 3
+					}
 				}
+				country_rank < rank_value:unrecognized_major_power
 			}
-			#OR = {
-			#	country_has_primary_culture = cu:manchu
-			#	country_has_primary_culture = cu:han
-			#}
-			#OR = {
-			#	trigger_if = {
-			#		limit = {
-			#			has_journal_entry = je_warlord_china
-			#		}
-			#		custom_tooltip = {
-			#			text = china_explosion_point_2_tt
-			#			var:china_warlord_explosion <= 3
-			#		}
-			#	}
-			#	country_rank < rank_value:unrecognized_major_power
-			#}
-			#OR = {
-			#	is_subject = no
-			#	is_subject_of = ROOT
-			#}
-			#trigger_if = {
-			#	limit = {
-			#		country_rank >= rank_value:unrecognized_major_power
-			#	}
-			#	OR = {
-			#		custom_tooltip = {
-			#			text = war_with_china_not_russia_tt
-			#			any_enemy_in_war = {
-			#				NOT = {
-			#					c:RUS ?= this
-			#				}
-			#			}
-			#		}
-			#		custom_tooltip = {
-			#			text = owes_russia_obligation_tt
-			#			c:RUS = {
-			#				is_owed_obligation_by = PREV
-			#			}
-			#		}
-			#	}	
-			#}
+			OR = {
+				is_subject = no
+				is_subject_of = ROOT
+			}
+			trigger_if = {
+				limit = {
+					country_rank >= rank_value:unrecognized_major_power
+				}
+				OR = {
+					custom_tooltip = {
+						text = war_with_china_not_russia_tt
+						any_enemy_in_war = {
+							NOT = {
+								c:RUS ?= this
+							}
+						}
+					}
+					custom_tooltip = {
+						text = owes_russia_obligation_tt
+						c:RUS = {
+							is_owed_obligation_by = PREV
+						}
+					}
+				}	
+			}
 		}
 		custom_tooltip = {
 			text = russia_chuguchak_protocol_req_tt
@@ -575,35 +284,14 @@ je_the_eastern_border_russia_chuguchak_protocol = {
 					any_scope_state = {
 						state_region = s:STATE_ALTAI
 						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
 					}
 					any_scope_state = {
 						state_region = s:STATE_JETISY
 						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
 					}
 					any_scope_state = {
 						state_region = s:STATE_KIRGHIZIA
 						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_ALTAI
-						}
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_JETISY
-						}
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_KIRGHIZIA
-						}
 					}
 				}
 				is_country_type = unrecognized
@@ -613,22 +301,9 @@ je_the_eastern_border_russia_chuguchak_protocol = {
 		}
 		if = {
 			limit = {
-				trigger_if = { # 추가
-					limit = { is_subject_type = subject_type_military_headquarters_china }
-					overlord = {
-						scope:donor_scope = {
-							owes_obligation_to = ROOT
-						}
-					}
+				scope:donor_scope = {
+					owes_obligation_to = ROOT
 				}
-				trigger_else = { # 추가
-					scope:donor_scope = {
-						owes_obligation_to = ROOT
-					}
-				}
-				#scope:donor_scope = {
-				#	owes_obligation_to = ROOT
-				#}
 			}
 			custom_tooltip = obligation_for_central_asia_tt
 		}
@@ -641,29 +316,12 @@ je_the_eastern_border_russia_chuguchak_protocol = {
 			custom_tooltip = transfer_of_central_asia_tt
 		}
 		else = {
-			if = { # 추가
-				limit = { is_subject_type = subject_type_military_headquarters_china }
-				c:RUS = {
-					create_incident = {
-						country = scope:donor_scope.overlord
-						value = 10
-					}
+			c:RUS = {
+				create_incident = {
+					country = scope:donor_scope
+					value = 15
 				}
-			}
-			else = { # 추가
-				c:RUS = {
-					create_incident = {
-						country = scope:donor_scope
-						value = 10
-					}
-				}
-			}
-			#c:RUS = {
-			#	create_incident = {
-			#		country = scope:donor_scope
-			#		value = 10
-			#	}
-			#}	
+			}		
 			custom_tooltip = transfer_of_central_asia_tt
 		}
 		set_global_variable = rus_chuguchak_protocol
@@ -692,42 +350,17 @@ je_the_eastern_border_treaty_of_aigun = {
 		s:STATE_AMUR = {
 			any_scope_state = {
 				is_split_state = no
-				is_split_state = no
-				trigger_if = { # 추가
-					limit = {
-						owner = { is_subject_type = subject_type_military_headquarters_china }
-					}
-					owner.overlord = {
-						is_player = no
-						is_country_type = unrecognized
-						OR = {
-							country_has_primary_culture = cu:manchu
-							country_has_primary_culture = cu:han
-						}
-					}
-				}
-				trigger_else = { # 추가
-					is_capital = no
-					owner = {
-						is_player = no
-						is_country_type = unrecognized
-						OR = {
-							country_has_primary_culture = cu:manchu
-							country_has_primary_culture = cu:han
-						}
-					}
-				}
-				#is_capital = no
-				#owner = {
-				#	is_player = no
-				#	is_country_type = unrecognized
-				#	OR = {
-				#		country_has_primary_culture = cu:manchu
-				#		country_has_primary_culture = cu:han
-				#	}
-				#}
+				is_capital = no
+				owner = {
+					is_player = no
+					is_country_type = unrecognized
+			OR = {
+				country_has_primary_culture = cu:manchu
+				country_has_primary_culture = cu:han
+			}
 			}
 		}
+	}
 	}
 
 	ai_chance = {
@@ -739,105 +372,36 @@ je_the_eastern_border_treaty_of_aigun = {
 			save_temporary_scope_as = east_siberia_region
 		}
 		any_country = {
-			trigger_if = { # 추가
-				limit = {
-					is_subject_type = subject_type_military_headquarters_china
-				}
-				overlord = {
-					OR = {
-						is_subject = no
-						is_subject_of = ROOT
-					}
-					OR = {
-						custom_tooltip = {
-							text = war_with_china_not_russia_tt
-							any_enemy_in_war = {
-								NOT = {
-									c:RUS ?= this
-								}
-							}
-						}
-						custom_tooltip = {
-							text = owes_russia_obligation_tt
-							c:RUS = {
-								is_owed_obligation_by = PREV
-							}
-						}
-						trigger_if = {
-							limit = {
-								has_journal_entry = je_warlord_china
-							}
-							custom_tooltip = {
-								text = china_explosion_point_75_tt
-								var:china_warlord_explosion_sum <= 0.75
-							}
-						}
-						country_rank < rank_value:unrecognized_major_power
-					}
-				}
+			OR = {
+				is_subject = no
+				is_subject_of = ROOT
 			}
-			trigger_else = { # 추가
-				OR = {
-					is_subject = no
-					is_subject_of = ROOT
-				}
-				OR = {
-					custom_tooltip = {
-						text = war_with_china_not_russia_tt
-						any_enemy_in_war = {
-							NOT = {
-								c:RUS ?= this
-							}
+			OR = {
+				custom_tooltip = {
+					text = war_with_china_not_russia_tt
+					any_enemy_in_war = {
+						NOT = {
+							c:RUS ?= this
 						}
+					}
+				}
+				custom_tooltip = {
+					text = owes_russia_obligation_tt
+					c:RUS = {
+						is_owed_obligation_by = PREV
+					}
+				}
+				trigger_if = {
+					limit = {
+						has_journal_entry = je_warlord_china
 					}
 					custom_tooltip = {
-						text = owes_russia_obligation_tt
-						c:RUS = {
-							is_owed_obligation_by = PREV
-						}
+						text = china_explosion_point_2_tt
+						var:china_warlord_explosion <= 3
 					}
-					trigger_if = {
-						limit = {
-							has_journal_entry = je_warlord_china
-						}
-						custom_tooltip = {
-							text = china_explosion_point_75_tt
-							var:china_warlord_explosion_sum <= 0.75
-						}
-					}
-					country_rank < rank_value:unrecognized_major_power
 				}
-			}
-			#OR = {
-			#	is_subject = no
-			#	is_subject_of = ROOT
-			#}
-			#OR = {
-			#	custom_tooltip = {
-			#		text = war_with_china_not_russia_tt
-			#		any_enemy_in_war = {
-			#			NOT = {
-			#				c:RUS ?= this
-			#			}
-			#		}
-			#	}
-			#	custom_tooltip = {
-			#		text = owes_russia_obligation_tt
-			#		c:RUS = {
-			#			is_owed_obligation_by = PREV
-			#		}
-			#	}
-			#	trigger_if = {
-			#		limit = {
-			#			has_journal_entry = je_warlord_china
-			#		}
-			#		custom_tooltip = {
-			#			text = china_explosion_point_2_tt
-			#			var:china_warlord_explosion <= 3
-			#		}
-			#	}
-			#	country_rank < rank_value:unrecognized_major_power
-			#}
+				country_rank < rank_value:unrecognized_major_power
+			}	
 		}
 		c:RUS = {
 			country_rank >= rank_value:great_power
@@ -864,26 +428,11 @@ je_the_eastern_border_treaty_of_aigun = {
 					country_has_primary_culture = cu:manchu
 					country_has_primary_culture = cu:han
 				}
-				OR = { # 추가
-					any_scope_state = {
-						state_region = s:STATE_AMUR
-						is_split_state = no
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } }
-					}
-					any_subject_or_below = {
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_AMUR
-							is_split_state = no
-						}
-					}
+				any_scope_state = {
+					state_region = s:STATE_AMUR
+					is_split_state = no
+					is_capital = no
 				}
-				#any_scope_state = {
-				#	state_region = s:STATE_AMUR
-				#	is_split_state = no
-				#	is_capital = no
-				#}
 				is_country_type = unrecognized
 				is_player = no
 			}

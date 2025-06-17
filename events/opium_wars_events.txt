@@ -209,12 +209,12 @@ opium_wars.1 = {
 		add_radicals = {
 			value = medium_radicals
 		}		
-		#if = {
-		#	limit = { has_journal_entry = je_warlord_china }
-		#	chi_remove_1_fragile_unity = yes
-		#}				
+		if = {
+			limit = { has_journal_entry = je_warlord_china }
+			chi_remove_1_fragile_unity = yes
+		}				
 		ai_chance = {
-			base = 0	# 10에서 수정
+			base = 10
 		}
 	}
 }
@@ -339,14 +339,7 @@ opium_wars.2 = {
 			}		
 		}		
 		ai_chance = {
-			base = 0	# 5에서 수정
-		}
-	}
-
-	after = { # 추가
-		trigger_event = {
-			id = opium_wars.101
-			days = { 360 720 }
+			base = 5
 		}
 	}
 }
@@ -415,10 +408,10 @@ opium_wars.3 = {
 				save_scope_as = opium_wars_aggressor_country
 			}
 		}
-		# if = { 제거
-		# 	limit = { has_journal_entry = je_warlord_china }
-		# 	chi_add_1_fragile_unity = yes
-		# }
+		if = {
+			limit = { has_journal_entry = je_warlord_china }
+			chi_add_1_fragile_unity = yes
+		}
 		hidden_effect = { add_banned_goods = g:opium }
 	}
 
@@ -431,7 +424,7 @@ opium_wars.3 = {
 		add_modifier = {
 			name = china_authority
 			months = very_long_modifier_time
-		}
+		}	
 		if = {
 			limit = { has_modifier = opium_wars_addiction_modifier }
 			remove_modifier = opium_wars_addiction_modifier
@@ -547,14 +540,7 @@ opium_wars.4 = {
 		if = {
 			limit = { has_journal_entry = je_warlord_china }
 			set_variable = lost_opium_wars
-			# chi_remove_1_fragile_unity = yes 제거
-			every_country = { # 추가
-				limit = { country_rank >= rank_value:great_power }
-				set_secret_goal = {
-					country = root
-					secret_goal = antagonize			
-				}	
-			}
+			chi_remove_1_fragile_unity = yes
 		}
 	}
 
@@ -566,9 +552,9 @@ opium_wars.4 = {
 			months = very_long_modifier_time
 			is_decaying = yes
 		}
-		# add_radicals = { 제거
-		# 	value = large_radicals
-		# }
+		add_radicals = {
+			value = large_radicals
+		}
 		if = {
 			limit = {
 				is_banning_goods = g:opium
@@ -928,113 +914,6 @@ opium_wars.8 = {
 				months = normal_modifier_time
 				multiplier = -1
 			}
-		}
-	}
-}
-
-opium_wars.101 = { # 아편 전쟁 회피 꼼수 좆같아서 추가함, 중국 vs 영국 전용
-	type = country_event
-	
-	hidden = yes
-
-	trigger = {
-		this = c:GBR
-		exists = c:GBR
-	}
-
-	immediate = {
-		save_scope_as = opium_wars_aggressor_country
-		c:CHI = { save_scope_as = opium_wars_target_country }
-		cu:han = { save_scope_as = opium_addicted_culture }
-		trigger_event = opium_wars.102
-	}
-}
-
-opium_wars.102 = { # 아편 전쟁 회피 꼼수 좆같아서 추가함, 중국 vs 영국 전용
-	type = country_event
-	placement = ROOT
-
-	title = opium_wars.102.t
-	desc = opium_wars.102.d
-	flavor = opium_wars.102.f
-
-	duration = 3
-
-	event_image = {
-		video = "unspecific_politicians_arguing"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-
-	trigger = {
-		has_journal_entry = je_opium_wars
-		je:je_opium_wars.target = c:CHI
-		has_truce_with = c:CHI
-	}
-
-	immediate = {
-		end_truce = c:CHI
-	}
-
-	option = { # 다시 전쟁
-		name = opium_wars.102.a
-		default_option = yes
-		end_truce = c:CHI
-		change_infamy = 10
-		hidden_effect = {
-			c:CHI = {
-				set_secret_goal = {
-					country = root
-					secret_goal = antagonize
-				}
-				trigger_event = opium_wars.103
-			}
-			set_secret_goal = {
-				country = c:CHI
-				secret_goal = conquer
-			}		
-		}
-		ai_chance = {
-			base = 1
-		}
-	}
-	option = { # not interested
-		name = opium_wars.102.b
-		ai_chance = {
-			base = 0
-		}
-	}
-}
-
-opium_wars.103 = { # 중국의 반응
-	type = country_event
-	placement = ROOT
-
-	title = opium_wars.103.t
-	desc = opium_wars.103.d
-	flavor = opium_wars.103.f
-
-	duration = 3
-
-	event_image = {
-		video = "europenorthamerica_opium_smoker"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/opium_smoker"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	option = { # 다시 전쟁
-		name = opium_wars.103.a
-		default_option = yes
-		show_as_tooltip = {
-			end_truce = c:GBR
-		}
-		ai_chance = {
-			base = 1
 		}
 	}
 }

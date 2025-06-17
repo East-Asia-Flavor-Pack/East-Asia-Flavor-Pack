@@ -1,0 +1,579 @@
+template regular_font
+{
+	font = "EBGaramond"
+	fontsize = 17
+}
+
+template tooltip_font
+{
+	font = "OpenSans"
+	fontsize = 15
+}
+
+template fontsize_large
+{
+	fontsize = 20
+}
+
+template fontsize_xl
+{
+	fontsize = 22
+}
+
+template fontsize_xxl
+{
+	fontsize = 26
+}
+
+template fontsize_mega
+{
+	fontsize = 30
+}
+
+template fontsize_medium
+{
+	fontsize = 14
+	using = tooltip_font
+}
+
+template fontsize_small
+{
+	fontsize = 12
+	using = tooltip_font
+}
+
+template fontsize_xsmall
+{
+	fontsize = 10
+	using = tooltip_font
+}
+
+template header_font
+{
+	font = "PlayfairDisplay"
+}
+
+template header_font_size
+{
+	fontsize = 26
+}
+
+template header_font_fancy
+{
+	font = "Fancy"
+}
+
+template header_font_fancy_size
+{
+	fontsize = 46
+}
+
+template clickthrough_blocker
+{
+	alwaystransparent = no
+	filter_mouse = left|right
+}
+
+### button animation durations
+template button_animation_duration
+{
+	duration = 0.1
+}
+template button_animation_duration_slow
+{
+	duration = 0.2
+}
+
+types Default
+{
+	type button = button {
+		gfxtype = buttongfx
+		shaderfile = "gfx/FX/pdxgui_pushbutton.shader"
+
+		ignore_unset_buttons = right
+		using = tooltip_es
+
+		block "sound" {
+			using = select_button_sound
+		}
+	}
+
+	type checkbutton = checkbutton {
+		block "sound" {
+			using = check_button_sound
+		}
+		gfxtype = checkbuttongfx
+		shaderfile = "gfx/FX/pdxgui_pushbutton.shader"
+		using = tooltip_es
+	}
+
+	type scrollbar = scrollbar {
+		min = 0
+		max = 100
+		step = 1
+		page = 10
+		value = 0
+		alwaystransparent = no
+
+		slider = {
+			button = {}
+		}
+	}
+
+	type progresspie = progressbar {
+		gfxtype = progresspiegfx
+		shaderfile = "gfx/FX/gui_progresspie.shader"
+		using = tooltip_es
+	}
+
+	type minimap = minimap {
+		gfxtype = minimapgfx
+		shaderfile = "gfx/FX/pdxgui_default.shader"
+	}
+
+	type minimap_window = minimap_window {
+		gfxtype = windowgfx
+		shaderfile = "gfx/FX/pdxgui_default.shader"
+	}
+
+	type piechart = piechart {
+		gfxtype = piechartgfx
+		shaderfile = "gfx/FX/pdxgui_piechart.shader"
+		effectname = "PieChart"
+		mask = "gfx/interface/default_piechart_mask.dds"
+		texture = "gfx/interface/piechart/piechart.dds"
+	}
+
+	type pieslice = pieslice {
+		using = tooltip_es
+	}
+
+	type treemapslice = treemapslice {
+		gfxtype = treemapslicegfx
+		shaderfile = "gfx/FX/pdxgui_treemapchart.shader"
+		mask = "gfx/interface/default_treemapchart_mask.dds"
+		texture = "gfx/interface/treemapchart/treemapchart.dds"
+		using = tooltip_es
+	}
+
+	type dropDown = dropDown {
+		onselectionchanged = "[PdxGuiWidget.TriggerAnimation('on_dropdown_select')]"
+		open_sound = "event:/SFX/UI/Global/decrement"
+		close_sound = "event:/SFX/UI/Global/increment"
+
+		state = {
+			name = on_dropdown_select
+			start_sound = {
+				using = sfx_select_button_sound
+			}
+		}
+	}
+
+	### THE PROPERTIES FOR ICONS INSIDE OF BUTTONS (both square and round ones)
+	type button_icon_properties = icon
+	{
+		name = icon
+		block "icon" {}
+		block "icon_size" {
+			size = { 100% 100% }
+		}
+		block "icon_position" {
+			parentanchor = center
+		}
+		block "icon_additional_properties" {}
+		alwaystransparent = yes
+		
+		### selected
+		modify_texture = {
+			name = "selected"
+			texture = "gfx/interface/buttons/round_button_selected_icon.dds"
+			spriteType = Corneredstretched
+			spriteborder = { 0 0 }
+			blend_mode = overlay
+			block "button_selected" {
+				visible = no
+			}
+		}
+		
+		### animation textures
+		modify_texture = {
+			name = "mouse_enter"
+			texture = "gfx/interface/buttons/button_icons/icon_button_mouse_enter.dds"
+			spriteType = Corneredstretched
+			spriteborder = { 0 0 }
+			blend_mode = overlay
+			alpha = 0
+			rotate_uv = 0
+		}
+		modify_texture = {
+			name = "mouse_press"
+			texture = "gfx/interface/buttons/default_button_mousepress.dds"
+			spriteType = Corneredstretched
+			spriteborder = { 0 0 }
+			blend_mode = overlay
+			alpha = 0
+		}
+		
+		### show
+		state = {
+			name = show
+			position = { 0 0 }
+			using = button_animation_duration
+			
+			modify_texture = {
+				name = mouse_press
+				alpha = 0
+			}
+			modify_texture = {
+				name = mouse_enter
+				alpha = 0
+				rotate_uv = 0
+			}
+		}
+
+		### enter
+		state = {
+			name = enter
+			position = { 0 0 }
+			using = button_animation_duration
+			
+			modify_texture = {
+				name = mouse_press
+				alpha = 0
+			}
+			modify_texture = {
+				name = mouse_enter
+				alpha = 1
+				rotate_uv = 180
+			}
+		}
+		
+		### leave
+		state = {
+			name = leave
+			position = { 0 0 }
+			using = button_animation_duration
+			
+			modify_texture = {
+				name = mouse_press
+				alpha = 0
+			}
+			modify_texture = {
+				name = mouse_enter
+				alpha = 0
+				rotate_uv = 0
+			}
+		}
+
+		### press
+		state = {
+			name = press
+			position = { 1 2 }
+			using = button_animation_duration
+			
+			modify_texture = {
+				name = mouse_press
+				alpha = 1
+			}
+			modify_texture = {
+				name = mouse_enter
+				alpha = 0
+				rotate_uv = 0
+			}
+		}
+
+		### release
+		state = {
+			position = { 0 0 }
+			name = release
+			using = button_animation_duration
+			
+			modify_texture = {
+				name = mouse_press
+				alpha = 0
+			}
+			modify_texture = {
+				name = mouse_enter
+				alpha = 0
+				rotate_uv = 0
+			}
+		}
+	}
+
+	### ROUND BUTTON WITH AN ICON
+	type button_icon_round = button
+	{
+		block "bg_texture" {
+			texture = "gfx/interface/buttons/round_button_small_bg.dds"
+		}
+		block "size" {
+			size = { 100% 100% }
+		}
+		block "sound" {
+			using = select_button_sound
+		}
+		effectname = "NoHighlight"
+		
+		### show
+		state = {
+			name = _show
+			on_start = "[PdxGuiWidget.AccessChild('icon').TriggerAnimation('show')]"
+			on_start = "[PdxGuiWidget.AccessChild('frame').TriggerAnimation('show')]"
+			on_start = "[PdxGuiWidget.AccessChild('wood').TriggerAnimation('show')]"
+		}
+
+		### enter
+		state = {
+			name = _mouse_enter
+			on_start = "[PdxGuiWidget.AccessChild('icon').TriggerAnimation('enter')]"
+			on_start = "[PdxGuiWidget.AccessChild('frame').TriggerAnimation('enter')]"
+			on_start = "[PdxGuiWidget.AccessChild('wood').TriggerAnimation('enter')]"
+		}
+		
+		### leave
+		state = {
+			name = _mouse_leave
+			on_start = "[PdxGuiWidget.AccessChild('icon').InterruptThenTriggerAnimation('enter','leave')]"
+			on_start = "[PdxGuiWidget.AccessChild('frame').InterruptThenTriggerAnimation('enter','leave')]"
+			on_start = "[PdxGuiWidget.AccessChild('wood').InterruptThenTriggerAnimation('enter','leave')]"
+		}
+
+		### press
+		state = {
+			name = _mouse_press
+			on_start = "[PdxGuiWidget.AccessChild('icon').TriggerAnimation('press')]"
+			on_start = "[PdxGuiWidget.AccessChild('frame').TriggerAnimation('press')]"
+			on_start = "[PdxGuiWidget.AccessChild('wood').TriggerAnimation('press')]"
+		}
+
+		### release
+		state = {
+			name = _mouse_release
+			on_start = "[PdxGuiWidget.AccessChild('icon').TriggerAnimation('release')]"
+			on_start = "[PdxGuiWidget.AccessChild('frame').TriggerAnimation('release')]"
+			on_start = "[PdxGuiWidget.AccessChild('wood').TriggerAnimation('release')]"
+		}
+		
+		### wood bg
+		icon = {
+			name = wood
+			block "wood_texture" {
+				texture = "gfx/interface/buttons/round_button_small_wood.dds"
+			}
+			size = { 100% 100% }
+			alwaystransparent = yes
+			position = { 0 0 }
+			
+			### selected
+			modify_texture = {
+				name = "selected"
+				texture = "gfx/interface/buttons/round_button_selected.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = overlay
+				block "button_selected" {
+					visible = no
+				}
+			}
+			
+			### animation textures
+			modify_texture = {
+				name = "mouse_enter"
+				texture = "gfx/interface/buttons/round_button_wood_mouse_enter.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = overlay
+				alpha = 0
+				rotate_uv = 0
+			}
+			modify_texture = {
+				name = "mouse_press"
+				texture = "gfx/interface/buttons/default_button_mousepress.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = overlay
+				alpha = 0
+			}
+			
+			### show
+			state = {
+				name = show
+				position = { 0 0 }
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_press
+					alpha = 0
+				}
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### enter
+			state = {
+				name = enter
+				position = { 0 0 }
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_press
+					alpha = 0
+				}
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0.6
+					rotate_uv = -60
+				}
+			}
+			
+			### leave
+			state = {
+				name = leave
+				position = { 0 0 }
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_press
+					alpha = 0
+				}
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### press
+			state = {
+				name = press
+				position = { 1 2 }
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_press
+					alpha = 1
+				}
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### release
+			state = {
+				name = release
+				position = { 0 0 }
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_press
+					alpha = 0
+				}
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+		}
+		
+		button_icon_properties = {}
+		
+		### frame
+		icon = {
+			name = frame
+			block "frame_texture" {
+				texture = "gfx/interface/buttons/round_button_small_frame.dds"
+			}
+			
+			size = { 100% 100% }
+			
+			alwaystransparent = yes
+			block "frame_visible" {
+				visible = no #only used for action buttons
+			}
+			
+			### animation textures
+			modify_texture = {
+				name = "mouse_enter"
+				texture = "gfx/interface/buttons/round_button_frame_mouse_enter.dds"
+				spriteType = Corneredstretched
+				spriteborder = { 0 0 }
+				blend_mode = overlay
+				alpha = 0
+				rotate_uv = 0
+			}
+			
+			### show
+			state = {
+				name = show
+				using = button_animation_duration
+
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### enter
+			state = {
+				name = enter
+				using = button_animation_duration
+
+				modify_texture = {
+					name = mouse_enter
+					alpha = 1
+					rotate_uv = -60
+				}
+			}
+			
+			### leave
+			state = {
+				name = leave
+				using = button_animation_duration
+
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### press
+			state = {
+				name = press
+				using = button_animation_duration
+
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+
+			### release
+			state = {
+				name = release
+				using = button_animation_duration
+				
+				modify_texture = {
+					name = mouse_enter
+					alpha = 0
+					rotate_uv = 0
+				}
+			}
+		}
+	}
+
+	type button_icon_goto = button_icon_round
+	{
+		blockoverride "icon" {
+			texture = "gfx/interface/buttons/button_icons/goto.dds"
+		}
+	}
+}

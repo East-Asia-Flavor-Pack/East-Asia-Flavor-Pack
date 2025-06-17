@@ -17,9 +17,41 @@
 		NOT = { has_law = law_type:law_state_religion }
 	}
 
-	when_taken = { # 수정
-		trigger_event = eafp_japan.5004
-		# 있던 효과들은 이벤트로 옮김
+	when_taken = {
+		set_state_religion = rel:shinto
+		state_religion_switch_effect = yes
+		ig:ig_devout = {
+			hidden_effect = { set_interest_group_name = ig_shinto_monks }
+			remove_ideology = ideology_buddhist_moralist
+			add_ideology = ideology_shinto_moralist
+			set_ig_trait = ig_trait:ig_trait_haibutsu_kishaku
+			set_ig_trait = ig_trait:ig_trait_secular_shrine_theory
+			set_ig_trait = ig_trait:ig_trait_heavenly_sovereign
+			leader ?= {
+				change_character_religion = rel:shinto
+			}
+		}
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				is_capital = yes
+			}
+			convert_population = {
+				target = rel:shinto
+				value = 0.4
+			}
+		}
+		every_scope_state = {
+			limit = {
+				owner = ROOT
+				is_incorporated = yes
+				NOT = { is_capital = yes }
+			}
+			convert_population = {
+				target = rel:shinto
+				value = 0.2
+			}
+		}
 	}
 
 	ai_chance = {

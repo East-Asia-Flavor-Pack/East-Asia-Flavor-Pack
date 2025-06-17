@@ -1,0 +1,131 @@
+﻿revive_olympic_games_decision = {
+	is_shown = {
+		exists = c:GRE
+		this = c:GRE
+	}
+
+	possible = {
+		this = c:GRE
+		has_technology_researched = organized_sports
+		hidden_trigger = {
+			NOT = { has_variable = revive_olympics_decision_taken }
+		}
+	}
+	
+	when_taken = {
+		set_variable = {
+			name = revive_olympics_decision_taken
+			value = yes
+		}
+		add_modifier = {
+			name = modifier_olympic_games
+		}
+		add_modifier = {
+			name = modifier_olympic_games_bureaucracy
+			months = short_modifier_time
+		}
+	}
+
+	ai_chance = {
+		base = 0
+		modifier = {
+			trigger = { bureaucracy > 0 }
+			add = 5
+		}
+		modifier = {
+			OR = {
+				is_diplomatic_play_committed_participant = yes
+				is_at_war = yes
+			}
+			add = -1000
+		}		
+	}
+}
+
+lowlands_land_reclamation = {
+	is_shown = {
+		owns_entire_state_region = STATE_FRIESLAND
+		owns_entire_state_region = STATE_HOLLAND
+		OR = {
+			NOT = { exists = global_var:land_reclamation_global }
+			AND = {
+				exists = global_var:land_reclamation_global
+				global_var:land_reclamation_global >= 10
+			}
+		}
+		NOT = { has_variable = dutch_land_reclaimer }
+	}
+
+	possible = {
+		has_technology_researched = watertube_boiler
+		bureaucracy > 200
+	}
+	
+	when_taken = {
+		if = {
+			limit = {
+				NOT = { has_global_variable = land_reclamation_global }
+			}
+			set_global_variable = {
+				name = land_reclamation_global
+				value = 0
+			}
+		}
+		add_modifier = {
+			name = modifier_reclaiming_land
+			days = -1 # permanent until removed
+		}
+		add_journal_entry = { type = je_land_reclamation }
+		set_variable = dutch_land_reclaimer
+		if = {
+			limit = {
+				NOT = { has_technology_researched = concrete_dockyards }
+			}
+			custom_tooltip = land_reclamation_no_tech
+		}
+		else = {
+			custom_tooltip = land_reclamation_tech
+		}
+	}
+
+	ai_chance = {
+		base = 5
+		modifier = {
+			OR = {
+				is_diplomatic_play_committed_participant = yes
+				is_at_war = yes
+			}
+			add = -1000
+		}		
+	}
+}
+
+abolish_tangena_ordeal = {
+	is_shown = {
+		exists = c:MAD
+		ROOT = c:MAD
+		has_modifier = modifier_tangena_ordeal
+	}
+
+	possible = {
+		exists = c:MAD
+		ROOT = c:MAD
+		has_modifier = modifier_tangena_ordeal
+		custom_tooltip = {
+			text = ranavalona_tt
+			NOT = {
+				ruler = {
+					has_variable = ranavalona
+				}
+			}
+		}
+	}
+
+	when_taken = {
+		remove_modifier = modifier_tangena_ordeal
+	}
+
+	ai_chance = {
+		base = 100
+	}
+}

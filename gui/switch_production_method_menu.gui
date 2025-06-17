@@ -1,0 +1,182 @@
+right_click_menu = {
+	name = "switch_production_method_menu"
+
+	parentanchor = top|right
+	widgetanchor = top|left
+
+	blockoverride "title_text" {
+		text = "[ProductionMethodGroup.GetName]"
+	}
+
+	blockoverride "items" {
+		datamodel = "[ChangeProductionMethodsMenuItems.AccessItems]"
+
+		item = {
+			production_methods_right_click_menu_item = {}
+		}
+	}
+}
+
+types production_methods_right_click 
+{
+
+	type production_methods_right_click_menu_item = container {	
+		right_click_menu_item = {
+			visible = "[ChangeProductionMethodMenuItem.IsActive]"
+
+			blockoverride "size" {
+				size = { 560 66 }
+			}
+
+			blockoverride "onclick" {}
+
+			blockoverride "button" {
+				background = {
+					using = paper_bg
+				}
+			}
+
+			blockoverride "properties" {
+				datacontext = "[ChangeProductionMethodMenuItem.AccessMethod]"
+				tooltip = "CHANGE_PRODUCTION_METHOD_TOOLTIP"
+				enabled = "[Or(ChangeProductionMethodMenuItem.IsValid, ChangeProductionMethodMenuItem.IsActive)]"
+
+				icon = {
+					size = { 50 50 }
+					parentanchor = vcenter
+					position = { 10 0 }
+				}
+
+				icon = {
+					visible = "[ChangeProductionMethodMenuItem.IsActive]"
+					using = highlighted_square_selection
+					size = { 100% 100% }
+				}
+
+				has_new_pm_icon	= {
+					size = { 25 25 }
+					position = { -5 -5 }
+					tooltip = "TOOLTIP_NEW_PRODUCTION_METHOD"
+					
+					blockoverride "visible" {
+						visible = "[GetPlayer.IsNewProductionMethod( ProductionMethod.Self )]"
+					}
+				}												
+
+				flowcontainer = {
+					parentanchor = right|vcenter
+					widgetanchor = right|vcenter
+					margin = { 12 6 }
+					direction = vertical
+					textbox = {
+						visible = "[Not(StringIsEmpty(ProductionMethod.GetCompactGoodsSummaryDesc))]"
+						parentanchor = right
+						autoresize = yes
+						align = right|nobaseline
+						max_width = 300
+						fontsize_min = 12
+						elide = right
+						text = "[ProductionMethod.GetCompactGoodsSummaryDesc]"
+					}
+					textbox = {
+						visible = "[Not(StringIsEmpty(ProductionMethod.GetCompactEmploymentSummaryDesc))]"
+						parentanchor = right
+						autoresize = yes
+						align = right|nobaseline
+						max_width = 300
+						fontsize_min = 12
+						elide = right
+						text = "[ProductionMethod.GetCompactEmploymentSummaryDesc]"
+					}
+				}
+			}
+
+			blockoverride "margin" {
+				margin_left = 64
+			}
+
+			blockoverride "texture" {
+				texture = "[ProductionMethod.GetTexture]"
+			}
+		
+			blockoverride = "text" {
+				text = "[ProductionMethod.GetNameNoFormatting]"
+			}
+		}
+
+		right_click_menu_item = {
+			visible = "[Not(ChangeProductionMethodMenuItem.IsActive)]"
+
+			blockoverride "size" {
+				size = { 560 66 }
+			}
+
+			blockoverride "properties" {
+				datacontext = "[ChangeProductionMethodMenuItem.AccessMethod]"
+				tooltip = "CHANGE_PRODUCTION_METHOD_TOOLTIP"
+				onclick = "[ChangeProductionMethodMenuItem.Execute]"
+				onmousehierarchyleave = "[ChangeProductionMethodMenuItem.OnMenuItemHovered ]"
+				enabled = "[Or(ChangeProductionMethodMenuItem.IsValid, ChangeProductionMethodMenuItem.IsActive)]"
+
+				icon = {
+					size = { 50 50 }
+					parentanchor = vcenter
+					position = { 10 0 }
+				}
+
+				has_new_pm_icon	= {
+					size = { 25 25 }
+
+					blockoverride "visible" {
+						visible = "[GetPlayer.IsNewProductionMethod( ProductionMethod.Self )]"
+					}
+					
+					position = { -3 -3 }
+					tooltip = "TOOLTIP_NEW_PRODUCTION_METHOD"
+				}												
+
+				flowcontainer = {
+					parentanchor = right|vcenter
+					widgetanchor = right|vcenter
+					margin = { 12 6 }
+					direction = vertical
+
+					textbox = {
+						visible = "[Not(StringIsEmpty(ProductionMethod.GetCompactGoodsSummaryDesc))]"
+						parentanchor = right
+						autoresize = yes
+						align = right|nobaseline
+						max_width = 300
+						fontsize_min = 12
+						elide = right
+						text = "[ProductionMethod.GetCompactGoodsSummaryDesc]"
+					}
+
+					textbox = {
+						visible = "[Not(StringIsEmpty(ProductionMethod.GetCompactEmploymentSummaryDesc))]"
+						parentanchor = right
+						autoresize = yes
+						align = right|nobaseline
+						max_width = 300
+						fontsize_min = 12
+						elide = right
+						text = "[ProductionMethod.GetCompactEmploymentSummaryDesc]"
+					}
+				}
+			}
+
+			blockoverride "margin" {
+				margin_left = 64
+			}
+
+			blockoverride "texture" {
+				texture = "[ProductionMethod.GetTexture]"
+			}
+		
+			blockoverride = "text" {
+				text = "[ProductionMethod.GetNameNoFormatting]"
+			}
+		}
+	}
+}
+	

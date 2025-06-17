@@ -1,0 +1,2070 @@
+# COPY-PASTED FOR NOW
+@panel_width_minus_10 = 530			# used to be 450
+@panel_width = 540  				# used to be 460
+@panel_width_half = 270				# used to be 230
+@panel_width_plus_10 = 550  		# used to be 470
+@panel_width_plus_14 = 554			# used to be 474
+@panel_width_plus_14_half = 277		# used to be 237
+@panel_width_plus_20 = 560			# used to be 480
+@panel_width_plus_30 = 570			# used to be 490
+@panel_width_plus_70 = 610			# used to be 530
+
+@portrait_size = 316
+@portrait_box_height = 276
+
+types pops_overview
+{
+	type pops_overview_panel = default_block_window {
+		name = "pops_overview_panel"
+		datacontext = "[AccessPlayer]"
+		
+		blockoverride "animation_state_block" {
+			state = {
+				name = _show
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/population"
+				}
+			}
+
+			state = {
+				name = _hide
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/population_stop"
+				}
+			}
+		}		
+
+		blockoverride "window_header_name"
+		{
+			text = "POPS_OVERVIEW_TITLE"
+		}
+
+		blockoverride "fixed_top" {
+			#TABS
+			tab_buttons = {
+				blockoverride "first_button"
+				{
+					text = "POPS_OVERVIEW_STATISTICS_TAB"
+				}
+				blockoverride "first_button_tooltip" {
+					tooltip = "POPS_OVERVIEW_STATISTICS_TAB"
+				}
+				blockoverride "first_button_click"
+				{
+					onclick = "[InformationPanel.SelectTab('default')]"
+				}
+				blockoverride "first_button_visibility"
+				{
+					visible = "[InformationPanel.IsTabSelected('default')]"
+				}
+				blockoverride "first_button_visibility_checked"
+				{
+					visible = "[Not( InformationPanel.IsTabSelected('default') )]"
+				}
+				blockoverride "first_button_selected"
+				{
+					text = "POPS_OVERVIEW_STATISTICS_TAB"
+				}
+				blockoverride "first_button_name" {
+					name = "tutorial_highlight_pops_statistics"
+				}
+
+				blockoverride "second_button"
+				{
+					text = "POPS_OVERVIEW_CHARTS"
+				}
+				blockoverride "second_button_tooltip" {
+					tooltip = "POPS_OVERVIEW_CHARTS"
+				}
+				blockoverride "second_button_click"
+				{
+					onclick = "[InformationPanel.SelectTab('population_charts')]"
+				}
+				blockoverride "second_button_visibility"
+				{
+					visible = "[InformationPanel.IsTabSelected('population_charts')]"
+				}
+				blockoverride "second_button_visibility_checked"
+				{
+					visible = "[Not( InformationPanel.IsTabSelected('population_charts') )]"
+				}
+				blockoverride "second_button_selected"
+				{
+					text = "POPS_OVERVIEW_CHARTS"
+				}
+				blockoverride "second_button_name" {
+					name = "tutorial_highlight_pops_charts"
+				}
+
+				blockoverride "third_button"
+				{
+					text = "POPS_OVERVIEW_POP_LIST_TAB"
+				}
+				blockoverride "third_button_tooltip" {
+					tooltip = "POPS_OVERVIEW_POP_LIST_TAB"
+				}
+				blockoverride "third_button_click"
+				{
+					onclick = "[InformationPanel.SelectTab('pop_list')]"
+				}
+				blockoverride "third_button_visibility"
+				{
+					visible = "[InformationPanel.IsTabSelected('pop_list')]"
+				}
+				blockoverride "third_button_visibility_checked"
+				{
+					visible = "[Not( InformationPanel.IsTabSelected('pop_list') )]"
+				}
+				blockoverride "third_button_selected"
+				{
+					text = "POPS_OVERVIEW_POP_LIST_TAB"
+				}
+				blockoverride "third_button_name" {
+					name = "tutorial_highlight_pops_pop_list"
+				}
+			}
+		}
+		
+		blockoverride "scrollarea_content"
+		{
+			flowcontainer = {
+				using = default_list_position
+				direction = vertical
+				visible = "[InformationPanel.IsTabSelected('default')]"
+				using = default_fade_in_out
+
+				### Pop statistics
+				flowcontainer = {
+					direction = vertical
+					margin_top = 10
+					margin_bottom = 10
+					spacing = 10
+
+					flowcontainer = {
+						direction = horizontal
+						spacing = 10
+						
+						container = {
+							minimumsize = { 265 -1 }
+							maximumsize = { 265 -1 }
+							parentanchor = vcenter
+						
+							background = {
+								using = entry_bg
+							}
+							
+							flowcontainer = {
+								margin = { 5 10 }
+								spacing = 5
+								parentanchor = center
+								using = population_tooltip_with_graph
+
+								icon = {
+									texture = "gfx/interface/icons/generic_icons/population.dds"
+									size = { 25 25 }
+								}
+								
+								textbox = {
+									text = "concept_population"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+									max_width = 150
+									fontsize_min = 14
+									elide = right
+								}
+
+								textbox = {
+									raw_text = " #variable [Country.GetTotalPopulation|D]#!"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+								}
+							}
+
+						}
+
+						textbox = {
+							minimumsize = { 265 -1 }
+							maximumsize = { 265 -1 }
+							margin = { 20 9 }
+							background = {
+								using = entry_bg
+							}
+							using = average_standard_of_living_tooltip_with_graph
+							text = "COUNTRY_SOL_ALL_LABEL"
+							autoresize = yes
+							using = fontsize_large
+							parentanchor = vcenter
+							align = hcenter|nobaseline
+							fontsize_min = 14
+							elide = right
+						}
+
+					}
+
+					flowcontainer = {
+						direction = horizontal
+						spacing = 10
+						
+						container = {
+							minimumsize = { 265 -1 }
+							maximumsize = { 265 -1 }
+							parentanchor = vcenter
+						
+							background = {
+								using = entry_bg
+							}
+							
+							flowcontainer = {
+								margin = { 5 10 }
+								spacing = 5
+								parentanchor = center
+								tooltip = "POLITICALLY_INVOLVED_POPULATION_TOOLTIP"
+							
+								textbox = {
+									text = "concept_politically_involved"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+									max_width = 170
+									fontsize_min = 14
+									elide = right
+								}
+
+								textbox = {
+									raw_text = " #variable [Country.GetPoliticallyInvolvedPopulation|D]#!"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+								}
+							}
+						}
+
+						container = {
+							minimumsize = { 265 -1 }
+							maximumsize = { 265 -1 }
+							parentanchor = vcenter
+						
+							background = {
+								using = entry_bg
+							}
+							
+							flowcontainer = {
+								margin = { 5 10 }
+								spacing = 5
+								parentanchor = center
+								tooltip = "POLITICALLY_UNALIGNED_POPULATION_TOOLTIP"
+								
+								textbox = {
+									text = "concept_politically_unaligned"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+									max_width = 170
+									fontsize_min = 14
+									elide = right
+								}
+
+								textbox = {
+									raw_text = " #variable [Country.GetInactivePopulation|D]#!"
+									autoresize = yes
+									using = fontsize_large
+									align = nobaseline
+									parentanchor = vcenter
+								}
+							}
+						}
+					}
+				}
+
+				container = {
+					widget = { 
+						size = { @panel_width @portrait_box_height }
+
+						background = {
+							texture = "gfx/interface/illustrations/top_illus/top_illu_population.dds"
+							using = top_illu_properties
+							margin = { -2 0 }
+						}
+					}
+
+					flowcontainer = {
+						parentanchor = hcenter
+
+						pop_strata_summary = {
+							using = average_standard_of_living_lower_tooltip_with_graph
+							
+							blockoverride "strata_portrait_properties" {
+								datacontext = "[GetPlayer.GetSampleLowerStrataPop]"
+							}
+
+							blockoverride "strata_icon" {
+								texture = "gfx/interface/icons/pops_icons/sol_poor_icon.dds"
+							}
+							blockoverride "strata_label" {
+								text = "LOWER_NO_ICON"
+							}
+
+							blockoverride "sol_summary" {
+								text = "COUNTRY_SOL_LOW_LABEL"
+							}
+
+							blockoverride "population_summary" {
+								text = "[GetTrendValue(Country.GetLowerStrataPopulationTrend)|vD]"
+							}
+
+							blockoverride "average_income" {
+								text = "POPS_OVERVIEW_AVERAGE_INCOME_LOW_LABEL"
+								tooltip = "POPS_OVERVIEW_AVERAGE_INCOME_LOW_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden" {
+								text = "POPS_OVERVIEW_TAX_BURDEN_LOW_LABEL"
+							}
+							blockoverride "tax_burden_tooltip" {
+								tooltip = "POPS_OVERVIEW_TAX_BURDEN_LOW_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden_items" {
+								datamodel = "[PopsOverviewPanel.GetTaxBurdenItemsPoor]"
+							}
+
+							blockoverride "goods_expenses" {
+								text = "POPS_OVERVIEW_GOODS_EXPENSES_LOW_LABEL"
+							}
+
+							blockoverride "goods_expenses_tooltip" {
+								tooltip = "POPS_OVERVIEW_GOODS_EXPENSES_LOW_LABEL_TOOLTIP"
+							}
+
+							blockoverride "goods_expense_items" {
+								datamodel = "[PopsOverviewPanel.GetGoodsExpenseItemsPoor]"
+							}
+
+							blockoverride "remainder" {
+								text = "POPS_OVERVIEW_REMAINDER_POOR"
+								tooltip = "POPS_OVERVIEW_REMAINDER_POOR_TOOLTIP"
+							}
+						}
+						pop_strata_summary = {
+							using = average_standard_of_living_middle_tooltip_with_graph
+							
+							blockoverride "strata_portrait_properties" {
+								datacontext = "[GetPlayer.GetSampleMiddleStrataPop]"
+							}
+
+							blockoverride "strata_icon" {
+								texture = "gfx/interface/icons/pops_icons/sol_middle_icon.dds"
+							}
+							blockoverride "strata_label" {
+								text = "MIDDLE_NO_ICON"
+							}
+
+							blockoverride "sol_summary" {
+								text = "COUNTRY_SOL_MIDDLE_LABEL"
+							}
+
+							blockoverride "population_summary" {
+								text = "[GetTrendValue(Country.GetMiddleStrataPopulationTrend)|vD]"
+							}
+
+							blockoverride "average_income" {
+								text = "POPS_OVERVIEW_AVERAGE_INCOME_MIDDLE_LABEL"
+								tooltip = "POPS_OVERVIEW_AVERAGE_INCOME_MIDDLE_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden" {
+								text = "POPS_OVERVIEW_TAX_BURDEN_MIDDLE_LABEL"
+							}
+							blockoverride "tax_burden_tooltip" {
+								tooltip = "POPS_OVERVIEW_TAX_BURDEN_MIDDLE_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden_items" {
+								datamodel = "[PopsOverviewPanel.GetTaxBurdenItemsMiddle]"
+							}
+
+							blockoverride "goods_expenses" {
+								text = "POPS_OVERVIEW_GOODS_EXPENSES_MIDDLE_LABEL"
+							}
+
+							blockoverride "goods_expenses_tooltip" {
+								tooltip = "POPS_OVERVIEW_GOODS_EXPENSES_MIDDLE_LABEL_TOOLTIP"
+							}
+
+							blockoverride "goods_expense_items" {
+								datamodel = "[PopsOverviewPanel.GetGoodsExpenseItemsMiddle]"
+							}
+
+							blockoverride "remainder" {
+								text = "POPS_OVERVIEW_REMAINDER_MIDDLE"
+								tooltip = "POPS_OVERVIEW_REMAINDER_MIDDLE_TOOLTIP"
+							}
+						}
+						pop_strata_summary = {
+							using = average_standard_of_living_upper_tooltip_with_graph
+							
+							blockoverride "strata_portrait_properties" {
+								datacontext = "[GetPlayer.GetSampleUpperStrataPop]"
+							}
+
+							blockoverride "strata_icon" {
+								texture = "gfx/interface/icons/pops_icons/sol_upper_icon.dds"
+							}
+							blockoverride "strata_label" {
+								text = "UPPER_NO_ICON"
+							}
+
+							blockoverride "sol_summary" {
+								text = "COUNTRY_SOL_UPPER_LABEL"
+							}
+
+							blockoverride "population_summary" {
+								text = "[GetTrendValue(Country.GetUpperStrataPopulationTrend)|vD]"
+							}
+
+							blockoverride "average_income" {
+								text = "POPS_OVERVIEW_AVERAGE_INCOME_UPPER_LABEL"
+								tooltip = "POPS_OVERVIEW_AVERAGE_INCOME_UPPER_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden" {
+								text = "POPS_OVERVIEW_TAX_BURDEN_UPPER_LABEL"
+							}
+							blockoverride "tax_burden_tooltip" {
+								tooltip = "POPS_OVERVIEW_TAX_BURDEN_UPPER_LABEL_TOOLTIP"
+							}
+
+							blockoverride "tax_burden_items" {
+								datamodel = "[PopsOverviewPanel.GetTaxBurdenItemsRich]"
+							}
+
+							blockoverride "goods_expenses" {
+								text = "POPS_OVERVIEW_GOODS_EXPENSES_UPPER_LABEL"
+							}
+
+							blockoverride "goods_expenses_tooltip" {
+								tooltip = "POPS_OVERVIEW_GOODS_EXPENSES_UPPER_LABEL_TOOLTIP"
+							}
+
+							blockoverride "goods_expense_items" {
+								datamodel = "[PopsOverviewPanel.GetGoodsExpenseItemsRich]"
+							}
+
+							blockoverride "remainder" {
+								text = "POPS_OVERVIEW_REMAINDER_RICH"
+								tooltip = "POPS_OVERVIEW_REMAINDER_RICH_TOOLTIP"
+							}
+						}
+					}
+				}
+			}
+
+			pops_overview_statistics = {
+				visible = "[InformationPanel.IsTabSelected('population_charts')]"
+			}
+
+			pop_list = {
+				visible = "[InformationPanel.IsTabSelected('pop_list')]"
+				using = default_fade_in_out
+
+				blockoverride "pop_list_context" {
+					datacontext = "[PopsOverviewPanel.AccessPopsList]"
+				}
+			}
+		}
+
+		blockoverride "fixed_bottom" {
+			flowcontainer = {
+				direction = vertical
+				spacing = 5
+
+				divider_clean = {
+					size = { @panel_width_plus_14 4 }
+				}
+
+				background = {
+					using = dark_area
+				}
+
+				button = {
+					parentanchor = hcenter
+					using = default_button_primary
+					text = "POP_BROWSER"
+					align = hcenter|nobaseline
+					size = { @panel_width 50 }
+					using = fontsize_large
+					onclick = "[InformationPanelBar.OpenPopBrowserPanel( GetPlayer.Self )]"
+				}
+			}
+		}
+	}
+
+	type pop_strata_summary = flowcontainer {
+		minimumsize = { 180 -1 }
+		maximumsize = { 180 -1 }
+		direction = vertical
+		using = entry_bg_fancy
+
+		# portrait and summary
+		widget = {
+			parentanchor = hcenter
+			size = { 180 380 }
+
+			widget = {
+				size = { 170 380 }
+				scissor = yes
+				parentanchor = hcenter
+				position = { 0 25 }
+
+				pop_portrait_base = {
+					parentanchor = center
+					
+					block "strata_portrait_properties" {}
+					size = { -1 @portrait_box_height }
+					blockoverride "portrait_size" {
+						size = { @portrait_size @portrait_size }
+					}
+					
+					blockoverride "pop_portrait_texture" {
+						portrait_texture = "[Pop.GetAnimatedTypedPortrait('environment_standard', 'camera_body', 'idle', GetPortraitRenderSize(PdxGuiWidget.Self), 'random_adult', '(int32)-1')]"
+					}
+
+					visible = "[Pop.IsValid]"
+					blockoverride "portrait_button" {}
+					tooltipwidget = { FancyTooltip_Pop = {} }
+				}
+
+
+			}
+
+			flowcontainer = {
+				direction = vertical
+				parentanchor = hcenter
+				margin_top = 15
+
+				flowcontainer = {
+					parentanchor = hcenter
+					icon = {
+						block "strata_icon" {}
+						size = { 28 28 }
+						parentanchor = vcenter
+					}
+					textbox = {
+						parentanchor = vcenter
+						block "strata_label" {}
+						align = nobaseline
+						autoresize = yes
+						margin_left = 5
+					}
+				}
+
+				textbox = {
+					block "population_summary" {}
+					autoresize = yes
+					parentanchor = hcenter
+					using = fontsize_large
+					default_format = "#variable"
+					align = nobaseline
+				}
+			}
+
+
+			flowcontainer = {
+				parentanchor = bottom|hcenter
+				direction = vertical
+
+				textbox = {
+					block "sol_summary" {}
+					autoresize = yes
+					maximumsize = { 180 -1 }
+					multiline = yes
+					align = hcenter
+				}
+				margin_bottom = 15
+			}
+		}
+
+		# breakdown
+		flowcontainer = {
+			direction = vertical
+			minimumsize = { 180 -1 }
+			maximumsize = { 180 -1 }
+			margin_bottom = 8
+
+			divider_clean = {}
+
+			textbox = {
+				block "average_income" {}
+				margin_top = 10
+				margin_bottom = 10
+				
+				autoresize = yes
+				minimumsize = { 180 -1 }
+				maximumsize = { 180 -1 }
+				using = fontsize_large
+				align = hcenter|nobaseline
+			}
+
+			section_header_button = {
+				blockoverride "layout" {
+					size = { 180 40 }
+				}
+
+				blockoverride "fontsize" {}
+
+				blockoverride "left_text" {
+					block "tax_burden" {}
+					elide = right
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'population_overview_strata_tax_breakdown' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'population_overview_strata_tax_breakdown' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'population_overview_strata_tax_breakdown' )]"
+				}
+
+				block "tax_burden_tooltip" {}
+			}
+
+			flowcontainer = {
+				visible = "[GetVariableSystem.Exists( 'population_overview_strata_tax_breakdown' )]"
+				minimumsize = { 180 -1 }
+				maximumsize = { 180 -1 }
+				direction = vertical
+				parentanchor = hcenter
+				margin_top = 5
+				margin_bottom = 5
+
+				block "tax_burden_items" {}
+				item = {
+					strata_taxation_item = {}
+				}
+			}
+
+			section_header_button = {
+				blockoverride "layout" {
+					size = { 180 40 }
+				}
+
+				blockoverride "fontsize" {}
+
+				blockoverride "left_text" {
+					block "goods_expenses" {}
+					elide = right
+				}
+
+				blockoverride "onclick" {
+					onclick = "[GetVariableSystem.Toggle( 'population_overview_strata_needs_breakdown' )]"
+				}
+
+				blockoverride "onclick_showmore" {
+					visible = "[Not(GetVariableSystem.Exists( 'population_overview_strata_needs_breakdown' ))]"
+				}
+
+				blockoverride "onclick_showless" {
+					visible = "[GetVariableSystem.Exists( 'population_overview_strata_needs_breakdown' )]"
+				}
+
+				block "goods_expenses_tooltip" {}
+			}
+
+			flowcontainer = {
+				direction = vertical
+				parentanchor = hcenter
+				visible = "[GetVariableSystem.Exists( 'population_overview_strata_needs_breakdown' )]"
+
+				block "goods_expense_items" {}
+				item = {
+					strata_pop_need_item = {}
+				}
+			}
+
+			textbox = {
+				autoresize = yes
+
+				block "remainder" {}
+				parentanchor = hcenter
+				maximumsize = { 160 -1 }
+				minimumsize = { 160 -1 }
+				margin_top = 10
+				margin_bottom = 10
+				align = hcenter|nobaseline
+				multiline = yes
+			}
+		}
+	}
+
+	type strata_taxation_item = widget {
+		size = { 180 23 }
+		parentanchor = hcenter
+
+		textbox = {
+			text = "[TaxBurdenItem.GetTaxType]"
+			autoresize = yes
+			minimumsize = { 130 -1 }
+			maximumsize = { 130 -1 }
+			align = nobaseline
+			parentanchor = vcenter
+			margin_left = 10
+			elide = "right"
+			fontsize_min = 14
+		}
+
+		textbox = {
+			text = "TAX_BURDEN_ITEM_LABEL"
+			tooltip = "TAX_BURDEN_ITEM_LABEL_TOOLTIP"
+			autoresize = yes
+			align = right|nobaseline
+			parentanchor = right|vcenter
+			position = { -10 0 }
+		}
+	}
+
+	type strata_pop_need_item = button {
+		size = { 170 40 }
+		using = default_button
+		datacontext = "[GoodsExpenseItem.GetGoods]"
+		onclick = "[InformationPanelBar.OpenGoodsPanel(AccessPlayer.AccessFirstMarket.Self, Goods.Self)]"
+		onrightclick = "[RightClickMenuManager.ShowForGoods(Goods.AccessSelf)]"
+		using = tooltip_above
+
+		tooltipwidget = {
+			FancyTooltip_Goods = {}
+		}
+
+		icon = {
+			texture = "[Goods.GetTexture]"
+			size = { 30 30 }
+			parentanchor = vcenter
+			position = { 10 0 }
+		}
+
+		textbox = {
+			text = "[LabelingHelper.GetPriceCompareIconNoFormatting(GoodsExpenseItem.GetRelativePriceDiff)]"
+			using = fontsize_large
+			autoresize = yes
+			parentanchor = vcenter
+			position = { 45 -2 }
+		}
+
+		textbox = {
+			text = "GOODS_EXPENSE_ITEM_LABEL"
+			autoresize = yes
+			align = right|nobaseline
+			parentanchor = right|vcenter
+			position = { -10 0 }
+			tooltip = "GOODS_EXPENSE_ITEM_TOOLTIP"
+		}
+	}
+
+	### POP CATEGORY ENTRY 
+	type pop_overview_category_entry = container {
+		parentanchor = hcenter
+		minimumsize = { @panel_width_plus_20 -1 }
+
+		flowcontainer = {
+			parentanchor = hcenter
+			minimumsize = { @panel_width_plus_20 -1 }
+			direction = vertical
+			spacing = 5
+			
+			alwaystransparent = no
+			
+			block "header" {
+				default_header = {
+					parentanchor = hcenter
+					
+					blockoverride "text" {
+						block "header_text" {
+							raw_text = "Religion"
+						}
+					}
+				}
+			}
+			
+			flowcontainer = {
+				minimumsize = { @panel_width -1 }
+				parentanchor = hcenter
+				spacing = 5
+				
+				block "piecharts" {}
+			}
+
+			block "show_more_button" {
+				thin_show_more_button = {}
+			}
+		}
+	}
+
+	type thin_show_more_button = button {
+		using = default_button
+		size = { @panel_width 30 }
+		parentanchor = hcenter
+
+		block "show_more_button_visibility" {}
+
+		block "show_more_onclick" {}
+
+		textbox = {
+
+			block "show_more_button_text_visibility" {}
+
+			parentanchor = center
+			align = center|nobaseline
+			text = "SHOW_MORE"
+		}
+
+		textbox = {
+
+			block "show_less_button_text_visibility" {}
+
+			parentanchor = center
+			align = center|nobaseline
+			text = "SHOW_LESS"
+		}
+	}
+
+	type culture_population_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopCulturesSortedByPopulation]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopCulturesSortedByPopulation), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessPopCulturesSortedByPopulation)]"
+			}
+			blockoverride "text" {
+				text = "NO_CULTURES"
+			}
+		}
+
+		blockoverride "heading" {
+			text = "POPULATION_PIECHART_HEADER"
+		}
+
+		blockoverride "tooltip" {
+			tooltip = "CULTURE_PIECHART"
+		}
+
+		blockoverride "pieslice" {
+			value = "[Culture.GetPopulationAsFloat(GetPlayer)]"
+		}
+
+		blockoverride "color" {
+			color = "[Culture.GetColor]"
+		}
+		
+		blockoverride "pie_item_goto_button" {
+			button = {
+				using = clean_button
+				size = { 100% 100% }
+				onclick = "[InformationPanelBar.OpenCultureInfoPanel(Culture.AccessSelf)]"
+			}
+		}
+
+		blockoverride "leftside_info" {
+			text = "[Culture.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[Culture.GetPopulationAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([Culture.GetPopulation(GetPlayer)|D])"
+		}
+	}
+	
+	type culture_pol_str_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopCulturesSortedByPolStr]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopCulturesSortedByPolStr), '(int32)3')]"
+		}
+
+		#empty_state = {
+		#	blockoverride "visible" {
+		#		visible = "[IsDataModelEmpty(AccessPlayer.AccessPopCulturesSortedByPolStr)]"
+		#	}
+		#	blockoverride "text" {
+		#		text = "NO_CULTURES_POL_STR"
+		#	}
+		#}
+
+		blockoverride "heading" {
+			text = "POLITICAL_STRENGTH_PIECHART_HEADER"
+		}
+
+		blockoverride "tooltip" {
+			tooltip = "CULTURE_PIECHART_POL_STR"
+		}
+
+		blockoverride "pieslice" {
+			value = "[Culture.GetPolStrAsFloat(GetPlayer)]"
+		}
+		
+		blockoverride "color" {
+			color = "[Culture.GetColor]"
+		}
+		
+		blockoverride "pie_item_goto_button" {
+			button = {
+				using = clean_button
+				size = { 100% 100% }
+				onclick = "[InformationPanelBar.OpenCultureInfoPanel(Culture.AccessSelf)]"
+			}
+		}
+
+		blockoverride "leftside_info" {
+			text = "[Culture.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[Culture.GetPolStrAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([Culture.GetPolStr(GetPlayer)|K])"
+		}
+	}
+	
+	type religion_population_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopReligionsSortedByPopulation]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopReligionsSortedByPopulation), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessPopReligionsSortedByPopulation)]"
+			}
+			blockoverride "text" {
+				text = "NO_RELIGIONS"
+			}
+		}
+
+		blockoverride "heading" {
+			text = "POPULATION_PIECHART_HEADER"
+		}
+
+		blockoverride "tooltip" {
+			tooltip = "RELIGION_PIECHART"
+		}
+
+		blockoverride "pieslice" {
+			value = "[Religion.GetPopulationAsFloat(GetPlayer)]"
+		}
+
+		
+		blockoverride "color" {
+			color = "[Religion.GetColor]"
+		}
+		
+		blockoverride "pie_item_goto_button" {
+			button = {
+				using = clean_button
+				size = { 100% 100% }
+				onclick = "[InformationPanelBar.OpenReligionInfoPanel(Religion.AccessSelf)]"
+			}
+		}
+
+		blockoverride "leftside_info" {
+			text = "[Religion.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[Religion.GetPopulationAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([Religion.GetPopulation(GetPlayer)|K])"
+		}
+	}
+	
+	type religion_pol_str_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopReligionsSortedByPolStr]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopReligionsSortedByPolStr), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessPopReligionsSortedByPolStr)]"
+			}
+			blockoverride "text" {
+				text = "NO_RELIGIONS_POL_STR"
+			}
+		}
+
+		blockoverride "heading" {
+			text = "POLITICAL_STRENGTH_PIECHART_HEADER"
+		}
+		
+		blockoverride "tooltip" {
+			tooltip = "RELIGION_PIECHART_POL_STR"
+		}
+
+		blockoverride "pieslice" {
+			value = "[Religion.GetPolStrAsFloat(GetPlayer)]"
+		}
+
+		
+		blockoverride "color" {
+			color = "[Religion.GetColor]"
+		}
+		
+		blockoverride "pie_item_goto_button" {
+			button = {
+				using = clean_button
+				size = { 100% 100% }
+				onclick = "[InformationPanelBar.OpenReligionInfoPanel(Religion.AccessSelf)]"
+			}
+		}
+
+		blockoverride "leftside_info" {
+			text = "[Religion.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[Religion.GetPolStrAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([Religion.GetPolStr(GetPlayer)|K])"
+		}
+	}
+
+	type market_starvation_piechart = chart {
+		datacontext = "[Market.GetFoodSecurityFilter]"
+		datacontext = "[FoodSecurityFilter.GetFoodSecurity]"
+
+		blockoverride "background" {}
+
+		blockoverride "datamodel" {
+			datamodel = "[GetStarvationTypes]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(GetStarvationTypes), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(GetStarvationTypes)]"
+			}
+			blockoverride "text" {
+				text = "NO_STARVATION"
+			}
+		}
+
+		blockoverride "title" {}
+
+		blockoverride "tooltip" {
+			tooltip = "STARVATION_PIESLICE_TOOLTIP"
+		}
+
+		blockoverride "pieslice" {
+			value = "[FoodSecurity.GetStarvationTypePopulationAsFloat(StarvationType.Self)]"
+		}
+		
+		blockoverride "color" {
+			color = "[StarvationType.GetColor]"
+		}
+
+		blockoverride "leftside_info" {
+			text = "[StarvationType.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			raw_text = "#v [FoodSecurity.GetStarvationTypePopulation(StarvationType.Self)|D]#!"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([FoodSecurity.GetStarvationTypePopulationAsPercentage(StarvationType.Self)|%0])"
+		}
+	}
+	
+	type pop_type_population_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopTypesSortedOnPopulation]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopTypesSortedOnPopulation), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessPopTypesSortedOnPopulation)]"
+			}
+			blockoverride "text" {
+				text = "NO_POP_TYPES"
+			}
+		}
+
+		blockoverride "heading" {
+			text = "POPULATION_PIECHART_HEADER"
+		}
+
+		blockoverride "tooltip" {
+			tooltip = "POP_TYPE_PIECHART"
+		}
+
+		blockoverride "pieslice" {
+			value = "[PopType.GetPopulationAsFloat(GetPlayer)]"
+		}
+
+		
+		blockoverride "color" {
+			color = "[PopType.GetColor]"
+		}
+
+		blockoverride "leftside_info" {
+			text = "[PopType.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[PopType.GetPopulationAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([PopType.GetPopulation(GetPlayer)|K])"
+		}
+	}
+	
+	type pop_type_pol_str_piechart = chart {
+		blockoverride "datamodel" {
+			datamodel = "[AccessPlayer.AccessPopTypesSortedOnPolStr]"
+		}
+
+		blockoverride "show_more_button_visibility" {
+			visible = "[GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopTypesSortedOnPolStr), '(int32)3')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				visible = "[IsDataModelEmpty(AccessPlayer.AccessPopTypesSortedOnPopulation)]"
+			}
+			blockoverride "text" {
+				text = "NO_POP_TYPES_POL_STR"
+			}
+		}
+
+		blockoverride "heading" {
+			text = "POLITICAL_STRENGTH_PIECHART_HEADER"
+		}
+
+		blockoverride "tooltip" {
+			tooltip = "POP_TYPE_PIECHART_POL_STR"
+		}
+
+		blockoverride "pieslice" {
+			value = "[PopType.GetPolStrAsFloat(GetPlayer)]"
+		}
+
+		
+		blockoverride "color" {
+			color = "[PopType.GetColor]"
+		}
+
+		blockoverride "leftside_info" {
+			text = "[PopType.GetName]"
+		}
+
+		blockoverride "rightside1_info" {
+			text = "[PopType.GetPolStrAsPercentage(GetPlayer)|v/%d]"
+		}
+
+		blockoverride "rightside2_info" {
+			raw_text = "([PopType.GetPolStr(GetPlayer)|K])"
+		}
+	}
+
+	### STATISTICS
+	type pops_overview_statistics = flowcontainer {
+		using = default_list_position
+		spacing = 10
+		direction = vertical
+		
+		### pop type
+		pop_overview_category_entry = {
+			blockoverride "animation" {
+				name = pops_overview_panel_show
+				on_finish = "[PdxGuiTriggerAllAnimations('pops_overview_panel_section_2')]"
+			}
+			blockoverride "header_text" {
+				text = "POP_TYPE_HEADER"
+			}
+			blockoverride "animation_enter" {
+				name = pop_overview_poptype_enter
+			}
+			blockoverride "animation_leave" {
+				name = pop_overview_poptype_leave
+			}
+
+			blockoverride "show_more_onclick" {
+				onclick = "[GetVariableSystem.Toggle( 'population_labels' )]"
+			}
+
+			blockoverride "show_more_button_text_visibility" {
+				visible = "[Not(GetVariableSystem.Exists( 'population_labels' ))]"
+			}
+
+			blockoverride "show_less_button_text_visibility" {
+				visible = "[GetVariableSystem.Exists( 'population_labels' )]"
+			}
+
+			blockoverride "piecharts" {
+				pop_type_population_piechart = {
+					visible = "[GetVariableSystem.Exists('population_labels')]"
+
+					blockoverride "maxverticalslots" {}
+				}
+
+				pop_type_population_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('population_labels'))]"
+				}
+
+				pop_type_pol_str_piechart = {
+					visible = "[GetVariableSystem.Exists('population_labels')]"
+
+					blockoverride "maxverticalslots" {}
+				}
+
+				pop_type_pol_str_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('population_labels'))]"
+				}
+			}
+			blockoverride "icon" {
+				texture = "gfx/interface/population/pop_type.dds"
+			}
+		}
+		
+		### culture
+		pop_overview_category_entry = {
+			blockoverride "animation" {
+				name = pops_overview_panel_section_2
+				on_finish = "[PdxGuiTriggerAllAnimations('pops_overview_panel_section_3')]"
+			}
+			blockoverride "header_text" {
+				text = "POP_CULTURE_HEADER"
+			}
+			blockoverride "animation_enter" {
+				name = pop_overview_culture_enter
+			}
+			blockoverride "animation_leave" {
+				name = pop_overview_culture_leave
+			}
+
+			blockoverride "show_more_onclick" {
+				onclick = "[GetVariableSystem.Toggle( 'culture_population_labels' )]"
+			}
+
+			blockoverride "show_more_button_text_visibility" {
+				visible = "[Not(GetVariableSystem.Exists( 'culture_population_labels' ))]"
+			}
+
+			blockoverride "show_less_button_text_visibility" {
+				visible = "[GetVariableSystem.Exists( 'culture_population_labels' )]"
+			}
+
+			blockoverride "show_more_button_visibility" {
+				visible = "[Or(GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopCulturesSortedByPopulation), '(int32)3'), GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopCulturesSortedByPolStr), '(int32)3'))]"
+			}
+
+			blockoverride "piecharts" {
+				culture_population_piechart = {
+					visible = "[GetVariableSystem.Exists('culture_population_labels')]"
+
+					blockoverride "maxverticalslots" {}
+				}
+
+				culture_population_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('culture_population_labels'))]"
+				}
+
+				culture_pol_str_piechart = {
+					visible = "[GetVariableSystem.Exists('culture_population_labels')]"
+
+					blockoverride "maxverticalslots" {}
+				}
+
+				culture_pol_str_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('culture_population_labels'))]"
+				}
+			}
+			blockoverride "icon" {
+				texture = "gfx/interface/population/pop_culture.dds"
+			}
+		}
+		
+		### religion
+		pop_overview_category_entry = {
+			blockoverride "animation" {
+				name = pops_overview_panel_section_3
+			}
+			blockoverride "header_text" {
+				text = "POP_RELIGION_HEADER"
+			}
+			blockoverride "animation_enter" {
+				name = pop_overview_religion_enter
+			}
+			blockoverride "animation_leave" {
+				name = pop_overview_religion_leave
+			}
+
+			blockoverride "show_more_onclick" {
+				onclick = "[GetVariableSystem.Toggle( 'religion_population_labels' )]"
+			}
+
+			blockoverride "show_more_button_text_visibility" {
+				visible = "[Not(GetVariableSystem.Exists( 'religion_population_labels' ))]"
+			}
+
+			blockoverride "show_less_button_text_visibility" {
+				visible = "[GetVariableSystem.Exists( 'religion_population_labels' )]"
+			}
+
+			blockoverride "show_more_button_visibility" {
+				visible = "[Or(GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopReligionsSortedByPopulation), '(int32)3'), GreaterThan_int32(GetDataModelSize(AccessPlayer.AccessPopReligionsSortedByPolStr), '(int32)3'))]"
+			}
+
+			blockoverride "piecharts" {
+				religion_population_piechart = {
+					visible = "[GetVariableSystem.Exists('religion_population_labels')]"
+
+					blockoverride "maxverticalslots" {
+						maxverticalslots = 14
+					}
+				}
+
+				religion_population_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('religion_population_labels'))]"
+
+					blockoverride "maxverticalslots" {
+						maxverticalslots = 3
+					}
+				}
+
+				religion_pol_str_piechart = {
+					visible = "[GetVariableSystem.Exists('religion_population_labels')]"
+
+					blockoverride "maxverticalslots" {
+						maxverticalslots = 14
+					}
+				}
+
+				religion_pol_str_piechart = {
+					visible = "[Not(GetVariableSystem.Exists('religion_population_labels'))]"
+
+					blockoverride "maxverticalslots" {
+						maxverticalslots = 3
+					}
+				}
+			}
+			blockoverride "icon" {
+				texture = "gfx/interface/population/pop_religion.dds"
+			}
+		}
+	}
+
+	### POP LIST
+	type pop_list = flowcontainer {
+		direction = vertical
+		using = default_list_position
+		spacing = 5
+		margin_bottom = 15
+		
+		block "pop_list_context" {}
+		
+		datamodel = "[PopList.GetItems]"
+
+		item = {
+			flowcontainer = {
+				direction = vertical
+				spacing = 0
+
+				background = {
+					using = entry_bg
+				}
+
+				### EXPANDABLE ENTRY
+				widget = {
+					size = { @panel_width_plus_10 110 }
+					datacontext = "[PopListItem.GetPopType]"
+
+					flowcontainer = {
+						datacontext = "[PopListItem.GetFirstPop]"
+						margin_left = 5
+						parentanchor = vcenter
+						
+						pop_portrait_simple = {
+
+							blockoverride "portrait_button" {}
+							
+							size = { 100 100 }
+							
+							background = {
+								using = pop_bg
+							}
+							
+							blockoverride "portrait_size" {
+								size = { 125 125 }
+							}
+						}
+					}
+
+					### DROPDOWN / EXPAND
+					section_header_button = {
+						parentanchor = right
+						position = { 0 2 }
+						size = { 440 38 }
+						
+						blockoverride "left_text" {
+							text = "POP_LIST_TITLE_LABEL"
+						}
+
+						blockoverride "right_text" {
+							section_header_right_text = {
+								block "right_text_text" {
+									text = "[PopListItem.GetTotalPopSize|vD]"
+									tooltip = "POP_LIST_TOTAL_TOOLTIP"
+								}
+								margin_right = 70
+							}
+						}
+						
+						blockoverride "onclick" {
+							onclick = "[PopListItem.ToggleExpand]"
+						}
+						
+						blockoverride "onclick_showmore" {
+							visible = "[Not(PopListItem.IsExpanded)]"
+						}
+
+						blockoverride "onclick_showless" {
+							visible = "[PopListItem.IsExpanded]"
+						}
+						
+						icon = {
+							size = { 45 45 }
+							position = { -15 -1 }
+							parentanchor = right|vcenter
+							texture = "[PopListItem.GetPopType.GetTexture]"
+						}
+						
+						widget = {
+							size = { 100% 100% }
+							datacontext = "[PopListItem]"
+
+							block "tooltipwidget" {
+							
+								tooltipwidget = {
+									FancyTooltip_PopType = {}
+								}
+							}
+						}
+					}		
+					
+					widget = {
+						parentanchor = right
+						size = { 440 50 }
+						position = { -1 52 }
+
+						# left info
+						flowcontainer = {
+							position = { -1 -1 }
+							parentanchor = left|vcenter
+							
+							### LARGEST INTEREST GROUPS
+							block "largest_IGs" {
+								flowcontainer = {
+									parentanchor = vcenter
+									visible = "[Not(PopList.HasBuildingContext)]"
+									datamodel = "[PopListItem.AccessTwoLargestIGs]"
+									spacing = 5
+									minimumsize = { 95 45 }
+
+									item = {
+										ig_button = {}
+									}
+								}
+							}
+							
+							### INFO FOR WORKFORCE IN BUILDINGS
+							flowcontainer = {
+								direction = vertical
+								visible = "[PopList.HasBuildingContext]"
+								datacontext = "[PopList.GetBuildingContext]"
+								margin_right = 10 
+
+								### WAGE
+								textbox = {
+									visible = "[And(PopListItem.GetPopType.IsPaidWages(Building.Self),Not(Building.IsRoleFullyReplacedByAnotherPopType(PopListItem.GetPopType)))]"
+									text = "AVG_WAGE_POP_LIST"
+									align = left|nobaseline
+									autoresize = yes
+									tooltip = "ANNUAL_WAGE_TOOLTIP"
+									alpha = "[TransparentIfFalse(GreaterThan_CFixedPoint(PopListItem.GetAverageAnnualWage, '(CFixedPoint)0'))]"
+								}
+								
+								### WORKERS
+								flowcontainer = {
+									direction = vertical
+									tooltip = "[PopListItem.GetEmploymentDesc()]"
+									spacing = 4
+									margin_top = 4
+									margin_bottom = 10
+
+									textbox = {
+										text = "[Building.GetPopTypeFullyReplacedDesc(PopListItem.GetPopType)]"
+										align = left|nobaseline
+										autoresize = yes
+									}
+
+									default_progressbar_horizontal = {
+										size = { 200 23 }
+										visible = "[Not(Building.IsRoleFullyReplacedByAnotherPopType(PopListItem.GetPopType))]"
+										blockoverride "values" {
+											min = -1    # Set to -1, otherwise zero slaves bar (before starts hiring) will be constantly filling up
+											max = "[IntToFloat(Building.GetMaxPopSize(PopListItem.GetPopType))]"
+											value = "[IntToFloat(PopListItem.GetWorkingAdultsPopSize)]"
+										}
+										
+										flowcontainer = {
+											parentanchor = vcenter
+											margin_left = 10
+											textbox = {
+												raw_text = "#bold [PopListItem.GetWorkingAdultsPopSize|D]#!"
+												autoresize = yes
+												align = center|nobaseline
+												parentanchor = vcenter
+											}
+
+											textbox = {
+												visible = "[LessThan_int64(PopListItem.GetWorkingAdultsPopSize, Building.GetMaxPopSize(PopListItem.GetPopType))]"
+												margin_left = 7
+												raw_text = "/ #maximum [Building.GetMaxPopSize(PopListItem.GetPopType)|D]#!"
+												autoresize = yes
+												align = center|nobaseline
+												parentanchor = vcenter
+											}
+										}
+									}
+								}
+							}							
+
+							flowcontainer = {
+								direction = vertical
+								margin_left = 5
+								margin_bottom = 10
+								parentanchor = vcenter
+
+								flowcontainer = {
+									spacing = 2
+									icon = {
+										texture = "gfx/interface/icons/generic_icons/population_radical.dds"
+										size = { 26 26 }
+										parentanchor = vcenter
+									}
+									textbox = {
+										parentanchor = vcenter
+										raw_text = "#variable [PopListItem.GetNumRadicals|D]#!"
+										autoresize = yes
+										align = left|nobaseline
+										tooltip = "RADICALS_TOOLTIP_POP_LIST"
+										alpha = "[TransparentIfZero_int64(PopListItem.GetNumRadicals)]"
+									}
+								}
+
+								flowcontainer = {
+									spacing = 2
+									icon = {
+										texture = "gfx/interface/icons/generic_icons/population_loyalist.dds"
+										size = { 26 26 }
+										parentanchor = vcenter
+									}
+									textbox = {
+										parentanchor = vcenter
+										raw_text = "#variable [PopListItem.GetNumLoyalists|D]#!"
+										autoresize = yes
+										align = left|nobaseline
+										tooltip = "LOYALISTS_TOOLTIP_POP_LIST"
+										alpha = "[TransparentIfZero_int64(PopListItem.GetNumLoyalists)]"
+									}
+								}
+							}
+						}
+
+						flowcontainer = {
+							parentanchor = right|vcenter
+							position = { -10 0 }
+							direction = vertical
+							margin_bottom = 10
+							
+							textbox = {
+								visible = "[GreaterThan_int64( PopListItem.GetWorkingAdultsPopSize, '(int64)0' )]"
+								text = "POPS_LIST_SOL"
+								autoresize = yes
+								align = nobaseline
+								tooltip = "POPS_LIST_SOL_TOOLTIP"
+								parentanchor = right
+								margin_right = 2
+								max_width = 140
+								fontsize_min = 12
+								elide = right
+							}
+							
+							flowcontainer = {
+								datacontext = "[PopListItem.GetFirstPop]"
+								datamodel = "[Pop.GetTopGoodsConsumption]"
+								tooltip = "[Pop.GetAdditionalSOLFactorsDesc]" 
+								parentanchor = right
+
+								item = {
+									icon = {
+										texture = "[PopConsumptionGoods.GetGoods.GetTexture]"
+										size = { 28 28 }
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				### EXPANDED
+				fixedgridbox = {
+					datamodel = "[PopListItem.GetPops]"
+					visible = "[PopListItem.IsExpanded]"
+					parentanchor = hcenter
+					
+					addcolumn = @panel_width 
+					addrow = 125
+
+					minimumsize = { @panel_width -1 }
+					maximumsize = { @panel_width -1 }
+					
+					using = expanded_list_bg
+					using = default_content_fade
+						
+					item = {
+						container = {
+							parentanchor = hcenter
+							name = "tutorial_highlight_pop"
+							
+							widget = {
+								size = { @panel_width 125 }
+								visible = "[Pop.IsValid]"
+								
+								background = {
+									using = entry_bg_simple
+								}
+								
+								### portrait + size
+								button = {
+									size = { 95 110 }
+									position = { 5 0 }
+									parentanchor = vcenter
+									using = default_button
+									onclick = "[InformationPanelBar.OpenPopDetailsPanel(Pop.AccessSelf)]"
+									onmousehierarchyenter = "[AccessHighlightManager.HighlightState(Pop.GetState.Self)]"
+									onmousehierarchyleave = "[AccessHighlightManager.RemoveHighlight]"
+
+									tooltipwidget = {
+										FancyTooltip_Pop = {}
+									}
+									pop_portrait_simple = {
+										position = { 0 0 }
+										parentanchor = bottom|hcenter
+										blockoverride "portrait_button" {
+											alwaystransparent = yes
+										}
+									}
+									textbox = {
+										position = { 0 4 }
+										block "pop_size_info" {
+											text = "[Pop.GetTotalSize|Dv]"
+										}
+										using = pop_population_tooltip_with_graph
+										size = { 100% 25 }
+										align = center|nobaseline
+										using = fontsize_large
+										parentanchor = top|hcenter
+										
+										background = {
+											using = dark_area
+											margin = { -5 0 }
+										}
+									}
+								}
+
+								### right side
+								flowcontainer = {								
+									position = { 105 0 }
+									parentanchor = vcenter
+									direction = vertical
+
+									# buttons
+									flowcontainer = {
+										
+										#total size info (for workforce panel)
+										block "total_info" {}
+
+										# first column (culture and religion)
+										flowcontainer = {
+											datacontext = "[Pop.GetCountry]"
+											direction = vertical
+											
+											#culture
+											button = {
+												size = { 210 27 }
+												using = clean_button
+												onclick = "[InformationPanelBar.OpenCultureInfoPanel(Pop.AccessCulture)]"
+												
+												datacontext = "[Pop.GetCulture]"
+												tooltipwidget = {
+													FancyTooltip_Culture = {}
+												}
+												
+												textbox = {
+													size = { 100% 100% }
+													text = "[Pop.GetCulture.GetName]"
+													elide = right
+													align = left|nobaseline
+													margin = { 10 0 }
+												}
+											}
+											
+											#religion
+											button = {
+												size = { 210 27 }
+												using = clean_button
+												onclick = "[InformationPanelBar.OpenReligionInfoPanel(Pop.AccessReligion)]"
+												
+												datacontext = "[Pop.GetReligion]"
+												tooltipwidget = {
+													FancyTooltip_Religion = {}
+												}
+												
+												icon = {
+													size = { 25 25 }
+													texture = "[Religion.GetTexture]"
+													parentanchor = right|vcenter
+													position = { -3 0 }
+												}
+														
+												textbox = {
+													size = { 100% 100% }
+													text = "[Pop.GetReligion.GetName]"
+													elide = right
+													align = left|nobaseline
+													margin = { 10 0 }
+													margin_right = 30
+													
+												}
+											}
+										}
+									
+										# second column (building and state)
+										block "building_and_state" {
+											flowcontainer = {
+												direction = vertical
+												button = {
+													size = { 220 27 }
+													using = clean_button
+													onclick = "[InformationPanelBar.OpenStatePanel(Pop.AccessState)]"
+															
+													textbox = {
+														size = { 100% 100% }
+														text = "[Pop.GetState.GetName]"
+														elide = right
+														align = left|nobaseline
+														margin = { 10 0 }
+													}
+												}
+													
+												button = {
+													visible = "[Pop.IsEmployed]"
+													size = { 220 27 }
+													using = clean_button
+													onclick = "[InformationPanelBar.OpenBuildingDetailsPanel(Pop.AccessBuilding)]"
+													
+													textbox = {
+														margin_right = 35
+														margin_left = 10
+														text = "[Pop.GetBuilding.GetName]"
+														size = { 100% 100% }
+														align = nobaseline
+														elide = right
+														parentanchor = vcenter
+													}
+													icon = {
+														position = { -5 0 }
+														size = { 22 22 }
+														texture = "[Pop.GetBuilding.GetIcon]"
+														tooltip = "[Pop.GetBuilding.GetTooltip]"
+														parentanchor = right|vcenter
+													}
+												}
+												
+												textbox = {
+													size = { 200 27 }
+													text = "UNEMPLOYED"
+													align = left|nobaseline
+													visible = "[Not(Pop.IsEmployed)]"
+													margin = { 10 0 }
+													alpha = 0.5
+													elide = right
+												}
+											}
+										}
+									}
+
+									# bottom half information
+									widget = {
+										size = { 430 55 }
+										flowcontainer = {
+											parentanchor = vcenter
+											spacing = 5
+
+											#acceptance icon
+											widget = {
+												parentanchor = vcenter
+												size = { 40 40 }
+
+												pop_acceptance_icon = {
+													parentanchor = center
+												}
+											}
+
+											# IG icon
+											ig_button = {
+												visible = "[Not(PopList.HasInterestGroupContext)]"
+												size = { 40 40 }
+												datacontext = "[Pop.GetLargestInterestGroup]"
+
+												parentanchor = vcenter
+
+												blockoverride "powerful_visibility" {
+													visible = "[Pop.GetLargestInterestGroup.IsPowerful]"
+												}
+
+												blockoverride "onclick" {
+													onclick = "[InformationPanelBar.OpenInterestGroupPanel(Pop.AccessLargestInterestGroup)]"
+												}
+
+												blockoverride "tooltip" {
+													tooltip = POP_IG_ATTRACTION_HEADER
+												}
+											}
+
+											# Spacing to align Radicals and Loyalists
+											widget = {
+												size = { 108 10 }
+												visible = "[PopList.HasBuildingContext]"
+											}
+
+											flowcontainer = {
+												direction = vertical
+												margin_left = 15
+												parentanchor = vcenter
+
+												flowcontainer = {
+													spacing = 2
+													visible = "[GreaterThan_int64(Pop.GetNumRadicals, '(int64)0')]"
+													tooltip = "RADICALS_TOOLTIP_POP"
+													
+													icon = {
+														texture = "gfx/interface/icons/generic_icons/population_radical.dds"
+														size = { 26 26 }
+														parentanchor = vcenter
+													}
+													textbox = {
+														parentanchor = vcenter
+														raw_text = "#variable [Pop.GetNumRadicals|D]#!"
+														autoresize = yes
+														align = left|nobaseline
+													}
+												}
+
+												flowcontainer = {
+													spacing = 2
+													visible = "[GreaterThan_int64(Pop.GetNumLoyalists, '(int64)0')]"
+													tooltip = "LOYALISTS_TOOLTIP_POP"
+													
+													icon = {
+														texture = "gfx/interface/icons/generic_icons/population_loyalist.dds"
+														size = { 26 26 }
+														parentanchor = vcenter
+													}
+													textbox = {
+														parentanchor = vcenter
+														raw_text = "#variable [Pop.GetNumLoyalists|D]#!"
+														autoresize = yes
+														align = left|nobaseline
+													}
+												}
+											}
+										}
+
+										flowcontainer = {
+											direction = vertical
+											parentanchor = right|vcenter
+											spacing = 3
+
+											# Standard of Living
+											textbox = {
+												raw_text = "[Pop.GetFormattedStandardOfLivingLabel|v] ([Pop.GetFormattedStandardOfLiving|v])"
+												using = pop_sol_tooltip_with_graph
+												autoresize = yes
+												align = nobaseline
+												margin_right = 2
+												parentanchor = right
+											}
+
+											flowcontainer = {
+												datamodel = "[Pop.GetTopGoodsConsumption]"
+												parentanchor = right
+												tooltip = "[Pop.GetAdditionalSOLFactorsDesc]" 
+
+												item = {
+													icon = {
+														texture = "[PopConsumptionGoods.GetGoods.GetTexture]"
+														size = { 28 28 }
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				textbox = {
+					visible = "[And(Not(PopListItem.IsAllPopsShown), PopListItem.IsExpanded)]"
+					parentanchor = hcenter
+					text = "POP_LIST_NOT_ALL_POPS_SHOWN"
+					autoresize = yes
+					align = left|nobaseline
+					margin_top = 8
+					margin_bottom = 2
+				}
+			
+				widget = {
+					visible = "[PopListItem.IsExpanded]" 
+					size = { 8 8 }
+				}
+			}
+		}
+	}
+
+	type pop_list_summary_widget = widget {
+		# Datacontexts used:
+		# PopList
+
+		size = { @panel_width 60 }
+
+		background = {
+			using = entry_bg_simple
+		}
+
+		hbox = {
+			margin = {15 5}
+
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+
+			pop_list_summary_section_item_vbox = {
+				blockoverride "sum_item_label"
+				{
+					text = "POPULATION_CONCEPT_HEADER"
+				}
+				blockoverride "sum_item_value"
+				{
+					text = "[PopList.GetTotalPopulation|vD]"
+				}
+			}
+
+			block "pop_list_summary_pol_str"
+			{
+				pop_list_summary_section_item_vbox = {
+					blockoverride "sum_item_label"
+					{
+						raw_text = "[concept_political_strength]:"
+					}
+					blockoverride "sum_item_value"
+					{
+						raw_text = "[PopList.GetTotalPoliticalStrength|vD]"
+					}
+				}
+			}	
+
+			pop_list_summary_section_item_vbox = {
+				blockoverride "sum_item_label"
+				{
+					text = "AVERAGE_SOL_HEADER"
+				}
+				blockoverride "sum_item_value"
+				{
+					raw_text = "[PopList.GetAverageStandardOfLivingLabel|v] ([PopList.GetAverageStandardOfLiving|1])" 	
+				}
+			}
+		}
+	}
+
+	type pop_list_summary_section_item_vbox = vbox {
+		layoutpolicy_horizontal = expanding
+		layoutpolicy_vertical = expanding
+		
+		textbox = {
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+
+			block "sum_item_label"
+			{
+				raw_text = "#todo sum_item_label#!"
+			}
+
+			align = nobaseline
+		}
+
+		textbox = {
+			layoutpolicy_horizontal = expanding
+			layoutpolicy_vertical = expanding
+
+			block "sum_item_value"
+			{
+				raw_text = "#todo sum_item_value#!"
+			}
+
+			align = nobaseline
+		}
+	}
+}

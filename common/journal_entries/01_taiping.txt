@@ -53,36 +53,29 @@
 			}
 			set_variable = open_to_missionaries_state
 		}
-
-		scope:journal_entry = { # 추가
-			set_variable = {
-				name = num_months_in_progress
-				value = 0
-			}
-		}
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			#if = {
-			#	limit = {
-			#		has_law = law_type:law_no_migration_controls
-			#		any_scope_state = {
-			#			NOT = {
-			#				has_variable = open_to_missionaries_state
-			#			}
-			#		}
-			#	}
-			#	every_scope_state = {
-			#		limit = {
-			#			NOT = {
-			#				has_variable = open_to_missionaries_state
-			#			}
-			#		}
-			#		set_variable = open_to_missionaries_state
-			#	}
-			#}
-			#else = {
+			if = {
+				limit = {
+					has_law = law_type:law_no_migration_controls
+					any_scope_state = {
+						NOT = {
+							has_variable = open_to_missionaries_state
+						}
+					}
+				}
+				every_scope_state = {
+					limit = {
+						NOT = {
+							has_variable = open_to_missionaries_state
+						}
+					}
+					set_variable = open_to_missionaries_state
+				}
+			}
+			else = {
 				every_scope_state = {
 					limit = {
 						any_neighbouring_state = {
@@ -99,47 +92,6 @@
 					}
 					set_variable = open_to_missionaries_state
 				}
-			#}
-
-			scope:journal_entry = { # 추가
-				if = {
-					limit = {
-						is_progressing = yes 
-					}
-					change_variable = {
-						name = num_months_in_progress
-						add = 1
-					}
-				}
-				else = {
-					change_variable = {
-						name = num_months_in_progress
-						subtract = 1
-					}
-				}
-				clamp_variable = {
-					name = num_months_in_progress
-					max = 12
-					min = 0
-				}
-			}
-			if = { # 추가
-				limit = {
-					has_variable = CHI_deported_missionaries
-					custom_tooltip = {
-						text = lost_war_tt
-						OR = {
-							has_variable = recently_lost_war
-							AND = {
-								has_variable = recently_had_war
-								NOT = {
-									has_variable = recently_won_war
-								}
-							}
-						}
-					}
-				}
-				remove_variable = CHI_deported_missionaries
 			}
 		}
 		random_events = {
@@ -149,49 +101,20 @@
 			10 = CHI_missionaries.3
 			10 = CHI_missionaries.4
 			10 = CHI_missionaries.5
-			10 = CHI_missionaries.11
-			10 = CHI_missionaries.13
-			10 = CHI_missionaries.15
 		}
 	}
 
 	complete = {
 		custom_tooltip = {
-			text = je_chinese_missions_complete_tt
-			scope:journal_entry = { is_goal_complete = yes } # 추가
-		}
-		custom_tooltip = {
 			text = missionary_ban_tt
 			has_variable = CHI_deported_missionaries
 		}
 		OR = {
-			# is_country_type = recognized
+			is_country_type = recognized
 			has_law = law_type:law_state_atheism
 			has_law = law_type:law_isolationism
 			has_law = law_type:law_closed_borders
 		}
-		
-	}
-
-	is_progressing = { # 추가
-		custom_tooltip = {
-			text = missionary_ban_tt
-			has_variable = CHI_deported_missionaries
-		}
-		OR = {
-			# is_country_type = recognized
-			has_law = law_type:law_state_atheism
-			has_law = law_type:law_isolationism
-			has_law = law_type:law_closed_borders
-		}
-	}
-
-	current_value = { # 추가
-		value = scope:journal_entry.var:num_months_in_progress
-	}
-	
-	goal_add_value = { # 추가
-		value = 12
 	}
 
 	weight = 10000
@@ -226,9 +149,6 @@ je_heavenly_kingdom_main = {
 			any_scope_pop = {
 				has_pop_religion = protestant
 			}
-
-			region = sr:region_south_china	# 추가
-
 			is_capital = no
 			state_region = { 
 				OR = {
@@ -237,9 +157,7 @@ je_heavenly_kingdom_main = {
 				}
 			}
 			turmoil > 0.15
-			NOT = { state_region = s:STATE_FORMOSA }	#추가, 대만에 첫 아지트 박히고 굶어죽는거 방지
 		}
-		NOT = { has_global_variable = heavenly_kingdom_start_var } # 추가
 	}
 
 	immediate = {
@@ -249,9 +167,6 @@ je_heavenly_kingdom_main = {
 				any_scope_pop = {
 					has_pop_religion = protestant
 				}
-
-				region = sr:region_south_china	# 추가
-
 				is_capital = no
 				state_region = { 
 					OR = {
@@ -259,10 +174,6 @@ je_heavenly_kingdom_main = {
 						is_homeland = cu:hakka 
 					}
 				}
-				NOT = { state_region = s:STATE_YUNNAN } # 추가
-				NOT = { state_region = s:STATE_GUIZHOU } # 추가
-				NOT = { state_region = s:STATE_SICHUAN } # 추가
-				NOT = { state_region = s:STATE_CHONGQING } # 추가
 				turmoil > 0.15
 			}
 			add_modifier = {
@@ -322,69 +233,10 @@ je_heavenly_kingdom_main = {
 	should_be_pinned_by_default = yes
 }
 
-je_taiping_timer = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	complete = {
-		custom_tooltip = {
-			text = taiping_timer_complete
-			NOT = { exists = c:TPG }
-		}
-	}
-	
-	timeout = 720
-
-	on_timeout = {
-		#custom_tooltip = {
-		#	text = taiping_time_attack
-		#}
-		show_as_tooltip = {
-			custom_tooltip = {
-				text = warlord_china_explosion_point_remove_5_tt
-				post_notification = warlord_china_explosion_point_remove
-				change_variable = {
-					name = china_warlord_explosion
-					subtract = 0.25
-				}
-			}
-			every_subject_or_below = {
-				if = {
-					limit = {
-						is_direct_subject_of = c:CHI
-						NOT = {
-							any_primary_culture = {
-								OR = {
-									has_discrimination_trait = east_asian_heritage
-									has_discrimination_trait = sinosphere
-								}
-							}
-						}
-					}
-					make_independent = yes
-				}
-			}
-		}
-		trigger_event = heavenly.103
-	}
-	
-	on_complete = {
-	}
-
-
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
 je_taiping = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	group = je_group_historical_content
-
-	scripted_button = call_up_local_militias_button # 추가
 
 	complete = {
 		custom_tooltip = {
@@ -401,29 +253,12 @@ je_taiping = {
 		c:TPG = {
 			save_scope_as = taiping_scope
 		}
-		# 이하 추가
-		if = {
-			limit = { has_variable = taiping_focus_on_attack }
-			remove_variable = taiping_focus_on_attack
-			add_modifier = {
-				name = taiping_focus_on_attack_modifier
-			}
-		}
-		if = {
-			limit = { has_variable = taiping_focus_on_defence }
-			remove_variable = taiping_focus_on_defence
-			add_modifier = {
-				name = taiping_focus_on_defence_modifier
-			}
-		}
 	}
-	
+
 	on_complete = {
 		trigger_event = { id = heavenly.5 days = 0 }
 		hidden_effect = {
 			remove_modifier = taiping_taiping_rebellion
-			remove_modifier = taiping_focus_on_attack_modifier # 추가
-			remove_modifier = taiping_focus_on_defence_modifier # 추가
 		}
 	}
 
@@ -432,16 +267,18 @@ je_taiping = {
 		has_truce_with = c:TPG
 	}
 
-	on_fail = { # 아예 다시 씀
+	on_fail = {
+		if = {
+			limit = { has_journal_entry = je_warlord_china }
+			chi_remove_1_fragile_unity = yes
+		}
 		hidden_effect = {
-			add_journal_entry = { type = je_taiping_truce_chi }
-			c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg } }
-			remove_modifier = taiping_focus_on_attack_modifier
-			remove_modifier = taiping_focus_on_defence_modifier
+			remove_modifier = taiping_taiping_rebellion
+			c:TPG = {
+				remove_modifier = taiping_taiping_rebellion
+			}
 		}
 	}
-
-	progress_desc = je_taiping_progress # 추가
 
 	weight = 1000
 	should_be_pinned_by_default = yes
@@ -454,11 +291,9 @@ je_taiping_revolution = {
 
 	group = je_group_historical_content
 
-	scripted_button = taiping_relocate_the_capital_button # 추가
-
 	complete = {
 		OR = {
-			custom_tooltip = { # 중국과 휴전 중 조건 뺌
+			custom_tooltip = {
 				text = china_destroyed
 				hidden_trigger = {
 					NOT = {
@@ -466,149 +301,17 @@ je_taiping_revolution = {
 					}
 				}
 			}
-			custom_tooltip = { # 추가
-				text = china_shatters_tt
-				has_global_variable = china_shatters
+			AND = {
+				exists = c:CHI
+				has_truce_with = c:CHI		
 			}
 		}
+		
 	}
 
 	immediate = {
 		c:CHI = {
 			save_scope_as = china_scope
-		}
-		# 이하 추가
-		if = {
-			limit = { has_variable = taiping_focus_on_attack }
-			remove_variable = taiping_focus_on_attack
-			add_modifier = {
-				name = taiping_focus_on_attack_modifier
-			}
-		}
-		if = {
-			limit = { has_variable = taiping_focus_on_defence }
-			remove_variable = taiping_focus_on_defence
-			add_modifier = {
-				name = taiping_focus_on_defence_modifier
-			}
-		}
-
-		set_variable = {
-			name = num_unincorporated_states_in_china_proper
-			value = 0
-		}
-		every_scope_state = {
-			limit = {
-				has_modifier = chi_war_dynamism_modifier2
-				controller = ROOT
-				owner = ROOT
-			}
-			ROOT = {
-				change_variable = {
-					name = num_unincorporated_states_in_china_proper
-					add = 1
-				}
-			}
-		}
-		c:CHI = {
-			every_scope_state = {
-				limit = {
-					controller = ROOT
-				}
-				ROOT = {
-					change_variable = {
-						name = num_unincorporated_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-		}
-
-		set_variable = {
-			name = num_claimed_states_in_china_proper
-			value = 0
-		}
-		c:CHI = {
-			every_scope_state = {
-				limit = {
-					has_modifier = chi_war_dynamism_modifier2
-					controller = c:CHI
-					owner = c:CHI
-				}
-				ROOT = {
-					change_variable = {
-						name = num_claimed_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-		}
-		every_scope_state = {
-			limit = {
-				controller = c:CHI
-			}
-			ROOT = {
-				change_variable = {
-					name = num_claimed_states_in_china_proper
-					add = 1
-				}
-			}
-		}
-
-		if = {
-			limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
-			add_modifier = {
-				name = taiping_unincorporated_states_modifier2
-				multiplier = {
-					value = var:num_claimed_states_in_china_proper
-					subtract = var:num_unincorporated_states_in_china_proper
-				}
-			}
-		}
-		else = {
-			add_modifier = {
-				name = taiping_unincorporated_states_modifier
-				multiplier = {
-					value = var:num_unincorporated_states_in_china_proper
-					subtract = var:num_claimed_states_in_china_proper
-				}
-			}
-		}
-
-		if = {
-			limit = { NOT = { has_variable = taiping_fervor_var } }
-			set_variable = {
-				name = taiping_fervor_var
-				value = -1
-			}
-		}
-		else = {
-			change_variable = {
-				name = taiping_fervor_var
-				add = 1
-			}
-			clamp_variable = {
-				name = taiping_fervor_var
-				max = 1
-				min = -1
-			}
-		}
-		if = {
-			limit = { var:taiping_fervor_var = -1 }
-			add_modifier = {
-				name = taiping_fervor_high_modifier
-			}
-		}
-		else_if = {
-			limit = { var:taiping_fervor_var = 0 }
-			add_modifier = {
-				name = taiping_fervor_middle_modifier
-			}
-		}
-		else = {
-			add_modifier = {
-				name = taiping_fervor_low_modifier
-			}
 		}
 	}
 
@@ -623,276 +326,13 @@ je_taiping_revolution = {
 				}
 				remove_modifier = taiping_taiping_revolution
 			}
-			remove_modifier = taiping_focus_on_attack_modifier # 추가
-			remove_modifier = taiping_focus_on_defence_modifier # 추가
-			remove_modifier = taiping_unincorporated_states_modifier # 추가
-			remove_variable = num_unincorporated_states_in_china_proper # 추가
-			remove_modifier = taiping_unincorporated_states_modifier2 # 추가
-			remove_variable = num_claimed_states_in_china_proper # 추가
-			remove_modifier = taiping_fervor_high_modifier # 추가
-			remove_modifier = taiping_fervor_middle_modifier # 추가
-			remove_modifier = taiping_fervor_low_modifier # 추가
 		}
 		
 	}
 
 	fail = {
-		# NOT = {
-		# 	exists = c:TPG
-		# }
-		exists = c:CHI # 추가
-		has_truce_with = c:CHI # 추가
-	}
-
-	on_fail = { # 추가
-		hidden_effect = {
-			# add_journal_entry = { type = je_taiping_truce_tpg } 청나라 쪽에서 추가
-			remove_modifier = taiping_focus_on_attack_modifier
-			remove_modifier = taiping_focus_on_defence_modifier
-			
-			remove_modifier = taiping_unincorporated_states_modifier
-			remove_variable = num_unincorporated_states_in_china_proper
-			remove_modifier = taiping_unincorporated_states_modifier2
-			remove_variable = num_claimed_states_in_china_proper
-			remove_modifier = taiping_fervor_high_modifier
-			remove_modifier = taiping_fervor_middle_modifier
-			remove_modifier = taiping_fervor_low_modifier
-		}
-	}
-
-	#on_monthly_pulse = { # 추가
-	#	effect = {
-	#		trigger_event = { id = heavenly.1002 months = 1 }
-	#	}
-	#}
-
-	on_weekly_pulse = { # 추가
-		effect = {
-			remove_modifier = taiping_unincorporated_states_modifier
-			remove_modifier = taiping_unincorporated_states_modifier2
-
-			set_variable = {
-				name = num_unincorporated_states_in_china_proper
-				value = 0
-			}
-			every_scope_state = {
-				limit = {
-					has_modifier = chi_war_dynamism_modifier2
-					controller = ROOT
-					owner = ROOT
-				}
-				ROOT = {
-					change_variable = {
-						name = num_unincorporated_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-			c:CHI = {
-				every_scope_state = {
-					limit = {
-						controller = ROOT
-					}
-					ROOT = {
-						change_variable = {
-							name = num_unincorporated_states_in_china_proper
-							add = 1
-						}
-					}
-				}
-			}
-	
-			set_variable = {
-				name = num_claimed_states_in_china_proper
-				value = 0
-			}
-			c:CHI = {
-				every_scope_state = {
-					limit = {
-						has_modifier = chi_war_dynamism_modifier2
-						controller = c:CHI
-						owner = c:CHI
-					}
-					ROOT = {
-						change_variable = {
-							name = num_claimed_states_in_china_proper
-							add = 1
-						}
-					}
-				}
-			}
-			every_scope_state = {
-				limit = {
-					controller = c:CHI
-				}
-				ROOT = {
-					change_variable = {
-						name = num_claimed_states_in_china_proper
-						add = 1
-					}
-				}
-			}
-	
-			if = {
-				limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
-				add_modifier = {
-					name = taiping_unincorporated_states_modifier2
-					multiplier = {
-						value = var:num_claimed_states_in_china_proper
-						subtract = var:num_unincorporated_states_in_china_proper
-					}
-				}
-			}
-			else = {
-				add_modifier = {
-					name = taiping_unincorporated_states_modifier
-					multiplier = {
-						value = var:num_unincorporated_states_in_china_proper
-						subtract = var:num_claimed_states_in_china_proper
-					}
-				}
-			}
-		}
-	}
-
-	progress_desc = je_taiping_revolution_progress # 추가
-
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-
-je_taiping_truce_chi = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	scripted_button = taiping_focus_on_attack_button
-	scripted_button = taiping_focus_on_defence_button
-
-	immediate = {
-		end_truce = c:TPG
-		create_bidirectional_truce = {  
-			country = c:TPG
-			months = 6
-		}
-	}
-
-	timeout = 180
-
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_chi
-			end_truce = c:TPG
-			c:TPG = {
-				create_diplomatic_play = {
-					name = taiping_rebellion
-					target_country = c:CHI
-					type = dp_taiping_rebellion
-					escalation = 80
-				}
-			}
-			add_journal_entry = { type = je_chinese_reunification }
-			add_journal_entry = { type = je_taiping }
-			c:TPG = {
-				add_journal_entry = { type = je_chinese_reunification }
-				add_journal_entry = { type = je_taiping_revolution }
-			}
-		}
-	}
-	
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-je_taiping_truce_tpg = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	scripted_button = taiping_focus_on_attack_button
-	scripted_button = taiping_focus_on_defence_button
-
-	immediate = {
-	}
-
-	timeout = 180
-
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_tpg
-		}
-	}
-
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-je_taiping_pre = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	immediate = {
-		end_truce = c:TPG
-		create_bidirectional_truce = {
-			country = c:TPG
-			months = 2
-		}
-	}
-
-	timeout = 60
-
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_chi
-			end_truce = c:TPG
-			c:TPG = {
-				create_diplomatic_play = {
-					name = taiping_rebellion
-					target_country = c:CHI
-					type = dp_taiping_rebellion
-					escalation = 80
-				}
-				hidden_effect = {
-					change_infamy = -150
-				}
-			}
-			add_journal_entry = { type = je_chinese_reunification }
-			add_journal_entry = { type = je_taiping }
-			add_journal_entry = { type = je_taiping_timer }
-			c:TPG = {
-				add_journal_entry = { type = je_chinese_reunification }
-				add_journal_entry = { type = je_taiping_revolution }
-			}
-		}
-	}
-	
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-je_taiping_revolution_pre = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	immediate = {
-	}
-
-	timeout = 60
-
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_tpg
+		NOT = {
+			exists = c:TPG
 		}
 	}
 

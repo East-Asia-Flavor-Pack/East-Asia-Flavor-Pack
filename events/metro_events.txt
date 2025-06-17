@@ -1,0 +1,85 @@
+﻿namespace = metro
+
+metro.1 = {
+	type = country_event
+
+	trigger = {
+	}
+
+	event_image = {
+		video = "unspecific_trains"
+	}
+
+	duration = 3
+
+	placement = ROOT
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	title = metro.1.t
+	desc = metro.1.d
+	flavor = metro.1.f
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				OR = {
+					AND = {
+						ROOT.market_capital = {
+							owner = ROOT
+						}
+						THIS = ROOT.market_capital
+					}
+					AND = {
+						ROOT.market_capital = {
+							NOT = {
+								owner = ROOT
+							}
+						}
+						has_building = building_trade_center
+					}
+				}
+				any_scope_building = {
+					is_building_type = building_urban_center
+					level >= 20
+				}
+				any_scope_building = {
+					is_building_type = building_railway
+					has_active_production_method = pm_steel_passenger_carriages
+					has_active_production_method = pm_electric_trains
+					level >= 5
+				}
+			}
+			save_scope_as = metro_state
+		}	
+	}
+
+	option = {
+		name = metro.1.a
+		default_option = yes
+		scope:metro_state = {
+			add_modifier = {
+				name = metro_system
+			}
+			add_loyalists_in_state = {
+				pop_type = engineers
+				value = 0.5
+			}
+		}
+	}
+	option = {
+		name = metro.1.b
+		default_option = yes
+		scope:metro_state = {
+			add_modifier = {
+				name = metro_system
+			}
+		}
+		add_modifier = {
+			name = metro_prestige
+			months = long_modifier_time
+		}
+	}
+}

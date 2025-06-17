@@ -1,15 +1,15 @@
 ﻿namespace = boxer_rebellion_events
 
 # The Yihetuan Movement
-boxer_rebellion_events.1 = { # 좀 많이 수정했음
+boxer_rebellion_events.1 = {
 	type = country_event
-	placement = scope:boxer_appeared_state # 수정
+	placement = ROOT
 
 	title = boxer_rebellion_events.1.t
 	desc = boxer_rebellion_events.1.d
 	flavor = boxer_rebellion_events.1.f
 
-	duration = 1 # 수정
+	duration = 3
 
 	event_image = {
 		video = "asia_union_leader"
@@ -29,18 +29,9 @@ boxer_rebellion_events.1 = { # 좀 많이 수정했음
 		cu:manchu = {
 			save_scope_as = manchu_culture
 		}
-		random_scope_state = { # 추가
-			limit = {
-				is_capital = no
-				is_coastal = yes
-				region = sr:region_north_china
-				state_region = { is_homeland = cu:han }
-			}
-			save_scope_as = boxer_appeared_state
-		}
 	}
 	option = {
-		name = boxer_rebellion_events.1.a # 수정
+		name = boxer_rebellion_events.1.a
 		every_country = {
 			limit = {
         		any_scope_state = { 
@@ -54,24 +45,77 @@ boxer_rebellion_events.1 = { # 좀 많이 수정했음
         	}
 			change_relations = {
 				country = ROOT
-				value = -2 # -100에서 수정
+				value = -100
 			}
 		}
-		scope:boxer_appeared_state = { # 추가
-			add_radicals_in_state = {
-				value = large_radicals # 수정
-				culture = cu:han
+		if = {
+			limit = {
+				any_scope_pop = { 
+					religion = rel:protestant 
+				}
 			}
-			add_modifier = { # 추가
-				name = boxer_presence
+			add_radicals = {
+				religion = rel:protestant
+				value = very_large_radicals
 			}
+		}
+		if = {
+			limit = {
+				any_scope_pop = { 
+					religion = rel:catholic 
+				}
+			}
+			add_radicals = {
+				religion = rel:catholic
+				value = very_large_radicals
+			}
+		}
+		if = {
+			limit = {
+				any_scope_pop = { 
+					religion = rel:orthodox 
+				}
+			}
+			add_radicals = {
+				religion = rel:orthodox
+				value = very_large_radicals
+			}
+		}
+		add_radicals = {
+			value = large_radicals
+			culture = cu:han
 		}
 		ai_chance = {
 			base = 100
 		}
 	}
-
-	# 옵션 b 제거
+	option = {
+		name = boxer_rebellion_events.1.b
+		default_option = yes
+		every_country = {
+			limit = {
+        		any_scope_state = { 
+        			state_region = { 
+        				is_homeland = cu:han 
+        			} 
+        		}
+        		NOT = { 
+        			owner = ROOT 
+        		}
+        	}
+			change_relations = {
+				country = ROOT
+				value = 20
+			}
+		}
+		add_radicals = {
+			value = very_large_radicals
+			culture = cu:han
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
 }
 
 # The Mandate of Heaven
@@ -111,7 +155,7 @@ boxer_rebellion_events.2 = {
 			name = revere_the_emperor	
 			months = long_modifier_time
 		}
-		# chi_add_1_fragile_unity = yes
+		chi_add_1_fragile_unity = yes
 		set_variable = won_boxer_rebellion
 	}
 	option = {
@@ -124,7 +168,7 @@ boxer_rebellion_events.2 = {
 			name = united_in_righteousness	
 			months = long_modifier_time
 		}
-		# chi_add_1_fragile_unity = yes
+		chi_add_1_fragile_unity = yes
 		set_variable = won_boxer_rebellion
 	}
 }
@@ -175,8 +219,158 @@ boxer_rebellion_events.3 = {
 			base = 100
 		}
 	}
-
-	# 옵션 b 제거함 (너무 뇌절임)
+	option = {
+		name = boxer_rebellion_events.3.b
+		custom_tooltip = boxer_rebellion_events.3.tt1
+		set_variable = china_han_empire
+		hidden_effect = {
+			ruler = {
+				kill_character = yes
+			}
+			if = {
+				limit = {
+					any_scope_character = {
+						is_heir = yes
+					}
+				}
+				heir = {
+					kill_character = yes
+				}
+			}
+		}
+		if = {
+			limit = {
+				year < 1862
+			}
+			create_character = {
+				first_name = "Fanhao"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				ruler = yes
+				birth_date = 1806.3.21
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+			create_character = {
+				first_name = "Xiangke"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				heir = yes
+				birth_date = 1848.9.25
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1848
+				year < 1876
+			}
+			create_character = {
+				first_name = "Xiangke"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				ruler = yes
+				birth_date = 1848.9.25
+				traits = {
+				}
+			}
+			create_character = {
+				first_name = "Lingyi"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				heir = yes
+				birth_date = 1872.11.29
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1872
+				year < 1920 # Should be 1919, but for the sake of script it is not
+			}
+			create_character = {
+				first_name = "Lingyi"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				ruler = yes
+				birth_date = 1872.11.29
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+			create_character = {
+				first_name = "Teh_Cheng"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				heir = yes
+				birth_date = 1920.8.17
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1921
+				year < 1936
+			}
+			create_character = {
+				first_name = "Teh_Cheng"
+				last_name = "Kong"
+				historical = yes
+				culture = cu:han
+				ruler = yes
+				birth_date = 1920.8.17
+				interest_group = ig_devout
+				traits = {
+				}
+			}
+		}
+		chi_remove_1_fragile_unity = yes
+		if = {
+			limit = {
+				has_law = law_type:law_national_supremacy
+			}
+			activate_law = law_type:law_ethnostate
+		}
+		if = {
+			limit = {
+				has_law = law_type:law_racial_segregation
+			}
+			activate_law = law_type:law_national_supremacy
+		}
+		if = {
+			limit = {
+				has_law = law_type:law_cultural_exclusion
+			}
+			activate_law = law_type:law_racial_segregation
+		}
+		if = {
+			limit = {
+				has_law = law_type:law_multicultural
+			}
+			activate_law = law_type:law_cultural_exclusion
+		}
+		remove_primary_culture = cu:manchu
+		add_radicals = {
+			value = 0.75
+			culture = cu:manchu
+		}
+		ai_chance = {
+			base = 0
+		}
+	}
 }
 
 # The Fall of the Qing Dynasty
@@ -209,13 +403,7 @@ boxer_rebellion_events.4 = {
 	option = {
 		name = boxer_rebellion_events.4.a
 		default_option = yes
-		# chi_remove_1_fragile_unity = yes
-		hidden_effect = { # 적당히 수정
-			if = {
-				limit = { has_journal_entry = je_warlord_china }
-			}
-			chi_remove_1_fragile_unity = yes
-		}
+		chi_remove_1_fragile_unity = yes
 		if = {
 			limit = {
 				NOT = { country_has_primary_culture = cu:han }
@@ -246,912 +434,5 @@ boxer_rebellion_events.4 = {
 		ai_chance = {
 			base = 0
 		}
-	}
-}
-
-boxer_rebellion_events.101 = { # 추가, 의화단의 확산
-	type = country_event
-	placement = ROOT
-
-	title = boxer_rebellion_events.101.t
-	desc = boxer_rebellion_events.101.d
-	flavor = boxer_rebellion_events.2.f
-
-	duration = 3
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	trigger = { # Triggered by JE
-		any_scope_state = {
-			is_capital = no
-			state_is_in_china = yes
-			state_region = { is_homeland = cu:han }
-			NOT = {
-				has_modifier = boxer_presence
-				has_modifier = boxer_agitation
-			}
-			any_neighbouring_state = {
-				OR = {
-					has_modifier = boxer_presence
-					has_modifier = boxer_agitation
-				}
-			}
-		}
-	}
-
-	immediate = {
-		random_scope_state = {
-			limit = {
-				is_capital = no
-				state_is_in_china = yes
-				state_region = { is_homeland = cu:han }
-				NOT = {
-					has_modifier = boxer_presence
-					has_modifier = boxer_agitation
-				}
-				any_neighbouring_state = {
-					OR = {
-						has_modifier = boxer_presence
-						has_modifier = boxer_agitation
-					}
-				}
-			}
-			save_scope_as = boxer_appeared_state
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.101.a
-		every_country = {
-			limit = {
-        		any_scope_state = { 
-        			state_region = { 
-        				is_homeland = cu:han 
-        			} 
-        		}
-        		NOT = { 
-        			owner = ROOT 
-        		}
-        	}
-			change_relations = {
-				country = ROOT
-				value = -5
-			}
-		}
-		scope:boxer_appeared_state = {
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:protestant 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:protestant
-					value = very_large_radicals
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:catholic 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:catholic
-					value = very_large_radicals
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:orthodox 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:orthodox
-					value = very_large_radicals
-				}
-			}
-			add_radicals_in_state = {
-				value = large_radicals
-				culture = cu:han
-			}
-			add_modifier = {
-				name = boxer_presence
-			}
-		}
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-boxer_rebellion_events.102 = { # 추가, 의화단의 외국인 공격
-	type = country_event
-	placement = scope:boxer_state
-
-	title = boxer_rebellion_events.102.t
-	desc = boxer_rebellion_events.102.d
-	flavor = boxer_rebellion_events.102.f
-
-	duration = 1
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	trigger = { # Triggered by JE
-		any_scope_state = {
-			is_capital = no
-			state_is_in_china = yes
-			state_region = { is_homeland = cu:han }
-			has_modifier = boxer_presence
-			NOT = { has_modifier = boxer_agitation }
-			OR = {
-				any_neighbouring_state = {
-					count = 2
-					OR = {
-						has_modifier = boxer_presence
-						has_modifier = boxer_agitation
-					}
-				}
-				any_neighbouring_state = {
-					has_modifier = boxer_agitation
-				}
-			}
-		}
-	}
-
-	immediate = {
-		random_scope_state = {
-			limit = {
-				is_capital = no
-				state_is_in_china = yes
-				state_region = { is_homeland = cu:han }
-				has_modifier = boxer_presence
-				NOT = { has_modifier = boxer_agitation }
-				OR = {
-					any_neighbouring_state = {
-						count = 2
-						OR = {
-							has_modifier = boxer_presence
-							has_modifier = boxer_agitation
-						}
-					}
-					any_neighbouring_state = {
-						has_modifier = boxer_agitation
-					}
-				}
-			}
-			save_scope_as = boxer_state
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.102.a
-		default_option = yes
-		every_country = {
-			limit = { country_rank >= rank_value:major_power }
-			if = {
-				limit = {
-					any_scope_state = { state_region = { is_homeland = cu:han } }
-					NOT = { owner = ROOT }
-				}
-				change_relations = {
-					country = ROOT
-					value = -25
-				}
-			}
-			else = {
-				change_relations = {
-					country = ROOT
-					value = -10
-				}
-			}
-		}
-		scope:boxer_state = {
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:protestant 
-					}
-				}
-				add_radicals = {
-					religion = rel:protestant
-					value = very_large_radicals
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:catholic 
-					}
-				}
-				add_radicals = {
-					religion = rel:catholic
-					value = very_large_radicals
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:orthodox 
-					}
-				}
-				add_radicals = {
-					religion = rel:orthodox
-					value = very_large_radicals
-				}
-			}
-			remove_modifier = boxer_presence
-			add_modifier = { name = boxer_agitation }
-			state_region = {
-				if = {
-					limit = { any_scope_state = { is_treaty_port = yes } }
-					every_scope_state = {
-						limit = { is_treaty_port = yes }
-						add_modifier = { name = attacked_treaty_port }
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.102.b
-		every_country = {
-			limit = { country_rank >= rank_value:major_power }
-			if = {
-				limit = {
-					any_scope_state = { state_region = { is_homeland = cu:han } }
-					NOT = { owner = ROOT }
-				}
-				change_relations = {
-					country = ROOT
-					value = 15
-				}
-			}
-			else = {
-				change_relations = {
-					country = ROOT
-					value = 5
-				}
-			}
-		}
-		scope:boxer_state = {
-			add_radicals = {
-				value = large_radicals
-				culture = cu:han
-			}
-			remove_modifier = boxer_presence
-			add_modifier = { name = boxer_agitation }
-			state_region = {
-				if = {
-					limit = { any_scope_state = { is_treaty_port = yes } }
-					every_scope_state = {
-						limit = { is_treaty_port = yes }
-						add_modifier = { name = attacked_treaty_port }
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 0
-		}
-	}
-}
-
-boxer_rebellion_events.103 = { # 추가, 의화단의 수도 입성, 공사관 공격
-	type = country_event
-	placement = root.capital
-
-	title = boxer_rebellion_events.103.t
-	desc = boxer_rebellion_events.103.d
-	flavor = boxer_rebellion_events.103.f
-
-	duration = 1
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	trigger = { # Triggered by JE
-		capital = {
-			OR = {
-				any_neighbouring_state = {
-					count = 2
-					OR = {
-						has_modifier = boxer_presence
-						has_modifier = boxer_agitation
-					}
-				}
-				any_neighbouring_state = {
-					has_modifier = boxer_agitation
-				}
-			}
-		}
-		any_scope_state = {
-			count = 4
-			OR = {
-				has_modifier = boxer_presence
-				has_modifier = boxer_agitation
-			}
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.103.a
-		default_option = yes
-		every_country = {
-			limit = { country_rank >= rank_value:major_power }
-			if = {
-				limit = {
-					any_scope_state = { state_region = { is_homeland = cu:han } }
-					NOT = { owner = ROOT }
-				}
-				change_relations = {
-					country = ROOT
-					value = -100
-				}
-			}
-			else = {
-				change_relations = {
-					country = ROOT
-					value = -50
-				}
-			}
-		}
-		every_country = {
-			limit = {
-				country_rank >= rank_value:great_power
-				OR = {
-					has_interest_marker_in_region = sr:region_north_china
-					has_interest_marker_in_region = sr:region_south_china
-				}
-			}
-			trigger_event = { id = boxer_rebellion_events.104 days = { 0 30 } }
-		}
-		capital = {
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:protestant 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:protestant
-					value = 0.4
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:catholic 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:catholic
-					value = 0.4
-				}
-			}
-			if = {
-				limit = {
-					any_scope_pop = { 
-						religion = rel:orthodox 
-					}
-				}
-				add_radicals_in_state = {
-					religion = rel:orthodox
-					value = 0.4
-				}
-			}
-			add_radicals_in_state = {
-				value = 0.1
-				culture = cu:han
-			}
-			add_modifier = { name = boxer_agitation }
-			state_region = {
-				if = {
-					limit = { any_scope_state = { is_treaty_port = yes } }
-					every_scope_state = {
-						limit = { is_treaty_port = yes }
-						add_modifier = { name = attacked_treaty_port }
-					}
-				}
-			}
-		}
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.103.b
-		every_country = {
-			limit = { country_rank >= rank_value:major_power }
-			if = {
-				limit = {
-					any_scope_state = { state_region = { is_homeland = cu:han } }
-					NOT = { owner = ROOT }
-				}
-				change_relations = {
-					country = ROOT
-					value = 25
-				}
-			}
-			else = {
-				change_relations = {
-					country = ROOT
-					value = 10
-				}
-			}
-		}
-		capital = {
-			add_radicals_in_state = {
-				value = very_large_radicals
-				culture = cu:han
-			}
-			add_modifier = { name = boxer_presence }
-			state_region = {
-				if = {
-					limit = { any_scope_state = { is_treaty_port = yes } }
-					every_scope_state = {
-						limit = { is_treaty_port = yes }
-						add_modifier = { name = attacked_treaty_port }
-					}
-				}
-			}
-		}
-		trigger_event = { id = boxer_rebellion_events.104 days = { 7 14 } }
-		ai_chance = {
-			base = 0
-		}
-	}
-}
-
-boxer_rebellion_events.104 = { # 추가, 의화단의 공사관 공격에 대한 열강의 대응, 더미
-	type = country_event
-	placement = root
-
-	title = boxer_rebellion_events.104.t
-	desc = boxer_rebellion_events.104.d
-	flavor = boxer_rebellion_events.104.f
-
-	duration = 1
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	option = {
-		name = boxer_rebellion_events.104.a
-		default_option = yes
-		if = {
-			limit = {
-				any_diplomatic_play = {
-					target = c:CHI
-					is_diplomatic_play_type = dp_boxer_rebellion
-				}
-			}
-			random_diplomatic_play = {
-				limit = {
-					target = c:CHI
-					is_diplomatic_play_type = dp_boxer_rebellion
-				}
-				add_initiator_backers = { ROOT }
-				add_war_goal = {
-					holder = root
-					type = war_reparations
-					target_country = c:CHI
-					primary_demand = yes
-				}
-			}
-		}
-		else = {
-			create_diplomatic_play = {
-				name = boxer_rebellion
-				target_country = c:CHI
-				type = dp_boxer_rebellion
-				add_war_goal = {
-					holder = root
-					type = war_reparations
-					target_country = c:CHI
-					primary_demand = yes
-				}
-			}
-		}
-		if = {
-			limit = {
-				any_scope_state = {
-					has_claim_by = c:CHI
-					is_treaty_port = yes
-				}
-			}
-			every_scope_state = {
-				limit = {
-					has_claim_by = c:CHI
-					is_treaty_port = yes
-				}
-				random_diplomatic_play = {
-					limit = {
-						target = c:CHI
-						is_diplomatic_play_type = dp_boxer_rebellion
-					}
-					add_war_goal = {
-						holder = c:CHI
-						type = return_state
-						target_state = prev
-						primary_demand = yes
-					}
-				}
-			}
-		}
-
-		ai_chance = {
-			base = 10
-			modifier = {
-				trigger = { has_truce_with = c:CHI }
-				factor = 0.5
-			}
-			modifier = {
-				trigger = {
-					any_scope_diplomatic_pact = {
-						any_participant = { this = c:CHI }
-						OR = {
-							is_diplomatic_action_type = alliance
-							is_diplomatic_action_type = defensive_pact
-						}
-					}
-				}
-				factor = 0
-			}
-			modifier = {
-				trigger = {
-					any_diplomatic_play = {
-						target = c:CHI
-						is_diplomatic_play_type = dp_boxer_rebellion
-						initiator = { is_diplomatic_play_enemy_of = root }
-					}
-				}
-				factor = 0
-			}
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.104.b
-		
-		every_scope_state = {
-			limit = { is_incorporated = yes }
-			add_radicals_in_state = { value = small_radicals }
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-boxer_rebellion_events.105 = { # 추가, 의화단의 난 The Boxer Rebellion
-	type = country_event
-	placement = root
-
-	title = boxer_rebellion_events.105.t
-	desc = boxer_rebellion_events.105.d
-	flavor = boxer_rebellion_events.105.f
-
-	duration = 1
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/asia/union_leader"
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	immediate = {
-		# save_scope_as = heavenly_kingdom_scope # 추가
-		# set_global_variable = heavenly_kingdom_start_var # 추가
-		c:CHI = {
-			every_scope_state = {
-				limit = {
-					is_incorporated = yes
-				}
-				set_variable = saved_incorporated_state_boxer
-			}
-		}
-		if = { # BXR 스폰할 주 지정
-			limit = { any_scope_state = { has_modifier = boxer_agitation } }
-			random_scope_state = {
-				limit = { has_modifier = boxer_agitation }
-				save_scope_as = boxer_rebellion_spawn
-			}
-		}
-		else = {
-			random_scope_state = {
-				limit = { has_modifier = boxer_presence }
-				save_scope_as = boxer_rebellion_spawn
-			}
-		}
-		create_country = {
-			tag = BXR
-			origin = this
-			state = scope:boxer_rebellion_spawn
-			on_created = {
-				if = {
-					limit = {
-						NOT = {
-							has_ruling_interest_group = ig_rural_folk
-						}
-					}
-					ig:ig_rural_folk = {
-						add_ruling_interest_group = yes
-					}
-				}
-				every_interest_group = {
-					limit = {
-						OR = {
-							is_interest_group_type = ig_intelligentsia
-							is_interest_group_type = ig_armed_forces
-							is_interest_group_type = ig_devout
-							is_interest_group_type = ig_landowners
-						}
-					}
-					add_modifier = {
-						name = taiping_taiping_revolution
-						months = long_modifier_time
-					}
-				}
-				if = {
-					limit = {
-						NOT = {
-							has_law = law_type:law_monarchy
-						}
-					}
-					activate_law = law_type:law_monarchy
-				}
-				if = {
-					limit = {
-						NOT = {
-							has_law = law_type:law_autocracy
-						}
-					}
-					activate_law = law_type:law_autocracy
-				}
-				if = {
-					limit = {
-						NOT = {
-							has_law = law_type:law_freedom_of_conscience
-						}
-					}
-					activate_law = law_type:law_freedom_of_conscience
-				}
-				if = {
-					limit = {
-						NOT = {
-							has_law = law_type:law_peasant_levies
-						}
-					}
-					activate_law = law_type:law_peasant_levies
-				}
-				if = {
-					limit = {
-						NOT = {
-							has_law = law_type:law_national_supremacy
-						}
-					}
-					activate_law = law_type:law_national_supremacy
-				}
-			}
-		}
-		c:BXR = {
-			save_scope_as = heavenly_kingdom_scope
-			set_variable = { name = gold_transfer value = c:CHI.gold_reserves }
-			change_variable = { name = gold_transfer divide = 5 }
-			set_variable = { name = gold_transfer_nil value = var:gold_transfer }
-			change_variable = { name = gold_transfer_nil divide = -1 }
-			change_relations = {
-				country = c:CHI
-				value = -200
-			}
-		}
-		every_country = {
-			limit = { NOR = { any_primary_culture = { shares_heritage_trait_with_any_primary_culture = c:BXR } } }
-			change_relations = {
-				country = c:BXR
-				value = -100
-			}
-		}
-		change_relations = {
-			country = c:BXR
-			value = -200
-		}
-	}
-
-	option = {
-		name = boxer_rebellion_events.105.a
-		if = {
-			limit = { any_scope_state = { has_modifier = boxer_agitation } }
-			every_scope_state = {
-				limit = { has_modifier = boxer_agitation }
-				save_scope_as = tpg_defector_state
-				custom_tooltip = {
-					text = taiping_state_defection
-					set_state_owner = c:BXR
-					set_state_type = incorporated
-					add_culture_standard_of_living_modifier = {
-						culture = cu:manchu
-						months = long_modifier_time
-						multiplier = -5
-					}
-				}
-			}
-		}
-		if = {
-			limit = { any_scope_state = { has_modifier = boxer_presence } }
-			every_scope_state = {
-				limit = { has_modifier = boxer_presence }
-				save_scope_as = tpg_defector_state
-				random_list = {
-					50 = {
-						save_scope_as = tpg_defector_state
-						custom_tooltip = {
-							text = taiping_state_defection
-							set_state_owner = c:BXR
-							set_state_type = incorporated
-							add_culture_standard_of_living_modifier = {
-								culture = cu:manchu
-								months = long_modifier_time
-								multiplier = -5
-							}
-						}
-					}
-					50 = {
-						add_radicals_in_state = {
-							value = large_radicals
-							culture = cu:han
-						}
-						this.state_region = {
-							add_claim = c:BXR
-						}
-					}
-				}
-			}
-		}
-		hidden_effect = {
-			every_state = {
-				limit = {
-					owner = c:BXR
-				}
-				this.state_region = {
-					add_claim = c:CHI
-				}
-			}	
-			every_state = {
-				limit = { has_modifier = boxer_agitation }
-				remove_modifier = boxer_agitation
-			}
-			every_state = {
-				limit = { has_modifier = boxer_presence }
-				remove_modifier = boxer_presence
-			}
-		}
-		c:BXR = {		
-			create_diplomatic_play = {
-				name = boxer_rebellion
-				target_country = c:CHI
-				type = dp_boxer_rebellion2
-			}
-			hidden_effect = { # 0으로 초기화하고 50 추가
-				change_infamy = -500
-				change_infamy = 50
-			}
-		}
-		hidden_effect = {
-			c:BXR = {
-				c:CHI = {
-					add_treasury = prev.var:gold_transfer_nil
-				}
-				add_treasury = var:gold_transfer	
-			}
-			random_diplomatic_play = {
-				limit = {
-					c:BXR = {
-						is_diplomatic_play_initiator = yes
-					}
-					c:CHI = {
-						is_diplomatic_play_target = yes
-					}
-				}
-				add_diplomatic_play_war_support = { target = c:BXR value = 100 }
-			}
-			every_state = {
-				limit = {
-					owner = c:CHI
-					OR = {	
-						is_split_state = no
-						state_region = {
-							any_state = {
-								is_treaty_port = yes
-							}
-						}
-					}
-				}
-				this.state_region = {
-					add_claim = c:BXR
-				}
-			}
-		}
-
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-boxer_rebellion_events.106 = { # 추가, 난 진압 완료
-	type = country_event
-	placement = ROOT
-
-	title = boxer_rebellion_events.106.t
-	desc = boxer_rebellion_events.106.d
-	flavor = boxer_rebellion_events.106.f
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	duration = 3
-
-	trigger = {
-		# triggered by journal entry
-	}
-
-	immediate = {
-		every_scope_state = {
-			limit = {
-				owner = ROOT
-				has_variable = saved_incorporated_state_boxer
-			}
-			set_state_owner = c:CHI #Just in case.
-			set_state_type = incorporated
-			remove_variable = saved_incorporated_state_boxer
-		}
-	}
-
-	option = { # mass re-conversions
-		name = boxer_rebellion_events.106.a
-		default_option = yes
 	}
 }

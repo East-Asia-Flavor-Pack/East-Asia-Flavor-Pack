@@ -1,0 +1,712 @@
+﻿namespace = raj
+
+# The Jewel in the Crown
+raj.1 = {
+	type = country_event
+	placement = ROOT
+
+	title = raj.1.t
+	desc = raj.1.d
+	flavor = raj.1.f
+
+	duration = 3
+
+	event_image = {
+		video = "ep1_transfer_of_authority"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	minor_left_icon = c:GBR
+	minor_right_icon = c:BIC
+
+	trigger = {
+	}
+
+	immediate = {
+		c:BIC = {
+			save_scope_as = company_country
+			trigger_event = { id = raj.7 days = 0 popup = yes }
+		}
+		c:GBR = {
+			save_scope_as = british_raj_country
+		}
+		set_variable = {
+			name = british_raj_var
+		}
+	}
+
+	option = {
+		name = raj.1.a
+		default_option = yes
+		custom_tooltip = activate_british_raj
+		if = {
+			limit = {
+				has_diplomatic_pact = {
+					who = c:BIC
+					type = chartered_company
+				}
+			}
+			c:BIC ?= {
+				decrease_autonomy = yes
+			}
+		}
+		c:BIC = {
+			set_variable = doctrine_of_lapse_ended
+			custom_tooltip = doctrine_of_lapse_disabled
+			remove_modifier = modifier_india_company_rule
+			add_modifier = modifier_india_crown_rule
+			if = {
+				limit = {
+					NOT = {
+						has_law = law_type:law_appointed_bureaucrats
+					}
+				}
+				activate_law = law_type:law_appointed_bureaucrats
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_law = law_type:law_autocracy
+					}
+				}
+				activate_law = law_type:law_autocracy
+			}
+			if = {
+				limit = {
+					NOR = {
+						has_law = law_type:law_hindu_caste_enforced
+						has_law = law_type:law_hindu_caste_codified
+					}
+				}
+				activate_law = law_type:law_hindu_caste_codified
+			}
+			ig:ig_industrialists = {
+				set_interest_group_name = ig_government_of_india
+			}
+			if = {
+				limit = {
+					game_date < 1862.1.1
+				}
+				create_character = { 
+					template = BIC_charles_canning
+					on_created = {
+						set_as_interest_group_leader = yes
+						set_character_as_ruler = yes
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					game_date < 1879.1.1
+				}
+				create_character = { 
+					template = BIC_john_lawrence
+					on_created = {
+						set_as_interest_group_leader = yes
+						set_character_as_ruler = yes
+					}
+				}
+			}
+			else = {
+				create_character = { 
+					culture = cu:british
+					interest_group = ig:ig_industrialists
+					on_created = {
+						set_as_interest_group_leader = yes
+						set_character_as_ruler = yes
+					}
+				}
+			}
+		}
+	}
+}
+
+# The Doctrine of Lapse
+raj.2 = {
+	type = country_event
+	placement = ROOT
+
+	title = raj.2.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = raj.2.d1
+				trigger = {
+					ruler = {
+						age > 60
+					}
+					NOT = {
+						exists = heir
+					}
+				}
+			}
+			triggered_desc = {
+				desc = raj.2.d2
+				trigger = {
+					exists = heir
+				}
+			}
+		}
+	}
+	flavor = raj.2.f
+
+	duration = 3
+
+	event_image = {
+		video = "ep1_redcoats"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	minor_left_icon = c:BIC
+
+	immediate = {
+		c:BIC ?= {
+			save_scope_as = overlord_scope
+		}
+	}
+
+	option = {
+		name = raj.2.a
+		default_option = yes
+		ai_chance = {
+			base = 90
+		}
+		if = {
+			limit = { # Should never happen, but just to be sure.
+				is_player = yes
+			}
+			play_as = scope:overlord_scope
+		}
+		if = {
+			limit = {
+				gold_reserves > 0
+			}
+			custom_tooltip = {
+				text = transfers_treasury_to_eic_tt
+				scope:overlord_scope ?= {
+					add_treasury = {
+						value = prev.gold_reserves
+					}
+				}
+			}
+		}
+		scope:overlord_scope ?= {
+			annex = ROOT
+		}
+	}
+
+	option = {
+		name = raj.2.b
+		ai_chance = {
+			base = 10
+			modifier = {
+				trigger = {
+					liberty_desire > 25
+				}
+				add = 10
+			}
+			modifier = {
+				trigger = {
+					liberty_desire > 50
+				}
+				add = 25
+			}
+			modifier = {
+				trigger = {
+					liberty_desire > 75
+				}
+				add = 25
+			}
+			modifier = {
+				trigger = {
+					any_country = {
+						has_diplomatic_pact = {
+							who = ROOT
+							type = guarantee_independence
+						}	
+					}
+				}
+				add = 100
+			}
+		}
+		create_diplomatic_play = {
+			target_country = scope:overlord_scope
+			type = dp_independence
+			add_war_goal = { holder = scope:overlord_scope target_country = ROOT type = annex_country }
+		}
+	}
+}
+
+# Overseas Service
+raj.4 = {
+	type = country_event
+	placement = ROOT
+
+	title = raj.4.t
+	desc = raj.4.d
+	flavor = raj.4.f
+
+	duration = 3
+
+	event_image = {
+		video = "middleeast_battlefield_trenches"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	trigger = {
+		NOT = { has_variable = kala_pani_event }
+		is_at_war = yes
+		any_scope_pop = {
+			is_pop_type = soldiers
+			religion = rel:hindu
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = kala_pani_event
+		}
+		rel:hindu = { save_scope_as = hindu_pop }
+	}
+
+	option = {
+		name = raj.4.a
+		ig:ig_armed_forces = {
+			add_modifier = {
+				name = hindu_overseas_exemption
+				months = normal_modifier_time
+			}
+		}
+		if = {
+			limit = {
+				exists = c:GBR
+				is_subject_of = c:GBR
+			}
+			change_relations = {
+				country = c:GBR
+				value = -20
+			}
+		}
+
+		ai_chance = {
+			base = 10
+			modifier = { # If the EIC is quite unstable, the AI shouldn't rock the boat.
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_upper_bound
+						}
+					}
+				}
+				add = 20
+			}
+			modifier = {
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_lower_bound
+						}
+					}
+				}
+				add = 40
+			}
+		}
+	}
+
+	option = {
+		name = raj.4.b
+		default_option = yes
+		add_radicals = {
+			pop_type = officers
+			religion = rel:hindu
+			value = small_radicals
+		}
+		add_radicals = {
+			pop_type = soldiers
+			religion = rel:hindu
+			value = small_radicals
+		}
+
+		custom_tooltip = {
+			text = sepoy_mutiny_progress_from_events_tt
+			set_variable = { 
+				name = bengal_progress_from_events_var_add_5 
+				value = -1
+				months = normal_modifier_time
+			}
+			set_variable = { 
+				name = bombay_progress_from_events_var_add_5
+				value = -1
+				months = normal_modifier_time
+			}
+			set_variable = { 
+				name = madras_progress_from_events_var_add_5
+				value = -1
+				months = normal_modifier_time
+			}
+		}
+
+		ai_chance = {
+			base = 90
+			modifier = { # If the EIC is quite unstable, the AI shouldn't rock the boat.
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_upper_bound
+						}
+					}
+				}
+				add = -30
+			}
+			modifier = {
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_lower_bound
+						}
+					}
+				}
+				add = -60
+			}
+		}
+	}
+}
+
+# Suspected Conversion Project
+raj.5 = {
+	type = country_event
+	placement = scope:missionaries_suspicion_state
+
+	title = raj.5.t
+	desc = raj.5.d
+	flavor = raj.5.f
+
+	duration = 3
+
+	event_image = {
+		video = "southamerica_christianity"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		NOT = { has_variable = suspected_conversions }
+		any_scope_state = {
+			any_scope_pop = {
+				OR = {
+					religion = rel:hindu
+					religion = rel:sunni
+					religion = rel:shiite
+				}
+			}
+			any_scope_pop = {
+				is_pop_type = clergymen
+				religion = { has_discrimination_trait = christian }
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = suspected_conversions
+			years = 3
+		}
+		random_scope_state = {
+			limit = {
+				any_scope_pop = {
+					OR = {
+						religion = rel:hindu
+						religion = rel:sunni
+						religion = rel:shiite
+					}
+				}
+				any_scope_pop = {
+					is_pop_type = clergymen
+					religion = { has_discrimination_trait = christian }
+				}
+			}
+			save_scope_as = missionaries_suspicion_state
+			random_scope_pop = {
+				limit = {
+					OR = {
+						religion = rel:hindu
+						religion = rel:sunni
+						religion = rel:shiite
+					}
+				}
+				save_scope_as = not_suspected_missionaries_pop
+			}
+			random_scope_pop = {
+				limit = {
+					is_pop_type = clergymen
+					religion = { has_discrimination_trait = christian }
+				}
+				religion = { save_scope_as = suspected_missionaries }
+				save_scope_as = suspected_missionaries_pop
+			}
+		}
+	}
+
+	option = {
+		name = raj.5.a
+		scope:missionaries_suspicion_state = {
+			# state_conversion_mult
+			add_modifier = {
+				name = promised_no_proselytization
+				months = long_modifier_time
+			}
+		}	
+		if = {
+			limit = {
+				AND = {
+					c:BIC ?= this
+					ig:ig_devout = {
+						leader = {
+		        			has_ideology = ideology:ideology_traditionalist_minoritarian
+		        		}
+					}
+				}		
+			}
+			ig:ig_devout = {
+				add_modifier = {
+					name = promised_no_missionaries
+					months = normal_modifier_time
+				}
+			}
+		}
+		scope:missionaries_suspicion_state = {
+			add_radicals_in_state = {
+				religion = scope:suspected_missionaries_pop.religion
+				value = medium_radicals
+			}
+		}
+
+		ai_chance = {
+			base = 75
+			modifier = { # If the EIC is quite unstable, the AI shouldn't rock the boat.
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_upper_bound
+						}
+					}
+				}
+				add = 25
+			}
+			modifier = {
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_lower_bound
+						}
+					}
+				}
+				add = 50
+			}
+		}
+	}
+
+	option = {
+		name = raj.5.b
+		default_option = yes
+		scope:missionaries_suspicion_state = {
+			add_radicals_in_state = {
+				religion = scope:not_suspected_missionaries_pop.religion
+				value = small_radicals
+			}
+			add_loyalists_in_state = {
+				religion = scope:suspected_missionaries_pop.religion
+				value = medium_radicals
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_uneasy_raj
+			}
+			custom_tooltip = {
+				text = sepoy_mutiny_progress_from_events_tt
+				set_variable = { 
+					name = bengal_progress_from_events_var_add_6
+					value = -1
+					months = normal_modifier_time
+				}
+				set_variable = { 
+					name = bombay_progress_from_events_var_add_6
+					value = -1
+					months = normal_modifier_time
+				}
+				set_variable = { 
+					name = madras_progress_from_events_var_add_6
+					value = -1
+					months = normal_modifier_time
+				}
+			}
+		}
+
+		ai_chance = {
+			base = 75
+			modifier = { # If the EIC is quite unstable, the AI shouldn't rock the boat.
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_upper_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_upper_bound
+						}
+					}
+				}
+				add = -25
+			}
+			modifier = {
+				trigger = {
+					has_journal_entry = je_uneasy_raj
+					je:je_uneasy_raj ?= { 
+						OR = {
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bengal)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_bombay)" < uneasy_raj_stability_medium_lower_bound
+							"scripted_bar_progress(sepoy_mutiny_progress_bar_madras)" < uneasy_raj_stability_medium_lower_bound
+						}
+					}
+				}
+				add = -50
+			}
+		}
+	}
+}
+
+# End of the Company
+raj.7 = {
+	type = country_event
+	placement = ROOT
+
+	title = raj.7.t
+	desc = raj.1.d
+	flavor = raj.1.f
+
+	duration = 3
+
+	event_image = {
+		video = "ep1_transfer_of_authority"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	minor_left_icon = c:GBR
+	minor_right_icon = c:BIC
+
+	trigger = {
+	}
+
+	immediate = {
+		c:BIC = {
+			save_scope_as = company_country
+		}
+		c:GBR = {
+			save_scope_as = british_raj_country
+		}
+	}
+
+	option = {
+		name = raj.7.a
+		default_option = yes
+		custom_tooltip = activate_british_raj
+		custom_tooltip = doctrine_of_lapse_disabled
+		if = {
+			limit = {
+				has_company = company_type:company_east_india_company
+			}
+			remove_company = company_type:company_east_india_company
+		}
+		show_as_tooltip = {
+			c:GBR = {
+				create_diplomatic_pact = {
+					country = c:BIC
+					type = colony
+				}
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_law = law_type:law_appointed_bureaucrats
+					}
+				}
+				activate_law = law_type:law_appointed_bureaucrats
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_law = law_type:law_autocracy
+					}
+				}
+				activate_law = law_type:law_autocracy
+			}
+			if = {
+				limit = {
+					OR = {
+						NOT = {
+							has_law = law_type:law_hindu_caste_enforced
+						}
+						NOT = {
+							has_law = law_type:law_hindu_caste_codified
+						}
+					}
+				}
+				activate_law = law_type:law_hindu_caste_codified
+			}
+		}
+		# Remove exempt from service from medium loyalty vassals
+		every_country = {
+			limit = {
+				has_variable = sepoy_mutiny_princely_state_medium_loyalty_var
+			}
+			if = {
+				limit = {
+					root = {
+						has_diplomatic_pact = {
+							who = prev
+							type = exempt_from_service
+						}
+					}
+				}
+				root = {
+					remove_diplomatic_pact = {
+						country = prev
+						type = exempt_from_service
+					}
+				}
+			}
+		}
+	}
+}

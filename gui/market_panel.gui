@@ -1,0 +1,1596 @@
+# COPY-PASTED FOR NOW
+@panel_width_minus_10 = 530			# used to be 450
+@panel_width = 540  				# used to be 460
+@panel_width_half = 270				# used to be 230
+@panel_width_plus_10 = 550  		# used to be 470
+@panel_width_plus_14 = 554			# used to be 474
+@panel_width_plus_14_half = 277		# used to be 237
+@panel_width_plus_20 = 560			# used to be 480
+@panel_width_plus_30 = 570			# used to be 490
+@panel_width_plus_70 = 610			# used to be 530
+
+types market_panel
+{
+	type market_panel = default_block_window {
+		name = "market_panel"
+		
+		blockoverride "animation_state_block" {
+			state = {
+				name = _show
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/markets"
+				}
+			}
+
+			state = {
+				name = _hide
+				start_sound = {
+					soundeffect = "event:/SFX/UI/SideBar/markets_stop"
+				}
+			}
+		}
+		
+		datacontext = "[MarketPanel.GetMarket]"
+		
+		blockoverride "window_header_name"
+		{
+			raw_text = "#BOLD [Market.GetOwner.GetFlagTextIcon] [Market.GetName]#!"
+		}
+		
+		blockoverride "fixed_top"
+		{
+			tab_buttons = {
+				blockoverride "first_button" {
+					text = "MARKET_PANEL_DETAILS_TAB_LABEL"
+				}
+				blockoverride "first_button_tooltip" {
+					tooltip = "MARKET_PANEL_DETAILS_TAB_LABEL" 
+				}
+				blockoverride "first_button_click" {
+					onclick = "[InformationPanel.SelectTab('default')]"
+					onclick = "[MarketPanel.ShowTrade]"
+				}
+				blockoverride "first_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('default')]"
+				}
+				blockoverride "first_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('default') )]"
+				}
+				blockoverride "first_button_selected" {
+					text = "MARKET_PANEL_DETAILS_TAB_LABEL_BOLD"
+				}
+				blockoverride "first_button_name" {
+					name = "tutorial_highlight_market_details"
+				}
+
+				blockoverride "second_button" {
+					text = "TRADE_ROUTES"
+				}
+				blockoverride "second_button_tooltip" {
+					tooltip = "TRADE_ROUTES" 
+				}
+				blockoverride "second_button_click" {
+					onclick = "[InformationPanel.SelectTab('trade_routes')]"
+					onclick = "[MarketPanel.ShowTrade]"
+				}
+				blockoverride "second_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('trade_routes')]"
+				}
+				blockoverride "second_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('trade_routes') )]"
+				}
+				blockoverride "second_button_selected" {
+					text = "TRADE_ROUTES"
+				}
+				blockoverride "second_button_name" {
+					name = "tutorial_highlight_trade_routes"
+				}
+
+				blockoverride "third_button" {
+					text = "MARKET_PANEL_FOOD_SECURITY_TAB_LABEL"
+				}
+				blockoverride "third_button_tooltip" {
+					tooltip = "MARKET_PANEL_FOOD_SECURITY_TAB_LABEL" 
+				}
+				blockoverride "third_button_click" {
+					onclick = "[InformationPanel.SelectTab('food_security')]"
+					onclick = "[MarketPanel.ShowStarvation]"
+				}
+				blockoverride "third_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('food_security')]"
+				}
+				blockoverride "third_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('food_security') )]"
+				}
+				blockoverride "third_button_selected" {
+					text = "MARKET_PANEL_FOOD_SECURITY_TAB_LABEL"
+				}
+
+				blockoverride "fourth_button" {
+					text = "MARKET_PANEL_STATES_TAB_LABEL"
+				}
+				blockoverride "fourth_button_click" {
+					onclick = "[InformationPanel.SelectTab('states')]"
+					onclick = "[MarketPanel.ShowTrade]"
+				}
+				blockoverride "fourth_button_visibility" {
+					visible = "[InformationPanel.IsTabSelected('states')]"
+				}
+				blockoverride "fourth_button_visibility_checked" {
+					visible = "[Not( InformationPanel.IsTabSelected('states') )]"
+				}
+				blockoverride "fourth_button_selected" {
+					text = "MARKET_PANEL_STATES_TAB_LABEL_BOLD"
+				}
+			}
+			
+			flowcontainer = {
+				visible = "[InformationPanel.IsTabSelected('default')]"
+				direction = vertical
+
+				section_header_button = {
+					datacontext = "[GetMetaPlayer.GetPlayedOrObservedCountry]"
+					
+					blockoverride "left_text" {
+						text = "MONTHLY_PRICE_REPORT"
+						fontsize_min = 12
+						elide = right
+					}
+
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle( 'monthly_price_report_dropdown' )]"
+						enabled = "[GreaterThan_CFixedPoint(Market.GetMarketSharePercentageFor( Country.Self ), '(CFixedPoint)0')]"
+					}
+					
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists( 'monthly_price_report_dropdown' ))]"
+					}
+
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists( 'monthly_price_report_dropdown' )]"
+					}
+				}
+
+				flowcontainer = {
+					visible = "[GetVariableSystem.Exists( 'monthly_price_report_dropdown' )]"
+					direction = vertical
+					datacontext = "[GetMetaPlayer.GetPlayedOrObservedCountry]"
+					parentanchor = hcenter
+
+					minimumsize = { @panel_width -1 }
+					margin_top = 10
+					margin_bottom = 10
+
+					background = {
+						using = entry_bg
+					}
+
+					textbox = {
+						text = "MONTHLY_PRICE_REPORT"
+						autoresize = yes
+						default_format = "#title"
+						align = nobaseline
+						margin_left = 10
+						maximumsize = { @panel_width -1 }
+					}
+
+					textbox = {
+						margin = { 10 10 }
+						margin_bottom = 5
+						text = "[Country.GetPriceReportDesc]"
+						autoresize = yes
+						align = nobaseline
+						maximumsize = { @panel_width -1 }
+						multiline = yes
+					}
+				}
+
+				### SUGGESTIONS IMPORT
+				section_header_button = {
+					blockoverride "left_text" {
+						text = "IMPORT_SUGGESTIONS_TITLE"
+						fontsize_min = 12
+						elide = right
+					}
+					
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle('suggest_import_trade_routes')]"
+					}
+					
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists('suggest_import_trade_routes'))]"
+					}
+
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists('suggest_import_trade_routes')]"
+					}
+				}
+
+				suggest_trade_goods = {}
+
+				### SUGGESTIONS EXPORT
+				section_header_button = {
+					blockoverride "left_text" {
+						text = "EXPORT_SUGGESTIONS_TITLE"
+						fontsize_min = 12
+						elide = right
+					}
+					
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle('suggest_export_trade_routes')]"
+					}
+					
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists('suggest_export_trade_routes'))]"
+					}
+
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists('suggest_export_trade_routes')]"
+					}
+				}
+
+				suggest_trade_goods = {
+					blockoverride "visible" {
+						visible = "[GetVariableSystem.Exists('suggest_export_trade_routes')]"
+					}
+					blockoverride "empty_state_visibility" {
+						visible = "[IsDataModelEmpty(Market.AccessGoodsSuggestedForExport)]"
+					}
+					blockoverride "goods_visibility" {
+						visible = "[Not(IsDataModelEmpty(Market.AccessGoodsSuggestedForExport))]"
+					}
+					blockoverride "empty_state_text" {
+						text = "NO_GOODS_EXPORT_SUGGESTION"
+					}
+					blockoverride "datamodel" {
+						datamodel = "[Market.AccessGoodsSuggestedForExport]"
+					}
+					blockoverride "button_functions" {
+						enabled = "[Goods.CanEstablishExportTradeRoute]"
+						onclick = "[Goods.EstablishExportTradeRoute]"
+					}
+				}
+
+				section_header_button = {					
+					blockoverride "left_text" {
+						text = "FILTERS"
+						fontsize_min = 12
+						elide = right
+					}
+
+					blockoverride "right_text" {
+						section_header_right_text = {
+							text = "CURRENT_GOODS_FILTERS"
+						}
+					}
+
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle( 'market_filters' )]"
+					}
+					
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists( 'market_filters' ))]"
+					}
+
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists( 'market_filters' )]"
+					}
+				}
+
+				flowcontainer = {
+					visible = "[GetVariableSystem.Exists( 'market_filters' )]"
+					margin_bottom = 10
+					margin_top = 5
+
+					using = default_list_position
+					direction = vertical
+					minimumsize = { @panel_width_plus_14 -1 }
+					background = {
+						using = dark_area
+					}
+
+					### LIST
+
+					goods_filters = {
+						parentanchor = hcenter
+					}
+				}
+			}
+			
+			flowcontainer = {
+				direction = vertical
+				visible = "[InformationPanel.IsTabSelected('trade_routes')]"
+
+				section_header_button = {					
+					blockoverride "left_text" {
+						text = "FILTERS"
+						fontsize_min = 12
+						elide = right
+					}
+
+					blockoverride "right_text" {
+						section_header_right_text = {
+							text = "CURRENT_TRADE_FILTERS_DESC"
+						}
+					}
+
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle( 'trade_route_filters' )]"
+					}
+					
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists( 'trade_route_filters' ))]"
+					}
+
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists( 'trade_route_filters' )]"
+					}
+				}
+				
+				flowcontainer = {
+					visible = "[GetVariableSystem.Exists( 'trade_route_filters' )]"
+					minimumsize = { @panel_width_plus_14 -1 }
+					parentanchor = hcenter
+					spacing = 10
+					margin_bottom = 10
+
+					background = {
+						using = dark_area
+					}
+
+					flowcontainer = {
+						direction = vertical
+
+						textbox = {
+							multiline = yes
+							size = { 95 95 }
+							text = "FILTER_GOODS"
+							align = right|nobaseline
+							margin_right = 10
+							margin_left = 10
+							visible = no # PRCAL-24432
+						}
+						textbox = {
+							multiline = yes
+							size = { 95 60 }
+							text = "GROUP"
+							align = right|nobaseline
+							margin_right = 10
+							margin_left = 10
+						}
+						textbox = {
+							multiline = yes
+							size = { 95 60 }
+							text = "FILTER_BY_OWNER"
+							align = right|nobaseline
+							margin_right = 10
+							margin_left = 10
+						}
+					}
+
+					vertical_divider = {}
+
+					flowcontainer = {
+						direction = vertical
+						margin_top = 10 
+						spacing = 20
+						margin_left = 10
+
+						# TODO: PRCAL-24432 - Hook in and filter out from results
+						goods_filters = {
+							parentanchor = hcenter
+							visible = no # PRCAL-24432
+
+							blockoverride "staple_icon" {}
+							blockoverride "staple_onclick" {}
+							blockoverride "staple_icon_selected" {}
+
+							blockoverride "industrial_icon" {}
+							blockoverride "industrial_onclick" {}
+							blockoverride "industrial_icon_selected" {}
+							
+							blockoverride "luxury_icon" {}
+							blockoverride "luxury_onclick" {}
+							blockoverride "luxury_icon_selected" {}
+							
+							blockoverride "military_icon" {}
+							blockoverride "military_onclick" {}
+							blockoverride "military_icon_selected" {}
+						}
+
+						flowcontainer = {
+							spacing = 5
+
+							filter_button = {
+								visible = "[GetVariableSystem.Exists( 'trade_route_grouping' )]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "NONE"
+								}
+
+								blockoverride "onclick" {
+									onclick = "[GetVariableSystem.Clear( 'trade_route_grouping' )]"
+								}
+							}
+
+							filter_background_selected = {
+								visible = "[Not(GetVariableSystem.Exists( 'trade_route_grouping' ))]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "NONE"
+								}
+							}
+
+							filter_button = {
+								visible = "[Not(GetVariableSystem.HasValue( 'trade_route_grouping', 'goods' ))]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "BY_GOODS"
+								}
+
+								blockoverride "onclick" {
+									onclick = "[GetVariableSystem.Set( 'trade_route_grouping', 'goods' )]"
+								}
+							}
+
+							filter_background_selected = {
+								visible = "[GetVariableSystem.HasValue( 'trade_route_grouping', 'goods' )]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "BY_GOODS"
+								}
+							}
+
+							filter_button = {
+								visible = "[Not(GetVariableSystem.HasValue( 'trade_route_grouping', 'country' ))]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "BY_COUNTRY"
+								}
+
+								blockoverride "onclick" {
+									onclick = "[GetVariableSystem.Set( 'trade_route_grouping', 'country' )]"
+								}
+							}
+
+							filter_background_selected = {
+								visible = "[GetVariableSystem.HasValue( 'trade_route_grouping', 'country' )]"
+								size = { 132 40 }
+
+								blockoverride "text" {
+									text = "BY_COUNTRY"
+								}
+							}
+						}
+
+						flowcontainer = {
+							spacing = 5
+
+							### ALL - NOT SELECTED
+							filter_button = {
+								visible = "[Market.GetOnlyShowPlayerTradeRoutes]"
+							}
+
+							### ALL - SELECTED
+							filter_background_selected = {
+								visible = "[Not(Market.GetOnlyShowPlayerTradeRoutes)]"
+							}
+
+							### ONLY YOURS - NOT SELECTED
+							filter_button = {
+								visible = "[Not(Market.GetOnlyShowPlayerTradeRoutes)]"
+
+								blockoverride "text" {
+									text = "ONLY_YOURS"
+								}
+							}
+
+							### ONLY YOURS - SELECTED
+							filter_background_selected = {
+								visible = "[Market.GetOnlyShowPlayerTradeRoutes]"
+
+								blockoverride "text" {
+									text = "ONLY_YOURS"
+								}
+							}
+						}
+					}
+				}
+			}
+
+			flowcontainer = {
+				visible = "[InformationPanel.IsTabSelected('default')]"
+
+				sort_button = {
+					size = { 50 20 }
+					tooltip = "SORT_BY_MARKET_GOODS"
+					onclick = "[Market.Sort('name')]"
+					onclick = "[Market.RestoreSort]"
+					button = {
+						texture = "gfx/interface/buttons/sort_button_icons/sort_icon_good.dds"
+						size = { 25 25 }
+						parentanchor = center
+						alwaystransparent = yes
+					}
+				}
+
+				sort_button = {
+					name = "tutorial_highlight_market_details_panel_sell_orders"
+					align = hcenter|nobaseline
+					text = "[concept_sell_orders]"
+					size = { 100 20 }
+					onclick = "[Market.Sort('sell')]"
+					onclick = "[Market.RestoreSort]"
+					elide = right
+				}
+
+				sort_button = {
+					name = "tutorial_highlight_market_details_panel_buy_orders"
+					align = hcenter|nobaseline
+					text = "[concept_buy_orders]"
+					size = { 100 20 }
+					onclick = "[Market.Sort('buy')]"
+					onclick = "[Market.RestoreSort]"
+					margin_right = 7
+					elide = right
+				}
+
+				sort_button = {
+					align = hcenter|nobaseline
+					text = "BALANCE"
+					size = { 80 20 }
+					onclick = "[Market.Sort('balance')]"
+					onclick = "[Market.RestoreSort]"
+					margin_right = 7
+					tooltip = "SORT_BY_BALANCE_TOOLTIP"
+					elide = right
+				}
+				
+				sort_button = {
+					align = hcenter|nobaseline
+					text = "[concept_market_price]"
+					size = { 210 20 }
+					onclick = "[Market.Sort('price')]"
+					onclick = "[Market.RestoreSort]"
+				}
+			}
+		}
+		### BUTTONS TO OPEN LENSBAR WITH OPTIONS
+		blockoverride "fixed_bottom"{
+
+			divider_clean = {
+				size = { @panel_width_plus_14 4 }
+				visible = "[InformationPanel.IsTabSelected('trade_routes')]"
+			}
+
+			flowcontainer = {
+				direction = vertical
+				minimumsize = { 450 -1 }
+				margin = { 10 10 }
+				margin_bottom = 0
+				visible = "[InformationPanel.IsTabSelected('trade_routes')]"
+
+				flowcontainer = {
+					spacing = 10
+					visible = "[MarketPanel.GetMarket.GetOwner.IsPlayer]"
+					parentanchor = hcenter
+
+					button = {
+						name = "tutorial_highlight_import_button"
+						using = default_button
+						size = { 260 70 }
+						onclick = "[GetLensToolbar.OpenTab('import_routes')]"
+						using = shimmer
+						
+						icon = {
+							texture = "gfx/interface/icons/lens_toolbar_icons/trade_route_import_lens_option.dds"
+							size = { 40 40 }
+							position = { 0 3 }
+							parentanchor = hcenter
+						}
+						textbox = {
+							text = "NEW_IMPORT_ROUTE"
+							size = { 100% 30 }
+							position = { 0 -3 }
+							parentanchor = bottom
+							margin = { 10 0 }
+							elide = right
+							align = center|nobaseline
+						}
+					}
+					button = {
+						using = default_button
+						size = { 260 70 }
+						onclick = "[GetLensToolbar.OpenTab('export_routes')]"
+						using = shimmer
+						
+						icon = {
+							texture = "gfx/interface/icons/lens_toolbar_icons/trade_route_export_lens_option.dds"
+							size = { 40 40 }
+							position = { 0 3 }
+							parentanchor = hcenter
+						}
+						textbox = {
+							text = "NEW_EXPORT_ROUTE"
+							size = { 100% 30 }
+							position = { 0 -3 }
+							parentanchor = bottom
+							margin = { 10 0 }
+							elide = right
+							align = center|nobaseline
+						}
+					}
+				}
+			}
+		}
+		
+		blockoverride "scrollarea_content"
+		{
+			container = {
+				parentanchor = hcenter
+				
+				market_panel_details_content = {
+					visible = "[InformationPanel.IsTabSelected('default')]"
+					using = default_fade_in_out
+				}
+
+				market_panel_trade_routes_content = {
+					visible = "[InformationPanel.IsTabSelected('trade_routes')]"
+					using = default_fade_in_out
+				}
+
+				market_panel_food_security_content = {
+					visible = "[InformationPanel.IsTabSelected('food_security')]"
+					using = default_fade_in_out
+				}
+
+				market_panel_states_content = {
+					visible = "[InformationPanel.IsTabSelected('states')]"
+					using = default_fade_in_out
+				}
+			}
+		}
+
+		blockoverride "pin_visibility" {
+			visible = yes
+		}
+
+		blockoverride "pin_properties" {
+			visible = "[MarketPanel.GetMarket.IsPinnedInOutliner]"
+			onclick = "[MarketPanel.GetMarket.TogglePinInOutliner]"
+			datacontext = "[MarketPanel.GetMarket]"
+			tooltip = "UNPIN_MARKET"
+		}
+
+		blockoverride "unpin_properties" {
+			visible = "[Not(MarketPanel.GetMarket.IsPinnedInOutliner)]"
+			onclick = "[MarketPanel.GetMarket.TogglePinInOutliner]"
+			datacontext = "[MarketPanel.GetMarket]"
+			tooltip = "PIN_MARKET"
+		}
+
+		blockoverride "goto_visibility" {
+			visible = yes
+		}
+
+		blockoverride "goto_properties" {
+			onclick = "[Market.AccessMarketCapital.ZoomToCapital]"
+			tooltip = "ZOOM_TO_MARKET_CAPITAL"
+			enabled = "[Not( Market.AccessMarketCapital.IsZoomingToCapital )]"
+		}
+	}
+
+	type market_panel_details_content = container {
+		parentanchor = hcenter
+		
+		flowcontainer = {
+			direction = vertical
+			using = default_list_position
+			margin_bottom = 20
+
+			flowcontainer = {
+				using = default_list_position
+				direction = vertical
+				spacing = 20
+				
+				flowcontainer = {
+					name = "tutorial_highlight_market_details_panel_all_goods"
+					direction = vertical
+					datamodel = "[Market.AccessMarketGoods( MarketPanel.GetFilters )]"
+					spacing = 2
+					parentanchor = hcenter
+					
+					item = {
+						goods_entry_button = {}
+					}
+				}
+				
+				flowcontainer = {
+					direction = vertical
+					visible = "[Not(IsDataModelEmpty(Market.AccessLocalGoods( MarketPanel.GetFilters )))]"
+					
+					default_header_2texts = {
+						parentanchor = hcenter
+						blockoverride "text1" {
+							text = "LOCAL_GOODS"
+						}
+					}	
+
+					widget = { size = { 5 5 } }		
+					
+					dynamicgridbox = {
+						flipdirection = yes
+						datamodel_wrap = 10
+						datamodel = "[Market.AccessLocalGoods( MarketPanel.GetFilters )]"
+						
+						item = {
+							container = {
+								tooltipwidget = {
+									FancyTooltip_Goods = {}
+								}	
+					
+								button_icon_round = {
+									size = { 50 50 }
+									using = select_button_sound
+									onclick = "[InformationPanelBar.OpenGoodsLocalPricesPanel(Goods.Self)]"
+									onrightclick = "[RightClickMenuManager.ShowForGoods(Goods.AccessSelf)]"
+								}
+								
+								icon = {
+									size = { 50 50 }
+									texture = "[Goods.GetTexture]"
+								}								
+							}
+						}
+					}							
+				}					
+				
+				textbox = {
+					parentanchor = hcenter
+					minimumsize = { 450 -1 }
+					autoresize = yes
+					multiline = yes
+					margin = { 0 10 }
+					align = center|nobaseline
+					visible = "[Not(InDebugMode)]"
+					text = "[Market.GetModifier.GetFullEntryDescFor('market_land_trade_capacity_add')]"
+					
+					background = {
+						using = entry_bg
+					}
+				}
+
+				textbox = {
+					parentanchor = hcenter
+					minimumsize = { 450 -1 }
+					autoresize = yes
+					multiline = yes
+					margin = { 0 10 }
+					align = center|nobaseline
+					visible = "[And(InDebugMode, Not(StringIsEmpty(Market.GetModifierDesc)))]"
+					text = "[Market.GetModifierDesc]"
+					
+					background = {
+						using = entry_bg
+					}
+				}
+			}
+		}
+		not_yet_initialized = {
+			visible = "[EqualTo_CFixedPoint(Market.GetBalance, '(CFixedPoint)0')]"
+		}
+	}
+
+	type goods_filters = flowcontainer {
+		spacing = 5
+		
+		### STAPLE FILTER
+		widget = {
+			size = { 75 75 }
+			
+			icon = {
+				texture = "gfx/interface/backgrounds/round_frame_dec.dds"
+				size = { 75 75 }
+				block "staple_icon_selected" {
+					visible = "[MarketPanel.IsSelected('staple')]"
+				}
+				using = default_fade_in_out
+			}
+			goods_filter_button = {
+				block "staple_icon" {
+					visible = "[Not(MarketPanel.IsSelected('staple'))]"
+				}
+				tooltip = "STAPLE_FILTER"
+				
+				block "staple_onclick" {
+					onclick = "[MarketPanel.Filter('staple')]"
+					using = market_filter_staple_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_staple_goods.dds"
+				}
+			}
+			goods_filter_button = {
+				block "staple_icon_selected" {
+					visible = "[MarketPanel.IsSelected('staple')]"
+				}
+				tooltip = "STAPLE_FILTER"
+				
+				block "staple_onclick" {
+					onclick = "[MarketPanel.Filter('staple')]"
+					using = market_filter_staple_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_staple_goods_selected.dds"
+				}
+			}
+		}
+		### INDUSTRIAL FILTER
+		widget = {
+			size = { 75 75 }
+			
+			icon = {
+				texture = "gfx/interface/backgrounds/round_frame_dec.dds"
+				size = { 75 75 }
+				block "industrial_icon_selected" {
+					visible = "[MarketPanel.IsSelected('industrial')]"
+				}
+				using = default_fade_in_out
+			}
+			goods_filter_button = {
+				block "industrial_icon" {
+					visible = "[Not(MarketPanel.IsSelected('industrial'))]"
+				}
+				tooltip = "INDUSTRIAL_GOODS_FILTER"
+				
+				block "industrial_onclick" {
+					onclick = "[MarketPanel.Filter('industrial')]"
+					using = market_filter_industrial_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_industrial_goods.dds"
+				}
+			}
+			goods_filter_button = {
+				block "industrial_icon_selected" {
+					visible = "[MarketPanel.IsSelected('industrial')]"
+				}
+				tooltip = "INDUSTRIAL_GOODS_FILTER"
+				
+				block "industrial_onclick" {
+					onclick = "[MarketPanel.Filter('industrial')]"
+					using = market_filter_industrial_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_industrial_goods_selected.dds"
+				}
+			}
+		}
+		### LUXURY FILTER
+		widget = {
+			size = { 75 75 }
+			
+			icon = {
+				texture = "gfx/interface/backgrounds/round_frame_dec.dds"
+				size = { 75 75 }
+				block "luxury_icon_selected" {
+					visible = "[MarketPanel.IsSelected('luxury')]"
+				}
+				using = default_fade_in_out
+			}
+			
+			goods_filter_button = {
+				block "luxury_icon" {
+					visible = "[Not(MarketPanel.IsSelected('luxury'))]"
+				}
+				tooltip = "LUXURY_GOODS_FILTER"
+				
+				block "luxury_onclick" {
+					onclick = "[MarketPanel.Filter('luxury')]"
+					using = market_filter_luxury_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_luxury_goods.dds"
+				}
+			}
+			goods_filter_button = {
+				block "luxury_icon_selected" {
+					visible = "[MarketPanel.IsSelected('luxury')]"
+				}
+				tooltip = "LUXURY_GOODS_FILTER"
+				
+				block "luxury_onclick" {
+					onclick = "[MarketPanel.Filter('luxury')]"
+					using = market_filter_luxury_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_luxury_goods_selected.dds"
+				}
+			}
+		}
+		### MILITARY FILTER
+		widget = {
+			size = { 75 75 }
+			
+			icon = {
+				texture = "gfx/interface/backgrounds/round_frame_dec.dds"
+				size = { 75 75 }
+				block "military_icon_selected" {
+					visible = "[MarketPanel.IsSelected('military')]"
+				}
+				using = default_fade_in_out
+			}
+			
+			goods_filter_button = {
+				block "military_icon" {
+					visible = "[Not(MarketPanel.IsSelected('military'))]"
+				}
+				tooltip = "MILITARY_GOODS_FILTER"
+				
+				block "military_onclick" {
+					onclick = "[MarketPanel.Filter('military')]"
+					using = market_filter_military_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_military_goods.dds"
+				}
+			}
+			goods_filter_button = {
+				block "military_icon_selected" {
+					visible = "[MarketPanel.IsSelected('military')]"
+				}
+				tooltip = "MILITARY_GOODS_FILTER"
+				
+				block "military_onclick" {
+					onclick = "[MarketPanel.Filter('military')]"
+					using = market_filter_military_button_sound
+				}
+				blockoverride "icon" {
+					texture = "gfx/interface/market_view/filter_military_goods_selected.dds"
+				}
+			}
+		}
+	}
+
+	### SUGGEST TRADE GOODS
+	type suggest_trade_goods = flowcontainer {
+		direction = vertical
+		margin = { 0 5 }
+		parentanchor = hcenter
+		
+		block "visible" {
+			visible = "[GetVariableSystem.Exists('suggest_import_trade_routes')]"
+		}
+
+		empty_state = {
+			blockoverride "visible" {
+				block "empty_state_visibility" {
+					visible = "[IsDataModelEmpty(Market.AccessGoodsSuggestedForImport)]"
+				}
+			}
+			blockoverride "text" {
+				block "empty_state_text" {
+					text = "NO_GOODS_IMPORT_SUGGESTION"
+				}
+			}
+		}
+		
+		fixedgridbox = {
+			name = buttons
+			parentanchor = hcenter
+			block "goods_visibility" {
+				visible = "[Not(IsDataModelEmpty(Market.AccessGoodsSuggestedForImport))]"
+			}
+			block "datamodel" {
+				datamodel = "[Market.AccessGoodsSuggestedForImport]"
+			}
+			maxhorizontalslots = 6
+			addrow = 70
+			addcolumn = 80
+			flipdirection = yes
+			
+			item = {
+				widget = {
+					size = { 80 70 }
+					
+					button_icon_square_map_interaction = {
+						parentanchor = center
+						size = { 70 70 }
+						block "button_functions" {
+							onclick = "[Goods.EstablishImportTradeRoute]"
+						}
+
+						tooltipwidget = {
+							FancyTooltip_Goods = {}
+						}
+
+						blockoverride "icon" {
+							texture = "[Goods.GetTexture]"
+						}
+
+						blockoverride "icon_size" {
+							size = { 80% 80% }
+						}
+
+						widget = {
+							parentanchor = bottom
+							size = { 100% 35 }
+
+							background = {
+								using = fade_up_colored
+								color = { 0.1 0.1 0.1 1 }
+								alpha = 1
+								using = simple_frame_mask
+							}
+						}
+
+						textbox = {
+							parentanchor = bottom
+							autoresize = yes
+							align = nobaseline
+							margin = { 6 3 }
+							text = "[Goods.GetMarketBuyAndSellOrdersBalance|0+=]"
+						}
+
+						textbox = {
+							parentanchor = right|bottom
+							autoresize = yes
+							align = nobaseline
+							margin = { 6 3 }
+							text = "[Goods.GetCompareIconAgainstBasePriceNoFormatting( Goods.GetMarketPrice )]"
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	type goods_filter_button = button_icon_round_big {
+		size = { 59 59 }
+		parentanchor = center
+		using = tooltip_above
+			
+		blockoverride "icon" {
+			block "icon" {}
+		}
+		blockoverride "icon_size" {
+			size = { 48 48 }
+		}
+	}
+	
+	type goods_entry_button = button {
+		size = { @panel_width 50 }
+		using = default_button
+		onclick = "[InformationPanelBar.OpenGoodsPanel(Goods.GetMarket, Goods.Self)]"
+		using = select_button_sound
+		onrightclick = "[RightClickMenuManager.ShowForGoods(Goods.AccessSelf)]"
+
+		block "tooltip" {
+		}
+
+		flowcontainer = {
+			parentanchor = left|vcenter
+			widgetanchor = left|vcenter
+			
+			using = goods_list_item
+			
+			textbox = {
+				align = right|nobaseline
+				visible = "[GreaterThan_CFixedPoint(Goods.GetMarketSellOrders, '(CFixedPoint)0')]"
+				text = "[Goods.GetMarketSellOrdersWithTooltip]"
+				size = { 95 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			textbox = {
+				align = right|nobaseline
+				visible = "[Not(GreaterThan_CFixedPoint(Goods.GetMarketSellOrders, '(CFixedPoint)0'))]"
+				raw_text = "-"
+				alpha = 0.5
+				size = { 95 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			vertical_divider = {}
+			
+			textbox = {
+				align = right|nobaseline
+				visible = "[GreaterThan_CFixedPoint(Goods.GetMarketBuyOrders, '(CFixedPoint)0')]"
+				text = "[Goods.GetMarketBuyOrdersWithTooltip]"
+				size = { 90 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			textbox = {
+				align = right|nobaseline
+				visible = "[Not(GreaterThan_CFixedPoint(Goods.GetMarketBuyOrders, '(CFixedPoint)0'))]"
+				raw_text = "-"
+				alpha = 0.5
+				size = { 90 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			vertical_divider = {}
+			
+			flowcontainer = {
+				direction = vertical
+				minimumsize = { 90 52 }
+				margin_top = 8
+				spacing = 4
+				tooltip = "MARKET_GOODS_BALANCE_TOOLTIP"
+
+				textbox = {
+					visible = "[GreaterThan_int32(FixedPointToInt(Goods.GetMarketBuyAndSellOrdersBalance), '(int32)0')]"
+					align = right|nobaseline
+					text = "MARKET_PANEL_BALANCE_GOLD"
+					autoresize = yes
+					margin_right = 15
+					parentanchor = right
+				}
+
+				textbox = {
+					visible = "[EqualTo_int32(FixedPointToInt(Goods.GetMarketBuyAndSellOrdersBalance), '(int32)0')]"
+					align = hcenter|nobaseline
+					text = "MARKET_PANEL_BALANCE"
+					autoresize = yes
+					parentanchor = hcenter
+				}
+
+				textbox = {
+					visible = "[LessThan_int32(FixedPointToInt(Goods.GetMarketBuyAndSellOrdersBalance), '(int32)0')]"
+					align = left|nobaseline
+					text = "MARKET_PANEL_BALANCE_BLUE"
+					autoresize = yes
+					margin_left = 15
+					parentanchor = left
+				}
+
+				double_direction_progressbar_gold = {
+					size = { 60 6 }
+					parentanchor = hcenter
+
+					blockoverride "negative_min_max_values" {
+						min = "[Negate_float(FixedPointToFloat(Goods.GetMarket.GetMaxImbalanceScaledByBasePrice))]"
+						max = 0
+					}
+
+					blockoverride "positive_min_max_values" {
+						min = 0
+						max = "[FixedPointToFloat(Goods.GetMarket.GetMaxImbalanceScaledByBasePrice)]"
+					}
+					
+					blockoverride "value_left" {
+						value = "[FixedPointToInt(Multiply_CFixedPoint(Goods.GetMarketBuyAndSellOrdersBalance, Goods.GetBasePrice))]"
+					}
+					blockoverride "value_right" {
+						value = "[FixedPointToInt(Multiply_CFixedPoint(Goods.GetMarketBuyAndSellOrdersBalance, Goods.GetBasePrice))]"
+					}
+				}
+			}
+
+			vertical_divider = {}
+			
+			block "last_column" {
+				widget = {
+					using = market_price_tooltip_with_graph
+					size = { 210 55 }
+
+					
+					textbox = {
+						align = right|nobaseline
+						raw_text = "@money![Goods.GetMarketPrice|0v] [Goods.GetCompareIconAgainstBasePriceNoFormatting( Goods.GetMarketPrice )]"
+						size = { 90 40 }
+						margin_right = 10
+						parentanchor = vcenter
+						margin_left = 5
+						fontsize_min = 12
+						elide = right
+					}
+
+					# graph
+					flowcontainer = {
+						position = { 90 0 }
+						parentanchor = vcenter
+
+						widget = {
+							size = { 40 26 }
+
+							background = {
+								using = light_bg
+								margin = { 3 3 }
+							}
+							
+							background = {
+								texture = "gfx/interface/graph/graph_frame.dds"
+								spriteType = Corneredtiled
+								spriteborder = { 2 2 }
+								texture_density = 5
+								margin = { 1 1 }
+								alpha = 1
+
+								modify_texture = {
+									texture = "gfx/interface/backgrounds/default_bg_shading.dds"
+									spriteType = Corneredstretched
+									spriteborder = { 0 0 }
+									blend_mode = overlay
+									alpha = 1
+								}
+							}
+
+							plotline = {
+								parentanchor = center
+								size = { 38 24 }
+								using = plot_line
+								width = 2
+								color = { .9 .9 .9 1.0 }
+								visible = "[Not(IsEmpty(Goods.GetPriceTrend))]"
+								plotpoints = "[GetTrendPlotPointsNormalized( Goods.GetPriceTrend, Goods.GetMinPrice, Goods.GetMaxPrice )]"
+							}
+						}
+					}
+
+					flowcontainer = {
+						direction = vertical
+						minimumsize = { 80 52 }
+						spacing = 4
+						margin_top = 8
+						parentanchor = right
+
+						textbox = {
+							visible = "[GreaterThanOrEqualTo_CFixedPoint(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice), '(CFixedPoint)0.01')]"
+							align = right|nobaseline
+							text = "MARKET_PANEL_GOODS_PRICE_GOLD"
+							autoresize = yes
+							margin_right = 10
+							parentanchor = right
+						}
+
+						textbox = {
+							visible = "[And( Not(LessThanOrEqualTo_CFixedPoint(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice), '(CFixedPoint)-0.01')), Not(GreaterThanOrEqualTo_CFixedPoint(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice), '(CFixedPoint)0.01')))]"
+							align = hcenter|nobaseline
+							text = "MARKET_PANEL_GOODS_PRICE"
+							autoresize = yes
+							parentanchor = hcenter
+						}
+
+						textbox = {
+							visible = "[LessThanOrEqualTo_CFixedPoint(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice), '(CFixedPoint)-0.01')]"
+							align = left|nobaseline
+							text = "MARKET_PANEL_GOODS_PRICE_BLUE"
+							autoresize = yes
+							margin_left = 10
+							parentanchor = left
+						}
+
+						double_direction_progressbar_gold = {
+							size = { 60 6 }
+							parentanchor = hcenter
+
+							blockoverride "negative_min_max_values" {
+								min = -0.75
+								max = 0
+							}
+
+							blockoverride "positive_min_max_values" {
+								min = 0
+								max = 0.75
+							}
+							
+							blockoverride "value_left" {
+								value = "[FixedPointToFloat(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice))]"
+							}
+							blockoverride "value_right" {
+								value = "[FixedPointToFloat(Goods.GetPercentageDeltaAgainstBasePrice(Goods.GetMarketPrice))]"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	type state_goods_entry_button = button {
+		size = { @panel_width 50 }
+		using = default_button
+		onclick = "[InformationPanelBar.OpenGoodsStatePanel(Goods.GetState, Goods.Self)]"
+		using = select_button_sound
+		onrightclick = "[RightClickMenuManager.ShowForGoods(Goods.AccessSelf)]"
+
+		block "tooltip" {
+		}
+
+		flowcontainer = {
+			parentanchor = left|vcenter
+			widgetanchor = left|vcenter
+			
+			using = goods_list_item
+			
+			textbox = {
+				align = right|nobaseline
+				visible = "[GreaterThan_CFixedPoint(Goods.GetStateProduction, '(CFixedPoint)0')]"
+				text = "[Goods.GetStateProductionWithTooltip]"
+				size = { 95 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			textbox = {
+				align = right|nobaseline
+				visible = "[Not(GreaterThan_CFixedPoint(Goods.GetStateProduction, '(CFixedPoint)0'))]"
+				raw_text = "-"
+				alpha = 0.5
+				size = { 95 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			vertical_divider = {}
+			
+			textbox = {
+				align = right|nobaseline
+				visible = "[GreaterThan_CFixedPoint(Goods.GetStateConsumption, '(CFixedPoint)0')]"
+				text = "[Goods.GetStateConsumptionWithTooltip]"
+				size = { 90 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			textbox = {
+				align = right|nobaseline
+				visible = "[Not(GreaterThan_CFixedPoint(Goods.GetStateConsumption, '(CFixedPoint)0'))]"
+				raw_text = "-"
+				alpha = 0.5
+				size = { 90 40 }
+				margin_right = 10
+				parentanchor = vcenter
+			}
+
+			vertical_divider = {}
+			
+			flowcontainer = {
+				direction = vertical
+				minimumsize = { 90 52 }
+				margin_top = 8
+				spacing = 4
+				tooltip = "STATE_GOODS_BALANCE_TOOLTIP"
+
+				textbox = {
+					visible = "[GreaterThan_int32(FixedPointToInt(Goods.GetStateProductionConsumptionDiff), '(int32)0')]"
+					align = right|nobaseline
+					text = "GOODS_LOCAL_PRICE_PANEL_BALANCE_GOLD"
+					autoresize = yes
+					margin_right = 15
+					parentanchor = right
+				}
+
+				textbox = {
+					visible = "[EqualTo_int32(FixedPointToInt(Goods.GetStateProductionConsumptionDiff), '(int32)0')]"
+					align = hcenter|nobaseline
+					text = "GOODS_LOCAL_PRICE_PANEL_BALANCE"
+					autoresize = yes
+					parentanchor = hcenter
+				}
+
+				textbox = {
+					visible = "[LessThan_int32(FixedPointToInt(Goods.GetStateProductionConsumptionDiff), '(int32)0')]"
+					align = left|nobaseline
+					text = "GOODS_LOCAL_PRICE_PANEL_BALANCE_BLUE"
+					autoresize = yes
+					margin_left = 15
+					parentanchor = left
+				}
+
+				double_direction_progressbar_gold = {
+					size = { 60 6 }
+					parentanchor = hcenter
+
+					blockoverride "negative_min_max_values" {
+						min = "[Negate_float(FixedPointToFloat(Goods.GetMarket.GetMaxImbalanceScaledByBasePrice))]"
+						max = 0
+					}
+
+					blockoverride "positive_min_max_values" {
+						min = 0
+						max = "[FixedPointToFloat(Goods.GetMarket.GetMaxImbalanceScaledByBasePrice)]"
+					}
+					
+					blockoverride "value_left" {
+						value = "[FixedPointToInt(Multiply_CFixedPoint(Goods.GetStateProductionConsumptionDiff, Goods.GetBasePrice))]"
+					}
+					blockoverride "value_right" {
+						value = "[FixedPointToInt(Multiply_CFixedPoint(Goods.GetStateProductionConsumptionDiff, Goods.GetBasePrice))]"
+					}
+				}
+			}
+
+			vertical_divider = {}
+			
+			block "last_column" {
+				widget = {
+					using = market_price_tooltip_with_graph
+					size = { 90 55 }
+
+					textbox = {
+						parentanchor = vcenter
+						align = right|nobaseline
+						size = { 80 40 }
+						fontsize_min = 12
+						elide = right
+						raw_text = "@money![Goods.GetStatePrice|0v] [Goods.GetCompareIconAgainstBasePriceNoFormatting( Goods.GetStatePrice )]"
+					}
+				}
+
+				vertical_divider = {}
+
+				widget = {
+					tooltip = "GOODS_SHORTAGE_TOOLTIP"
+					size = { 120 55 }
+					
+					textbox = {
+						visible = "[Goods.HasShortageInState]"
+						align = right|nobaseline
+						size = { 110 40 }
+						margin_right = 10
+						parentanchor = vcenter
+						margin_left = 5
+						fontsize_min = 12
+						elide = right
+						text = "FOOD_SECURITY_GOODS_ITEM_HAS_SHORTAGE_IN_STATE"
+					}
+
+					textbox = {
+						visible = "[Not(Goods.HasShortageInState)]"
+						align = right|nobaseline
+						size = { 110 40 }
+						margin_right = 10
+						parentanchor = vcenter
+						margin_left = 5
+						fontsize_min = 12
+						elide = right
+						using = empty_state_text_properties
+						text = "FOOD_SECURITY_GOODS_ITEM_NO_SHORTAGE"
+					}
+				}
+			}
+		}
+	}
+
+	type filter_button = button {
+		using = default_button
+		using = tooltip_above
+
+		block "size" {
+			size = { 200 40 }
+		}
+
+		block "onclick" {
+			onclick = "[Market.ToggleOnlyShowPlayerTradeRoutes]"
+		}
+
+		block "text" {
+			text = "ALL"
+		}
+	}
+	
+	type filter_selected_button = button {
+		using = default_button
+		using = tooltip_above
+
+		block "size" {
+			size = { 200 40 }
+		}
+
+		block "onclick" {
+			onclick = "[Market.ToggleOnlyShowPlayerTradeRoutes]"
+		}
+
+		block "text" {
+			text = "ALL"
+		}
+		
+		background = {
+			using = paper_bg
+		}
+		
+		icon = {
+			name = "selected_bg"
+			size = { 100% 100% }
+			using = highlighted_square_selection
+			using = shimmer_fade_in
+		}
+	}
+
+	type filter_background_selected = widget {
+		using = tooltip_above
+		
+		block "size" {
+			size = { 200 40 }
+		}
+		
+		background = {
+			using = paper_bg
+		}
+
+		textbox = {
+			parentanchor = center
+			align = nobaseline
+			autoresize = yes
+
+			block "text" {
+				text = "ALL"
+			}
+		}
+
+		icon = {
+			name = "selected_bg"
+			size = { 100% 100% }
+			using = highlighted_square_selection
+			using = shimmer_fade_in
+		}
+	}
+}
+
+template goods_list_item {
+	widget = {
+		block "goods_list_item_datacontext" {}
+		parentanchor = vcenter
+		
+		block "widget_size" {
+			size = { 55 55 }
+		}
+
+		tooltipwidget = {
+			FancyTooltip_Goods = {}
+		}
+		
+		icon = {
+			texture = "gfx/interface/market_view/trade_good_list_bg.dds"
+			position = { 25 0 }
+			size = { 190 46 }
+			parentanchor = vcenter
+			color = "[Goods.GetCategoryColor]"
+		}
+
+		icon = {
+			texture = "gfx/interface/market_view/trade_good_icon_bg.dds"
+			color = "[Goods.GetCategoryColor]"
+			
+			block "bg_size" {
+				size = { 55 55 }
+			}
+			
+			icon = {
+				texture = "[Goods.GetTexture]"
+				size = { 40 40 }
+				parentanchor = center
+			}
+			icon = {
+				size = { 25 25 }
+				visible = "[Goods.HasGoodsShortage]"
+				texture = "gfx/interface/icons/generic_icons/goods_shortage.dds"
+				tooltip = "GOODS_SHORTAGE_TOOLTIP"
+				parentanchor = bottom
+			}
+		}
+	}
+}
+
+template goods_filter_button
+{
+	using = filter_button_sound
+	framesize = { 89 83 }
+	gfxtype = framedbuttongfx
+	effectname = "NoHighlight"
+	upframe = 1
+	overframe = 2
+	downframe = 3
+}
