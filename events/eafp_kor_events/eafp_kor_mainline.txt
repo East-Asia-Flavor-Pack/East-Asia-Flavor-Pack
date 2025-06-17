@@ -14,8 +14,6 @@
 ##300번~399번 - 힘의 공유 관련 이벤트
 #369까지 - 힘의공유 저널에서 점화하는 역사 이벤트 영역
 #399까지 - 힘의공유 저널에서 점화하는 임의 이벤트 영역
-#900~999번 - 스크립트용 히든이벤트
-##1000번~1499번 - 근대화 이벤트
 ####1500번대는 경복궁 중건 관련 이벤트
 
 ##1번~19번 - 초기이벤트 라인 + 건강 저널 역사적 이벤트
@@ -3480,16 +3478,13 @@ eafp_kor_mainline.101 = {	#철종즉위
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		set_variable = {
-			name = eafp_var_je_regent_regnal_year
-			value = 1
-		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.101.oa
 		default_option = yes
 		add_journal_entry = { type = je_korean_kings_health }
+		add_journal_entry = { type = je_korean_regent }
 		ruler = {
 			add_modifier = {
 				name = eafp_modi_puppet_king
@@ -3539,13 +3534,6 @@ eafp_kor_mainline.101 = {	#철종즉위
 				id = eafp_kor_mainline.340
 				days = { 5110 5475 }
 			}
-			if = {
-				limit = { has_variable = eafp_var_je_regent_complete_yi_hwan }
-				trigger_event = {
-					id = eafp_kor_mainline.113
-					days = 30
-				}
-			}
 		}
 	}
 }
@@ -3559,8 +3547,9 @@ eafp_kor_mainline.102 = {	#철종사망
 			triggered_desc = {
 				desc = eafp_kor_mainline.102.md2
 				trigger = {
-					s:STATE_SEOUL.region_state:KOR ?= {
+					OR = {
 						has_building = building_gyeongbokgung
+						has_building = building_gaudi_gyeong
 					}
 				}
 			}
@@ -3666,27 +3655,17 @@ eafp_kor_mainline.103 = {	#고종즉위
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		set_variable = {
-			name = eafp_var_je_regent_regnal_year
-			value = 1
-		}
 	}
 
 	option = {
 		name = eafp_kor_mainline.103.oa
 		default_option = yes
 		add_journal_entry = { type = je_korean_kings_health }
+		add_journal_entry = { type = je_korean_regent }
 		eafp_effect_option_gain_balance = {
 			BALANCE = 100
 		}
 		hidden_effect = {
-			if = {
-				limit = { has_variable = eafp_var_je_regent_complete_yi_byeon }
-				trigger_event = {
-					id = eafp_kor_mainline.113
-					days = 30
-				}
-			}
 			trigger_event = {	#역사 이벤트 점화
 				id = eafp_kor_mainline.342
 				days = { 45 90 }
@@ -3695,18 +3674,18 @@ eafp_kor_mainline.103 = {	#고종즉위
 				id = eafp_kor_mainline.346
 				days = { 3285 4380 }
 			}
-			trigger_event = {	#역사 이벤트 점화
-				id = eafp_kor_mainline.347
-				days = { 3650 4015 }
-			}
-			trigger_event = {	#역사 이벤트 점화
-				id = eafp_kor_mainline.348
-				days = { 4015 4380 }
-			}
-			trigger_event = {	#역사 이벤트 점화
-				id = eafp_kor_mainline.349
-				days = { 4380 4745 }
-			}
+			#trigger_event = {	#역사 이벤트 점화
+			#	id = eafp_kor_mainline.347
+			#	days = { 3650 4015 }
+			#}
+			#trigger_event = {	#역사 이벤트 점화
+			#	id = eafp_kor_mainline.348
+			#	days = { 4015 4380 }
+			#}
+			#trigger_event = {	#역사 이벤트 점화
+			#	id = eafp_kor_mainline.349
+			#	days = { 4380 4745 }
+			#}
 		}
 	}
 }
@@ -3720,8 +3699,9 @@ eafp_kor_mainline.104 = {	#고종사망
 			triggered_desc = {
 				desc = eafp_kor_mainline.104.md2
 				trigger = {
-					s:STATE_SEOUL.region_state:KOR ?= {
+					OR = {
 						has_building = building_gyeongbokgung
+						has_building = building_gaudi_gyeong
 					}
 				}
 			}
@@ -3785,17 +3765,6 @@ eafp_kor_mainline.105 = {	# 수렴청정 끝 - 헌종
 				save_scope_as = eafp_char_yangban_leader
 			}
 		}
-		random_scope_character = {
-			limit = {
-				has_template = eafp_kor_myeonggyeongbi_kim_character_template
-			}
-			set_character_busy_and_immortal = no
-		}
-	}
-
-	option = {
-		name = eafp_kor_mainline.105.oa
-		default_option = yes
 		hidden_effect = { # 잠재력 트레잇 제거
 			ruler = {
 				if = {
@@ -3825,6 +3794,11 @@ eafp_kor_mainline.105 = {	# 수렴청정 끝 - 헌종
 			}
 		}
 	}
+
+	option = {
+		name = eafp_kor_mainline.105.oa
+		default_option = yes
+	}
 }
 eafp_kor_mainline.106 = {	# 수렴청정 끝 - 철종
 	type = country_event
@@ -3847,12 +3821,6 @@ eafp_kor_mainline.106 = {	# 수렴청정 끝 - 철종
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		random_scope_character = {
-			limit = {
-				has_template = eafp_kor_myeonggyeongbi_kim_character_template
-			}
-			set_character_busy_and_immortal = no
-		}
 	}
 
 	option = {
@@ -3881,12 +3849,6 @@ eafp_kor_mainline.107 = {	# 수렴청정 끝 - 고종
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		random_scope_character = {
-			limit = {
-				has_template = eafp_kor_hyoyubi_jo_character_template
-			}
-			set_character_busy_and_immortal = no
-		}
 	}
 
 	option = {
@@ -3894,62 +3856,10 @@ eafp_kor_mainline.107 = {	# 수렴청정 끝 - 고종
 		default_option = yes
 	}
 }
-eafp_kor_mainline.108 = {	#
-	type = country_event
-	placement = ROOT
+# eafp_kor_mainline.108
 
-	title = eafp_kor_mainline.108.mt
-	desc = eafp_kor_mainline.108.md
-	flavor = eafp_kor_mainline.108.mf
+# eafp_kor_mainline.109
 
-	duration = 2
-	
-
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-	}
-
-	option = {
-		name = eafp_kor_mainline.108.oa
-		default_option = yes
-	}
-}
-eafp_kor_mainline.109 = {	#
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.109.mt
-	desc = eafp_kor_mainline.109.md
-	flavor = eafp_kor_mainline.109.mf
-
-	duration = 2
-	
-
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-	}
-
-	option = {
-		name = eafp_kor_mainline.109.oa
-		default_option = yes
-	}
-}
 eafp_kor_mainline.110 = {	#헌종사망후 대왕대비1
 	type = country_event
 	placement = ROOT
@@ -4066,88 +3976,8 @@ eafp_kor_mainline.112 = {	#헌종사망후 대왕대비3
 				set_character_busy_and_immortal = yes
 			}
 		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_korean_regent }
-			}
-			add_journal_entry = {
-				type = je_korean_regent
-			}
-		}
-		custom_tooltip = {
-			text = eafp_k112_event_tt
-			random_scope_character = {
-				limit = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
-				save_scope_as = regent
-			}
-			set_variable = {
-				name = eafp_var_je_regent_character
-				value = scope:regent
-			}
-			set_variable = {
-				name = eafp_var_je_regent_type
-				value = flag:halmuni
-			}
-		}
 		trigger_event = eafp_kor_mainline.101	#철종
 		default_option = yes
-	}
-}
-eafp_kor_mainline.113 = {	#권력 공유 저널 완료 했을 때 다음 왕이 받는 보상
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.113.mt
-	desc = eafp_kor_mainline.113.md
-	flavor = eafp_kor_mainline.113.mf
-
-	duration = 2
-	
-
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/africa/city_center"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-		
-	}
-
-	option = {
-		name = eafp_kor_mainline.113.oa
-
-		trigger = {
-			OR = {
-				has_variable = eafp_var_je_regent_complete_yi_hwan
-				has_variable = eafp_var_je_regent_complete_yi_byeon
-			}
-			NAND = {
-				has_variable = eafp_var_je_regent_complete_yi_hwan
-				has_variable = eafp_var_je_regent_complete_yi_byeon
-			}
-		}
-
-		eafp_effect_option_gain_balance = {
-			BALANCE = -50
-		}
-		default_option = yes
-	}
-
-	option = {
-		name = eafp_kor_mainline.113.oa
-
-		trigger = {
-			has_variable = eafp_var_je_regent_complete_yi_hwan
-			has_variable = eafp_var_je_regent_complete_yi_byeon
-		}
-
-		eafp_effect_option_gain_balance = {
-			BALANCE = -100
-		}
 	}
 }
 
@@ -4220,29 +4050,6 @@ eafp_kor_mainline.115 = {
 				set_character_busy_and_immortal = yes
 			}
 		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_korean_regent }
-			}
-			add_journal_entry = {
-				type = je_korean_regent
-			}
-		}
-		custom_tooltip = {
-			text = eafp_k115_event_tt
-			random_scope_character = {
-				limit = { has_template = eafp_kor_hyoyubi_jo_character_template }
-				save_scope_as = regent
-			}
-			set_variable = {
-				name = eafp_var_je_regent_character
-				value = scope:regent
-			}
-			set_variable = {
-				name = eafp_var_je_regent_type
-				value = flag:halmuni
-			}
-		}
 
 		trigger_event = eafp_kor_mainline.103
 	}
@@ -4275,26 +4082,6 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 
 	option = {
 		name = eafp_kor_mainline.120.oa
-		custom_tooltip = {
-			text = eafp_kor_mainline.120.tt
-		}
-		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					if = {
-						limit = {
-							has_template = eafp_kor_kim_juagun_character_template
-						}
-						set_character_immortal = yes
-						place_character_in_void = 60
-					}
-				}
-			}
-		}
-		create_character = {
-			# 이지연. 기해박해때 천주교 탄압 주장 상소문을 올린 우의정. 역사 루트 선택시 김좌근을 잠시 대체하는 양반리더로써 있을것이나, 1년뒤 탄핵을 받아 유배를 떠날 것. 24.07.19 추가.
-			template = eafp_kor_yi_jiyeon_character_template
-		}
 		every_scope_character = {
 			limit = {
 				has_role = agitator
@@ -4382,26 +4169,6 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 	}
 	option = {
 		name = eafp_kor_mainline.120.ob
-		custom_tooltip = {
-			text = eafp_kor_mainline.120.tt
-		}
-		default_option = yes
-		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					if = {
-						limit = {
-							has_template = eafp_kor_kim_juagun_character_template
-						}
-						set_character_busy_and_immortal = yes
-					}
-				}
-			}
-		}
-		create_character = {
-			# 이지연. 기해박해때 천주교 탄압 주장 상소문을 올린 우의정. 역사 루트 선택시 김좌근을 잠시 대체하는 양반리더로써 있을것이나, 1년뒤 탄핵을 받아 유배를 떠날 것. 24.07.19 추가.
-			template = eafp_kor_yi_jiyeon_character_template
-		}
 		every_scope_character = {
 			limit = {
 				has_role = agitator
@@ -4596,11 +4363,7 @@ eafp_kor_mainline.123 = {	#이지연 귀양
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	trigger = {
-		ig:ig_landowners = {
-			leader = {
-				has_template = eafp_kor_yi_jiyeon_character_template
-			}
-		}
+		has_journal_entry = je_sedo_politics
 	}
 	
 	immediate = {
@@ -4609,15 +4372,8 @@ eafp_kor_mainline.123 = {	#이지연 귀양
 	option = {
 		name = eafp_kor_mainline.123.oa
 		default_option = yes
-		ig:ig_landowners = {
-			leader = {
-				exile_character = yes
-			}
-		}
-		create_character = {
-			# Jo In-young, served as Yeonguijeong (Chief State Councilor) 1841–1844 and in 1850. Armed forces loose fit.
-			# 조인영 양반리더로 옮길거임!!! 이지연 사망or유배 후 나오는 양반리더로 만들것. 24.07.19
-			template = eafp_kor_jo_inyoung_character_template
+		eafp_effect_option_gain_attitude = {
+			ATTITUDE = 1
 		}
 	}
 	option = {
@@ -5372,6 +5128,16 @@ eafp_kor_mainline.171 = {	#
 		add_modifier = {
 			name = eafp_modi_confucian_state_reverse
 			months = normal_modifier_time
+		}
+		ig:ig_intelligentsia = {
+			set_interest_group_name = ig_intelligentsia
+			###
+			add_ideology = ideology_republican
+			add_ideology = ideology_anti_clerical
+			remove_ideology = ideology_silhak
+			set_ig_trait = ig_trait:ig_trait_social_criticism
+			set_ig_trait = ig_trait:ig_trait_avant_garde
+			set_ig_trait = ig_trait:ig_trait_propagandists
 		}
 		ai_chance = {
 			base = 1
@@ -7764,7 +7530,7 @@ eafp_kor_mainline.302 = {	#유배자 복권
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -20
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -7773,7 +7539,6 @@ eafp_kor_mainline.302 = {	#유배자 복권
 			limit = {
 				OR = {
 					has_template = eafp_kor_gim_jeonghui_character_template
-					has_template = eafp_kor_yi_jiyeon_character_template
 				}
 				OR = {
 					NOT = { exists = owner }
@@ -7794,7 +7559,7 @@ eafp_kor_mainline.302 = {	#유배자 복권
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -20
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -7818,7 +7583,6 @@ eafp_kor_mainline.302 = {	#유배자 복권
 			limit = {
 				OR = {
 					has_template = eafp_kor_gim_jeonghui_character_template
-					has_template = eafp_kor_yi_jiyeon_character_template
 				}
 				OR = {
 					NOT = { exists = owner }
@@ -7915,7 +7679,7 @@ eafp_kor_mainline.304 = {	#총위영
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -20
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -8008,7 +7772,7 @@ eafp_kor_mainline.306 = {	#초계문신제
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -15
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -8086,10 +7850,10 @@ eafp_kor_mainline.308 = {	#어사
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -25
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
+			ATTITUDE = -2
 		}
 		set_variable = {
 			name = eafp_var_royal_inspector
@@ -8170,7 +7934,7 @@ eafp_kor_mainline.310 = {	#병조판서
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -20
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -8178,6 +7942,11 @@ eafp_kor_mainline.310 = {	#병조판서
 		create_character = {
 			# 서좌보. 헌종실록 15권 헌종 14년 1월 19일 갑오 3번째기사 참조 바람.
 			template = eafp_kor_seo_jwabo_character_template
+			on_created = {
+				add_modifier = {
+					name = eafp_modi_king_friendly
+				}
+			}
 		}
 	}
 }
@@ -8251,10 +8020,10 @@ eafp_kor_mainline.312 = {	#훈련대장
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -25
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
+			ATTITUDE = -2
 		}
 		custom_tooltip = {
 			text = eafp_k312_event_tt
@@ -8416,7 +8185,7 @@ eafp_kor_mainline.314 = {	#삼사
 			STRESS = 5
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -20
+			BALANCE = -10
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
@@ -8502,7 +8271,7 @@ eafp_kor_mainline.316 = {	#김흥근
 			STRESS = 10
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -50
+			BALANCE = -20
 		}
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -2
@@ -8968,14 +8737,6 @@ eafp_kor_mainline.326 = {	#조병현 사사
 				save_scope_as = eafp_char_yangban_leader
 			}
 		}
-		create_character = {
-			# 조병현
-			template = eafp_kor_jo_byeonghyeon_character_template
-			save_scope_as = eafp_char_sedo_byeonghyeon
-			on_created = {
-				place_character_in_void = 10000
-			}
-		}
 	}
 
 	option = {
@@ -8991,17 +8752,6 @@ eafp_kor_mainline.326 = {	#조병현 사사
 		}
 		eafp_effect_option_gain_balance = {
 			BALANCE = 20
-		}
-		scope:eafp_char_sedo_byeonghyeon = {
-			hidden_effect = {
-				if = {
-					limit = {
-						is_in_void = yes
-					}
-					free_character_from_void = yes
-				}
-			}
-			kill_character = yes
 		}
 		default_option = yes
 	}
@@ -9019,13 +8769,6 @@ eafp_kor_mainline.326 = {	#조병현 사사
 		}
 		eafp_effect_option_gain_stress = {
 			STRESS = 7
-		}
-		scope:eafp_char_sedo_byeonghyeon = {
-			hidden_effect = {
-				free_character_from_void = yes
-				add_character_role = agitator
-			}
-			exile_character = yes
 		}
 	}
 	option = {
@@ -9133,14 +8876,6 @@ eafp_kor_mainline.330 = {	#신해조천의
 	}
 	
 	immediate = {
-		create_character = {
-			# 권돈인
-			template = eafp_kor_gwon_donin_character_template
-			save_scope_as = eafp_char_sedo_donin
-			on_created = {
-				place_character_in_void = 10000
-			}
-		}
 	}
 
 	option = {
@@ -9159,18 +8894,6 @@ eafp_kor_mainline.330 = {	#신해조천의
 				}
 				exile_character = yes
 			}
-		}
-		scope:eafp_char_sedo_donin = {
-			hidden_effect = {
-				if = {
-					limit = {
-						is_in_void = yes
-					}
-					free_character_from_void = yes
-				}
-				add_character_role = agitator
-			}
-			exile_character = yes
 		}
 		eafp_effect_option_gain_balance = {
 			BALANCE = 30
@@ -9608,17 +9331,6 @@ eafp_kor_mainline.339 = {	#서대순의 상소
 		eafp_effect_option_gain_balance = {
 			BALANCE = 20
 		}
-		scope:eafp_char_sedo_byeonghyeon = {
-			hidden_effect = {
-				if = {
-					limit = {
-						is_in_void = yes
-					}
-					free_character_from_void = yes
-				}
-			}
-			kill_character = yes
-		}
 		default_option = yes
 	}
 	option = {
@@ -9663,6 +9375,8 @@ eafp_kor_mainline.340 = {	#종계변무
 
 	trigger = {
 		has_journal_entry = je_korean_kings_health
+		exists = c:CHI
+		is_subject_of = c:CHI
 		ruler = {
 			has_template = eafp_kor_yi_byeon_character_template
 		}
@@ -9704,6 +9418,8 @@ eafp_kor_mainline.341 = {	#종계변무
 
 	trigger = {
 		has_journal_entry = je_korean_kings_health
+		exists = c:CHI
+		is_subject_of = c:CHI
 		ruler = {
 			has_template = eafp_kor_yi_byeon_character_template
 		}
@@ -9742,6 +9458,7 @@ eafp_kor_mainline.342 = {
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	trigger = {
+		has_journale_entry = je_sedo_politics
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
@@ -9781,6 +9498,7 @@ eafp_kor_mainline.343 = {
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	trigger = {
+		has_journale_entry = je_sedo_politics
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
@@ -9818,6 +9536,7 @@ eafp_kor_mainline.344 = {
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	trigger = {
+		has_journale_entry = je_sedo_politics
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
@@ -9855,6 +9574,7 @@ eafp_kor_mainline.345 = {
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	trigger = {
+		has_journale_entry = je_sedo_politics
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
@@ -9864,28 +9584,31 @@ eafp_kor_mainline.345 = {
 		name = eafp_kor_mainline.345.oa
 		default_option = yes
 		custom_tooltip = eafp_kor_mainline.345.tt
-		every_scope_state = {
-			limit = {
-				OR = {
-					state_region = s:STATE_SEOUL
-					state_region = s:STATE_BUSAN
-					state_region = s:STATE_YANGHO
-					state_region = s:STATE_SARIWON
-					state_region = s:STATE_PYONGYANG
+		if = {
+			limit = { has_journal_entry = je_korean_land_problem }
+			every_scope_state = {
+				limit = {
+					OR = {
+						state_region = s:STATE_SEOUL
+						state_region = s:STATE_BUSAN
+						state_region = s:STATE_YANGHO
+						state_region = s:STATE_SARIWON
+						state_region = s:STATE_PYONGYANG
+					}
 				}
-			}
-			eafp_effect_option_gain_adm = {
-				ADM = 30
-			}
-			eafp_effect_option_gain_civ = {
-				CIV = 30
-			}
-			eafp_effect_option_gain_mil = {
-				MIL = 30
+				eafp_effect_option_gain_adm = {
+					ADM = 30
+				}
+				eafp_effect_option_gain_civ = {
+					CIV = 30
+				}
+				eafp_effect_option_gain_mil = {
+					MIL = 30
+				}
 			}
 		}
 		eafp_effect_option_gain_balance = {
-			BALANCE = -50
+			BALANCE = -500
 		}
 	}
 }
@@ -9935,7 +9658,7 @@ eafp_kor_mainline.346 = {	#원자 탄생
 		}
 	}
 }
-eafp_kor_mainline.347 = {	#최익현의 상소
+eafp_kor_mainline.347 = {	#최익현의 상소, 안씀
 	type = country_event
 	placement = ROOT
 
@@ -9959,10 +9682,7 @@ eafp_kor_mainline.347 = {	#최익현의 상소
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
-		has_journal_entry = je_korean_regent
-		var:eafp_var_je_regent_character ?= {
-			has_template = eafp_kor_yi_haeung_character_template
-		}
+		ig:ig_landowners.leader = { has_template = eafp_kor_yi_haeung_character_template }
 	}
 	
 	immediate = {
@@ -9973,13 +9693,10 @@ eafp_kor_mainline.347 = {	#최익현의 상소
 		name = eafp_kor_mainline.347.oa
 		default_option = yes
 
-		eafp_effect_option_gain_balance = {
-			BALANCE = -50
-		}
 	}
 }
 
-eafp_kor_mainline.348 = {	#이휘림의 상소
+eafp_kor_mainline.348 = {	#이휘림의 상소, 안씀
 	type = country_event
 	placement = ROOT
 
@@ -10003,10 +9720,7 @@ eafp_kor_mainline.348 = {	#이휘림의 상소
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
-		has_journal_entry = je_korean_regent
-		var:eafp_var_je_regent_character ?= {
-			has_template = eafp_kor_yi_haeung_character_template
-		}
+		ig:ig_landowners.leader = { has_template = eafp_kor_yi_haeung_character_template }
 	}
 	
 	immediate = {
@@ -10017,13 +9731,10 @@ eafp_kor_mainline.348 = {	#이휘림의 상소
 		name = eafp_kor_mainline.348.oa
 		default_option = yes
 
-		eafp_effect_option_gain_balance = {
-			BALANCE = -50
-		}
 	}
 }
 
-eafp_kor_mainline.349 = {	#유생들의 상소
+eafp_kor_mainline.349 = {	#유생들의 상소, 안씀
 	type = country_event
 	placement = ROOT
 
@@ -10047,10 +9758,7 @@ eafp_kor_mainline.349 = {	#유생들의 상소
 		ruler = {
 			has_template = eafp_kor_yi_hyeong_character_template
 		}
-		has_journal_entry = je_korean_regent
-		var:eafp_var_je_regent_character ?= {
-			has_template = eafp_kor_yi_haeung_character_template
-		}
+		ig:ig_landowners.leader = { has_template = eafp_kor_yi_haeung_character_template }
 	}
 	
 	immediate = {
@@ -10061,9 +9769,6 @@ eafp_kor_mainline.349 = {	#유생들의 상소
 		name = eafp_kor_mainline.349.oa
 		default_option = yes
 
-		eafp_effect_option_gain_balance = {
-			BALANCE = -50
-		}
 	}
 }
 
@@ -10271,55 +9976,8 @@ eafp_kor_mainline.370 = {	#권력공유자 상호작용 - 관찰사 임명 이�
 		}
 	}
 }
-eafp_kor_mainline.371 = {	#반정세력 승리시 저널 값들 재조정하는 히든이벤트
-	type = country_event
-	hidden = yes
 
-	immediate = {
-		if = {
-			limit = {
-				ruler = {
-					has_variable = is_kor_revolt_king_eafp
-				}
-				has_journal_entry = je_korean_kings_health
-				je:je_korean_kings_health = {
-					"scripted_bar_progress(eafp_progress_bar_kings_health)" < 100
-				}
-			}
-			je:je_korean_kings_health = {
-				add_progress = { value = -300 name = eafp_progress_bar_kings_health }
-				add_progress = { value = 100 name = eafp_progress_bar_kings_health }
-			}
-		}
-		if = {
-			limit = {
-				has_journal_entry = je_sedo_politics
-				var:eafp_var_je_sedo_politics_balance < 200
-			}
-			set_variable = {
-				name = eafp_var_je_sedo_politics_balance
-				value = 200
-			}
-		}
-		if = {
-			limit = {
-				ruler = {
-					has_variable = is_kor_revolt_king_eafp
-					has_template = eafp_kor_yi_hui2_character_template
-				}
-				has_journal_entry = je_korean_kings_health
-			}
-			je:je_korean_kings_health = {
-				add_progress = { value = 50 name = eafp_progress_bar_kings_health }
-			}
-		}
-	}
-}
-
-#900~999번 - 스크립트용 히든이벤트
-
-##1000번~1499번 - 근대화 이벤트
-
+# 흥선대원군 관련 이벤트
 
 
 

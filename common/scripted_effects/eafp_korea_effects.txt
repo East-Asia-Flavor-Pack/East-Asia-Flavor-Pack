@@ -535,6 +535,11 @@ eafp_effect_option_gain_balance = {	#선지 누를때-힘의균형 증감
 		value = $BALANCE$
 		text = eafp_balance_gain_from_event_option_effect_loc
 	}
+	clamp_variable = {
+		name = eafp_var_je_sedo_politics_balance
+		min = 0
+		max = 500
+	}
 }
 eafp_effect_option_gain_attitude = {	#선지 누를때-권력공유자 태도 증감-그냥 변화요인으로 바꿈
 	#효과
@@ -545,6 +550,8 @@ eafp_effect_option_gain_attitude = {	#선지 누를때-권력공유자 태도 �
 			add_modifier = {
 				name = eafp_modi_sedo_politics_happy
 				multiplier = $ATTITUDE$
+				months = normal_modifier_time
+				is_decaying = yes
 			}
 		}
 	}
@@ -554,8 +561,10 @@ eafp_effect_option_gain_attitude = {	#선지 누를때-권력공유자 태도 �
 				name = eafp_modi_sedo_politics_angry
 				multiplier = {
 					value = $ATTITUDE$
-					multiply = 1
+					multiply = -1
 				}
+				months = normal_modifier_time
+				is_decaying = yes
 			}
 		}
 	}
@@ -763,8 +772,270 @@ eafp_effect_option_gain_blossom = {	#선지 누를때-개화도 증감
 	}
 }
 
+eafp_effect_regent_assign = {
+	every_scope_character = {
+		limit = {
+			has_trait = kor_grand_empress_dowager
+		}
+		set_character_busy_and_immortal = no
+		kill_character = {
+			hidden = yes
+		}
+	}
+	if = { # 명경대왕대비 김씨
+		limit = { game_date <= 1857.9.21 }
+		create_character = {
+			template = eafp_kor_myeonggyeongbi_kim_character_template
+			save_scope_as = regent
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+	}
+	else_if = { # 효유대왕대비 조씨
+		limit = { game_date <= 1890.5.23 }
+		create_character = {
+			template = eafp_kor_hyoyubi_jo_character_template
+			save_scope_as = regent
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+	}
+	else_if = { # 명헌대왕대비 홍씨
+		limit = { game_date <= 1904.1.2 }
+		create_character = {
+			template = eafp_kor_myeongheonbi_hong_character_template
+			save_scope_as = regent
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+	}
+	else_if = { # 효자대왕대비 민씨
+		limit = { game_date <= 1925.1.1 } # 임의
+		create_character = {
+			template = eafp_kor_hyojabi_min_character_template
+			save_scope_as = regent
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+	}
+	else = {
+		# 이때까지 정치제도가 그대로 이어질거라 생각이 안듦 TODO
+		create_character = {
+			female = yes
+			age = { 30 50 }
+			save_scope_as = regent
+			traits = {
+				kor_grand_empress_dowager
+			}
+			on_created = {
+				set_character_busy_and_immortal = yes
+			}
+		}
+	}
+	set_variable = {
+		name = eafp_var_je_regent_character
+		value = scope:regent
+	}
+	scope:regent = {
+		post_notification = eafp_message_new_regent
+	}
+}
+eafp_regent_lifespan_pulse = {
+	if = { # 명경대왕대비 김씨
+		limit = {
+			scope:eafp_var_je_regent_character ?= { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
+			game_date > 1857.9.21
+		}
+		scope:eafp_var_je_regent_character = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+		eafp_effect_regent_assign = yes
+	}
+	else_if = { # 효유대왕대비 조씨
+		limit = {
+			scope:eafp_var_je_regent_character ?= { has_template = eafp_kor_hyoyubi_jo_character_template }
+			game_date > 1890.5.23
+		}
+		scope:eafp_var_je_regent_character = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+		eafp_effect_regent_assign = yes
+	}
+	else_if = { # 명헌대왕대비 홍씨
+		limit = {
+			scope:eafp_var_je_regent_character ?= { has_template = eafp_kor_myeongheonbi_hong_character_template }
+			game_date > 1904.1.2
+		}
+		scope:eafp_var_je_regent_character = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+		eafp_effect_regent_assign = yes
+	}
+	else_if = { # 효자대왕대비 민씨
+		limit = {
+			scope:eafp_var_je_regent_character ?= { has_template = eafp_kor_hyojabi_min_character_template }
+			game_date > 1925.1.1
+		}
+		scope:eafp_var_je_regent_character = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+		eafp_effect_regent_assign = yes
+	}
+	else_if = {
+		# 이때까지 정치제도가 그대로 이어질거라 생각이 안듦 TODO
+		limit = {
+			scope:eafp_var_je_regent_character ?= {
+				NOT = { has_template = eafp_kor_myeonggyeongbi_kim_character_template }
+				NOT = { has_template = eafp_kor_hyoyubi_jo_character_template }
+				NOT = { has_template = eafp_kor_myeongheonbi_hong_character_template }
+				NOT = { has_template = eafp_kor_hyojabi_min_character_template }
+				age >= 65
+			}
+		}
+		random_list = {
+			30 = 0
+			1 = {
+				scope:eafp_var_je_regent_character = {
+					set_character_busy_and_immortal = no
+					kill_character = {
+						hidden = yes
+					}
+				}
+				eafp_effect_regent_assign = yes
+			}
+		}
+	}
+}
 
 ####
+
+eafp_sedo_politics_lifespan_pulse = {
+	##이하 역사 이벤트용 히든 이펙트
+	if = {
+		limit = {
+			ig:ig_landowners.leader = {
+				has_template = eafp_kor_kim_yugun_character_template
+				NOT = { has_modifier = eafp_modi_yugun_bad }
+			}
+			game_date > 1839.3.1
+		}
+		ig:ig_landowners.leader = {
+			add_modifier = eafp_modi_yugun_bad
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_yugun_character_template }
+			game_date > 1839.10.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_jo_manyeong_character_template }
+			game_date > 1851.7.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_heunggeun_character_template }
+			game_date > 1852.5.5
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_juagun_character_template }
+			game_date > 1868.1.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_byeonggi_character_template }
+			game_date > 1872.1.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_byeonghak_character_template }
+			game_date > 1875.1.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_byeonghak_character_template }
+			game_date > 1875.1.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			ig:ig_landowners.leader = { has_template = eafp_kor_kim_byeongguk_character_template }
+			game_date > 1904.1.1
+		}
+		ig:ig_landowners.leader = {
+			set_character_busy_and_immortal = no
+			kill_character = {
+				hidden = yes
+			}
+		}
+	}
+}
 eafp_sedo_politics_authority_event_roll = {	#월 헌종 왕권강화책 굴림
 	random_list = {
 		160 = {	#아무일도 없었다.
@@ -1037,33 +1308,33 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 				#힘의균형 단계별 주사위 완화 보정
 				if = {
 					limit = {
-						var:eafp_var_je_sedo_politics_balance >= 100
+						var:eafp_var_je_sedo_politics_balance <= 100
 					}
-					add = 400
+					add = 250
 				}
 			}
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_sedo_politics_balance >= 200
+						var:eafp_var_je_sedo_politics_balance <= 200
 					}
-					add = 350
+					add = 250
 				}
 			}
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_sedo_politics_balance >= 300
+						var:eafp_var_je_sedo_politics_balance <= 300
 					}
-					add = 300
+					add = 250
 				}
 			}
 			modifier = {
 				if = {
 					limit = {
-						var:eafp_var_je_sedo_politics_balance >= 400
+						var:eafp_var_je_sedo_politics_balance <= 400
 					}
-					add = 300
+					add = 250
 				}
 			}
 
@@ -1078,6 +1349,9 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 		}
 		#1단계
 		40 = {	#소규모 자금착복
+			trigger = {
+				gold_reserves >= 0
+			}
 			modifier = {
 				#권력공유자의 사유재산이 낮다면
 				if = {
@@ -1104,126 +1378,105 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 			}
 			save_scope_value_as = {
 				name = eafp_pocket_money_payment
-				value = eafp_val_embezzle_s_cost
+				value = {
+					value = eafp_val_embezzle_s_cost
+					multiply = -1
+				}
 			}
 			post_notification = eafp_message_sedo_politics_embezzle_s
 		}
 		20 = {	#정치력 키우기
+			trigger = {
+				ig:ig_landowners = {
+					NOT = { has_modifier = eafp_modi_pp_up }
+				}
+			}
 			modifier = {
-				# 양반과 성리학자 둘 다 정치력이 20% 밑이라면,
+				# 양반 정치력이 20% 밑이라면,
 				if = {
 					limit = {
-						any_interest_group = {
-							OR = {
-								is_interest_group_type = ig_landowners
-								is_interest_group_type = ig_devout
-							}
-							is_powerful = no
-							count >= 2
-						}
+						ig:ig_landowners = { is_powerful = no }
 					}
 					add = 15
 				}
 			}
-			if = {
-				limit = {
-					any_interest_group = {
-						NOT = { has_modifier = eafp_modi_pp_up }
-						count = all
-					}
+			ig:ig_landowners = {
+				add_modifier = {
+					name = eafp_modi_pp_up
+					months = 18
 				}
-				#양반과 성리학자 상호 협력 가능.
-				random_list = {
-					1 = {	#양반
-						modifier = {
-							if = {
-								limit = {
-									any_interest_group = {
-										is_interest_group_type = ig_landowners
-										is_powerful = no
-									}
-								}
-								add = 10
-							}
-						}
-						ig:ig_landowners = {
-							add_modifier = {
-								name = eafp_modi_pp_up
-								months = 18
-							}
-							save_scope_as = eafp_message_target_ig
-						}
-						post_notification = eafp_message_sedo_politics_political_power
-					}
-					1 = {	#성리학자
-						modifier = {
-							if = {
-								limit = {
-									any_interest_group = {
-										is_interest_group_type = ig_devout
-										is_powerful = no
-									}
-								}
-								add = 10
-							}
-						}
-						ig:ig_devout = {
-							add_modifier = {
-								name = eafp_modi_pp_up
-								months = 18
-							}
-							save_scope_as = eafp_message_target_ig
-						}
-						post_notification = eafp_message_sedo_politics_political_power
-					}
-				}
+				save_scope_as = eafp_message_target_ig
 			}
-			else = {
-				eafp_sedo_politics_corruption_roll = yes	#다시 굴림.
-			}
+			post_notification = eafp_message_sedo_politics_political_power
 		}
 		20 = {	#힘의균형 끌기
+			trigger = {
+				var:eafp_var_je_sedo_politics_account >= {
+					value = gold_reserves_limit
+					multiply = 0.05
+				}
+			}
 			modifier = {
-				#권력공유자의 돈이 부족하다면
+				#권력공유자의 돈이 충분하다면
 				if = {
 					limit = {
-						OR = {
-							NOT = { has_variable = eafp_var_je_sedo_politics_account }
-							var:eafp_var_je_sedo_politics_account <= eafp_val_pulling_balance_cost
+						has_variable = eafp_var_je_sedo_politics_account
+						var:eafp_var_je_sedo_politics_account >= {
+							value = gold_reserves_limit
+							multiply = 0.15
 						}
 					}
-					add = -24
+					add = 30
+				}
+				if = {
+					limit = {
+						has_variable = eafp_var_je_sedo_politics_account
+						var:eafp_var_je_sedo_politics_account >= {
+							value = gold_reserves_limit
+							multiply = 0.5
+						}
+					}
+					add = 50
 				}
 				#권력공유자의 권세가 매우 낮다면
 				if = {
 					limit = {
 						var:eafp_var_je_sedo_politics_balance < 100
 					}
-					add = 4
+					add = 20
 				}
 				#권력공유자의 권세가 낮다면
 				if = {
 					limit = {
 						var:eafp_var_je_sedo_politics_balance < 200
 					}
-					add = 4
+					add = 10
 				}
 			}
 			change_variable = {	#지출
 				name = eafp_var_je_sedo_politics_account
-				add = eafp_val_pulling_balance_cost
+				add = {
+					value = gold_reserves_limit
+					multiply = -0.05
+				}
 			}
 			eafp_effect_option_gain_balance = {
 				BALANCE = 10
 			}
 			save_scope_value_as = {
 				name = eafp_pocket_money_payment
-				value = eafp_val_pulling_balance_cost
+				value = {
+					value = gold_reserves_limit
+					multiply = 0.05
+				}
 			}
 			post_notification = eafp_message_sedo_politics_pulling_balance
 		}
 		#2단계
 		15 = {	#지역수탈-민
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 100
+			}
 			modifier = {
 				#암행어사가 활발히 활동중일경우,
 				if = {
@@ -1231,13 +1484,6 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 						has_variable = eafp_var_royal_inspector
 					}
 					add = -7
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 100
-					}
-					add = -15
 				}
 			}
 			random_list = {
@@ -1452,9 +1698,11 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 					post_notification = eafp_message_sedo_politics_exploit_civ
 				}
 			}
-			#post_notification = eafp_message_sedo_politics_exploit_civ
 		}
 		15 = {	#지역수탈-관
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 100
+			}
 			modifier = {
 				#암행어사가 활발히 활동중일경우,
 				if = {
@@ -1462,13 +1710,6 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 						has_variable = eafp_var_royal_inspector
 					}
 					add = -7
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 100
-					}
-					add = -15
 				}
 			}
 			random_list = {
@@ -1683,9 +1924,11 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 					post_notification = eafp_message_sedo_politics_exploit_adm
 				}
 			}
-			#post_notification = eafp_message_sedo_politics_exploit_adm
 		}
 		15 = {	#지역수탈-군
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 100
+			}
 			modifier = {
 				#암행어사가 활발히 활동중일경우,
 				if = {
@@ -1693,13 +1936,6 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 						has_variable = eafp_var_royal_inspector
 					}
 					add = -7
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 100
-					}
-					add = -15
 				}
 			}
 			random_list = {
@@ -1914,34 +2150,24 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 					post_notification = eafp_message_sedo_politics_exploit_mil
 				}
 			}
-			#post_notification = eafp_message_sedo_politics_exploit_mil
 		}
 		20 = {	#정통성 하락
-			modifier = {
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 100
-					}
-					add = -20
-				}
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 100
+				NOT = { has_modifier = eafp_modi_attack_legitimacy }
 			}
-			if = {
-				limit = {
-					NOT = { has_modifier = eafp_modi_attack_legitimacy }
-				}
-				add_modifier = {
-					name = eafp_modi_attack_legitimacy
-					months = 12
-				}
-				post_notification = eafp_message_sedo_politics_attack_legitimacy
+			add_modifier = {
+				name = eafp_modi_attack_legitimacy
+				months = 12
 			}
-			else = {
-				eafp_sedo_politics_corruption_roll = yes	#다시 굴림.
-			}
+			post_notification = eafp_message_sedo_politics_attack_legitimacy
 		}
 		#3단계
 		30 = {	#중규모 자금착복
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 200
+				gold_reserves >= 0
+			}
 			modifier = {
 				#권력공유자의 사유재산이 낮다면
 				if = {
@@ -1951,66 +2177,37 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 							var:eafp_var_je_sedo_politics_account <= eafp_val_embezzle_focus
 						}
 					}
-					add = 6
-				}
-				#민영화 모디파이어가 이미 있다면
-				if = {
-					limit = {
-						has_modifier = eafp_modi_forced_privatization
-					}
 					add = 10
 				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 200
-					}
-					add = -46
+			}
+			add_treasury = eafp_val_embezzle_m_cost	#내가 낼 돈
+			hidden_effect = {	#툴팁 지저분하니까
+				add_investment_pool = {	#송금
+					value = eafp_val_embezzle_m_cost
+					multiply = -0.1
 				}
 			}
-			ROOT = {
-				add_treasury = eafp_val_embezzle_m_cost	#내가 낼 돈
-				hidden_effect = {	#툴팁 지저분하니까
-					add_investment_pool = {	#송금
-						value = eafp_val_embezzle_m_cost
-						multiply = -0.1
-					}
-				}
-				change_variable = {	#송금
-					name = eafp_var_je_sedo_politics_account
-					add = {
-						value = eafp_val_embezzle_m_cost
-						multiply = -0.9	#개인자금으로 갈 90%
-					}
+			change_variable = {	#송금
+				name = eafp_var_je_sedo_politics_account
+				add = {
+					value = eafp_val_embezzle_m_cost
+					multiply = -0.9	#개인자금으로 갈 90%
 				}
 			}
+			save_scope_value_as = {
+				name = eafp_pocket_money_payment
+				value = {
+					value = eafp_val_embezzle_m_cost
+					multiply = -1
+				}
+			}
+			post_notification = eafp_message_sedo_politics_embezzle_m
 		}
 		30 = {	#국영건물 사영화
-			modifier = {
-				#권력공유자의 사유재산이 낮다면
-				if = {
-					limit = {
-						OR = {
-							NOT = { has_variable = eafp_var_je_sedo_politics_account }
-							var:eafp_var_je_sedo_politics_account <= eafp_val_forced_privatization_cost
-						}
-					}
-					add = -30
-				}
-				#모디파이어가 이미 있다면
-				if = {
-					limit = {
-						has_modifier = eafp_modi_forced_privatization
-					}
-					add = -30
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 200
-					}
-					add = -30
-				}
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 200
+				NOT = { has_modifier = eafp_modi_forced_privatization }
+				var:eafp_var_je_sedo_politics_account >= eafp_val_forced_privatization_cost
 			}
 			change_variable = {	#지불
 				name = eafp_var_je_sedo_politics_account
@@ -2029,25 +2226,16 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 		}
 		#4단계
 		30 = {	#지휘관 측근임명
-			modifier = {
-				#더 교체할 지휘관도 없다면...?
-				if = {
-					limit = {
-						any_military_formation = {
-							any_scope_general = {
-								OR = {
-									has_modifier = eafp_modi_sedo_friendly
-									has_modifier = eafp_modi_kmsii_good
-									has_modifier = eafp_modi_jossi_good
-								}
-								is_ruler = no
-								count = all
-							}
-							count = all
-						}
-					}
-					add = -30
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 300
+				any_scope_general = {
+					NOT = { has_modifier = eafp_modi_sedo_friendly }
+					NOT = { has_modifier = eafp_modi_kmsii_good }
+					NOT = { has_modifier = eafp_modi_jossi_good }
+					is_ruler = no
 				}
+			}
+			modifier = {
 				#이미 두놈이상 측근이라면?
 				if = {
 					limit = {
@@ -2057,13 +2245,6 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 						}
 					}
 					add = -15
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 300
-					}
-					add = -30
 				}
 			}
 			ig:ig_landowners = {	#권력공유자의 IG를 따와서...
@@ -2291,6 +2472,9 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 			post_notification = eafp_message_sedo_politics_appoint_general
 		}
 		30 = {	#행정력 하락
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 300
+			}
 			modifier = {
 				#이미 모디파이어가 있다면?
 				if = {
@@ -2298,13 +2482,6 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 						has_modifier = eafp_modi_appoint_bureaucrat
 					}
 					add = -10
-				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 300
-					}
-					add = -30
 				}
 			}
 			add_modifier = {
@@ -2315,6 +2492,10 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 		}
 		#5단계
 		30 = {	#대규모 자금착복
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 400
+				gold_reserves >= 0
+			}
 			modifier = {
 				#권력공유자의 사유재산이 낮다면
 				if = {
@@ -2326,59 +2507,34 @@ eafp_sedo_politics_corruption_roll = {	#주 권력공유자 사익추구 행동 
 					}
 					add = 6
 				}
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 400
-					}
-					add = -36
+			}
+			add_treasury = eafp_val_embezzle_l_cost	#내가 낼 돈
+			hidden_effect = {	#툴팁 지저분하니까
+				add_investment_pool = {	#송금
+					value = eafp_val_embezzle_l_cost
+					multiply = -0.1
 				}
 			}
-			ROOT = {
-				add_treasury = eafp_val_embezzle_l_cost	#내가 낼 돈
-				hidden_effect = {	#툴팁 지저분하니까
-					add_investment_pool = {	#송금
-						value = eafp_val_embezzle_l_cost
-						multiply = -0.1
-					}
-				}
-				change_variable = {	#송금
-					name = eafp_var_je_sedo_politics_account
-					add = {
-						value = eafp_val_embezzle_l_cost
-						multiply = -0.9	#개인자금으로 갈 90%
-					}
+			change_variable = {	#송금
+				name = eafp_var_je_sedo_politics_account
+				add = {
+					value = eafp_val_embezzle_l_cost
+					multiply = -0.9	#개인자금으로 갈 90%
 				}
 			}
+			save_scope_value_as = {
+				name = eafp_pocket_money_payment
+				value = {
+					value = eafp_val_embezzle_l_cost
+					multiply = -1
+				}
+			}
+			post_notification = eafp_message_sedo_politics_embezzle_l
 		}
-		25 = {	#날치기 제정
-			modifier = {
-				#가능하다면?
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance >= 400
-						NOT = { has_variable = eafp_var_snatch_law_cooltime }
-					}
-					add = 5000
-				}
-			}
-			modifier = {
-				#아직 쿨타임이면?
-				if = {
-					limit = {
-						has_variable = eafp_var_snatch_law_cooltime
-					}
-					add = -25
-				}
-			}
-			modifier = {
-				####힘의균형 등급에 의한 행동가능여부 판별!
-				if = {
-					limit = {
-						var:eafp_var_je_sedo_politics_balance < 400
-					}
-					add = -25
-				}
+		25 = {	#날치기 제정 TODO
+			trigger = {
+				var:eafp_var_je_sedo_politics_balance >= 400
+				NOT = { has_variable = eafp_var_snatch_law_cooltime }
 			}
 			#이펙트 = yes
 			set_variable = {
@@ -2511,6 +2667,12 @@ eafp_effect_missionary_spawn = {	#선교사 스폰
 			create_character = {
 				# 로랑 앵베르. 37년 5월 14일 조선에 밀입국.
 				template = eafp_kor_laurent_joseph_marius_imbert_character_template
+				on_created = {
+					add_modifier = {
+						name = eafp_modi_missionary_stealth
+						months = 36
+					}
+				}
 			}
 		}
 		100 = {	#김대건

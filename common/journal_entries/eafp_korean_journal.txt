@@ -488,7 +488,6 @@ je_korean_land_problem = {
 					NOT = { has_variable = eafp_check_evt_k200 }
 					game_date > 1837.3.1
 					has_journal_entry = je_korean_regent
-					var:eafp_var_je_regent_type ?= flag:halmuni
 					has_journal_entry = je_sedo_politics
 				}
 				trigger_event = {	#역사 이벤트 점화
@@ -510,7 +509,7 @@ je_korean_land_problem = {
 			}
 		}
 		random_events = {
-			100 = 0
+			200 = 0
 			10 = eafp_kor_mainline.250
 			10 = eafp_kor_mainline.251
 			10 = eafp_kor_mainline.252
@@ -1289,10 +1288,6 @@ je_korean_regent = {
 	group = je_group_historical_content
 
 	immediate = {
-		set_variable = {	#권력공유 타입
-			name = eafp_var_je_regent_type
-			value = flag:halmuni	#수렴청정중으로 시작
-		}
 		if = {
 			limit = { NOT = { has_variable = eafp_var_je_regent_regnal_year } }
 			set_variable = {
@@ -1305,28 +1300,26 @@ je_korean_regent = {
 	}
 	
 	invalid = {
-		#always = no
-		OR = {
-			NOT = { has_law = law_type:law_monarchy }
-			has_law = law_type:law_census_voting
-			has_law = law_type:law_universal_suffrage
-			has_law = law_type:law_anarchy
-		}
+		country_je_sedo_politics_is_invalid = yes
 	}
 
 	on_invalid = {
-		remove_variable = eafp_var_je_regent_type
+		var:eafp_var_je_regent_character = {
+			set_character_busy_and_immortal = no
+		}
 		remove_variable = eafp_var_je_regent_regnal_year
 		remove_variable = eafp_var_je_regent_character
+		post_notification = eafp_message_end_regent
 	}
 
-	complete = {
-		OR = {
+	complete = {	
+		custom_tooltip = {
+			text = je_korean_regent_complete_tt1
 			ruler.age >= define:NCharacters|ADULT_AGE
-			custom_tooltip = {
-				text = je_korean_regent_complete_tt
-				var:eafp_var_je_regent_regnal_year >= 3
-			}
+		}
+		custom_tooltip = {
+			text = je_korean_regent_complete_tt2
+			var:eafp_var_je_regent_regnal_year >= 3
 		}
 	}
 
@@ -1335,72 +1328,34 @@ je_korean_regent = {
 			var:eafp_var_je_regent_character = {
 				set_character_busy_and_immortal = no
 			}
-			ig:ig_landowners = {
-				leader = {
-					set_character_busy_and_immortal = no
-				}
-			}
-			if = {
-				limit = { ruler = { has_template = eafp_kor_yi_hwan_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_hwan
-			}
-			else_if = {
-				limit = { ruler = { has_template = eafp_kor_yi_byeon_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_byeon
-			}
-			else_if = {
-				limit = { ruler = { has_template = eafp_kor_yi_hyeong_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_hyeong
-			}
-			remove_variable = eafp_var_je_regent_type
 			remove_variable = eafp_var_je_regent_regnal_year
 			remove_variable = eafp_var_je_regent_character
 
 			if = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_hwan_character_template }
-					var:eafp_var_je_regent_type ?= flag:halmuni
 				}
 				trigger_event = eafp_kor_mainline.105
 			}
 			else_if = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_byeon_character_template }
-					var:eafp_var_je_regent_type ?= flag:halmuni
 				}
 				trigger_event = eafp_kor_mainline.106
 			}
 			else_if = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_hyeong_character_template }
-					var:eafp_var_je_regent_type ?= flag:halmuni
 				}
 				trigger_event = eafp_kor_mainline.107
 			}
+			post_notification = eafp_message_end_regent
 		}
 	}
 
 	on_weekly_pulse = {
 		effect = {
-			#권력공유자 슬롯이 비어있다면? TODO 수정할것
-			if = {
-				limit = {
-					NOT = {
-						has_variable = eafp_var_je_regent_character
-					}
-				}
-				set_variable = {
-					name = eafp_var_je_regent_character
-					value = ruler
-				}
-				set_variable = {
-					name = eafp_var_je_regent_type
-					value = 0
-				}
-			}
-			var:eafp_var_je_regent_character ?= {
-				set_character_busy_and_immortal = yes
-			}
+			eafp_regent_lifespan_pulse = yes  # 대왕대비 등장&퇴장
 		}
 	}
 
@@ -1435,19 +1390,12 @@ je_sedo_politics = {
 	}
 	
 	invalid = {
-		#always = no
-		OR = {
-			NOT = { has_law = law_type:law_monarchy }
-			has_law = law_type:law_census_voting
-			has_law = law_type:law_universal_suffrage
-			has_law = law_type:law_anarchy
-		}
+		country_je_sedo_politics_is_invalid = yes
 	}
 
 	on_invalid = {
 		remove_variable = eafp_var_je_sedo_politics_balance
 		remove_variable = eafp_var_je_sedo_politics_account
-		remove_variable = eafp_var_je_regent_regnal_year
 	}
 
 	complete = {
@@ -1464,138 +1412,15 @@ je_sedo_politics = {
 					set_character_busy_and_immortal = no
 				}
 			}
-			if = {
-				limit = { ruler = { has_template = eafp_kor_yi_hwan_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_hwan
-			}
-			else_if = {
-				limit = { ruler = { has_template = eafp_kor_yi_byeon_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_byeon
-			}
-			else_if = {
-				limit = { ruler = { has_template = eafp_kor_yi_hyeong_character_template } }
-				set_variable = eafp_var_je_regent_complete_yi_hyeong
-			}
 			remove_variable = eafp_var_je_sedo_politics_balance
 			remove_variable = eafp_var_je_sedo_politics_account
-			remove_variable = eafp_var_je_regent_regnal_year
-		}
-	}
-
-	status_desc = {
-		first_valid = {
-			triggered_desc = {
-				desc = je_sedo_politics_balance_16
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 400
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_15
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 375
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_14
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 350
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_13
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 325
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_12
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 300
-				}
-			}
-			##
-			triggered_desc = {
-				desc = je_sedo_politics_balance_11
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance  >= 275
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_10
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance  >= 250
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_9
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance  >= 225
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_8
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 200
-				}
-			}
-			##
-			triggered_desc = {
-				desc = je_sedo_politics_balance_7
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 175
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_6
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 150
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_5
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 125
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_4
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 100
-				}
-			}
-			##
-			triggered_desc = {
-				desc = je_sedo_politics_balance_3
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 75
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_2
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 50
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_1
-				trigger = {
-					var:eafp_var_je_sedo_politics_balance >= 25
-				}
-			}
-			triggered_desc = {
-				desc = je_sedo_politics_balance_0
-				trigger = {
-					always = yes
-				}
-			}
 		}
 	}
 
 	on_weekly_pulse = {
 		effect = {
-			#사익추구 활동 굴림
-			eafp_sedo_politics_corruption_roll = yes
+			eafp_sedo_politics_corruption_roll = yes # 사익추구 활동 굴림
+			eafp_sedo_politics_lifespan_pulse = yes # 세도정치 인물 등장&퇴장
 		}
 	}
 	on_monthly_pulse = {
@@ -1626,41 +1451,6 @@ je_sedo_politics = {
 				}
 				set_variable = eafp_check_evt_k321
 			}
-			##이하 역사 이벤트용 히든 이펙트
-			if = {
-				limit = {
-					game_date > 1839.3.1
-					ig:ig_landowners = {
-						leader = {
-							has_template = eafp_kor_kim_yugun_character_template
-						}
-					}
-				}
-				hidden_effect = {
-					ig:ig_landowners = {
-						leader = {
-							add_modifier = eafp_modi_yugun_bad
-						}
-					}
-				}
-			}
-			if = {
-				limit = {
-					game_date > 1839.10.1
-					ig:ig_landowners = {
-						leader = {
-							has_template = eafp_kor_kim_yugun_character_template
-						}
-					}
-				}
-				hidden_effect = {
-					ig:ig_landowners = {
-						leader = {
-							kill_character = yes
-						}
-					}
-				}
-			}
 			if = {	#헌종 왕권 강화책 뽑기
 				limit = {
 					ruler = {
@@ -1669,6 +1459,16 @@ je_sedo_politics = {
 					}
 				}
 				eafp_sedo_politics_authority_event_roll = yes
+			}
+			# 
+			change_variable = {
+				name = eafp_var_je_sedo_politics_balance
+				add = eafp_val_sedo_politics_monthly
+			}
+			clamp_variable = {
+				name = eafp_var_je_sedo_politics_balance
+				min = 0
+				max = 500
 			}
 		}
 	}
@@ -1712,6 +1512,22 @@ je_korean_confu = {
 		remove_modifier = eafp_modi_catholic_plague
 		remove_variable = eafp_progress_bar_confu_from_trade_var
 		trigger_event = eafp_kor_mainline.171
+		show_as_tooltip = {
+			add_modifier = {
+				name = eafp_modi_confucian_state_reverse
+				months = normal_modifier_time
+			}
+			ig:ig_intelligentsia = {
+				set_interest_group_name = ig_intelligentsia
+				###
+				add_ideology = ideology_republican
+				add_ideology = ideology_anti_clerical
+				remove_ideology = ideology_silhak
+				set_ig_trait = ig_trait:ig_trait_social_criticism
+				set_ig_trait = ig_trait:ig_trait_avant_garde
+				set_ig_trait = ig_trait:ig_trait_propagandists
+			}
+		}
 	}
 	
 	fail = {
@@ -1769,11 +1585,6 @@ je_korean_confu = {
 				limit = {
 					NOT = { has_variable = eafp_check_evt_k120 }
 					game_date > 1839.3.1
-					any_interest_group = {
-						leader = {
-							has_template = eafp_kor_kim_juagun_character_template
-						}
-					}
 				}
 				trigger_event = {	#역사 이벤트 점화
 					id = eafp_kor_mainline.120
@@ -1888,13 +1699,7 @@ je_korean_seowon = {
 				text = je_korean_land_problem_complete_cond_tt
 				has_variable = eafp_var_sam_all_clear
 			}
-			any_scope_character = {
-				custom_tooltip = {
-					text = is_regent_tt
-					ROOT.var:eafp_var_je_regent_character ?= THIS
-				}
-				has_trait = kor_i_am_your_father
-			}
+			NOT = { has_journal_entry = je_sedo_politics }
 		}
 	}
 
@@ -1988,13 +1793,7 @@ je_rlg_seoul_gyeongbokgung_poor = {
 				text = je_korean_land_problem_complete_cond_tt
 				has_variable = eafp_var_sam_all_clear
 			}
-			any_scope_character = {
-				custom_tooltip = {
-					text = is_regent_tt
-					ROOT.var:eafp_var_je_regent_character ?= THIS
-				}
-				has_trait = kor_i_am_your_father
-			}
+			NOT = { has_journal_entry = je_sedo_politics }
 		}
 	}
 

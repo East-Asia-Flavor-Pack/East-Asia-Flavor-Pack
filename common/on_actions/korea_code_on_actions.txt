@@ -4,7 +4,7 @@
 	}
 	effect = {
 		if = {
-			limit = { has_journal_entry = je_korean_regent }
+			limit = { has_variable = eafp_var_je_regent_regnal_year }
 			change_variable = {
 				name = eafp_var_je_regent_regnal_year
 				add = 1
@@ -30,6 +30,8 @@ korea_on_monthly_pulse_country = {
 							has_template = eafp_kor_yi_cheok_character_template
 							has_template = eafp_kor_myeonggyeongbi_kim_character_template
 							has_template = eafp_kor_hyoyubi_jo_character_template
+							has_template = eafp_kor_myeongheonbi_hong_character_template
+							has_template = eafp_kor_hyojabi_min_character_template
 						}
 					}
 					NOT = { government_transfer_of_power = hereditary }
@@ -45,6 +47,8 @@ korea_on_monthly_pulse_country = {
 						has_template = eafp_kor_yi_cheok_character_template
 						has_template = eafp_kor_myeonggyeongbi_kim_character_template
 						has_template = eafp_kor_hyoyubi_jo_character_template
+						has_template = eafp_kor_myeongheonbi_hong_character_template
+						has_template = eafp_kor_hyojabi_min_character_template
 					}
 				}
 				set_character_busy_and_immortal = no
@@ -56,6 +60,8 @@ korea_on_monthly_pulse_country = {
 					OR = {
 						has_template = eafp_kor_myeonggyeongbi_kim_character_template
 						has_template = eafp_kor_hyoyubi_jo_character_template
+						has_template = eafp_kor_myeongheonbi_hong_character_template
+						has_template = eafp_kor_hyojabi_min_character_template
 					}
 					NOR = {
 						ROOT.var:eafp_var_je_regent_character ?= THIS
@@ -68,6 +74,8 @@ korea_on_monthly_pulse_country = {
 					OR = {
 						has_template = eafp_kor_myeonggyeongbi_kim_character_template
 						has_template = eafp_kor_hyoyubi_jo_character_template
+						has_template = eafp_kor_myeongheonbi_hong_character_template
+						has_template = eafp_kor_hyojabi_min_character_template
 					}
 					NOR = {
 						ROOT.var:eafp_var_je_regent_character ?= THIS
@@ -81,6 +89,9 @@ korea_on_monthly_pulse_country = {
 }
 
 korea_on_acquired_technology = {
+	trigger = {
+		c:KOR ?= THIS
+	}
 	effect = {
 		eafp_effect_option_gain_blossom = {
 			BLOSSOM = 20
@@ -90,12 +101,18 @@ korea_on_acquired_technology = {
 
 
 korea_on_monthly_pulse_character = {
+	trigger = {
+		owner ?= { c:KOR ?= THIS }
+	}
 	effect = {
 
 	}
 }
 
 korea_on_character_death = {
+	trigger = {
+		owner ?= { c:KOR ?= THIS }
+	}
 	effect = {
 		##군주
 		if = {
@@ -103,61 +120,133 @@ korea_on_character_death = {
 				has_template = eafp_kor_yi_hwan_character_template
 				is_ruler = yes
 			}
-			owner = {
+			c:KOR = {
 				trigger_event = eafp_kor_mainline.100
 			}
 		}
-		if = {
+		else_if = {
 			limit = {	#철종
 				has_template = eafp_kor_yi_byeon_character_template
 				is_ruler = yes
 			}
-			owner = {
+			c:KOR = {
 				trigger_event = eafp_kor_mainline.102
 			}
 		}
-		if = {
+		else_if = {
 			limit = {	#고종
 				has_template = eafp_kor_yi_hyeong_character_template
 				is_ruler = yes
 			}
-			owner = {
+			c:KOR = {
 				trigger_event = eafp_kor_mainline.104
 			}
 		}
 		##
-		if = {
-			limit = { has_template = eafp_kor_kim_yugun_character_template }	#김유근
-			if = {
-				limit = { was_exiled = no }	#자연사 시점에 유배중이 아니라면?
-				owner = {
-					create_character = {
-						# 김좌근. 김조순의 삼남. 김유근 사망 후 양반 리더 이어받게 할 예정. 24.07.19 추가.
-						template = eafp_kor_kim_juagun_character_template
+		else_if = {
+			limit = {
+				has_template = eafp_kor_kim_yugun_character_template	#김유근
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 조만영
+					template = eafp_kor_jo_manyeong_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
 					}
 				}
 			}
 		}
-		if = {
-			limit = { has_template = eafp_kor_yi_jiyeon_character_template }	#이지연
-			if = {
-				limit = { was_exiled = no }	#자연사 시점에 유배중이 아니라면?
-				owner = {
-					create_character = {
-						# 조인영
-						template = eafp_kor_jo_inyoung_character_template
+		else_if = {
+			limit = {
+				has_template = eafp_kor_jo_manyeong_character_template	#조만영
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 김흥근
+					template = eafp_kor_kim_heunggeun_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
 					}
 				}
 			}
 		}
-		if = {
-			limit = { has_template = eafp_kor_jo_inyoung_character_template }	#조인영
-			if = {
-				limit = { was_exiled = no }	#자연사 시점에 유배중이 아니라면?
-				owner = {
-					create_character = {
-						# 김좌근. 김조순의 삼남. 김유근 사망 후 양반 리더 이어받게 할 예정. 24.07.19 추가.
-						template = eafp_kor_kim_juagun_character_template
+		else_if = {
+			limit = {
+				has_template = eafp_kor_kim_heunggeun_character_template	#김흥근
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 김좌근. 김조순의 삼남.
+					template = eafp_kor_kim_juagun_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_template = eafp_kor_kim_juagun_character_template	#김좌근
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 김병학
+					template = eafp_kor_kim_byeonghak_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_template = eafp_kor_kim_byeonghak_character_template	#김병학
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 김병국
+					template = eafp_kor_kim_byeongguk_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
+					}
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_template = eafp_kor_kim_byeongguk_character_template	#김병국
+				c:KOR = { has_journal_entry = je_sedo_politics }
+			}
+			c:KOR = {
+				create_character = {
+					# 김승규
+					template = eafp_kor_kim_seunggyu_character_template
+					on_created = {
+						set_character_busy_and_immortal = yes
+						add_modifier = {
+							name = eafp_modi_jossi_good
+						}
 					}
 				}
 			}
@@ -165,7 +254,27 @@ korea_on_character_death = {
 	}
 }
 
+korea_on_new_ruler = {
+	trigger = {
+		owner ?= { c:KOR ?= THIS }
+	}
+	effect = {
+		c:KOR = {
+			if = {
+				limit = { country_je_sedo_politics_is_invalid = no }
+				set_variable = {
+					name = eafp_var_je_regent_regnal_year
+					value = 1
+				}
+			}
+		}
+	}
+}
+
 korea_on_government_reformed = {
+	trigger = {
+		c:KOR ?= THIS
+	}
 	effect = {
 		if = {
 			limit = {
@@ -179,21 +288,23 @@ korea_on_government_reformed = {
 	}
 }
 korea_on_mobilized_army = {
+	trigger = {
+		owner ?= { c:KOR ?= THIS }
+	}
 	effect = {
-		if = {
-			limit = {
-				owner = {
+		c:KOR = {
+			if = {
+				limit = {
 					has_journal_entry = je_sedo_politics
 					var:eafp_var_je_sedo_politics_balance >= 200
 				}
-			}
-			owner = {
 				eafp_effect_option_gain_stress = {
 					STRESS = 5
 				}
 				post_notification = eafp_message_sedo_politics_mobilized_army
 			}
 		}
+		
 	}
 }
 korea_on_diplo_play_start = {
@@ -258,6 +369,11 @@ korea_on_revolution_start = {
 								is_decaying = yes
 							}
 							set_variable = is_kor_revolt_king_eafp
+							add_random_trait = skill
+							add_modifier = {
+								name = eafp_modi_kings_health_bad
+								months = -1
+							}
 						}
 					}
 				}
@@ -285,14 +401,40 @@ korea_on_revolution_start = {
 	}
 }
 korea_on_civil_war_won = {
+	trigger = {
+		ruler = { has_variable = is_kor_revolt_king_eafp }
+	}
 	effect = {
 		if = {
 			limit = {
-				ruler = {
-					has_variable = is_kor_revolt_king_eafp
+				has_journal_entry = je_korean_kings_health
+				je:je_korean_kings_health = {
+					"scripted_bar_progress(eafp_progress_bar_kings_health)" < 100
 				}
 			}
-			trigger_event = { id = eafp_kor_mainline.371 days = 1 }	#딜레이를 줘야 제대로 됨
+			je:je_korean_kings_health = {
+				set_bar_progress = { value = 100 name = eafp_progress_bar_kings_health }
+			}
+			if = {
+				limit = {
+					ruler = {
+						has_template = eafp_kor_yi_hui2_character_template
+					}
+				}
+				je:je_korean_kings_health = {
+					add_progress = { value = 50 name = eafp_progress_bar_kings_health }
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_sedo_politics
+				var:eafp_var_je_sedo_politics_balance < 200
+			}
+			set_variable = {
+				name = eafp_var_je_sedo_politics_balance
+				value = 200
+			}
 		}
 	}
 }
