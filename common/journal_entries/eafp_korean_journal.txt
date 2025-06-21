@@ -3,12 +3,6 @@ je_korean_kings_health = {
 	icon = "gfx/interface/icons/eafp_icons/medicine.dds"
 
 	group = je_group_historical_content
-
-	immediate = {
-		ruler = {
-			set_character_busy_and_immortal = yes
-		}
-	}
 	
 	scripted_progress_bar = eafp_progress_bar_kings_health
 	
@@ -110,28 +104,6 @@ je_korean_kings_health = {
 		effect = {
 			##역사적 이벤트
 			# 헌종
-			if = {	#헌종 건강악화1
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k006 }
-					ruler = { has_template = eafp_kor_yi_hwan_character_template }
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 450
-					}
-				}
-				trigger_event = eafp_kor_mainline.6
-				set_variable = eafp_check_evt_k006
-			}
-			if = {	#헌종 건강악화2
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k007 }
-					ruler = { has_template = eafp_kor_yi_hwan_character_template }
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 475
-					}
-				}
-				trigger_event = eafp_kor_mainline.7
-				set_variable = eafp_check_evt_k007
-			}
 			if = {
 				limit = {
 					ruler = {
@@ -235,29 +207,12 @@ je_korean_kings_health = {
 					1 = { trigger_event = eafp_kor_mainline.30 }
 				}
 			}
-			# 철종
-			if = {	#철종 건강악화1
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k008 }
-					ruler = { has_template = eafp_kor_yi_byeon_character_template }
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 450
-					}
-				}
-				trigger_event = eafp_kor_mainline.8
-				set_variable = eafp_check_evt_k008
-			}
-			if = {	#철종 건강악화2
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k009 }
-					ruler = { has_template = eafp_kor_yi_byeon_character_template }
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_kings_health)" > 475
-					}
-				}
-				trigger_event = eafp_kor_mainline.9
-				set_variable = eafp_check_evt_k009
-			}
+		}
+		events = {
+			eafp_kor_mainline.6
+			eafp_kor_mainline.7
+			eafp_kor_mainline.8
+			eafp_kor_mainline.9
 		}
 	}
 
@@ -482,31 +437,6 @@ je_korean_land_problem = {
 					multiplier = eafp_val_total_mil_modi_mult
 				}			
 			}
-			##역사적 이벤트
-			if = {	#대왕대비의 꾸짖음
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k200 }
-					game_date > 1837.3.1
-					has_journal_entry = je_korean_regent
-					has_journal_entry = je_sedo_politics
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.200
-					days = { 1 90 }
-				}
-				set_variable = eafp_check_evt_k200
-			}
-			if = {	#혜성 - 철종5년, 임술봉기 저널 스타트
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k201 }
-					game_date > 1854.4.1
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.201
-					days = { 1 7 }
-				}
-				set_variable = eafp_check_evt_k201
-			}
 		}
 		random_events = {
 			200 = 0
@@ -519,6 +449,10 @@ je_korean_land_problem = {
 			10 = eafp_kor_mainline.256
 			10 = eafp_kor_mainline.257
 			10 = eafp_kor_mainline.258
+		}
+		events = {
+			eafp_kor_mainline.200
+			eafp_kor_mainline.201
 		}
 	}
 
@@ -728,112 +662,18 @@ je_korean_imsul_uprising = {
 				name = eafp_var_je_imsul_uprising
 				add = eafp_val_total_land_level
 			}
-			##역사적 이벤트
-			if = {	#재정구멍
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k206 }
-					var:eafp_var_je_imsul_uprising >= 175
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.206
-					days = { 1 60 }
-				}
-				set_variable = eafp_check_evt_k206
-			}
-			if = {	#억울함 호소
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k207 }
-					var:eafp_var_je_imsul_uprising >= 200
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.207
-					days = { 1 60 }
-				}
-				set_variable = eafp_check_evt_k207
-			}
-			if = {	#목사 교체 - 월 33%확률, 최대 10번 반복
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k208 }
-					var:eafp_var_je_imsul_uprising >= 200
-					has_variable = eafp_check_evt_k207	#백성들이 상경해서 억울함을 알린 후부터 발동
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.208
-					days = { 1 7 }
-				}
-				#set_variable = eafp_check_evt_k208	#이벤트문 코드에서 10스택 쌓이면 선언시킬것.
-			}
-			if = {	#도결 책정
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k209 }
-					var:eafp_var_je_imsul_uprising >= 250
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.209
-					days = { 1 60 }
-				}
-				set_variable = eafp_check_evt_k209
-			}
-			if = {	#비밀스런 움직임
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k210 }
-					var:eafp_var_je_imsul_uprising >= 275
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.210
-					days = { 1 30 }
-				}
-				set_variable = eafp_check_evt_k210
-			}
-			#혜성
-			if = {	#혜성 - 철종9년, 봉기 진행바 가속
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k202 }
-					game_date > 1858.9.1
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.202
-					days = { 1 7 }
-				}
-				set_variable = eafp_check_evt_k202
-			}
-			if = {	#혜성 - 철종11년, 봉기 진행바 가속
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k203 }
-					game_date > 1860.6.1
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.203
-					days = { 1 7 }
-				}
-				set_variable = eafp_check_evt_k203
-			}
-			if = {	#혜성 - 철종12년, 봉기 진행바 가속
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k204 }
-					game_date > 1861.6.25
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.204
-					days = { 1 7 }
-				}
-				set_variable = eafp_check_evt_k204
-			}
-			if = {	#혜성 - 철종13년, 봉기 진행바 가속
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k205 }
-					game_date > 1862.8.1
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.205
-					days = { 1 7 }
-				}
-				set_variable = eafp_check_evt_k205
-			}
 		}
-		#hidden_effect = {
-		#	eafp_land_problem_add_modifier = yes
-		#}
+		events = {
+			eafp_kor_mainline.202
+			eafp_kor_mainline.203
+			eafp_kor_mainline.204
+			eafp_kor_mainline.205
+			eafp_kor_mainline.206
+			eafp_kor_mainline.207
+			eafp_kor_mainline.208
+			eafp_kor_mainline.209
+			eafp_kor_mainline.210
+		}
 	}
 
 	current_value = {
@@ -966,16 +806,6 @@ je_korean_imsul_boom = {
 	on_weekly_pulse = {
 		effect = {
 			#진행바
-			if = {
-				limit = {
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_progress_bar_imsul_relax)" >= 90
-					}
-					NOT = { has_variable = eafp_check_evt_k220 }
-				}
-				trigger_event = eafp_kor_mainline.220
-				set_variable = eafp_check_evt_k220
-			}
 			if = {
 				limit = {
 					scope:journal_entry = {
@@ -1155,6 +985,9 @@ je_korean_imsul_boom = {
 					}
 				}
 			}
+		}
+		events = {
+			eafp_kor_mainline.220
 		}
 	}
 	
@@ -1373,7 +1206,7 @@ je_sedo_politics = {
 	immediate = {
 		set_variable = {
 			name = eafp_var_je_sedo_politics_balance
-			value = 100
+			value = 150
 		}
 		set_variable = {
 			name = eafp_var_je_sedo_politics_account
@@ -1394,8 +1227,20 @@ je_sedo_politics = {
 	}
 
 	on_invalid = {
-		remove_variable = eafp_var_je_sedo_politics_balance
-		remove_variable = eafp_var_je_sedo_politics_account
+		hidden_effect = {
+			ig:ig_landowners = {
+				leader = {
+					set_character_busy_and_immortal = no
+				}
+			}
+			remove_variable = eafp_var_je_sedo_politics_balance
+			remove_variable = eafp_var_je_sedo_politics_account
+			remove_modifier = eafp_modi_sedo_they_are_angry
+			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
+			ig:ig_landowners.leader = {
+				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
+			}
+		}
 	}
 
 	complete = {
@@ -1414,6 +1259,11 @@ je_sedo_politics = {
 			}
 			remove_variable = eafp_var_je_sedo_politics_balance
 			remove_variable = eafp_var_je_sedo_politics_account
+			remove_modifier = eafp_modi_sedo_they_are_angry
+			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
+			ig:ig_landowners.leader = {
+				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
+			}
 		}
 	}
 
@@ -1436,21 +1286,6 @@ je_sedo_politics = {
 				}
 			}
 			eafp_sedo_politics_corruption_passive = yes
-			##역사적 이벤트
-			if = {	#민진용의 역모 - 1844
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k321 }
-					game_date > 1844.8.1
-					ruler = {
-						has_template = eafp_kor_yi_hwan_character_template
-					}
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.321
-					days = { 1 15 }
-				}
-				set_variable = eafp_check_evt_k321
-			}
 			if = {	#헌종 왕권 강화책 뽑기
 				limit = {
 					ruler = {
@@ -1470,6 +1305,9 @@ je_sedo_politics = {
 				min = 0
 				max = 500
 			}
+		}
+		events = {
+			eafp_kor_mainline.321
 		}
 	}
 
@@ -1529,16 +1367,6 @@ je_korean_confu = {
 			}
 		}
 	}
-	
-	fail = {
-		always = no
-		has_law = law_type:law_total_separation
-	}
-
-	on_fail = {
-		remove_modifier = eafp_modi_catholic_plague
-		remove_variable = eafp_progress_bar_confu_from_trade_var
-	}
 
 	invalid = {
 		NOT = { country_has_state_religion = rel:confucian }
@@ -1580,78 +1408,13 @@ je_korean_confu = {
 			eafp_effect_cal_catholic_modi_mult = yes
 			eafp_effect_catholic_spread = yes
 			eafp_effect_missionary_spawn = yes
-			##역사적 이벤트
-			if = {	#기해박해-이지연의 상소문
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k120 }
-					game_date > 1839.3.1
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.120
-					days = { 1 30 }
-				}
-				set_variable = eafp_check_evt_k120
-			}
-			if = {	#윤상도의 옥
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k122 }
-					game_date > 1840.1.1
-					any_interest_group = {
-						leader = {
-							has_template = eafp_kor_gim_jeonghui_character_template
-						}
-					}
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.122
-					days = { 1 30 }
-				}
-				set_variable = eafp_check_evt_k122
-			}
-			if = {	#병오박해-김대건 발각
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k124 }
-					game_date > 1846.4.1
-					any_scope_character = {
-						has_template = eafp_kor_daegeon_kim_character_template
-					}
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.124
-					days = { 1 30 }
-				}
-				set_variable = eafp_check_evt_k124
-			}
-			if = {	#경신박해
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k127 }
-					year >= 1860
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.127
-					days = { 1 180 }
-				}
-				set_variable = eafp_check_evt_k127
-			}
-			if = {	#병인박해
-				limit = {
-					NOT = { has_variable = eafp_check_evt_k128 }
-					exists = c:DAI
-					any_country = {
-						OR = {
-							country_has_state_religion = rel:protestant
-							country_has_state_religion = rel:catholic
-							country_has_state_religion = rel:orthodox
-						}
-						has_war_with = c:DAI
-					}
-				}
-				trigger_event = {	#역사 이벤트 점화
-					id = eafp_kor_mainline.128
-					days = { 1 180 }
-				}
-				set_variable = eafp_check_evt_k128
-			}
+		}
+		events = {
+			eafp_kor_mainline.120
+			eafp_kor_mainline.123
+			eafp_kor_mainline.124
+			eafp_kor_mainline.127
+			eafp_kor_mainline.128
 		}
 	}
 

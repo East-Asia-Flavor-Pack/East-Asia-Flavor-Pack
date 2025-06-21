@@ -751,6 +751,17 @@ boxer_rebellion_events.104 = { # 추가, 의화단의 공사관 공격에 대한
 	option = {
 		name = boxer_rebellion_events.104.a
 		default_option = yes
+		
+		c:CHI = {
+			save_temporary_scope_value_as = {
+				name = war_reparations_amount
+				value = {
+					value = income
+					multiply = define:NDiplomacy|DEFAULT_WAR_REPARATIONS_MONEY_TRANSFER
+				}
+			}
+		}
+
 		if = {
 			limit = {
 				any_diplomatic_play = {
@@ -766,8 +777,16 @@ boxer_rebellion_events.104 = { # 추가, 의화단의 공사관 공격에 대한
 				add_initiator_backers = { ROOT }
 				add_war_goal = {
 					holder = root
-					type = war_reparations
 					target_country = c:CHI
+					type = enforce_treaty_article
+					article = {
+						article = money_transfer
+						source_country = c:CHI
+						target_country = root
+						inputs = {
+							{ quantity = scope:war_reparations_amount }
+						}
+					}
 					primary_demand = yes
 				}
 			}
@@ -779,8 +798,16 @@ boxer_rebellion_events.104 = { # 추가, 의화단의 공사관 공격에 대한
 				type = dp_boxer_rebellion
 				add_war_goal = {
 					holder = root
-					type = war_reparations
 					target_country = c:CHI
+					type = enforce_treaty_article
+					article = {
+						article = money_transfer
+						source_country = c:CHI
+						target_country = root
+						inputs = {
+							{ quantity = scope:war_reparations_amount }
+						}
+					}
 					primary_demand = yes
 				}
 			}
@@ -820,11 +847,12 @@ boxer_rebellion_events.104 = { # 추가, 의화단의 공사관 공격에 대한
 			}
 			modifier = {
 				trigger = {
-					any_scope_diplomatic_pact = {
-						any_participant = { this = c:CHI }
-						OR = {
-							is_diplomatic_action_type = alliance
-							is_diplomatic_action_type = defensive_pact
+					any_scope_treaty = {
+						any_scope_article = {
+							OR = {
+								has_type = alliance
+								has_type = defensive_pact
+							}
 						}
 					}
 				}

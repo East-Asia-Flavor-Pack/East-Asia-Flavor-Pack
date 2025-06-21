@@ -11,8 +11,9 @@
 @panel_width_plus_30 = 570			# used to be 490
 @panel_width_plus_70 = 610			# used to be 530
 
-types eafp_journal_entry_panel_types {
-	type journal_entry_panel = default_block_window {
+types eafp_journal_entry_panel_types
+{
+	type journal_entry_panel = default_block_window_two_lines {
 		name = "journal_entry_panel"
 		datacontext = "[JournalEntryPanel.AccessJournalEntry]"
 
@@ -27,7 +28,7 @@ types eafp_journal_entry_panel_types {
 		
 		blockoverride "window_header_name"
 		{
-			text = "[JournalEntry.GetName]"
+			text = "[LabelingHelper.CapitalizeOnlyFirst(JournalEntry.GetName)]"
 		}
 
 		blockoverride "window_header_name_line_two" {
@@ -40,6 +41,7 @@ types eafp_journal_entry_panel_types {
 				direction = vertical
 				using = default_list_position
 				spacing = 10
+
 				widget  = {
 					size = { @panel_width_plus_20 120 }
 					
@@ -85,7 +87,7 @@ types eafp_journal_entry_panel_types {
 							}
 						}
 					}
-					
+
 					### TIMED MODIFIERS
 					flowcontainer = {
 						background = {
@@ -141,7 +143,7 @@ types eafp_journal_entry_panel_types {
 						eafp_sedo_politics = {}
 					}
 				}
-				
+
 				###############################
 				### Journal Entry Character ###
 				###############################
@@ -513,7 +515,7 @@ types eafp_journal_entry_panel_types {
 						}
 					}
 				}
-					
+
 				flowcontainer = {
 					direction = vertical
 					using = default_list_position
@@ -711,6 +713,166 @@ types eafp_journal_entry_panel_types {
 			visible = "[Not(JournalEntry.IsPinnedInOutliner)]"
 			onclick = "[JournalEntry.TogglePinInOutliner]"
 			tooltip = "PIN_JOURNAL_ENTRY"
+		}
+	}
+
+	type scripted_journal_entry_button = button {
+		using = default_button_action
+		tooltip = "SCRIPTED_ACTION_TOOLTIP"
+		enabled = "[IsValid( ScriptedButton.ExecuteEffect )]"
+		onclick = "[Execute( ScriptedButton.ExecuteEffect )]"
+		size = { 250 50 }
+		margin = { 20 20 }
+
+		widget = {
+			visible = "[ScriptedButton.IsSelected]"
+			size = { 100% 100% }
+
+			background = {
+				using = paper_bg
+			}
+		}
+
+		textbox = {
+			parentanchor = center
+			align = nobaseline
+			autoresize = yes
+			max_width = 230
+			elide = right
+			fontsize_min = 14
+			text = "[ScriptedButton.GetName]"
+		}
+
+		icon = {
+			visible = "[ScriptedButton.IsSelected]"
+			using = highlighted_square_selection
+		}
+	}
+
+	type com_journal_entry_character = widget {
+		block "character_context" {}
+
+		block "character_size" {
+			size = { @panel_width_half 290 }
+		}
+
+		widget = {
+			size = { @panel_width_half 290 }
+			parentanchor = hcenter
+
+			# Character Tooltip
+			tooltipwidget = {
+				FancyTooltip_Character = {}
+			}
+
+			# Character Portrait
+			character_portrait_large_torso = {
+				position = { 0 0 }
+				parentanchor = hcenter
+				blockoverride "show_hat" {}
+				blockoverride "tooltip" {}
+				blockoverride "portrait_icons" {}
+				blockoverride "portrait_button" {}
+			}
+
+			# Character Name
+			default_header_clean_faded = {
+				size = { 250 40 }
+				position = { 0 256 }
+				blockoverride "text" {}
+				parentanchor = hcenter
+				textbox = {
+					text = "[Character.GetFullNameNoFormatting]"
+					parentanchor = vcenter|hcenter
+					position = { 0 -2 }
+					autoresize = yes
+					max_width = @panel_width_half
+					using = fontsize_large
+				}
+			}
+
+			# Character Opinion
+			flowcontainer = {
+				position = { 180 50 }
+				margin = { 10 10 }
+				tooltipwidget = {
+					RegularTooltip = {
+						blockoverride "text" {
+							text = "[Character.MakeScope.Var('com_opinion').GetFlagName]"
+						}
+					}
+				}
+
+				icon = {
+					size = { 40 40 }
+					texture = "gfx/interface/icons/ai_strategy_icons/progressive_agenda.dds"
+				}
+
+				background = {
+					texture = "gfx/interface/backgrounds/round_button_bg.dds"
+				}
+			}
+		}
+	}
+
+	type com_journal_entry_characters = flowcontainer {
+		direction = vertical
+		visible = "[DataModelHasItems(JournalEntry.MakeScope.GetList('com_journal_characters'))]"
+
+		divider_clean = {}
+
+		flowcontainer = {
+			direction = vertical
+			margin_bottom = 20
+
+			# All elements (Only when even amount of characters)
+			com_journal_entry_character_grid = {
+				blockoverride "grid_visible" {
+					visible = "[IsEven_int32(GetDataModelSize(JournalEntry.MakeScope.GetList('com_journal_characters')))]"
+				}
+			}
+
+			# All elements except last (Only when odd amount of characters)
+			com_journal_entry_character_grid = {
+				blockoverride "datamodel" {
+					datamodel = "[DataModelSkipLast(JournalEntry.MakeScope.GetList('com_journal_characters'), '(int32)1')]"
+				}
+				blockoverride "grid_visible" {
+					visible = "[And(Not(EqualTo_int32(GetDataModelSize(JournalEntry.MakeScope.GetList('com_journal_characters')), '(int32)1')), IsOdd_int32(GetDataModelSize(JournalEntry.MakeScope.GetList('com_journal_characters'))))]"
+				}
+			}
+
+			# Last element (Only when odd amount of characters)
+			com_journal_entry_character_grid = {
+				blockoverride "datamodel" {
+					datamodel = "[DataModelLast(JournalEntry.MakeScope.GetList('com_journal_characters'), '(int32)1')]"
+				}
+				blockoverride "grid_visible" {
+					visible = "[IsOdd_int32(GetDataModelSize(JournalEntry.MakeScope.GetList('com_journal_characters')))]"
+				}
+				blockoverride "character_size" {
+					size = { @panel_width 290 }
+				}
+			}
+		}
+
+		divider_clean = {}
+	}
+
+	type com_journal_entry_character_grid = dynamicgridbox {
+		block "datamodel" {
+			datamodel = "[JournalEntry.MakeScope.GetList('com_journal_characters')]"
+		}
+		block "grid_visible" {}
+		flipdirection = yes
+		datamodel_wrap = 2
+
+		item = {
+			com_journal_entry_character = {
+				blockoverride "character_context" {
+					datacontext = "[Scope.GetCharacter]"
+				}
+			}
 		}
 	}
 }
