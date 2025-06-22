@@ -8,7 +8,6 @@ Includes = {
 	"jomini/jomini_lighting.fxh"
 	"jomini/jomini_fog.fxh"
 	"jomini/portrait_accessory_variation.fxh"
-	"jomini/portrait_coa.fxh"
 	"jomini/portrait_decals.fxh"
 	"jomini/portrait_user_data.fxh"
 	"constants.fxh"
@@ -89,15 +88,6 @@ PixelShader =
 		SampleModeU = "Wrap"
 		SampleModeV = "Wrap"
 	}
-	TextureSampler CoaTexture 
-	{
-		Index = 12
-		MagFilter = "Linear"
-		MinFilter = "Linear"
-		MipFilter = "Linear"
-		SampleModeU = "Clamp"
-		SampleModeV = "Clamp"
-	}
 	TextureSampler ShadowTexture
 	{
 		Ref = PdxShadowmap
@@ -127,9 +117,8 @@ VertexStruct VS_OUTPUT_PDXMESHPORTRAIT
 	float2 	UV1				: TEXCOORD4;
 	float2 	UV2				: TEXCOORD5;
 	float3 	WorldSpacePos	: TEXCOORD6;
-	float4 	ShadowProj		: TEXCOORD7;
 	# This instance index is used to fetch custom user data from the Data[] array (see pdxmesh.fxh)
-	uint 	InstanceIndex	: TEXCOORD8;
+	uint 	InstanceIndex	: TEXCOORD7;
 };
 
 VertexStruct VS_INPUT_PDXMESHSTANDARD_ID
@@ -157,6 +146,12 @@ VertexStruct VS_INPUT_PDXMESHSTANDARD_ID
 };
 
 # Portrait constants (SPortraitConstants)
+VertexStruct LightDirT
+{
+	float3		vDirection	: COMMENT;
+	uint		Type 		: COMMENT;
+};
+
 ConstantBuffer( 5 )
 {
 	float4 		vPaletteColorSkin;
@@ -167,19 +162,16 @@ ConstantBuffer( 5 )
 	float4		vHairPropertyMult;
 	
 	float4 		Light_Color_Falloff[3];
-	float4 		Light_Position_Radius[3]
-	float4 		Light_Direction_Type[3];
+	float4 		Light_Position_Radius[3];
+	LightDirT	Light_Direction_Type[3];
 	float4 		Light_InnerCone_OuterCone_AffectedByShadows[3];
 	
 	int			DecalCount;
-	int         PreSkinColorDecalCount
+	int         PreSkinColorDecalCount;
 	int			TotalDecalCount;
 	int 		_; // Alignment
 
 	float4 		PatternColorOverrides[16];
-	float4		CoaColor1;
-	float4		CoaColor2;
-	float4		CoaOffsetAndScale;
 
 	float		HasDiffuseMapOverride;
 	float		HasNormalMapOverride;
@@ -273,8 +265,6 @@ VertexShader = {
 				Out.WorldSpacePos.xyz = Out.Position.xyz;
 				Out.WorldSpacePos /= WorldMatrix[3][3];
 				Out.Position = FixProjectionAndMul( ViewProjectionMatrix, Out.Position );
-				
-				Out.ShadowProj = mul( ShadowMapTextureMatrix, float4( Out.WorldSpacePos, 1.0 ) );
 				
 				Out.UV0 = Input.UV0;
 			#ifdef PDX_MESH_UV1
@@ -448,23 +438,23 @@ PixelShader =
 				float4 Color_Fallof = Light_Color_Falloff[i];
 				float LightShadowTerm = Light_InnerCone_OuterCone_AffectedByShadows[i].z > 0.5 ? ShadowTerm : 1.0;
 				
-				if( Light_Direction_Type[i].w == LIGHT_TYPE_SPOTLIGHT )
+				if( Light_Direction_Type[i].Type == LIGHT_TYPE_SPOTLIGHT )
 				{
 					float InnerAngle = Light_InnerCone_OuterCone_AffectedByShadows[i].x;
 					float OuterAngle = Light_InnerCone_OuterCone_AffectedByShadows[i].y;
-					SPortraitSpotLight Spot = GetPortraitSpotLight( Light_Position_Radius[i], Color_Fallof, Light_Direction_Type[i].xyz, InnerAngle, OuterAngle );
+					SPortraitSpotLight Spot = GetPortraitSpotLight( Light_Position_Radius[i], Color_Fallof, Light_Direction_Type[i].vDirection, InnerAngle, OuterAngle );
 					GGXSpotLight( Spot, WorldSpacePos, LightShadowTerm, MaterialProps, DiffuseLight, SpecularLight );
 				}
-				else if( Light_Direction_Type[i].w == LIGHT_TYPE_POINTLIGHT )
+				else if( Light_Direction_Type[i].Type == LIGHT_TYPE_POINTLIGHT )
 				{
 					SPortraitPointLight Light = GetPortraitPointLight( Light_Position_Radius[i], Color_Fallof );
 					GGXPointLight( Light, WorldSpacePos, LightShadowTerm, MaterialProps, DiffuseLight, SpecularLight );
 				}
-				else if( Light_Direction_Type[i].w == LIGHT_TYPE_DIRECTIONAL )
+				else if( Light_Direction_Type[i].Type == LIGHT_TYPE_DIRECTIONAL )
 				{
 					SLightingProperties LightingProps;
 					LightingProps._ToCameraDir = normalize( CameraPosition - WorldSpacePos );
-					LightingProps._ToLightDir = -Light_Direction_Type[i].xyz;
+					LightingProps._ToLightDir = -Light_Direction_Type[i].vDirection;
 					LightingProps._LightIntensity = Color_Fallof.rgb;
 					LightingProps._ShadowTerm = LightShadowTerm;
 					LightingProps._CubemapIntensity = 0.0;
@@ -656,15 +646,12 @@ PixelShader =
 				PS_COLOR_SSAO Out;
 
 				float2 UV0 = Input.UV0;
-				float4 Diffuse = PdxTex2D( DiffuseMap, UV0 );			
+				float4 Diffuse = PdxTex2D( DiffuseMap, UV0 );								
 				//이부분을 날려버림으로써 잡다한 효과는 없앨 수 있도록
 				//float4 Properties = PdxTex2D( PropertiesMap, UV0 );
 				//float3 NormalSample = UnpackRRxGNormal( PdxTex2D( NormalMap, UV0 ) );		
 				//Properties.r = 1.0; // wipe this clean now, ready to be modified later
-				
-				//#ifdef COA_ENABLED
-				//	ApplyCoa( Input, Diffuse, CoaColor1, CoaColor2, CoaOffsetAndScale.xy, CoaOffsetAndScale.zw, CoaTexture );
-				//#endif
+
 				//#ifdef VARIATIONS_ENABLED
 				//	ApplyVariationPatterns( Input, Diffuse, Properties, NormalSample );
 				//#endif
@@ -794,12 +781,8 @@ DepthStencilState hair_alpha_blend
 
 BlendState alpha_to_coverage
 {
-	BlendEnable = yes
-	SourceBlend = "SRC_ALPHA"
-	DestBlend = "INV_SRC_ALPHA"
+	BlendEnable = no
 	WriteMask = "RED|GREEN|BLUE|ALPHA"
-	SourceAlpha = "ONE"
-	DestAlpha = "INV_SRC_ALPHA"
 	AlphaToCoverage = yes
 }
 
@@ -916,7 +899,7 @@ Effect portrait_attachment_pattern_alpha_to_coverage
 Effect portrait_attachment_pattern_alpha_to_coverageShadow
 {
 	VertexShader = "VertexPdxMeshStandardShadow"
-	PixelShader = "PixelPdxMeshStandardShadow"
+	PixelShader = "PixelPdxMeshAlphaBlendShadow"
 	RasterizerState = "ShadowRasterizerState"
 	Defines = { "PDXMESH_DISABLE_DITHERED_OPACITY" "PDX_MESH_BLENDSHAPES" }
 }
@@ -940,23 +923,9 @@ Effect portrait_attachment_alpha_to_coverage
 Effect portrait_attachment_alpha_to_coverageShadow
 {
 	VertexShader = "VertexPdxMeshStandardShadow"
-	PixelShader = "PixelPdxMeshStandardShadow"
+	PixelShader = "PixelPdxMeshAlphaBlendShadow"
 	RasterizerState = "ShadowRasterizerState"
 	Defines = { "PDX_MESH_BLENDSHAPES" }
-}
-
-Effect portrait_attachment_with_coa
-{
-	VertexShader = "VS_portrait_blend_shapes"
-	PixelShader = "PS_attachment"
-	Defines = { "COA_ENABLED" }
-}
-
-Effect portrait_attachment_with_coa_and_variations
-{
-	VertexShader = "VS_portrait_blend_shapes"
-	PixelShader = "PS_attachment"
-	Defines = { "COA_ENABLED" "VARIATIONS_ENABLED" }
 }
 
 Effect portrait_hair
@@ -980,7 +949,7 @@ Effect portrait_hair_transparency_hack
 Effect portrait_hairShadow
 {
 	VertexShader = "VertexPdxMeshStandardShadow"
-	PixelShader = "PixelPdxMeshStandardShadow"
+	PixelShader = "PixelPdxMeshAlphaBlendShadow"
 	RasterizerState = "ShadowRasterizerState"
 	Defines = { "PDXMESH_DISABLE_DITHERED_OPACITY" }
 }
@@ -1031,7 +1000,7 @@ Effect portrait_attachment_alpha
 Effect portrait_attachment_alphaShadow
 {
 	VertexShader = "VertexPdxMeshStandardShadow"
-	PixelShader = "PixelPdxMeshStandardShadow"
+	PixelShader = "PixelPdxMeshAlphaBlendShadow"
 	RasterizerState = "ShadowRasterizerState"
 	Defines = { "PDX_MESH_BLENDSHAPES" }
 }
