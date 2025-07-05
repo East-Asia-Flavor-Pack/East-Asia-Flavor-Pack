@@ -2749,3 +2749,100 @@ eafp_effect_cal_catholic_modi_mult = {
 	remove_local_variable = total_religion
 	remove_local_variable = total_pops
 }
+
+eafp_effect_catholic_purge = {	#가톨릭 퍼지
+	set_variable = {	#쿨타임 4년
+		name = eafp_var_button_educating_cooltime
+		months = 48
+	}
+	custom_tooltip = {
+		text = eafp_catholic_purge_tt1
+		every_scope_state = {
+			limit = {
+				is_incorporated = yes
+			}
+			kill_population_percent_in_state = {
+				percent = 0.10
+				religion = rel:catholic
+			}
+		}
+		every_scope_state = {
+			every_scope_pop = {
+				limit = {
+					has_pop_religion = catholic
+				}
+				change_pop_religion = {
+					target = rel:confucian
+					value = 0.10
+				}
+			}
+		}
+	}
+	every_scope_character = {
+		limit = {
+			has_role = agitator
+			has_ideology = ideology:ideology_eafp_missionary
+			NOT = { has_modifier = eafp_modi_missionary_stealth }
+			OR = {
+				NOT = { has_modifier = eafp_modi_missionary_stealth }
+				has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
+				has_template = eafp_kor_pierre_maubant_character_template
+			}
+		}
+		every_country = {
+			limit = {
+				PREV.culture = {
+					is_primary_culture_of = PREV
+				}
+			}
+			change_relations = {
+				country = ROOT
+				value = -20
+			}
+			create_diplomatic_catalyst = {  
+				type = catalyst_event_negative
+				target = ROOT
+			}
+		}
+		kill_character = yes
+	}
+	custom_tooltip = eafp_catholic_purge_tt2
+	show_as_tooltip = {
+		random_country = {
+			limit = {
+				OR = {
+					country_has_state_religion = rel:catholic
+					country_has_state_religion = rel:protestant
+				}
+			}
+			change_relations = {
+				country = ROOT
+				value = -5
+			}
+		}
+	}
+	hidden_effect = {
+		every_country = {
+			limit = {
+				OR = {
+					country_has_state_religion = rel:catholic
+					country_has_state_religion = rel:protestant
+				}
+			}
+			change_relations = {
+				country = ROOT
+				value = -5
+			}
+		}
+	}
+	if = {
+		limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
+		every_political_movement = {
+			limit = { is_political_movement_type = eafp_movement_rel_catholic }
+			add_modifier = {
+				name = large_scale_christian_persecution_modifier
+				days = normal_modifier_time
+			}
+		}
+	}
+}

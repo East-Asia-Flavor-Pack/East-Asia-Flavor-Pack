@@ -1,5 +1,5 @@
-﻿viet_cambodian_journal_2 = { #캄보디아 문제 - 동화
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+﻿je_khmer_issue = { # 크메르 문제
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	group = je_group_historical_content
 
@@ -8,30 +8,42 @@
 			value = 0.4
 			culture = cu:khmer
 		}
+		random_scope_state = {
+			limit = {
+				state_region = s:STATE_CAMBODIA
+			}
+			save_scope_as = cambodia_state_scope
+		}
+		cu:khmer = {
+			save_scope_as = khmer_culture_scope
+		}
 	}
 	
 	complete = {
-		any_scope_state = {
-			state_region = s:STATE_CAMBODIA
+		scope:cambodia_state_scope = {
 			is_incorporated = yes
-			OR = {
+			radical_fraction = {
+				value <= 0.20
+				culture = cu:khmer
+			}
+		}
+		OR = {
+			scope:cambodia_state_scope = {
 				culture_percent_state = {
 					target = cu:vietnamese
 					value >= 0.2
 				}
-				radical_fraction = {
-					value <= 0.20
-					culture = cu:khmer
-				}
 			}
+			cultural_acceptance_base = { target = cu:khmer value >= acceptance_status_4 }
 		}
-	}
-	fail = {
-		NOT = { has_state_in_state_region = STATE_CAMBODIA }
 	}
 
 	on_complete = {
 
+	}
+
+	fail = {
+		NOT = { has_state_in_state_region = STATE_CAMBODIA }
 	}
 
 	on_fail = {
@@ -45,20 +57,58 @@
 		}
 	}
 
-    possible = {
-		exists = c:DAI
-		this = c:DAI
-	}
-	is_shown_when_inactive = {
-		exists = c:DAI
-		this = c:DAI
-	}
 	on_timeout = {
 		trigger_event = {
 			id = viet_event.3
 		}
 	}
+
 	timeout = 3285
+
+	on_monthly_pulse = {
+		random_events = {
+			90 = 0
+			10 = algeria_events.6
+		}
+		
+		effect = {
+			if = {
+				limit = {
+					is_ai = yes
+				}
+
+				if = {
+					limit = {
+						scope:cambodia_state_scope = {
+							is_incorporated = no
+						}
+					}
+					scope:cambodia_state_scope = {
+						if = {
+							limit = {
+								NOT = { has_variable = khmer_issue_incorporation_timer }
+								NOT = { has_variable = is_incorporating_khmer_issue }
+							}
+							set_variable = is_incorporating_khmer_issue
+							set_variable = {
+								name = khmer_issue_incorporation_timer
+								days = very_long_modifier_time
+							}
+						}
+						else_if = {
+							limit = {
+								NOT = { has_variable = khmer_issue_incorporation_timer }
+								has_variable = is_incorporating_khmer_issue
+							}
+							set_state_type = incorporated
+							remove_variable = is_incorporating_khmer_issue
+						}
+					}
+				}
+			}
+		}
+	}
+
 	weight = 100
 
 	should_be_pinned_by_default = yes
