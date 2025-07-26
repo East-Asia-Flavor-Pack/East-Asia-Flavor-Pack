@@ -1564,6 +1564,21 @@ je_boshin_war_sabaku = {
 		}
 	}
 
+	fail = {
+		NOT = {
+			any_diplomatic_play = {
+				type = play_type:dp_boshin_war
+			}
+		}
+		exists = c:NIP
+	}
+
+	on_fail = {
+		add_journal_entry = {
+			type = je_boshin_peace_sabaku
+		}
+	}
+
 	weight = 20000
 
 	should_be_pinned_by_default = yes
@@ -1574,7 +1589,101 @@ je_boshin_war_tobaku = {
 
 	group = je_group_historical_content
 
+	complete = {
+		NOT = { exists = c:JAP }
+	}
 
+	on_complete = {
+		trigger_event = {
+			id = meiji.1
+			popup = yes
+		}
+		change_tag = JAP
+		hidden_effect = {
+			set_variable = {
+				name = meiji_var
+				value = 0
+			}
+			remove_modifier = modifier_japan_hiring_bonus
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			random_scope_war = {
+				limit = {
+					is_warleader = c:JAP
+					is_warleader = c:NIP
+				}
+				add_war_war_support = { target = ROOT value = 5 }
+			}
+		}
+	}
+
+	fail = {
+		NOT = {
+			any_diplomatic_play = {
+				type = play_type:dp_boshin_war
+			}
+		}
+		exists = c:JAP
+	}
+
+	on_fail = {
+		add_journal_entry = {
+			type = je_boshin_peace_tobaku
+		}
+	}
+
+	weight = 20000
+
+	should_be_pinned_by_default = yes
+}
+
+je_boshin_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 좌막파 저널
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	complete = {
+		NOT = { exists = c:NIP }
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = boshin_war.9
+			popup = yes
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			random_scope_war = {
+				limit = {
+					is_warleader = c:JAP
+					is_warleader = c:NIP
+				}
+				add_war_war_support = { target = ROOT value = 5 }
+			}
+		}
+	}
+
+	weight = 20000
+
+	should_be_pinned_by_default = yes
+}
+
+je_boshin_peace_tobaku = { # 보신 전쟁이 무조건 평화로 끝났을때 도막파 저널
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	immediate = {
+		set_global_variable = {
+			name = boshin_peace_global_var
+			value = 50
+		}
+	}
 
 	complete = {
 		NOT = { exists = c:JAP }
@@ -1836,62 +1945,643 @@ je_shinto = {
 	}
 
 	modifiers_while_active = {
-		
+		national_edification_modifier
 	}
 
 	complete = {
-		NOT = { exists = c:KOR }
-	}
-
-	on_complete = {
-		trigger_event = seikanron_events.99
-	}
-
-	invalid = {
-		NOT = {
-			any_political_lobby = {
-				is_political_lobby_type = lobby_anti_country
-				target = c:KOR
+		custom_tooltip = {
+			text = je_shinto_complete_tt
+			je_shinto = {
+				"scripted_bar_progress(shinto_shinto_population_progress_bar)" >= 0.3
 			}
 		}
 	}
 
-	fail = {
-		any_political_lobby = {
-			is_political_lobby_type = lobby_anti_country
-			target = c:KOR
-			appeasement <= -8
+	on_complete = {
+		hidden_effect = {
+			je:je_shinto = {
+				save_scope_value_as = {
+					name = shinto_faction_power_progress_bar_value
+					value = "scripted_bar_progress(shinto_faction_power_progress_bar)"
+				}
+				save_scope_value_as = {
+					name = shinto_shinto_buddism_balance_progress_bar_value
+					value = "scripted_bar_progress(shinto_shinto_buddism_balance_progress_bar)"
+				}
+			}
 		}
+		trigger_event = shinto_events.99
+	}
+
+	fail = {
+		NOT = { country_has_state_religion = rel:shinto }
 	}
 
 	on_fail = {
-		
+		custom_tooltip = {
+			text = shinto_events.99.tt
+			if = {
+				limit = { has_modifier = shinto_centralization_modifier }
+				remove_modifier = shinto_centralization_modifier
+			}
+			if = {
+				limit = { has_modifier = shinto_gradual_standardization_modifier }
+				remove_modifier = shinto_gradual_standardization_modifier
+			}
+			if = {
+				limit = { has_modifier = shinto_shrine_autonomy_modifier }
+				remove_modifier = shinto_shrine_autonomy_modifier
+			}
+			if = {
+				limit = { has_modifier = imperial_shinto_pantheon_established_modifier }
+				remove_modifier = imperial_shinto_pantheon_established_modifier
+			}
+			if = {
+				limit = { has_modifier = diverse_shinto_pantheon_accepted_modifier }
+				remove_modifier = diverse_shinto_pantheon_accepted_modifier
+			}
+			if = {
+				limit = { has_modifier = imperial_dignity_enforced_modifier }
+				remove_modifier = imperial_dignity_enforced_modifier
+			}
+			if = {
+				limit = { has_modifier = folk_reverence_tolerated_modifier }
+				remove_modifier = folk_reverence_tolerated_modifier
+			}
+			if = {
+				limit = { has_modifier = imperial_etiquette_education_modifier }
+				remove_modifier = imperial_etiquette_education_modifier
+			}
+			if = {
+				limit = { has_modifier = heresy_investigation_modifier }
+				remove_modifier = heresy_investigation_modifier
+			}
+			if = {
+				limit = { has_modifier = heresy_accusation_dismissed_modifier }
+				remove_modifier = heresy_accusation_dismissed_modifier
+			}
+			if = {
+				limit = { has_modifier = shinto_doctrinal_review_modifier }
+				remove_modifier = shinto_doctrinal_review_modifier
+			}
+			if = {
+				limit = { has_modifier = bureaucratic_confusion_resolved_modifier }
+				remove_modifier = bureaucratic_confusion_resolved_modifier
+			}
+			if = {
+				limit = { has_modifier = religious_policy_stagnation_modifier }
+				remove_modifier = religious_policy_stagnation_modifier
+			}
+			if = {
+				limit = { has_modifier = regional_religious_approach_modifier }
+				remove_modifier = regional_religious_approach_modifier
+			}
+			if = {
+				limit = { has_modifier = standardized_religious_education_modifier }
+				remove_modifier = standardized_religious_education_modifier
+			}
+			if = {
+				limit = { has_modifier = simplified_doctrine_modifier }
+				remove_modifier = simplified_doctrine_modifier
+			}
+			if = {
+				limit = { has_modifier = imperial_portrait_education_modifier }
+				remove_modifier = imperial_portrait_education_modifier
+			}
+			if = {
+				limit = { has_modifier = imperial_portrait_folk_belief_modifier }
+				remove_modifier = imperial_portrait_folk_belief_modifier
+			}
+			if = {
+				limit = { has_modifier = state_shinto_indoctrination_modifier }
+				remove_modifier = state_shinto_indoctrination_modifier
+			}
+			if = {
+				limit = { has_modifier = shinto_first_policy_strengthened_modifier }
+				remove_modifier = shinto_first_policy_strengthened_modifier
+			}
+			if = {
+				limit = { has_modifier = seeking_compromise_with_buddhists_modifier }
+				remove_modifier = seeking_compromise_with_buddhists_modifier
+			}
+			if = {
+				limit = { has_modifier = religious_united_front_modifier }
+				remove_modifier = religious_united_front_modifier
+			}
+			if = {
+				limit = { has_modifier = shinto_supremacy_buddhist_role_modifier }
+				remove_modifier = shinto_supremacy_buddhist_role_modifier
+			}
+			if = {
+				limit = { has_modifier = religious_independence_policy_modifier }
+				remove_modifier = religious_independence_policy_modifier
+			}
+			if = {
+				limit = { has_modifier = strict_shinbutsu_bunri_modifier }
+				remove_modifier = strict_shinbutsu_bunri_modifier
+			}
+			if = {
+				limit = { has_modifier = gradual_shinbutsu_bunri_modifier }
+				remove_modifier = gradual_shinbutsu_bunri_modifier
+			}
+			if = {
+				limit = { has_modifier = shinbutsu_bunri_exemption_modifier }
+				remove_modifier = shinbutsu_bunri_exemption_modifier
+			}
+			if = {
+				limit = { has_modifier = forced_shrine_merger_modifier }
+				remove_modifier = forced_shrine_merger_modifier
+			}
+			if = {
+				limit = { has_modifier = flexible_shrine_policy_modifier }
+				remove_modifier = flexible_shrine_policy_modifier
+			}
+			if = {
+				limit = { has_modifier = managed_shrine_merger_modifier }
+				remove_modifier = managed_shrine_merger_modifier
+			}
+			if = {
+				limit = { has_modifier = pure_shinto_architecture_modifier }
+				remove_modifier = pure_shinto_architecture_modifier
+			}
+			if = {
+				limit = { has_modifier = syncretic_shrine_architecture_modifier }
+				remove_modifier = syncretic_shrine_architecture_modifier
+			}
+			if = {
+				limit = { has_modifier = priest_reeducation_program_modifier }
+				remove_modifier = priest_reeducation_program_modifier
+			}
+			if = {
+				limit = { has_modifier = awkward_rituals_continue_modifier }
+				remove_modifier = awkward_rituals_continue_modifier
+			}
+			if = {
+				limit = { has_modifier = form_over_substance_policy_modifier }
+				remove_modifier = form_over_substance_policy_modifier
+			}
+			if = {
+				limit = { has_modifier = superstition_crackdown_modifier }
+				remove_modifier = superstition_crackdown_modifier
+			}
+			if = {
+				limit = { has_modifier = superstition_tolerated_modifier }
+				remove_modifier = superstition_tolerated_modifier
+			}
+			if = {
+				limit = { has_modifier = folk_religion_absorbed_modifier }
+				remove_modifier = folk_religion_absorbed_modifier
+			}
+		}
 	}
 
 	on_monthly_pulse = {
 		random_events = {
 			200 = 0
-			10 = seikanron_events.2
-			10 = seikanron_events.3
-			10 = seikanron_events.4
-			10 = seikanron_events.5
-			10 = seikanron_events.6
-			10 = seikanron_events.7
-			10 = seikanron_events.8
-			10 = seikanron_events.9
-			10 = seikanron_events.10
-			10 = seikanron_events.13
-			10 = seikanron_events.14
-			10 = seikanron_events.15
+			10 = shinto_events.3
+			10 = shinto_events.4
+			10 = shinto_events.5
+			10 = shinto_events.6
+			10 = shinto_events.7
+			10 = shinto_events.8
+			10 = shinto_events.9
+			10 = shinto_events.10
+			10 = shinto_events.11
+			10 = shinto_events.12
+			10 = shinto_events.13
+			10 = shinto_events.14
+			10 = shinto_events.15
 		}
 	}
 
 	on_weekly_pulse = {
 		events = {
-			seikanron_events.1
+			shinto_events.2
 		}
 	}
 
 	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+# 재벌
+
+je_zaibatsu = {
+	icon = "gfx/interface/icons/religion_icons/shinto.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		has_variable = meiji_var
+	}
+
+	possible = {
+		c:JAP ?= THIS
+		any_company = {
+			is_zaibatsu_company = yes
+		}
+	}
+
+	immediate = {
+		hidden_effect = {
+			ig:ig_industrialists = {
+				set_interest_group_name = ig_zaibatsu
+			}
+		}
+		trigger_event = zaibatsu_events.1
+	}
+
+	modifiers_while_active = {
+		zaibatsu_cooperation_modifier
+	}
+
+	complete = {
+		
+	}
+
+	on_complete = {
+		
+	}
+	
+	fail = {
+		NOR = {
+			c:JAP ?= THIS
+			OR = {
+				has_company = company_type:company_mitsubishi
+				has_company = company_type:company_mitsui
+				has_company = company_type:company_sumitomo
+			}
+		}
+	}
+
+	on_fail = {
+		hidden_effect = {
+			ig:ig_industrialists = {
+				set_interest_group_name = ig_industrialists
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			200 = 0
+			10 = zaibatsu_events.2
+			10 = zaibatsu_events.3
+		}
+	}
+
+	on_weekly_pulse = {
+		events = {
+			
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_zaibatsu_petition_government = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_internal_affairs
+
+	immediate = {
+		set_variable = {
+			name = zaibatsu_petition_government_var
+			value = 0
+		}
+	}
+
+	is_progressing = {
+		market_capital.market = {
+			mg:grain = { market_goods_cheaper >= 0.25 }
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					ig:ig_industrialists ?= {
+						is_in_government = yes
+					}
+				}
+				change_variable = {
+					name = zaibatsu_petition_government_var
+					add = 1
+				}
+			}
+		}
+	}
+
+	complete = {
+		ig:ig_industrialists ?= {
+			is_in_government = yes
+		}
+	}
+
+	on_complete = {
+		add_loyalists = {
+			value = medium_radicals
+			interest_group = ig:ig_industrialists
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			days = long_modifier_time
+			is_decaying = yes
+		}
+		remove_variable = zaibatsu_petition_government_var
+	}
+
+	invalid = { NOT = { has_journal_entry = je_zaibatsu } }
+
+	on_invalid = { remove_variable = zaibatsu_petition_government_var }
+
+	fail = {
+		ig:ig_industrialists ?= {
+			is_in_government = no
+		}
+	}
+
+	on_timeout = {
+		ig:ig_industrialists = {
+			if = {
+				limit = {
+					is_powerful = yes
+				}
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+					multiplier = 1.5
+				}
+			}
+			else = {
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		remove_variable = zaibatsu_petition_government_var
+	}
+
+	on_fail = {
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = modifier_failed_to_meet_petition
+				days = long_modifier_time
+				is_decaying = yes
+				multiplier = 2
+			}
+		}
+		remove_variable = zaibatsu_petition_government_var
+	}
+
+	timeout = 1825
+
+	current_value = {
+		value = root.var:zaibatsu_petition_government_var
+	}
+
+	goal_add_value = {
+		value = 60
+	}
+
+	progressbar = yes
+	display_progressbar_as_months = yes
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}
+
+je_zaibatsu_petition_rice = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_internal_affairs
+
+	immediate = {
+		set_variable = {
+			name = zaibatsu_petition_rice_var
+			value = 0
+		}
+	}
+
+	is_progressing = {
+		market_capital.market = {
+			mg:grain = { market_goods_cheaper >= 0.25 }
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					market_capital.market = {
+						mg:grain = { market_goods_cheaper >= 0.25 }
+					}
+				}
+				change_variable = {
+					name = zaibatsu_petition_rice_var
+					add = 1
+				}
+			}
+		}
+	}
+
+	complete = {
+		market_capital.market = {
+			mg:grain = { market_goods_cheaper >= 0.25 }
+		}
+	}
+
+	on_complete = {
+		add_loyalists = {
+			value = medium_radicals
+			interest_group = ig:ig_industrialists
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			days = long_modifier_time
+			is_decaying = yes
+		}
+		remove_variable = zaibatsu_petition_rice_var
+	}
+
+	invalid = { NOT = { has_journal_entry = je_zaibatsu } }
+
+	on_invalid = { remove_variable = zaibatsu_petition_rice_var }
+
+	fail = {
+		ig:ig_industrialists ?= {
+			is_in_government = no
+		}
+	}
+
+	on_timeout = {
+		ig:ig_industrialists = {
+			if = {
+				limit = {
+					is_powerful = yes
+				}
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+					multiplier = 1.5
+				}
+			}
+			else = {
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		remove_variable = zaibatsu_petition_rice_var
+	}
+
+	on_fail = {
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = modifier_failed_to_meet_petition
+				days = long_modifier_time
+				is_decaying = yes
+				multiplier = 2
+			}
+		}
+		remove_variable = zaibatsu_petition_rice_var
+	}
+
+	timeout = 1825
+
+	current_value = {
+		value = root.var:zaibatsu_petition_rice_var
+	}
+
+	goal_add_value = {
+		value = 60
+	}
+
+	progressbar = yes
+	display_progressbar_as_months = yes
+
+	weight = 1000
+
+	should_be_pinned_by_default = yes
+}
+
+je_zaibatsu_petition_remove_monopoly = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_internal_affairs
+
+	immediate = {
+		set_variable = {
+			name = zaibatsu_petition_remove_monopoly_var
+			value = 0
+		}
+	}
+
+	is_progressing = {
+		country_has_country_monopoly = no
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					country_has_country_monopoly = no
+				}
+				change_variable = {
+					name = zaibatsu_petition_remove_monopoly_var
+					add = 1
+				}
+			}
+		}
+	}
+
+	complete = {
+		country_has_country_monopoly = no
+	}
+
+	on_complete = {
+		add_loyalists = {
+			value = medium_radicals
+			interest_group = ig:ig_industrialists
+		}
+		add_modifier = {
+			name = modifier_successfully_met_petition_legitimacy
+			days = long_modifier_time
+			is_decaying = yes
+		}
+		remove_variable = zaibatsu_petition_remove_monopoly_var
+	}
+
+	invalid = { NOT = { has_journal_entry = je_zaibatsu } }
+
+	on_invalid = { remove_variable = zaibatsu_petition_remove_monopoly_var }
+
+	fail = {
+		ig:ig_industrialists ?= {
+			is_in_government = no
+		}
+	}
+
+	on_timeout = {
+		ig:ig_industrialists = {
+			if = {
+				limit = {
+					is_powerful = yes
+				}
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+					multiplier = 1.5
+				}
+			}
+			else = {
+				add_modifier = {
+					name = modifier_failed_to_meet_petition
+					days = long_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		remove_variable = zaibatsu_petition_remove_monopoly_var
+	}
+
+	on_fail = {
+		ig:ig_industrialists = {
+			add_modifier = {
+				name = modifier_failed_to_meet_petition
+				days = long_modifier_time
+				is_decaying = yes
+				multiplier = 2
+			}
+		}
+		remove_variable = zaibatsu_petition_remove_monopoly_var
+	}
+
+	timeout = 1825
+
+	current_value = {
+		value = root.var:zaibatsu_petition_remove_monopoly_var
+	}
+
+	goal_add_value = {
+		value = 60
+	}
+
+	progressbar = yes
+	display_progressbar_as_months = yes
+
+	weight = 1000
+
 	should_be_pinned_by_default = yes
 }

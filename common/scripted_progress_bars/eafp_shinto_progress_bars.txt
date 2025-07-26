@@ -11,7 +11,8 @@
 				add = {
 					#desc = 
 					value = {
-						value = s:STATE_HOKKAIDO.region_state:JAP.state_population
+						value = region_japan_shinto_population_value
+						divide = region_japan_population_value
 						subtract = "scripted_bar_progress(shinto_shinto_population_progress_bar)"
 					}
 				}
@@ -21,5 +22,124 @@
 
  	start_value = 0
  	min_value = 0
- 	max_value = 200000
+ 	max_value = 0.3
+}
+
+shinto_faction_power_progress_bar = {
+ 	name = "shinto_faction_power_progress_bar_name"
+ 	desc = "shinto_faction_power_progress_bar_desc"
+
+ 	double_sided_gold = yes
+
+ 	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_shinto }
+			je:je_shinto = {
+				add = {
+					desc = "BASE"
+					value = {
+						value = "scripted_bar_progress(shinto_faction_power_progress_bar)"
+						multiply = 1
+					}
+				}
+			}
+			add = {
+				desc = "shinto_faction_power_progress_bar_from_relative_bureaucracy"
+				value = {
+					value = relative_bureaucracy
+					multiply = 10
+				}
+			}
+			add = {
+				desc = "shinto_faction_power_progress_bar_from_relative_authority"
+				value = {
+					value = relative_authority
+					multiply = 10
+				}
+			}
+			add = {
+				desc = "shinto_faction_power_progress_bar_from_ig_intelligentsia_clout"
+				value = {
+					value = ig:ig_intelligentsia.ig_clout
+					multiply = 1
+					if = {
+						limit = { ig:ig_intelligentsia = { is_in_government = yes } }
+						multiply = 2
+					}
+				}
+			}
+			add = {
+				desc = "shinto_faction_power_progress_bar_from_ig_rural_folk_clout"
+				value = {
+					value = ig:ig_rural_folk.ig_clout
+					multiply = -1
+					if = {
+						limit = { ig:ig_rural_folk = { is_in_government = yes } }
+						multiply = 2
+					}
+				}
+			}
+		}
+ 	}
+
+ 	start_value = -50
+ 	min_value = -100
+ 	max_value = 100
+}
+
+shinto_shinto_buddism_balance_progress_bar = {
+ 	name = "shinto_shinto_buddism_balance_progress_bar_name"
+ 	desc = "shinto_shinto_buddism_balance_progress_bar_desc"
+
+ 	double_sided_bad = yes
+
+ 	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_shinto }
+			je:je_shinto = {
+				add = {
+					desc = "BASE"
+					value = {
+						value = "scripted_bar_progress(shinto_shinto_buddism_balance_progress_bar)"
+						multiply = 1
+					}
+				}
+			}
+			add = {
+				desc = "shinto_shinto_buddism_balance_progress_bar_from_ig_devout_clout"
+				value = {
+					value = ig:ig_devout.ig_clout
+					multiply = 1
+					if = {
+						limit = { ig:ig_devout = { is_in_government = yes } }
+						multiply = 2
+					}
+				}
+			}
+			add = {
+				desc = "shinto_shinto_buddism_balance_progress_bar_from_ig_intelligentsia_clout"
+				value = {
+					value = ig:ig_intelligentsia.ig_clout
+					multiply = -1
+					if = {
+						limit = { ig:ig_intelligentsia = { is_in_government = yes } }
+						multiply = 2
+					}
+				}
+			}
+			je:je_shinto = {
+				add = {
+					desc = "shinto_shinto_buddism_balance_progress_bar_from_shinto_population"
+					value = {
+						value = "scripted_bar_progress(shinto_shinto_population_progress_bar)"
+						multiply = 1.5
+					}
+				}
+			}
+		}
+ 	}
+
+ 	start_value = -50
+ 	min_value = -100
+ 	max_value = 100
 }

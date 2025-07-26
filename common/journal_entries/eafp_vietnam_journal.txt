@@ -4,10 +4,6 @@
 	group = je_group_historical_content
 
 	immediate = {
-		add_radicals = {
-			value = 0.4
-			culture = cu:khmer
-		}
 		random_scope_state = {
 			limit = {
 				state_region = s:STATE_CAMBODIA
@@ -20,15 +16,33 @@
 	}
 	
 	complete = {
-		scope:cambodia_state_scope = {
+		any_scope_state = {
+			filter = {
+				state_region = { is_homeland = cu:khmer }
+				culture_percent_state = {
+					target = cu:khmer
+					value > 0
+				}
+			}
+			count = all
+			state_region = { is_homeland = cu:khmer }
 			is_incorporated = yes
-			radical_fraction = {
-				value <= 0.20
+			loyalist_fraction = {
+				value >= 0.20
 				culture = cu:khmer
 			}
 		}
 		OR = {
-			scope:cambodia_state_scope = {
+			any_scope_state = {
+				filter = {
+					state_region = { is_homeland = cu:khmer }
+					culture_percent_state = {
+						target = cu:khmer
+						value > 0
+					}
+				}
+				count = all
+				state_region = { is_homeland = cu:khmer }
 				culture_percent_state = {
 					target = cu:vietnamese
 					value >= 0.2
@@ -39,39 +53,64 @@
 	}
 
 	on_complete = {
-
+		trigger_event = khmer_issue_events.1
+		every_state = {
+			limit = { has_modifier = dai_raging_rebellion_modifier }
+			remove_modifier = dai_raging_rebellion_modifier
+		}
 	}
 
 	fail = {
-		NOT = { has_state_in_state_region = STATE_CAMBODIA }
+		exists = c:CAM
+		any_diplomatic_play = {
+			initiator = c:CAM
+			target = ROOT
+			is_diplomatic_play_type = dp_secession
+		}
 	}
 
 	on_fail = {
-		add_radicals = {
-			value = 0.1
-			culture = cu:vietnamese
-		}
-		add_radicals = {
-			value = 0.2
-			culture = cu:khmer
-		}
+		trigger_event = khmer_issue_events.2
 	}
 
-	on_timeout = {
-		trigger_event = {
-			id = viet_event.3
+	invalid = {
+		hidden_trigger = {
+			NAND = {
+				exists = c:CAM
+				any_diplomatic_play = {
+					initiator = c:CAM
+					target = ROOT
+					is_diplomatic_play_type = dp_secession
+				}
+			}
+		}
+		NOT = {
+			any_scope_state = {
+				state_region = { is_homeland = cu:khmer }
+			}
 		}
 	}
-
-	timeout = 3285
 
 	on_monthly_pulse = {
-		random_events = {
-			90 = 0
-			10 = algeria_events.6
-		}
-		
 		effect = {
+			# 더 연산 소요 줄게 바꾸기 TODO
+			every_state = {
+				limit = { state_region = { is_homeland = cu:khmer } }
+				if = {
+					limit = {
+						owner = ROOT
+						NOT = { has_modifier = dai_raging_rebellion_modifier }
+					}
+					add_modifier = dai_raging_rebellion_modifier
+				}
+				else_if = {
+					limit = {
+						NOT = { owner = ROOT }
+						has_modifier = dai_raging_rebellion_modifier
+					}
+					remove_modifier = dai_raging_rebellion_modifier
+				}
+			}
 			if = {
 				limit = {
 					is_ai = yes

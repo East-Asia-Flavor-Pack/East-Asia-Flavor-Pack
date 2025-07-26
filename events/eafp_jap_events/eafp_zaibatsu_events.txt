@@ -1,0 +1,356 @@
+﻿namespace = zaibatsu_events
+
+zaibatsu_events.1 = {
+	type = country_event
+	placement = root
+
+	title = zaibatsu_events.1.t
+	desc = zaibatsu_events.1.d
+	flavor = zaibatsu_events.1.f
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	event_image = { 
+		video = "europenorthamerica_capitalists_meeting"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	duration = 3
+
+	option = {
+		name = zaibatsu_events.1.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+zaibatsu_events.2 = {
+	type = country_event
+	placement = root
+
+	title = zaibatsu_events.2.t
+	desc = zaibatsu_events.2.d
+	flavor = zaibatsu_events.2.f
+
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	event_image = { 
+		video = "europenorthamerica_capitalists_meeting"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	duration = 3
+
+	cooldown = { days = very_long_modifier_time }
+
+	trigger = {
+		NOR = {
+			has_variable = gov_petition_fired
+			has_variable = gov_petition_cooldown
+			has_modifier = modifier_successfully_met_petition_legitimacy
+			any_interest_group = {
+				has_modifier = modifier_failed_to_meet_petition
+			}
+			has_journal_entry = je_government_petition
+			is_revolutionary = yes
+			is_secessionist = yes
+		}
+		ig:ig_industrialists ?= {
+			is_in_government = no
+		}
+	}
+
+	immediate = {
+		set_variable = { name = gov_petition_cooldown years = 10 }
+		set_variable = { name = gov_petition_fired months = 3 }
+	}
+
+	option = {
+		name = government_petition_events.1.a
+		default_option = yes
+		
+		add_journal_entry = {
+			name = je_zaibatsu_petition_government
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c1
+		trigger = {
+			NOT = {
+				scope:government_petition_ig = {
+					has_variable = government_petition_rejected
+				}
+			}
+		}
+		custom_tooltip = government_petition_blown_off_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c2
+		trigger = {
+			scope:government_petition_ig = {
+				has_variable = government_petition_rejected
+			}
+		}
+		custom_tooltip = government_petition_blown_off_2_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			multiplier = 3
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				multiplier = 4
+				is_decaying = yes
+			}
+		}
+	}
+}
+
+zaibatsu_events.3 = {
+	type = country_event
+	placement = root
+
+	title = zaibatsu_events.3.t
+	desc = zaibatsu_events.3.d
+	flavor = zaibatsu_events.3.f
+
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	event_image = { 
+		video = "europenorthamerica_capitalists_meeting"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	duration = 3
+
+	cooldown = { days = very_long_modifier_time }
+
+	trigger = {
+		NOR = {
+			has_variable = gov_petition_fired
+			has_variable = gov_petition_cooldown
+			has_modifier = modifier_successfully_met_petition_legitimacy
+			any_interest_group = {
+				has_modifier = modifier_failed_to_meet_petition
+			}
+			has_journal_entry = je_government_petition
+			is_revolutionary = yes
+			is_secessionist = yes
+		}
+		ig:ig_industrialists ?= {
+			is_in_government = yes
+		}
+		market_capital.market = {
+			mg:grain = { market_goods_pricier > 0 }
+		}
+	}
+
+	immediate = {
+		set_variable = { name = gov_petition_cooldown years = 10 }
+		set_variable = { name = gov_petition_fired months = 3 }
+	}
+
+	option = {
+		name = zaibatsu_events.3.a
+		default_option = yes
+		
+		add_journal_entry = {
+			name = je_zaibatsu_petition_rice
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c1
+		trigger = {
+			NOT = {
+				scope:government_petition_ig = {
+					has_variable = government_petition_rejected
+				}
+			}
+		}
+		custom_tooltip = government_petition_blown_off_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c2
+		trigger = {
+			scope:government_petition_ig = {
+				has_variable = government_petition_rejected
+			}
+		}
+		custom_tooltip = government_petition_blown_off_2_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			multiplier = 3
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				multiplier = 4
+				is_decaying = yes
+			}
+		}
+	}
+}
+
+zaibatsu_events.4 = {
+	type = country_event
+	placement = root
+
+	title = zaibatsu_events.4.t
+	desc = zaibatsu_events.4.d
+	flavor = zaibatsu_events.4.f
+
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	event_image = { 
+		video = "europenorthamerica_capitalists_meeting"
+	}
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	duration = 3
+
+	cooldown = { days = very_long_modifier_time }
+
+	trigger = {
+		NOR = {
+			has_variable = gov_petition_fired
+			has_variable = gov_petition_cooldown
+			has_modifier = modifier_successfully_met_petition_legitimacy
+			any_interest_group = {
+				has_modifier = modifier_failed_to_meet_petition
+			}
+			has_journal_entry = je_government_petition
+			is_revolutionary = yes
+			is_secessionist = yes
+		}
+		ig:ig_industrialists ?= {
+			is_in_government = yes
+		}
+		country_has_country_monopoly = yes
+	}
+
+	immediate = {
+		set_variable = { name = gov_petition_cooldown years = 10 }
+		set_variable = { name = gov_petition_fired months = 3 }
+
+	}
+
+	option = {
+		name = zaibatsu_events.4.a
+		default_option = yes
+		
+		add_journal_entry = {
+			name = je_zaibatsu_petition_remove_monopoly
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c1
+		trigger = {
+			NOT = {
+				scope:government_petition_ig = {
+					has_variable = government_petition_rejected
+				}
+			}
+		}
+		custom_tooltip = government_petition_blown_off_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+
+	option = {
+		name = government_petition_events.1.c2
+		trigger = {
+			scope:government_petition_ig = {
+				has_variable = government_petition_rejected
+			}
+		}
+		custom_tooltip = government_petition_blown_off_2_tt
+		scope:government_petition_ig = {
+			set_variable = { name = government_petition_rejected years = 20 }
+		}
+		add_modifier = {
+			name = modifier_petition_rejected_legitimacy
+			days = normal_modifier_time
+			multiplier = 3
+			is_decaying = yes
+		}
+		scope:government_petition_ig = {
+			add_modifier = {
+				name = modifier_petition_rejected_ig_opinion
+				days = normal_modifier_time
+				multiplier = 4
+				is_decaying = yes
+			}
+		}
+	}
+}

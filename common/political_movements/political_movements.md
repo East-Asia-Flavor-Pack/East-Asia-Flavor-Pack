@@ -53,6 +53,7 @@
 	# Root = character
 	# scope:culture = The cultural identity of the movement, if any
 	# scope:religion = The religious identity of the movement, if any
+	# scope:interest_group = The interest group in the movement's country matching the character's IG - use this instead of character's actual IG so that it works for exiled agitators
 	character_support_weight = {}
 	
 	# Trigger that must evaluate true for a movement to be able to pressure an Interest Group (this is in addition to the required supporting clout)

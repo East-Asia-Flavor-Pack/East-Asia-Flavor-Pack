@@ -1143,7 +1143,240 @@ eafp_scripted_button_sedo_politics_balance_authority = {
 	desc = "eafp_scripted_button_sedo_politics_balance_authority_desc"
 
 	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		authority >= 100
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_authority } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_authority
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+			remove_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_modifier = {
+				name = eafp_modi_sedo_politics_balance_authority
+				months = 12
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			post_notification = eafp_message_sedo_politics_balance_authority
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_authority
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_bureaucracy = {
+	name = "eafp_scripted_button_sedo_politics_balance_bureaucracy"
+	desc = "eafp_scripted_button_sedo_politics_balance_bureaucracy_desc"
+
+	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		bureaucracy >= 0
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+			remove_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_modifier = {
+				name = eafp_modi_sedo_politics_balance_bureaucracy
+				months = 12
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			post_notification = eafp_message_sedo_politics_balance_bureaucracy
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_money = {
+	name = "eafp_scripted_button_sedo_politics_balance_money"
+	desc = "eafp_scripted_button_sedo_politics_balance_money_desc"
+
+	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		scaled_gold_reserves >= 0.1
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_money } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_money
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+			remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_treasury = {
+				value = gold_reserves_limit
+				multiply = -0.1
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			save_scope_value_as = {
+				name = eafp_scripted_button_sedo_politics_balance_money_payment
+				value = {
+					value = gold_reserves_limit
+					multiply = 0.1
+				}
+			}
+			post_notification = eafp_message_sedo_politics_balance_money
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_money
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_remove = {
+	name = "eafp_scripted_button_sedo_politics_balance_remove"
+	desc = "eafp_scripted_button_sedo_politics_balance_remove_desc"
+
+	visible = {
+		is_ai = no
+		OR = {
+			has_variable = eafp_scripted_button_sedo_politics_balance_authority
+			has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+			has_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+	}
+
+	possible = {
 		always = yes
+	}
+
+	effect = {
+		remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+		remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		remove_variable = eafp_scripted_button_sedo_politics_balance_money
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_scripted_button_sedo_politics_balance_authority_ai = {
+	name = "eafp_scripted_button_sedo_politics_balance_authority"
+	desc = "eafp_scripted_button_sedo_politics_balance_authority_desc"
+
+	visible = {
+		is_ai = yes
 	}
 
 	possible = {
@@ -1175,12 +1408,12 @@ eafp_scripted_button_sedo_politics_balance_authority = {
 		value = 100
 	}
 }
-eafp_scripted_button_sedo_politics_balance_bureaucracy = {
+eafp_scripted_button_sedo_politics_balance_bureaucracy_ai = {
 	name = "eafp_scripted_button_sedo_politics_balance_bureaucracy"
 	desc = "eafp_scripted_button_sedo_politics_balance_bureaucracy_desc"
 
 	visible = {
-		always = yes
+		is_ai = yes
 	}
 
 	possible = {
@@ -1215,12 +1448,12 @@ eafp_scripted_button_sedo_politics_balance_bureaucracy = {
 		}
 	}
 }
-eafp_scripted_button_sedo_politics_balance_money = {
+eafp_scripted_button_sedo_politics_balance_money_ai = {
 	name = "eafp_scripted_button_sedo_politics_balance_money"
 	desc = "eafp_scripted_button_sedo_politics_balance_money_desc"
 
 	visible = {
-		always = yes
+		is_ai = yes
 	}
 
 	possible = {
