@@ -1,0 +1,71 @@
+﻿namespace = eafp_set_hierarchy_event
+
+
+eafp_set_hierarchy_event.1 = {
+	type = country_event
+	hidden = yes
+
+	trigger = {
+		has_social_hierarchy = default_social_hierarchy
+		religion_percent_country = {
+			target = rel:confucian
+			value >= 0.50
+		}
+		owner = {
+			any_primary_culture = {
+				has_discrimination_trait = east_asian_heritage
+			}
+		}
+		has_law = law_type:law_traditionalism
+		has_law = law_type:law_peasant_levies
+	}
+
+	immediate = {
+		owner = {
+			save_scope_as = relevant_country_scope
+		}
+		set_social_hierarchy = four_occupations_system
+		post_notification = four_occupations_hierarchy_appears
+	}
+
+}
+
+
+eafp_set_hierarchy_event.2 = {
+	type = country_event
+	hidden = yes
+
+	trigger = {
+		has_social_hierarchy = four_occupations_system
+		OR = {
+			religion_percent_country = {
+				target = rel:confucian
+				value <= 0.10
+			}
+			NOT = { has_law = law_type:law_traditionalism }
+		}
+	}
+
+	immediate = {
+		owner = {
+			save_scope_as = relevant_country_scope
+		}
+		set_social_hierarchy = default_social_hierarchy
+		post_notification = four_occupations_hierarchy_disappears
+	}
+
+}
+
+eafp_set_hierarchy_event.3 = {
+	type = country_event
+	hidden = yes
+
+	trigger = {
+		has_social_hierarchy = four_occupations_system_shogunate
+		has_law = law_type:law_chusei
+	}
+
+	immediate = {
+		set_social_hierarchy = four_occupations_system
+	}
+}

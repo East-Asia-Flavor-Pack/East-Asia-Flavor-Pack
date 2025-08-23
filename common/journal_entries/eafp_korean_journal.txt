@@ -6,9 +6,11 @@ je_korean_kings_health = {
 	
 	scripted_progress_bar = eafp_progress_bar_kings_health
 	
-	scripted_button = eafp_scripted_button_health_out
-	#scripted_button = eafp_scripted_button_health_in
-	
+	scripted_button = eafp_scripted_button_health_walk
+	scripted_button = eafp_scripted_button_health_inspectation_tour
+	scripted_button = eafp_scripted_button_health_hunting
+	scripted_button = eafp_scripted_button_health_tomb_tour
+
 	complete = {
 		has_technology_researched = quinine
 	}
@@ -26,27 +28,19 @@ je_korean_kings_health = {
 				}
 			}
 		}
+		remove_variable = no_heirs
+		trigger_event = eafp_kor_mainline.19
 	}
 	
 	fail = {	#급사
 		custom_tooltip = {
 			text = je_korean_kings_health_goal
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 500
-			}
+			always = no
 		}
 	}
 
 	on_fail = {
-		je:je_korean_kings_health = {
-			set_bar_progress = { value = 0 name = eafp_progress_bar_kings_health }
-		}
-		ruler = {
-			hidden_effect = {
-				set_character_busy_and_immortal = no
-			}
-			kill_character = yes
-		}
+		
 	}
 
 	status_desc = {
@@ -194,17 +188,17 @@ je_korean_kings_health = {
 							}
 						}
 					}
-					1 = { trigger_event = eafp_kor_mainline.20 }
-					1 = { trigger_event = eafp_kor_mainline.21 }
-					1 = { trigger_event = eafp_kor_mainline.22 }
-					1 = { trigger_event = eafp_kor_mainline.23 }
-					1 = { trigger_event = eafp_kor_mainline.24 }
-					1 = { trigger_event = eafp_kor_mainline.25 }
-					1 = { trigger_event = eafp_kor_mainline.26 }
-					1 = { trigger_event = eafp_kor_mainline.27 }
-					1 = { trigger_event = eafp_kor_mainline.28 }
-					1 = { trigger_event = eafp_kor_mainline.29 }
-					1 = { trigger_event = eafp_kor_mainline.30 }
+					1 = { trigger_event = { id = eafp_kor_mainline.20 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.21 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.22 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.23 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.24 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.25 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.26 } }
+					# 1 = { trigger_event = { id = eafp_kor_mainline.27 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.28 } }
+					# 1 = { trigger_event = { id = eafp_kor_mainline.29 } }
+					1 = { trigger_event = { id = eafp_kor_mainline.30 } }
 				}
 			}
 		}
@@ -213,6 +207,27 @@ je_korean_kings_health = {
 			eafp_kor_mainline.7
 			eafp_kor_mainline.8
 			eafp_kor_mainline.9
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					scope:journal_entry ?= {
+						"scripted_bar_progress(eafp_progress_bar_kings_health)" >= 500
+					}
+				}
+				scope:journal_entry = {
+					set_bar_progress = { value = 0 name = eafp_progress_bar_kings_health }
+				}
+				ruler = {
+					hidden_effect = {
+						set_character_busy_and_immortal = no
+					}
+					kill_character = yes
+				}
+			}
 		}
 	}
 
@@ -228,133 +243,12 @@ je_korean_land_problem = {
 	group = je_group_historical_content
 
 	immediate = {
-		##각5개주 현황 변수
-		set_variable = {
-			name = eafp_kor_landlvl_SEOUL_civ
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_SEOUL_mil
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_SEOUL_adm
-			value = 1
-		}
-		#
-		set_variable = {
-			name = eafp_kor_landlvl_PYONGYANG_civ
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_PYONGYANG_mil
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_PYONGYANG_adm
-			value = 1
-		}
-		#
-		set_variable = {
-			name = eafp_kor_landlvl_SARIWON_civ
-			value = 0
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_SARIWON_mil
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_SARIWON_adm
-			value = 0
-		}
-		#
-		set_variable = {
-			name = eafp_kor_landlvl_BUSAN_civ
-			value = 0
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_BUSAN_mil
-			value = 0
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_BUSAN_adm
-			value = 1
-		}
-		#
-		set_variable = {
-			name = eafp_kor_landlvl_YANGHO_civ
-			value = 1
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_YANGHO_mil
-			value = 0
-		}
-		set_variable = {
-			name = eafp_kor_landlvl_YANGHO_adm
-			value = 1
-		}
-		#각 주 초기 경험치
-		set_variable = {
-			name = eafp_kor_landexp_SEOUL_civ
-			value = 0
-		}
-		set_variable = {
-			name = eafp_kor_landexp_SEOUL_mil
-			value = 80
-		}
-		set_variable = {
-			name = eafp_kor_landexp_SEOUL_adm
-			value = 70
-		}
-		set_variable = {
-			name = eafp_kor_landexp_YANGHO_civ
-			value = 50
-		}
-		set_variable = {
-			name = eafp_kor_landexp_YANGHO_mil
-			value = 10
-		}
-		set_variable = {
-			name = eafp_kor_landexp_YANGHO_adm
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_BUSAN_civ
-			value = 50
-		}
-		set_variable = {
-			name = eafp_kor_landexp_BUSAN_mil
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_BUSAN_adm
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_PYONGYANG_civ
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_PYONGYANG_mil
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_PYONGYANG_adm
-			value = 50
-		}
-		set_variable = {
-			name = eafp_kor_landexp_SARIWON_civ
-			value = 20
-		}
-		set_variable = {
-			name = eafp_kor_landexp_SARIWON_mil
-			value = 25
-		}
-		set_variable = {
-			name = eafp_kor_landexp_SARIWON_adm
-			value = 70
-		}
+		eafp_land_problem_add_modifier = yes	#초기 모디파이어 설정
 	}
+
+	scripted_progress_bar = eafp_progress_bar_land_problem_landexp_adm
+	scripted_progress_bar = eafp_progress_bar_land_problem_landexp_mil
+	scripted_progress_bar = eafp_progress_bar_land_problem_landexp_civ
 
 	complete = {
 		custom_tooltip = {
@@ -364,67 +258,16 @@ je_korean_land_problem = {
 	}
 
 	on_complete = {
-		trigger_event = eafp_kor_mainline.299
-		hidden_effect = {
-			remove_variable = eafp_kor_landlvl_SEOUL_civ
-			remove_variable = eafp_kor_landlvl_SEOUL_mil
-			remove_variable = eafp_kor_landlvl_SEOUL_adm
-			remove_variable = eafp_kor_landexp_SEOUL_civ
-			remove_variable = eafp_kor_landexp_SEOUL_mil
-			remove_variable = eafp_kor_landexp_SEOUL_adm
-			remove_variable = eafp_kor_landlvl_YANGHO_civ
-			remove_variable = eafp_kor_landlvl_YANGHO_mil
-			remove_variable = eafp_kor_landlvl_YANGHO_adm
-			remove_variable = eafp_kor_landexp_YANGHO_civ
-			remove_variable = eafp_kor_landexp_YANGHO_mil
-			remove_variable = eafp_kor_landexp_YANGHO_adm
-			remove_variable = eafp_kor_landlvl_BUSAN_civ
-			remove_variable = eafp_kor_landlvl_BUSAN_mil
-			remove_variable = eafp_kor_landlvl_BUSAN_adm
-			remove_variable = eafp_kor_landexp_BUSAN_civ
-			remove_variable = eafp_kor_landexp_BUSAN_mil
-			remove_variable = eafp_kor_landexp_BUSAN_adm
-			remove_variable = eafp_kor_landlvl_PYONGYANG_civ
-			remove_variable = eafp_kor_landlvl_PYONGYANG_mil
-			remove_variable = eafp_kor_landlvl_PYONGYANG_adm
-			remove_variable = eafp_kor_landexp_PYONGYANG_civ
-			remove_variable = eafp_kor_landexp_PYONGYANG_mil
-			remove_variable = eafp_kor_landexp_PYONGYANG_adm
-			remove_variable = eafp_kor_landlvl_SARIWON_civ
-			remove_variable = eafp_kor_landlvl_SARIWON_mil
-			remove_variable = eafp_kor_landlvl_SARIWON_adm
-			remove_variable = eafp_kor_landexp_SARIWON_civ
-			remove_variable = eafp_kor_landexp_SARIWON_mil
-			remove_variable = eafp_kor_landexp_SARIWON_adm
-		}
+		trigger_event = { id = eafp_kor_mainline.299 }
 	}
 	
 	scripted_button = eafp_scripted_button_sam_jeon
 	scripted_button = eafp_scripted_button_sam_gun
 	scripted_button = eafp_scripted_button_sam_hwan
 	scripted_button = eafp_scripted_button_sam_all
-	
-	progress_desc = je_korean_land_problem_pgdesc
-	
-	on_weekly_pulse = {
-		effect = {
-			#등급 업/다운
-			eafp_land_problem_levelup = yes
-		}
-	}
 
 	on_monthly_pulse = {
 		effect = {
-			#개선 진행도 자연증가
-			eafp_land_problem_expup = yes
-			#AI 조율
-			if = {
-				limit = {
-					is_ai = yes
-				}
-				eafp_land_problem_expup_ai = yes
-			}
-			eafp_land_problem_levelup = yes
 			#모디파이어 업데이트
 			eafp_land_problem_add_modifier = yes
 			if = {
@@ -438,21 +281,8 @@ je_korean_land_problem = {
 				}			
 			}
 		}
-		random_events = {
-			200 = 0
-			10 = eafp_kor_mainline.250
-			10 = eafp_kor_mainline.251
-			10 = eafp_kor_mainline.252
-			10 = eafp_kor_mainline.253
-			10 = eafp_kor_mainline.254
-			10 = eafp_kor_mainline.255
-			10 = eafp_kor_mainline.256
-			10 = eafp_kor_mainline.257
-			10 = eafp_kor_mainline.258
-		}
 		events = {
 			eafp_kor_mainline.200
-			eafp_kor_mainline.201
 		}
 	}
 
@@ -500,7 +330,7 @@ je_yangjeon = {
 		remove_variable = eafp_var_yangjeon_weekly
 		remove_modifier = eafp_modi_yangjeon_cost
 		
-		trigger_event = eafp_kor_mainline.298
+		trigger_event = { id = eafp_kor_mainline.298 }
 	}
 
 	weight = 2000
@@ -509,11 +339,22 @@ je_yangjeon = {
 
 	can_revolution_inherit = yes
 }
-##임술농민봉기 - 철종5년에 준비
+##임술농민봉기
 je_korean_imsul_uprising = {
 	icon = "gfx/interface/icons/pops_icons/peasants.dds"
 
 	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:KOR ?= THIS
+		NOT = { has_variable = eafp_var_sam_all_clear }
+	}
+
+	possible = {
+		radical_fraction = {
+			value >= 0.25
+		}
+	}
 
 	immediate = {
 		set_variable = {
@@ -531,7 +372,7 @@ je_korean_imsul_uprising = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 0
 			save_scope_as = eafp_imsul_rising_target_state
 		}
@@ -545,7 +386,7 @@ je_korean_imsul_uprising = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 1
 			save_scope_as = eafp_imsul_rising_target_state_2nd
 		}
@@ -559,25 +400,26 @@ je_korean_imsul_uprising = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 2
 			save_scope_as = eafp_imsul_rising_target_state_3rd
 		}
 	}
 
 	complete = {	#중기적 개혁
-		custom_tooltip = {
-			text = je_korean_imsul_uprising_complete_cond_tt
-			OR = {
-				has_variable = eafp_var_sam_jeon_clear
-				has_variable = eafp_var_sam_gun_clear
-				has_variable = eafp_var_sam_hwan_clear
+		OR = {
+			radical_fraction = {
+				value <= 0.1
+			}
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
 			}
 		}
 	}
 
 	on_complete = {
-		trigger_event = eafp_kor_mainline.220
+		trigger_event = { id = eafp_kor_mainline.220 }
 	}
 	
 	fail = {
@@ -587,13 +429,16 @@ je_korean_imsul_uprising = {
 	}
 
 	on_fail = { # 추가
-		custom_tooltip = {
-			text = je_korean_imsul_uprising_fail_tt
-		}
-		scope:eafp_imsul_rising_target_state = {
-			add_modifier = {
-				name = eafp_modi_imsul_state_zero
-				months = 24
+		if = {
+			limit = { has_journal_entry = je_korean_imsul_uprising }
+			custom_tooltip = {
+				text = je_korean_imsul_uprising_fail_tt
+			}
+			scope:eafp_imsul_rising_target_state = {
+				add_modifier = {
+					name = eafp_modi_imsul_state_zero
+					months = 24
+				}
 			}
 		}
 		hidden_effect = {
@@ -605,7 +450,17 @@ je_korean_imsul_uprising = {
 		#fra_republican_unrest
 	}
 	
-	progress_desc = je_korean_imsul_uprising_pgdesc
+	progress_desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_journal_entry = je_korean_imsul_uprising
+				}
+				desc = je_korean_imsul_uprising_pgdesc
+			}
+			desc = EMPTY_STRING
+		}
+	}
 	
 	on_weekly_pulse = {
 		effect = {
@@ -621,7 +476,7 @@ je_korean_imsul_uprising = {
 						state_region = s:STATE_SARIWON
 					}
 				}
-				order_by = eafp_val_imsul_uprising_risk
+				order_by = radical_fraction
 				save_scope_as = eafp_imsul_rising_target_state
 			}
 			ordered_scope_state = {
@@ -634,7 +489,7 @@ je_korean_imsul_uprising = {
 						state_region = s:STATE_SARIWON
 					}
 				}
-				order_by = eafp_val_imsul_uprising_risk
+				order_by = radical_fraction
 				position = 1
 				save_scope_as = eafp_imsul_rising_target_state_2nd
 			}
@@ -648,7 +503,7 @@ je_korean_imsul_uprising = {
 						state_region = s:STATE_SARIWON
 					}
 				}
-				order_by = eafp_val_imsul_uprising_risk
+				order_by = radical_fraction
 				position = 2
 				save_scope_as = eafp_imsul_rising_target_state_3rd
 			}
@@ -660,14 +515,10 @@ je_korean_imsul_uprising = {
 			#전국 합산 개선진행도 체크
 			change_variable = {
 				name = eafp_var_je_imsul_uprising
-				add = eafp_val_total_land_level
+				add = 1
 			}
 		}
 		events = {
-			eafp_kor_mainline.202
-			eafp_kor_mainline.203
-			eafp_kor_mainline.204
-			eafp_kor_mainline.205
 			eafp_kor_mainline.206
 			eafp_kor_mainline.207
 			eafp_kor_mainline.208
@@ -681,7 +532,7 @@ je_korean_imsul_uprising = {
 	}
 
 	goal_add_value = {
-		value = 300
+		value = 36
 	}
 
 	progressbar = yes
@@ -725,7 +576,7 @@ je_korean_imsul_boom = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 0
 			save_scope_as = eafp_imsul_rising_target_state
 		}
@@ -739,7 +590,7 @@ je_korean_imsul_boom = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 1
 			save_scope_as = eafp_imsul_rising_target_state_2nd
 		}
@@ -753,7 +604,7 @@ je_korean_imsul_boom = {
 					state_region = s:STATE_SARIWON
 				}
 			}
-			order_by = eafp_val_imsul_uprising_risk
+			order_by = radical_fraction
 			position = 2
 			save_scope_as = eafp_imsul_rising_target_state_3rd
 		}
@@ -766,7 +617,7 @@ je_korean_imsul_boom = {
 				name = eafp_var_imsul_on_state
 				value = 1
 			}
-			trigger_event = eafp_kor_mainline.211
+			trigger_event = { id = eafp_kor_mainline.211 }
 		}
 	}
 
@@ -980,14 +831,18 @@ je_korean_imsul_boom = {
 					limit = {
 						has_variable = eafp_var_imsul_on_state	#이미 봉기가 확산되어 있는 주 중에서,
 					}
-					trigger_event = {
-						id = eafp_kor_mainline.219
-					}
+					trigger_event = { id = eafp_kor_mainline.219 }
 				}
 			}
-		}
-		events = {
-			eafp_kor_mainline.220
+
+			if = {
+				limit = {
+					je:je_korean_imsul_boom = {
+						"scripted_bar_progress(eafp_progress_bar_imsul_relax)" >= 90
+					}
+					trigger_event = { id = eafp_kor_mainline.220 }
+				}
+			}
 		}
 	}
 	
@@ -1028,7 +883,7 @@ je_samjeong_ijeongcheong = {
 	}
 
 	on_complete = {
-		trigger_event = eafp_kor_mainline.226
+		trigger_event = { id = eafp_kor_mainline.226 }
 	}
 	
 	weight = 1000
@@ -1062,14 +917,22 @@ je_king_cheoljong_education = {
 	}
 
 	on_complete = {
-		trigger_event = eafp_kor_mainline.89
+		trigger_event = { id = eafp_kor_mainline.99 }
 		show_as_tooltip = {
 			eafp_effect_option_gain_balance = {
 				BALANCE = -50
 			}
 			ruler = {
 				add_trait = erudite
-				remove_modifier = eafp_modi_puppet_king
+				if = {
+					limit = { has_trait = eafp_modi_puppet_king_imsi }
+					remove_trait = eafp_modi_puppet_king_imsi
+				}
+				if = {
+					limit = { has_trait = eafp_modi_puppet_king }
+					remove_trait = eafp_modi_puppet_king
+				}
+				set_ideology = ideology:ideology_land_reformer
 			}
 		}
 		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
@@ -1089,16 +952,6 @@ je_king_cheoljong_education = {
 
 	on_monthly_pulse = {
 		events = {
-			eafp_kor_mainline.71
-			eafp_kor_mainline.72
-			eafp_kor_mainline.73
-			eafp_kor_mainline.74
-			eafp_kor_mainline.75
-			eafp_kor_mainline.76
-			eafp_kor_mainline.77
-			eafp_kor_mainline.78
-			eafp_kor_mainline.79
-			eafp_kor_mainline.80
 			eafp_kor_mainline.81
 			eafp_kor_mainline.82
 			eafp_kor_mainline.83
@@ -1107,6 +960,16 @@ je_king_cheoljong_education = {
 			eafp_kor_mainline.86
 			eafp_kor_mainline.87
 			eafp_kor_mainline.88
+			eafp_kor_mainline.89
+			eafp_kor_mainline.90
+			eafp_kor_mainline.91
+			eafp_kor_mainline.92
+			eafp_kor_mainline.93
+			eafp_kor_mainline.94
+			eafp_kor_mainline.95
+			eafp_kor_mainline.96
+			eafp_kor_mainline.97
+			eafp_kor_mainline.98
 		}
 	}
 	
@@ -1168,19 +1031,19 @@ je_korean_regent = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_hwan_character_template }
 				}
-				trigger_event = eafp_kor_mainline.105
+				trigger_event = { id = eafp_kor_mainline.105 }
 			}
 			else_if = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_byeon_character_template }
 				}
-				trigger_event = eafp_kor_mainline.106
+				trigger_event = { id = eafp_kor_mainline.106 }
 			}
 			else_if = {
 				limit = {
 					ruler = { has_template = eafp_kor_yi_hyeong_character_template }
 				}
-				trigger_event = eafp_kor_mainline.107
+				trigger_event = { id = eafp_kor_mainline.107 }
 			}
 			post_notification = eafp_message_end_regent
 		}
@@ -1455,7 +1318,7 @@ je_korean_confu = {
 	on_complete = {
 		remove_modifier = eafp_modi_catholic_plague
 		remove_variable = eafp_progress_bar_confu_from_trade_var
-		trigger_event = eafp_kor_mainline.171
+		trigger_event = { id = eafp_kor_mainline.171 }
 		show_as_tooltip = {
 			add_modifier = {
 				name = eafp_modi_confucian_state_reverse
@@ -1577,7 +1440,7 @@ je_korean_seowon = {
 			name = eafp_modi_seowon_problem_backlash
 			multiplier = 30
 		}
-		trigger_event = eafp_kor_mainline.150
+		trigger_event = { id = eafp_kor_mainline.150 }
 	}
 	
 	complete = {
@@ -1607,7 +1470,7 @@ je_korean_seowon = {
 	on_complete = {
 		set_variable = eafp_kor_seowon_complete
 		remove_modifier = eafp_modi_seowon_problem_backlash
-		trigger_event = eafp_kor_mainline.159
+		trigger_event = { id = eafp_kor_mainline.159 }
 	}
 
 	on_weekly_pulse = {
@@ -1692,7 +1555,6 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	}
 	
 	scripted_button = eafp_scripted_button_wonnap
-	scripted_button = eafp_scripted_button_dangbaek
 
 	immediate = {
 		set_variable = {
@@ -1712,18 +1574,7 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	}
 	
 	on_weekly_pulse = {
-		random_events = {
-			100 = 0
-			10 = eafp_kor_mainline.1507	#상소
-		}
 		effect = {
-			if = {
-				limit = {
-					var:eafp_var_gyeongbokgung_rebuild >= 500
-					NOT = { has_variable = eafp_var_gbg_rebuild_1504 }
-				}
-				trigger_event = eafp_kor_mainline.1504
-			}
 			if = {
 				limit = {
 					is_ai = yes
@@ -1802,64 +1653,6 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
     
 	#invalid = {
 	#}
-
-	should_be_pinned_by_default = yes
-}
-
-je_rlg_seoul_dangbaek = {
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	group = je_group_historical_content
-
-	scripted_progress_bar = eafp_progress_bar_dangbaek_inflation
-	
-	scripted_button = eafp_scripted_button_increase_dangbaek_supply
-	scripted_button = eafp_scripted_button_decrease_dangbaek_supply
-
-	complete = {
-		scope:journal_entry = {
-			is_goal_complete = yes
-		}
-		always = no
-	}
-
-	immediate = {
-		set_variable = {
-			name = eafp_var_dangbaek
-			value = 0
-		}
-	}
-	
-	timeout = 1460
-	
-	on_complete = {
-		trigger_event = {
-			id = eafp_kor_mainline.1509
-		}
-	}
-
-	on_timeout = {
-		remove_modifier = eafp_modi_dangbaek_inflation
-		add_modifier = {
-			name = eafp_modi_dangbaek_inflation
-			multiplier = eafp_progress_bar_dangbaek_inflation_progress_bar_value
-			months = 36
-			is_decaying = yes
-		}
-		remove_modifier = eafp_modi_dangbaek
-		remove_variable = eafp_var_dangbaek
-	}
-
-	on_monthly_pulse = {
-		effect = {
-			remove_modifier = eafp_modi_dangbaek_inflation
-			add_modifier = {
-				name = eafp_modi_dangbaek_inflation
-				multiplier = eafp_progress_bar_dangbaek_inflation_progress_bar_value
-			}
-			remove_modifier = eafp_modi_dangbaek
-		}
-	}
 
 	should_be_pinned_by_default = yes
 }

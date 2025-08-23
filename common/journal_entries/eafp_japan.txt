@@ -74,7 +74,16 @@ je_bakuhantaisei = {
 	}
 
 	fail = {
-		
+		OR = {
+			custom_tooltip = {
+				text = bakufu_kaikaku_fail_tt
+				scope:journal_entry = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0 }
+			}
+			has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi
+		}
+		hidden_trigger = {
+			always = no
+		}
 	}
 
 	on_fail = {
@@ -90,18 +99,18 @@ je_bakuhantaisei = {
 					NOT = { has_variable = rojushuza_var }
 					NOT = { has_variable = recruiting_bakufu_politicians }
 				}
-				trigger_event = eafp_japan.4
+				trigger_event = { id = eafp_japan.4 }
 			}
 			if = {
 				limit = {
 					variable_list_size = { name = roju_varlist value < 4 }
 					NOT = { has_variable = recruiting_bakufu_politicians }
 				}
-				trigger_event = eafp_japan.6
+				trigger_event = { id = eafp_japan.6 }
 			}
 			if = {
 				limit = { scope:journal_entry = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0 } }
-				trigger_event = boshin_war.1 # 대정봉환
+				trigger_event = { id = boshin_war.1 } # 대정봉환
 				scope:journal_entry = { set_bar_progress = { value = 4000 name = bakuhantaisei_bakufu_authority_progress_bar } }
 			}
 		}
@@ -665,7 +674,7 @@ je_hokkaido = {
 	}
 
 	on_complete = {
-		trigger_event = hokkaido.1
+		trigger_event = { id = hokkaido.1 }
 	}
 
 	on_monthly_pulse = {
@@ -759,7 +768,7 @@ je_tenpo_famine = {
 	}
 
 	on_complete = {
-		trigger_event = tenpo_famine.99
+		trigger_event = { id = tenpo_famine.99 }
 	}
 
 	weight = 10000
@@ -889,7 +898,7 @@ je_bakufu_kaikaku = {
 			set_variable = bakufu_kaikaku_complete_var
 		}
 
-		trigger_event = eafp_japan.2999
+		trigger_event = { id = eafp_japan.2999 }
 	}
 
 	on_monthly_pulse = {
@@ -1575,7 +1584,7 @@ je_boshin_war_sabaku = {
 
 	on_fail = {
 		add_journal_entry = {
-			type = je_boshin_peace_sabaku
+			type = je_boshin_war_peace_sabaku
 		}
 	}
 
@@ -1631,7 +1640,7 @@ je_boshin_war_tobaku = {
 
 	on_fail = {
 		add_journal_entry = {
-			type = je_boshin_peace_tobaku
+			type = je_boshin_war_peace_tobaku
 		}
 	}
 
@@ -1640,13 +1649,25 @@ je_boshin_war_tobaku = {
 	should_be_pinned_by_default = yes
 }
 
-je_boshin_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 좌막파 저널
+je_boshin_war_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 좌막파 JAP 저널
 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	group = je_group_historical_content
 
+	scripted_progress_bar = boshin_war_peace_sabaku_legitimacy_progress_bar
+
+	immediate = {
+		c:JAP = { save_scope_as = JAP_scope }
+		c:NIP = { save_scope_as = NIP_scope }
+	}
+
 	complete = {
-		NOT = { exists = c:NIP }
+		custom_tooltip = {
+			text = je_boshin_war_peace_goal
+			scope:journal_entry = {
+				scripted_bar_progress = { name = boshin_war_peace_sabaku_legitimacy_progress_bar value >= 100 }
+			}
+		}
 	}
 
 	on_complete = {
@@ -1656,14 +1677,67 @@ je_boshin_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 �
 		}
 	}
 
-	on_weekly_pulse = {
+	invalid = {
+		NOT = { exists = c:NIP }
+	}
+
+	on_invalid = {
+		trigger_event = {
+			id = boshin_war.9
+			popup = yes
+		}
+	}
+
+	on_monthly_pulse = {
 		effect = {
-			random_scope_war = {
-				limit = {
-					is_warleader = c:JAP
-					is_warleader = c:NIP
+			# 좌막파 저널과 도막파 저널의 progress bar 값을 동기화하는 용도.
+			c:JAP = {
+				je:je_boshin_war_peace_sabaku ?= {
+					save_scope_value_as = {
+						name = sabaku_legitimacy
+						value = "scripted_bar_progress(boshin_war_peace_sabaku_legitimacy_progress_bar)"
+					}
 				}
-				add_war_war_support = { target = ROOT value = 5 }
+			}
+			c:NIP = {
+				je:je_boshin_war_peace_tobaku ?= {
+					save_scope_value_as = {
+						name = tobaku_legitimacy
+						value = "scripted_bar_progress(boshin_war_peace_tobaku_legitimacy_progress_bar)"
+					}
+				}
+			}
+			c:JAP = {
+				je:je_boshin_war_peace_sabaku ?= {
+					set_bar_progress = {
+						name = boshin_war_peace_sabaku_legitimacy_progress_bar
+						value = {
+							value = scope:sabaku_legitimacy
+							add = 100
+							subtract = scope:tobaku_legitimacy
+							divide = 2
+						}
+					}
+					save_scope_value_as = {
+						name = sabaku_legitimacy
+						value = "scripted_bar_progress(boshin_war_peace_sabaku_legitimacy_progress_bar)"
+					}
+				}
+			}
+			c:NIP = {
+				je:je_boshin_war_peace_tobaku ?= {
+					set_bar_progress = {
+						name = boshin_war_peace_tobaku_legitimacy_progress_bar
+						value = {
+							value = 100
+							subtract = scope:sabaku_legitimacy
+						}
+					}
+					save_scope_value_as = {
+						name = tobaku_legitimacy
+						value = "scripted_bar_progress(boshin_war_peace_tobaku_legitimacy_progress_bar)"
+					}
+				}
 			}
 		}
 	}
@@ -1673,20 +1747,25 @@ je_boshin_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 �
 	should_be_pinned_by_default = yes
 }
 
-je_boshin_peace_tobaku = { # 보신 전쟁이 무조건 평화로 끝났을때 도막파 저널
+je_boshin_war_peace_tobaku = { # 보신 전쟁이 무조건 평화로 끝났을때 도막파 NIP 저널
 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	group = je_group_historical_content
 
+	scripted_progress_bar = boshin_war_peace_tobaku_legitimacy_progress_bar
+
 	immediate = {
-		set_global_variable = {
-			name = boshin_peace_global_var
-			value = 50
-		}
+		c:JAP = { save_scope_as = JAP_scope }
+		c:NIP = { save_scope_as = NIP_scope }
 	}
 
 	complete = {
-		NOT = { exists = c:JAP }
+		custom_tooltip = {
+			text = je_boshin_war_peace_goal
+			scope:journal_entry = {
+				scripted_bar_progress = { name = boshin_war_peace_tobaku_legitimacy_progress_bar value >= 100 }
+			}
+		}
 	}
 
 	on_complete = {
@@ -1704,16 +1783,27 @@ je_boshin_peace_tobaku = { # 보신 전쟁이 무조건 평화로 끝났을때 �
 		}
 	}
 
-	on_weekly_pulse = {
-		effect = {
-			random_scope_war = {
-				limit = {
-					is_warleader = c:JAP
-					is_warleader = c:NIP
-				}
-				add_war_war_support = { target = ROOT value = 5 }
-			}
+	invalid = {
+		NOT = { exists = c:JAP }
+	}
+
+	on_invalid = {
+		trigger_event = {
+			id = meiji.1
+			popup = yes
 		}
+		change_tag = JAP
+		hidden_effect = {
+			set_variable = {
+				name = meiji_var
+				value = 0
+			}
+			remove_modifier = modifier_japan_hiring_bonus
+		}
+	}
+
+	on_weekly_pulse = {
+		
 	}
 
 	weight = 20000
@@ -1877,7 +1967,7 @@ je_seikanron = {
 	}
 
 	on_complete = {
-		trigger_event = seikanron_events.99
+		trigger_event = { id = seikanron_events.99 }
 	}
 
 	invalid = {
@@ -1951,7 +2041,7 @@ je_shinto = {
 	complete = {
 		custom_tooltip = {
 			text = je_shinto_complete_tt
-			je_shinto = {
+			je:je_shinto = {
 				"scripted_bar_progress(shinto_shinto_population_progress_bar)" >= 0.3
 			}
 		}
@@ -1970,7 +2060,7 @@ je_shinto = {
 				}
 			}
 		}
-		trigger_event = shinto_events.99
+		trigger_event = { id = shinto_events.99 }
 	}
 
 	fail = {
@@ -2189,7 +2279,7 @@ je_zaibatsu = {
 				set_interest_group_name = ig_zaibatsu
 			}
 		}
-		trigger_event = zaibatsu_events.1
+		trigger_event = { id = zaibatsu_events.1 }
 	}
 
 	modifiers_while_active = {
