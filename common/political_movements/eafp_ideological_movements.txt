@@ -621,7 +621,6 @@ eafp_movement_sonno_joi = {
 	character_ideologies = {
 		ideology_sonno_joi
 		ideology_modernizer_leader
-		ideology_reformer
 		ideology_protectionist
 	}
 
@@ -643,7 +642,6 @@ eafp_movement_sonno_joi = {
 		OR = {
 			has_ideology = ideology:ideology_sonno_joi
 			has_ideology = ideology:ideology_modernizer_leader
-			has_ideology = ideology:ideology_reformer
 			has_ideology = ideology:ideology_protectionist
 		}
 	}
@@ -671,22 +669,24 @@ eafp_movement_sonno_joi = {
 		}
 	}
 
+	can_pressure_interest_group = {
+		NOT = { is_interest_group_type = ig_landowners }
+		NOT = { is_interest_group_type = ig_armed_forces }
+	}
+
 	pop_support_trigger = {
 		culture = cu:japanese
 	}
 
 	pop_support_factors = {
-		movement_support_high_urbanization
 		movement_support_high_literacy
 		movement_support_below_expected_sol
 		movement_support_radicalization
-		movement_support_aristocrats
-		movement_support_shopkeepers
+		movement_support_clergymen
+		movement_support_farmers
 		movement_support_academics
 		movement_support_bureaucrats
 		movement_support_clerks
-		movement_support_machinists
-		movement_support_peasants
 		movement_support_je_bakuhantaisei
 	}
 
@@ -728,106 +728,55 @@ eafp_movement_sonno_joi = {
 			}
 		}
 
-		add = {
-			desc = "URBAN_STATE"
-			value = 10
-			multiply = state.state_urbanization_rate
-		}
-
 		if = {
 			limit = {
-				strata = upper
+				is_pop_type = clergymen
 			}
-			if = {
-				limit = {
-					is_pop_type = aristocrats
-				}
-				add = {
-					value = 9
-					desc = "POP_ARISTOCRATS"
-				}
-			}
-			else = {
-				add = {
-					value = 6
-					desc = "UPPER_NO_ICON"
-				}
+			add = {
+				value = 20
+				desc = "POP_CLERGYMEN"
 			}
 		}
 		else_if = {
 			limit = {
-				strata = middle
+				is_pop_type = farmers
 			}
-			if = {
-				limit = {
-					is_pop_type = shopkeepers
-				}
-				add = {
-					value = 20
-					desc = "POP_SHOPKEEPERS"
-				}
-			}
-			else_if = {
-				limit = {
-					is_pop_type = academics
-				}
-				add = {
-					value = 30
-					desc = "POP_ACADEMICS"
-				}
-			}
-			else_if = {
-				limit = {
-					is_pop_type = bureaucrats
-				}
-				add = {
-					value = 12
-					desc = "POP_BUREAUCRATS"
-				}
-			}
-			else = {
-				add = {
-					value = 6
-					desc = "MIDDLE_NO_ICON"
-				}
+			add = {
+				value = 20
+				desc = "POP_FARMERS"
 			}
 		}
 		else_if = {
 			limit = {
-				strata = lower
+				is_pop_type = academics
 			}
-			if = {
-				limit = {
-					is_pop_type = clerks
-				}
-				add = {
-					value = 15
-					desc = "POP_CLERKS"
-				}
+			add = {
+				value = 30
+				desc = "POP_ACADEMICS"
 			}
-			else_if = {
-				limit = {
-					is_pop_type = machinists
-				}
-				add = {
-					value = 12
-					desc = "POP_MACHINISTS"
-				}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = bureaucrats
 			}
-			else_if = {
-				limit = {
-					is_pop_type = peasants
-				}
-				add = {
-					value = 3
-					desc = "POP_PEASANTS"
-				}
+			add = {
+				value = 20
+				desc = "POP_BUREAUCRATS"
 			}
-			else = {
-				add = {
-					value = 6
-					desc = "LOWER_NO_ICON"
-				}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = clerks
+			}
+			add = {
+				value = 20
+				desc = "POP_CLERKS"
+			}
+		}
+		else = {
+			add = {
+				value = 10
+				desc = "WAR_EXHAUSTION_BASE"
 			}
 		}
 
@@ -855,7 +804,7 @@ eafp_movement_sonno_joi = {
 			add = 1
 		}
 
-		if = { # 세배까지 ㄱㄴ
+		if = { # 3배까지 ㄱㄴ
 			limit = { owner ?= { has_journal_entry = je_bakuhantaisei } }
 			owner ?= {
 				multiply = {
@@ -881,24 +830,112 @@ eafp_movement_sonno_joi = {
 		}
 
 		state_weight = {
-			value = state_urbanization_rate
+			value = 0
+			if = {
+				limit = {
+					s:STATE_TOHOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_TOHOKU }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_TOHOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_TOHOKU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KANTO.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KANTO }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_KANTO_loyalty_progress_bar_value
+						add = bakuhantaisei_KANTO_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_CHUBU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_CHUBU }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_CHUBU_loyalty_progress_bar_value
+						add = bakuhantaisei_CHUBU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KANSAI.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KANSAI }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_KANSAI_loyalty_progress_bar_value
+						add = bakuhantaisei_KANSAI_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KYUSHU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KYUSHU }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_KYUSHU_loyalty_progress_bar_value
+						add = bakuhantaisei_KYUSHU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_CHUGOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_CHUGOKU }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_CHUGOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_CHUGOKU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_SHIKOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_SHIKOKU }
+				}
+				owner = {
+					add = {
+						value = 100
+						subtract = bakuhantaisei_SHIKOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_SHIKOKU_independency_progress_bar_value
+					}
+				}
+			}
+		}
+
+		forced_tags = {
+			NIP = {
+				trigger = {
+					always = yes
+				}
+				weight = 1000
+			}
 		}
 	}
 
-	secession = {
-		possible = {
-			political_movement_support >= 0.05
-			scope:clout <= 0
-		}
-
-		weight = {
-			value = 1000
-		}
-
-		state_weight = {
-			value = state_urbanization_rate
-		}
-	}
+	law_enactment_radicalism_multiplier = 2
+	active_law_radicalism_multiplier = 2
 
 	additional_radicalism_factors = {
 		owner = {
@@ -935,6 +972,410 @@ eafp_movement_sonno_joi = {
 					desc = "NO_INSTITUTION_police"
 				}
 			}
+			# 추가
+			if = { # +0.8까지 ㄱㄴ
+				limit = { has_journal_entry = je_bakuhantaisei }
+				add = {
+					desc = "from_bakuhantaisei_je"
+					value = 4000
+					je:je_bakuhantaisei ?= {
+						subtract = "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)"
+					}
+					divide = 5000
+				}
+			}
+		}
+		subtract = { # 추가
+			value = 0.5
+			subtract = political_movement_support
+			min = 0
+			multiply = 1
+			desc = "LOW_MOVEMENT_IDENTITY_SUPPORT"
+		}
+	}
+}
+
+eafp_movement_sabaku = {
+	category = movement_category_ideological
+
+	ideology = ideology_sabaku_movement
+	character_ideologies = {
+		ideology_kaikakuha
+		ideology_hoshuha
+		ideology_hitotsubashiha
+		ideology_nankiha
+		ideology_reformer
+	}
+
+	creation_trigger = {
+        c:JAP ?= this
+		has_law = law_type:law_bakufu
+	}	
+
+	creation_weight = {
+		value = 100
+	}
+
+	on_created = {
+		add_movement_enthusiasm_modifier = yes
+	}
+
+	character_support_trigger = {
+		culture = cu:japanese
+		OR = {
+			has_ideology = ideology:ideology_kaikakuha
+			has_ideology = ideology:ideology_hoshuha
+			has_ideology = ideology:ideology_hitotsubashiha
+			has_ideology = ideology:ideology_nankiha
+			has_ideology = ideology:ideology_reformer
+		}
+	}
+	character_support_weight = {
+		value = 100
+		if = {
+			limit = {
+				OR = {
+					has_ideology = ideology:ideology_kaikakuha
+					has_ideology = ideology:ideology_hoshuha
+					has_ideology = ideology:ideology_hitotsubashiha
+					has_ideology = ideology:ideology_nankiha
+				}
+			}
+			multiply = {
+				value = 5
+			}
+		}
+		if = {
+			limit = {
+				OR = {
+					is_interest_group_type = ig_landowners
+					is_interest_group_type = ig_armed_forces
+					is_interest_group_type = ig_petty_bourgeoisie
+				}
+			}
+			multiply = {
+				value = 2
+			}
+		}
+	}
+
+	pop_support_trigger = {
+		culture = cu:japanese
+	}
+
+	pop_support_factors = {
+		movement_support_high_literacy
+		movement_support_below_expected_sol
+		movement_support_radicalization
+		movement_support_aristocrats
+		movement_support_clergymen
+		movement_support_academics
+		movement_support_bureaucrats
+		movement_support_officers
+		movement_support_je_bakuhantaisei
+	}
+
+	pop_support_weight = {
+		if = {
+			limit = {
+				exists = scope:political_movement
+				scope:political_movement ?= {
+					OR = {
+						is_being_suppressed = yes
+						is_being_bolstered = yes
+					}
+				}
+			}
+			if = {
+				limit = {
+					scope:political_movement = {
+						is_being_suppressed = yes
+					}
+				}
+				add = {
+					value = suppression_base_value
+					multiply = {
+						value = -0.5
+						add = owner.modifier:country_suppression_attraction_factor
+					}
+					desc = "concept_suppressed"
+				}
+			}
+			else = {
+				add = {
+					value = bolstering_base_value
+					multiply = {
+						value = 0.5
+						add = owner.modifier:country_bolster_attraction_factor
+					}
+					desc = "concept_bolstered"
+				}
+			}
+		}
+
+		if = {
+			limit = {
+				is_pop_type = aristocrats
+			}
+			add = {
+				value = 30
+				desc = "POP_ARISTOCRATS"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = clergymen
+			}
+			add = {
+				value = 20
+				desc = "POP_CLERGYMEN"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = academics
+			}
+			add = {
+				value = 20
+				desc = "POP_ACADEMICS"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = bureaucrats
+			}
+			add = {
+				value = 30
+				desc = "POP_BUREAUCRATS"
+			}
+		}
+		else_if = {
+			limit = {
+				is_pop_type = officers
+			}
+			add = {
+				value = 20
+				desc = "POP_OFFICERS"
+			}
+		}
+		else = {
+			add = {
+				value = 10
+				desc = "WAR_EXHAUSTION_BASE"
+			}
+		}
+
+		if = {
+			limit = {
+				standard_of_living < state.average_expected_sol # It is intentional that a labourer being well-off doesn't decrease support for this.
+			}
+			add = { # Increases likelihood of support if impoverished.
+				desc = "IS_BELOW_EXPECTED_SOL"
+				value = state.average_expected_sol
+				subtract = standard_of_living
+				max = 10
+			}
+		}
+
+		multiply = { # Illiterate pops participate at 1/10 the rate of fully literate pops
+			desc = "POP_LITERACY"
+			value = literacy_rate
+			add = 0.10
+		}
+
+		multiply = { # Multiplied by 2x max
+			desc = "POP_RADICALS"
+			value = pop_radical_fraction
+			add = 1
+		}
+
+		if = { # 3배까지 ㄱㄴ
+			limit = { owner ?= { has_journal_entry = je_bakuhantaisei } }
+			owner ?= {
+				multiply = {
+					desc = "from_bakuhantaisei_je"
+					value = 4000
+					je:je_bakuhantaisei ?= {
+						subtract = "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)"
+					}
+					divide = 2000
+					add = 1
+				}
+			}
+		}
+	}
+
+	revolution = {
+		possible = {
+			political_movement_support >= 0.05
+		}
+
+		weight = {
+			value = 100
+		}
+
+		state_weight = {
+			value = 100
+			if = {
+				limit = {
+					s:STATE_TOHOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_TOHOKU }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_TOHOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_TOHOKU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KANTO.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KANTO }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_KANTO_loyalty_progress_bar_value
+						add = bakuhantaisei_KANTO_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_CHUBU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_CHUBU }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_CHUBU_loyalty_progress_bar_value
+						add = bakuhantaisei_CHUBU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KANSAI.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KANSAI }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_KANSAI_loyalty_progress_bar_value
+						add = bakuhantaisei_KANSAI_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_KYUSHU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_KYUSHU }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_KYUSHU_loyalty_progress_bar_value
+						add = bakuhantaisei_KYUSHU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_CHUGOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_CHUGOKU }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_CHUGOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_CHUGOKU_independency_progress_bar_value
+					}
+				}
+			}
+			if = {
+				limit = {
+					s:STATE_SHIKOKU.region_state:JAP ?= THIS
+					owner ?= { has_journal_entry = je:je_bakuhantaisei_SHIKOKU }
+				}
+				owner = {
+					subtract = {
+						value = 100
+						subtract = bakuhantaisei_SHIKOKU_loyalty_progress_bar_value
+						add = bakuhantaisei_SHIKOKU_independency_progress_bar_value
+					}
+				}
+			}
+		}
+
+		forced_tags = {
+			JSN = {
+				trigger = {
+					always = yes
+				}
+				weight = 1000
+			}
+		}
+	}
+
+	law_enactment_radicalism_multiplier = 2
+	active_law_radicalism_multiplier = 2
+
+	additional_radicalism_factors = {
+		owner = {
+			if = {
+				limit = { has_institution = institution_schools }
+
+				add = {
+					value = 3
+					subtract = "institution_investment_level(institution_schools)"
+					multiply = 0.05
+					desc = "INSTITUTION_FUNDING_LEVEL_schools"
+				}
+			}
+			else = {
+				add = {
+					value = 0.1
+					desc = "NO_INSTITUTION_schools"
+				}
+			}
+
+			if = {
+				limit = { has_institution = institution_police }
+
+				add = {
+					value = "institution_investment_level(institution_police)"
+					subtract = 2
+					multiply = 0.05
+					desc = "INSTITUTION_FUNDING_LEVEL_police"
+				}
+			}
+			else = {
+				add = {
+					value = -0.1
+					desc = "NO_INSTITUTION_police"
+				}
+			}
+			# 추가
+			if = { # +0.4까지 ㄱㄴ
+				limit = { has_journal_entry = je_bakuhantaisei }
+				add = {
+					desc = "from_bakuhantaisei_je"
+					value = 4000
+					je:je_bakuhantaisei ?= {
+						subtract = "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)"
+					}
+					divide = 10000
+				}
+			}
+		}
+		subtract = { # 추가
+			value = 0.5
+			subtract = political_movement_support
+			min = 0
+			multiply = 1
+			desc = "LOW_MOVEMENT_IDENTITY_SUPPORT"
 		}
 	}
 }

@@ -16,6 +16,10 @@ je_bakuhantaisei = {
 		
 	}
 
+	modifiers_while_active = {
+		bakuhantaisei_modifier
+	}
+
 	status_desc = {
 		first_valid = {
 			triggered_desc = { 
@@ -70,48 +74,107 @@ je_bakuhantaisei = {
 	}
 
 	on_complete = { 
-		# TODO
-	}
-
-	fail = {
-		OR = {
-			custom_tooltip = {
-				text = bakufu_kaikaku_fail_tt
-				scope:journal_entry = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0 }
+		hidden_effect = {
+			every_scope_character = {
+				limit = { is_bakufu_politician = yes }
+				remove_bakufu_politician_role = yes
 			}
-			has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi
 		}
-		hidden_trigger = {
-			always = no
+		every_scope_state = {
+			limit = { has_modifier = legacy_of_sekigahara_modifier }
+			remove_modifier = legacy_of_sekigahara_modifier
 		}
 	}
 
-	on_fail = {
-		custom_tooltip = {
-			text = je_bakuhantaisei_on_fail_tt
+	invalid = {
+		NOT = { has_law = law_type:law_bakufu }
+	}
+
+	on_invalid = { 
+		hidden_effect = {
+			every_scope_character = {
+				limit = { is_bakufu_politician = yes }
+				remove_bakufu_politician_role = yes
+			}
+		}
+		every_scope_state = {
+			limit = { has_modifier = legacy_of_sekigahara_modifier }
+			remove_modifier = legacy_of_sekigahara_modifier
 		}
 	}
 
 	on_weekly_pulse = {
-		effect = { # 왠진 모르지만 막부 정치인 자리 비었을때 강제 활성화
-			if = {
-				limit = {
-					NOT = { has_variable = rojushuza_var }
-					NOT = { has_variable = recruiting_bakufu_politicians }
-				}
-				trigger_event = { id = eafp_japan.4 }
-			}
+		effect = {
+			# 왠진 모르지만 막부 정치인 자리 비었을때 강제 활성화
 			if = {
 				limit = {
 					variable_list_size = { name = roju_varlist value < 4 }
 					NOT = { has_variable = recruiting_bakufu_politicians }
 				}
-				trigger_event = { id = eafp_japan.6 }
+				appoint_roju_effect = yes
+			}
+			else_if = {
+				limit = {
+					NOT = { has_variable = rojushuza_var }
+					NOT = { has_variable = recruiting_bakufu_politicians }
+				}
+				appoint_rojushuza_effect = yes
+			}
+			c:NIP ?= {
+				if = {
+					limit = {
+						is_revolutionary = yes
+						is_diplomatic_play_enemy_of = ROOT
+						ROOT = { has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi }
+						NOT = { has_variable = boshin_war_happened }
+					}
+					save_scope_as = sonno_joi_country
+
+					add_journal_entry = {
+						type = je_boshin_war_tobaku
+					}
+					ROOT = {
+						add_journal_entry = {
+							type = je_boshin_war_sabaku
+						}
+					}
+
+					if = {
+						limit = { NOT = { has_variable = boshin_war_happened } }
+						set_variable = boshin_war_happened
+						ROOT = {
+							trigger_event = boshin_war.1
+						}
+					}
+				}
+			}
+			# invalid한 인물이 있을 때 지움
+			if = {
+				limit = {
+					var:tairo_var.owner != ROOT
+				}
+				var:tairo_var ?= { remove_bakufu_politician_role = yes }
+				remove_variable = tairo_var
 			}
 			if = {
-				limit = { scope:journal_entry = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 0 } }
-				trigger_event = { id = boshin_war.1 } # 대정봉환
-				scope:journal_entry = { set_bar_progress = { value = 4000 name = bakuhantaisei_bakufu_authority_progress_bar } }
+				limit = {
+					var:rojushuza_var.owner != ROOT
+				}
+				var:rojushuza_var ?= { remove_bakufu_politician_role = yes }
+				remove_variable = rojushuza_var
+			}
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						owner != ROOT
+					}
+				}
+				every_in_list = {
+					variable = roju_varlist
+					limit = { owner != ROOT }
+					remove_bakufu_politician_role = yes
+				}
 			}
 		}
 	}
@@ -131,7 +194,7 @@ je_bakuhantaisei = {
 		effect = {
 			every_scope_character = { # 막부 정치인 인물 사망 판정
 				limit = {
-					has_variable = eafp_bakuhantaisei_politician_influence
+					is_bakufu_politician = yes
 					is_busy = yes # immortal 판정 trigger는 없음. (원래)
 
 					NOT = { has_modifier = modifier_bakufu_recently_appointed } # 최근 임명된 놈 제외
@@ -216,7 +279,10 @@ je_bakuhantaisei_TOHOKU = {
 	}
 
 	invalid = {
-		NOT = { exists = s:STATE_TOHOKU.region_state:JAP }
+		OR = {
+			NOT = { exists = s:STATE_TOHOKU.region_state:JAP }
+			NOT = { has_law = law_type:law_bakufu }
+		}
 	}
 
 	on_invalid = {
@@ -281,9 +347,13 @@ je_bakuhantaisei_KANTO = {
 		je_bakuhantaisei_STATE_clear = { STATE = KANTO }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_KANTO.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_KANTO.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -347,9 +417,13 @@ je_bakuhantaisei_CHUBU = {
 		je_bakuhantaisei_STATE_clear = { STATE = CHUBU }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_CHUBU.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_CHUBU.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -413,9 +487,13 @@ je_bakuhantaisei_KANSAI = {
 		je_bakuhantaisei_STATE_clear = { STATE = KANSAI }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_KANSAI.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_KANSAI.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -479,9 +557,13 @@ je_bakuhantaisei_KYUSHU = {
 		je_bakuhantaisei_STATE_clear = { STATE = KYUSHU }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_KYUSHU.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_KYUSHU.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -545,9 +627,13 @@ je_bakuhantaisei_CHUGOKU = {
 		je_bakuhantaisei_STATE_clear = { STATE = CHUGOKU }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_CHUGOKU.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_CHUGOKU.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -611,9 +697,13 @@ je_bakuhantaisei_SHIKOKU = {
 		je_bakuhantaisei_STATE_clear = { STATE = SHIKOKU }
 	}
 
-	invalid = {
-		NOT = { exists = s:STATE_SHIKOKU.region_state:JAP }
-	}
+    invalid = {
+        OR = {
+            NOT = { exists = s:STATE_SHIKOKU.region_state:JAP }
+            NOT = { has_law = law_type:law_bakufu }
+        }
+    }
+
 
 	on_invalid = {
 		set_variable = {
@@ -674,6 +764,22 @@ je_hokkaido = {
 	}
 
 	on_complete = {
+		s:STATE_HOKKAIDO = {
+			every_scope_state = {
+				if = {
+					limit = { has_modifier = matsumae_han_modifier }
+					remove_modifier = matsumae_han_modifier
+				}
+				if = {
+					limit = { has_modifier = bashoukeoisei_modifier }
+					remove_modifier = bashoukeoisei_modifier
+				}
+				if = {
+					limit = { has_modifier = disorganized_bashoukeoisei_modifier }
+					remove_modifier = disorganized_bashoukeoisei_modifier
+				}
+			}
+		}
 		trigger_event = { id = hokkaido.1 }
 	}
 
@@ -901,6 +1007,73 @@ je_bakufu_kaikaku = {
 		trigger_event = { id = eafp_japan.2999 }
 	}
 
+	invalid = {
+		NOT = { has_journal_entry = je_bakuhantaisei }
+	}
+
+	on_invalid = {
+		hidden_effect = {
+			# 파벌에 따른 다이묘 approval
+			remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
+			remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
+			set_local_variable = {
+				name = modifier_multiplier
+				value = {
+					je:je_bakufu_kaikaku = {
+						value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
+						subtract = 50
+						multiply = ROOT.bakufu_hitotsubashiha_hiritsu
+						add = {
+							value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
+							subtract = 50
+							multiply = ROOT.bakufu_nankiha_hiritsu
+						}
+						divide = 50
+					}
+				}
+			}
+			if = {
+				limit = { local_var:modifier_multiplier >= 0 }
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_positive_modifier
+					multiplier = local_var:modifier_multiplier
+					months = 24
+					is_decaying = yes
+				}
+			}
+			else = {
+				add_modifier = {
+					name = bakufu_kaikaku_daimyo_approval_negative_modifier
+					multiplier = {
+						value = local_var:modifier_multiplier
+						multiply = -1
+					}
+					months = 24
+					is_decaying = yes
+				}
+			}
+			# 파벌의 영향력 차이에 대한 변화 요인
+			remove_modifier = bakufu_kaikaku_daimyo_influence_modifier
+			add_modifier = {
+				name = bakufu_kaikaku_daimyo_influence_modifier
+				multiplier = {
+					value = 0.25
+					subtract = {
+						value = bakufu_hitotsubashiha_hiritsu
+						multiply = bakufu_nankiha_hiritsu
+					}
+					multiply = 4
+				}
+				months = 24
+				is_decaying = yes
+			}
+
+			remove_variable = hitotsubashiha_influence_var_monthly_add
+			remove_variable = nankiha_influence_var_monthly_add
+			set_variable = bakufu_kaikaku_complete_var
+		}
+	}
+
 	on_monthly_pulse = {
 		effect = {
 			bakufu_kaikaku_progress_bar_monthly_calc = yes
@@ -967,9 +1140,28 @@ je_bakufu_kaikaku = {
 								100 = { # 난키파 정치인 암살
 									trigger = {
 										je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)" <= 40 }
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_nankiha = yes
+										}
 									}
 									trigger_event = {
 										id = eafp_japan.2182
+										days = { 1 30 }
+										popup = yes
+									}
+								}
+								100 = { # 난키파 축출
+									trigger = {
+										bakufu_hitotsubashiha_hiritsu >= 0.7
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_nankiha = yes
+											count >= 3
+										}
+									}
+									trigger_event = {
+										id = eafp_japan.2184
 										days = { 1 30 }
 										popup = yes
 									}
@@ -987,7 +1179,13 @@ je_bakufu_kaikaku = {
 									}
 								}
 								100 = { # 난키파 정치인 사임 요구
-									trigger = { NOT = { has_journal_entry = je_eafpjap2311 } }
+									trigger = {
+										NOT = { has_journal_entry = je_eafpjap2311 }
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_nankiha = yes
+										}
+									}
 									trigger_event = {
 										id = eafp_japan.2311
 										days = { 1 30 }
@@ -1044,6 +1242,10 @@ je_bakufu_kaikaku = {
 								100 = { # 히토츠바시파 정치인 암살
 									trigger = {
 										je:je_bakufu_kaikaku = { "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)" <= 40 }
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_hitotsubashiha = yes
+										}
 									}
 									trigger_event = {
 										id = eafp_japan.2181
@@ -1051,8 +1253,29 @@ je_bakufu_kaikaku = {
 										popup = yes
 									}
 								}
+								100 = { # 히토츠바시파 축출
+									trigger = {
+										bakufu_nankiha_hiritsu >= 0.7
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_hitotsubashiha = yes
+											count >= 3
+										}
+									}
+									trigger_event = {
+										id = eafp_japan.2183
+										days = { 1 30 }
+										popup = yes
+									}
+								}
 								100 = { # 히토츠바시파 정치인 사임 요구
-									trigger = { NOT = { has_journal_entry = je_eafpjap2310 } }
+									trigger = {
+										NOT = { has_journal_entry = je_eafpjap2310 }
+										any_scope_character = {
+											is_bakufu_politician = yes
+											is_hitotsubashiha = yes
+										}
+									}
 									trigger_event = {
 										id = eafp_japan.2310
 										days = { 1 30 }
@@ -1230,6 +1453,14 @@ je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
 		}
 	}
 
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	on_invalid = {
+		remove_modifier = bakufu_corruption_dip
+	}
+
 	weight = 10000
 }
 
@@ -1295,6 +1526,14 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 		}
 	}
 
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	on_invalid = {
+		remove_modifier = bakufu_corruption_mil
+	}
+
 	weight = 10000
 
 }
@@ -1315,13 +1554,12 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 		scope:journal_entry = { is_goal_complete = yes }
 
 		has_law = law_type:law_monarchy
+		has_law = law_type:law_bakufu
 		NOT = { has_modifier = declared_bankruptcy }
 		ig:ig_landowners = {
 			is_in_government = yes
 		}
 		has_insurrectionary_interest_groups = no
-		is_at_war = no
-		government_legitimacy >= 80
 		bureaucracy >= 0
 		any_scope_building = {
 			is_building_type = building_university
@@ -1345,6 +1583,7 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 
 	is_progressing = {
 		has_law = law_type:law_monarchy
+		has_law = law_type:law_bakufu
 		NOT = { has_modifier = declared_bankruptcy }
 		ig:ig_landowners = {
 			is_in_government = yes
@@ -1366,6 +1605,7 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 			if = {
 				limit = {
 					has_law = law_type:law_monarchy
+					has_law = law_type:law_bakufu
 					NOT = { has_modifier = declared_bankruptcy }
 					ig:ig_landowners = {
 						is_in_government = yes
@@ -1387,6 +1627,14 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 				}
 			}
 		}
+	}
+
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	on_invalid = {
+		remove_modifier = bakufu_corruption_adm
 	}
 
 	current_value = {
@@ -1442,6 +1690,14 @@ je_bakufu_zaisei = { # je_meiji_economy에 대응
 		}
 	}
 
+	invalid = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	on_invalid = {
+		remove_modifier = bakufu_corruption_fin
+	}
+
 	current_value = {
 		value = root.gdp
 	}
@@ -1469,7 +1725,7 @@ je_eafpjap2310 = {
 			text = target_character_resigned_tt
 			OR = {
 				NOT = { exists = scope:target }
-				NOT = { scope:target = { has_variable = eafp_bakuhantaisei_politician_influence } }
+				NOT = { scope:target = { is_bakufu_politician = yes } }
 			}
 		}
 	}
@@ -1481,10 +1737,7 @@ je_eafpjap2310 = {
 	}
 
 	invalid = {
-		OR = {
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
-			NOT = { has_journal_entry = je_bakuhantaisei }
-		}
+		NOT = { has_journal_entry = je_bakuhantaisei }
 	}
 
 	on_timeout = {
@@ -1511,7 +1764,7 @@ je_eafpjap2311 = {
 			text = target_character_resigned_tt
 			OR = {
 				NOT = { exists = scope:target }
-				NOT = { scope:target = { has_variable = eafp_bakuhantaisei_politician_influence } }
+				NOT = { scope:target = { is_bakufu_politician = yes } }
 			}
 		}
 	}
@@ -1523,10 +1776,7 @@ je_eafpjap2311 = {
 	}
 
 	invalid = {
-		OR = {
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
-			NOT = { has_journal_entry = je_bakuhantaisei }
-		}
+		NOT = { has_journal_entry = je_bakuhantaisei }
 	}
 
 	on_timeout = {
@@ -1551,14 +1801,22 @@ je_boshin_war_sabaku = {
 	group = je_group_historical_content
 
 	complete = {
-		NOT = { exists = c:NIP }
+		NOT = {
+			any_civil_war = {
+				political_movement = {
+					is_political_movement_type = eafp_movement_sonno_joi
+				}
+			}
+		}
+		has_law = law_type:law_bakufu
 	}
 
 	on_complete = {
-		trigger_event = {
-			id = boshin_war.9
-			popup = yes
-		}
+		trigger_event = boshin_war.9
+	}
+
+	invalid = {
+		NOT = { has_law = law_type:law_bakufu }
 	}
 
 	on_weekly_pulse = {
@@ -1570,21 +1828,6 @@ je_boshin_war_sabaku = {
 				}
 				add_war_war_support = { target = ROOT value = 5 }
 			}
-		}
-	}
-
-	fail = {
-		NOT = {
-			any_diplomatic_play = {
-				type = play_type:dp_boshin_war
-			}
-		}
-		exists = c:NIP
-	}
-
-	on_fail = {
-		add_journal_entry = {
-			type = je_boshin_war_peace_sabaku
 		}
 	}
 
@@ -1599,7 +1842,16 @@ je_boshin_war_tobaku = {
 	group = je_group_historical_content
 
 	complete = {
-		NOT = { exists = c:JAP }
+		NOT = {
+			c:JAP = {
+				any_civil_war = {
+					political_movement = {
+						is_political_movement_type = eafp_movement_sonno_joi
+					}
+				}
+			}
+		}
+		NOT = { has_law = law_type:law_bakufu }
 	}
 
 	on_complete = {
@@ -1615,6 +1867,10 @@ je_boshin_war_tobaku = {
 			}
 			remove_modifier = modifier_japan_hiring_bonus
 		}
+	}
+
+	invalid = {
+		has_law = law_type:law_bakufu
 	}
 
 	on_weekly_pulse = {
@@ -1627,183 +1883,6 @@ je_boshin_war_tobaku = {
 				add_war_war_support = { target = ROOT value = 5 }
 			}
 		}
-	}
-
-	fail = {
-		NOT = {
-			any_diplomatic_play = {
-				type = play_type:dp_boshin_war
-			}
-		}
-		exists = c:JAP
-	}
-
-	on_fail = {
-		add_journal_entry = {
-			type = je_boshin_war_peace_tobaku
-		}
-	}
-
-	weight = 20000
-
-	should_be_pinned_by_default = yes
-}
-
-je_boshin_war_peace_sabaku = { # 보신 전쟁이 무조건 평화로 끝났을때 좌막파 JAP 저널
-	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
-
-	group = je_group_historical_content
-
-	scripted_progress_bar = boshin_war_peace_sabaku_legitimacy_progress_bar
-
-	immediate = {
-		c:JAP = { save_scope_as = JAP_scope }
-		c:NIP = { save_scope_as = NIP_scope }
-	}
-
-	complete = {
-		custom_tooltip = {
-			text = je_boshin_war_peace_goal
-			scope:journal_entry = {
-				scripted_bar_progress = { name = boshin_war_peace_sabaku_legitimacy_progress_bar value >= 100 }
-			}
-		}
-	}
-
-	on_complete = {
-		trigger_event = {
-			id = boshin_war.9
-			popup = yes
-		}
-	}
-
-	invalid = {
-		NOT = { exists = c:NIP }
-	}
-
-	on_invalid = {
-		trigger_event = {
-			id = boshin_war.9
-			popup = yes
-		}
-	}
-
-	on_monthly_pulse = {
-		effect = {
-			# 좌막파 저널과 도막파 저널의 progress bar 값을 동기화하는 용도.
-			c:JAP = {
-				je:je_boshin_war_peace_sabaku ?= {
-					save_scope_value_as = {
-						name = sabaku_legitimacy
-						value = "scripted_bar_progress(boshin_war_peace_sabaku_legitimacy_progress_bar)"
-					}
-				}
-			}
-			c:NIP = {
-				je:je_boshin_war_peace_tobaku ?= {
-					save_scope_value_as = {
-						name = tobaku_legitimacy
-						value = "scripted_bar_progress(boshin_war_peace_tobaku_legitimacy_progress_bar)"
-					}
-				}
-			}
-			c:JAP = {
-				je:je_boshin_war_peace_sabaku ?= {
-					set_bar_progress = {
-						name = boshin_war_peace_sabaku_legitimacy_progress_bar
-						value = {
-							value = scope:sabaku_legitimacy
-							add = 100
-							subtract = scope:tobaku_legitimacy
-							divide = 2
-						}
-					}
-					save_scope_value_as = {
-						name = sabaku_legitimacy
-						value = "scripted_bar_progress(boshin_war_peace_sabaku_legitimacy_progress_bar)"
-					}
-				}
-			}
-			c:NIP = {
-				je:je_boshin_war_peace_tobaku ?= {
-					set_bar_progress = {
-						name = boshin_war_peace_tobaku_legitimacy_progress_bar
-						value = {
-							value = 100
-							subtract = scope:sabaku_legitimacy
-						}
-					}
-					save_scope_value_as = {
-						name = tobaku_legitimacy
-						value = "scripted_bar_progress(boshin_war_peace_tobaku_legitimacy_progress_bar)"
-					}
-				}
-			}
-		}
-	}
-
-	weight = 20000
-
-	should_be_pinned_by_default = yes
-}
-
-je_boshin_war_peace_tobaku = { # 보신 전쟁이 무조건 평화로 끝났을때 도막파 NIP 저널
-	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
-
-	group = je_group_historical_content
-
-	scripted_progress_bar = boshin_war_peace_tobaku_legitimacy_progress_bar
-
-	immediate = {
-		c:JAP = { save_scope_as = JAP_scope }
-		c:NIP = { save_scope_as = NIP_scope }
-	}
-
-	complete = {
-		custom_tooltip = {
-			text = je_boshin_war_peace_goal
-			scope:journal_entry = {
-				scripted_bar_progress = { name = boshin_war_peace_tobaku_legitimacy_progress_bar value >= 100 }
-			}
-		}
-	}
-
-	on_complete = {
-		trigger_event = {
-			id = meiji.1
-			popup = yes
-		}
-		change_tag = JAP
-		hidden_effect = {
-			set_variable = {
-				name = meiji_var
-				value = 0
-			}
-			remove_modifier = modifier_japan_hiring_bonus
-		}
-	}
-
-	invalid = {
-		NOT = { exists = c:JAP }
-	}
-
-	on_invalid = {
-		trigger_event = {
-			id = meiji.1
-			popup = yes
-		}
-		change_tag = JAP
-		hidden_effect = {
-			set_variable = {
-				name = meiji_var
-				value = 0
-			}
-			remove_modifier = modifier_japan_hiring_bonus
-		}
-	}
-
-	on_weekly_pulse = {
-		
 	}
 
 	weight = 20000
@@ -2068,190 +2147,16 @@ je_shinto = {
 	}
 
 	on_fail = {
-		custom_tooltip = {
-			text = shinto_events.99.tt
-			if = {
-				limit = { has_modifier = shinto_centralization_modifier }
-				remove_modifier = shinto_centralization_modifier
-			}
-			if = {
-				limit = { has_modifier = shinto_gradual_standardization_modifier }
-				remove_modifier = shinto_gradual_standardization_modifier
-			}
-			if = {
-				limit = { has_modifier = shinto_shrine_autonomy_modifier }
-				remove_modifier = shinto_shrine_autonomy_modifier
-			}
-			if = {
-				limit = { has_modifier = imperial_shinto_pantheon_established_modifier }
-				remove_modifier = imperial_shinto_pantheon_established_modifier
-			}
-			if = {
-				limit = { has_modifier = diverse_shinto_pantheon_accepted_modifier }
-				remove_modifier = diverse_shinto_pantheon_accepted_modifier
-			}
-			if = {
-				limit = { has_modifier = imperial_dignity_enforced_modifier }
-				remove_modifier = imperial_dignity_enforced_modifier
-			}
-			if = {
-				limit = { has_modifier = folk_reverence_tolerated_modifier }
-				remove_modifier = folk_reverence_tolerated_modifier
-			}
-			if = {
-				limit = { has_modifier = imperial_etiquette_education_modifier }
-				remove_modifier = imperial_etiquette_education_modifier
-			}
-			if = {
-				limit = { has_modifier = heresy_investigation_modifier }
-				remove_modifier = heresy_investigation_modifier
-			}
-			if = {
-				limit = { has_modifier = heresy_accusation_dismissed_modifier }
-				remove_modifier = heresy_accusation_dismissed_modifier
-			}
-			if = {
-				limit = { has_modifier = shinto_doctrinal_review_modifier }
-				remove_modifier = shinto_doctrinal_review_modifier
-			}
-			if = {
-				limit = { has_modifier = bureaucratic_confusion_resolved_modifier }
-				remove_modifier = bureaucratic_confusion_resolved_modifier
-			}
-			if = {
-				limit = { has_modifier = religious_policy_stagnation_modifier }
-				remove_modifier = religious_policy_stagnation_modifier
-			}
-			if = {
-				limit = { has_modifier = regional_religious_approach_modifier }
-				remove_modifier = regional_religious_approach_modifier
-			}
-			if = {
-				limit = { has_modifier = standardized_religious_education_modifier }
-				remove_modifier = standardized_religious_education_modifier
-			}
-			if = {
-				limit = { has_modifier = simplified_doctrine_modifier }
-				remove_modifier = simplified_doctrine_modifier
-			}
-			if = {
-				limit = { has_modifier = imperial_portrait_education_modifier }
-				remove_modifier = imperial_portrait_education_modifier
-			}
-			if = {
-				limit = { has_modifier = imperial_portrait_folk_belief_modifier }
-				remove_modifier = imperial_portrait_folk_belief_modifier
-			}
-			if = {
-				limit = { has_modifier = state_shinto_indoctrination_modifier }
-				remove_modifier = state_shinto_indoctrination_modifier
-			}
-			if = {
-				limit = { has_modifier = shinto_first_policy_strengthened_modifier }
-				remove_modifier = shinto_first_policy_strengthened_modifier
-			}
-			if = {
-				limit = { has_modifier = seeking_compromise_with_buddhists_modifier }
-				remove_modifier = seeking_compromise_with_buddhists_modifier
-			}
-			if = {
-				limit = { has_modifier = religious_united_front_modifier }
-				remove_modifier = religious_united_front_modifier
-			}
-			if = {
-				limit = { has_modifier = shinto_supremacy_buddhist_role_modifier }
-				remove_modifier = shinto_supremacy_buddhist_role_modifier
-			}
-			if = {
-				limit = { has_modifier = religious_independence_policy_modifier }
-				remove_modifier = religious_independence_policy_modifier
-			}
-			if = {
-				limit = { has_modifier = strict_shinbutsu_bunri_modifier }
-				remove_modifier = strict_shinbutsu_bunri_modifier
-			}
-			if = {
-				limit = { has_modifier = gradual_shinbutsu_bunri_modifier }
-				remove_modifier = gradual_shinbutsu_bunri_modifier
-			}
-			if = {
-				limit = { has_modifier = shinbutsu_bunri_exemption_modifier }
-				remove_modifier = shinbutsu_bunri_exemption_modifier
-			}
-			if = {
-				limit = { has_modifier = forced_shrine_merger_modifier }
-				remove_modifier = forced_shrine_merger_modifier
-			}
-			if = {
-				limit = { has_modifier = flexible_shrine_policy_modifier }
-				remove_modifier = flexible_shrine_policy_modifier
-			}
-			if = {
-				limit = { has_modifier = managed_shrine_merger_modifier }
-				remove_modifier = managed_shrine_merger_modifier
-			}
-			if = {
-				limit = { has_modifier = pure_shinto_architecture_modifier }
-				remove_modifier = pure_shinto_architecture_modifier
-			}
-			if = {
-				limit = { has_modifier = syncretic_shrine_architecture_modifier }
-				remove_modifier = syncretic_shrine_architecture_modifier
-			}
-			if = {
-				limit = { has_modifier = priest_reeducation_program_modifier }
-				remove_modifier = priest_reeducation_program_modifier
-			}
-			if = {
-				limit = { has_modifier = awkward_rituals_continue_modifier }
-				remove_modifier = awkward_rituals_continue_modifier
-			}
-			if = {
-				limit = { has_modifier = form_over_substance_policy_modifier }
-				remove_modifier = form_over_substance_policy_modifier
-			}
-			if = {
-				limit = { has_modifier = superstition_crackdown_modifier }
-				remove_modifier = superstition_crackdown_modifier
-			}
-			if = {
-				limit = { has_modifier = superstition_tolerated_modifier }
-				remove_modifier = superstition_tolerated_modifier
-			}
-			if = {
-				limit = { has_modifier = folk_religion_absorbed_modifier }
-				remove_modifier = folk_religion_absorbed_modifier
-			}
-		}
 	}
 
 	on_monthly_pulse = {
-		random_events = {
-			200 = 0
-			10 = shinto_events.3
-			10 = shinto_events.4
-			10 = shinto_events.5
-			10 = shinto_events.6
-			10 = shinto_events.7
-			10 = shinto_events.8
-			10 = shinto_events.9
-			10 = shinto_events.10
-			10 = shinto_events.11
-			10 = shinto_events.12
-			10 = shinto_events.13
-			10 = shinto_events.14
-			10 = shinto_events.15
-		}
 	}
 
 	on_weekly_pulse = {
-		events = {
-			shinto_events.2
-		}
 	}
 
 	weight = 1000
-	should_be_pinned_by_default = yes
+	should_be_pinned_by_default = no
 }
 
 # 재벌
@@ -2675,3 +2580,197 @@ je_zaibatsu_petition_remove_monopoly = {
 
 	should_be_pinned_by_default = yes
 }
+
+# 류큐 처분: 중국이랑 딜 보는 컨텐츠
+
+je_ryukyu_disposition = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		exists = c:CHI
+		c:RYU ?= {
+			is_subject_of = c:JAP
+		}
+		NOT = {
+			has_global_variable = china_shatters
+		}
+	}
+
+	possible = {
+		c:JAP ?= THIS
+		exists = c:CHI
+		c:RYU ?= {
+			is_subject_of = c:JAP
+		}
+		any_diplomatic_play = {
+			initiator_is = c:JAP
+			target_is = c:RYU
+			has_play_goal = annex_country
+		}
+		NOT = {
+			has_global_variable = china_shatters
+		}
+	}
+
+	immediate = {
+		c:CHI = { add_journal_entry = { type = je_ryukyu_disposition_chi } }
+		c:RYU = { save_scope_as = RYU_scope }
+		c:CHI = { save_scope_as = CHI_scope }
+	}
+
+	complete = {
+		
+	}
+
+	on_complete = {
+		
+	}
+	
+	fail = {
+		OR = {
+			NOT = { exists = c:JAP }
+			NOT = { exists = c:CHI }
+			NOT = {
+				c:RYU ?= {
+					is_subject_of = c:JAP
+				}
+			}
+			NOT = {
+				any_diplomatic_play = {
+					initiator_is = c:JAP
+					target_is = c:RYU
+					has_play_goal = annex_country
+				}
+			}
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_ryukyu_disposition_chi = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	group = je_group_historical_content
+
+	immediate = {
+		c:RYU = { save_scope_as = RYU_scope }
+		c:JAP = { save_scope_as = JAP_scope }
+	}
+
+	complete = {
+		
+	}
+
+	on_complete = {
+		
+	}
+	
+	fail = {
+		OR = {
+			NOT = { exists = c:JAP }
+			NOT = { exists = c:CHI }
+			NOT = {
+				c:RYU ?= {
+					is_subject_of = c:JAP
+				}
+			}
+			NOT = {
+				any_diplomatic_play = {
+					initiator_is = c:JAP
+					target_is = c:RYU
+					has_play_goal = annex_country
+				}
+			}
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+# 가라후토 개척: 러시아랑 딜 보는 컨텐츠
+
+je_karafuto = {
+	icon = "gfx/interface/icons/law_icons/frontier_colonization.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		has_state_in_state_region = STATE_HOKKAIDO
+	}
+
+	possible = {
+		has_state_in_state_region = STATE_SAKHALIN
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				c:RUS ?= { has_state_in_state_region = STATE_SAKHALIN }
+			}
+			trigger_event = karafuto_events.1
+		}
+	}
+
+	complete = {
+		#s:STATE_SAKHALIN = {
+		#	NOT = {
+		#		any_scope_state = {
+		#			is_under_colonization = yes
+		#		}
+		#	}
+		#}
+		always = no
+	}
+
+	on_complete = {
+		
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			90 = 0
+			10 = karafuto_events.1
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+# 토끼 파동
+# 그냥 투기

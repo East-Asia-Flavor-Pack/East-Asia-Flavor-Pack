@@ -133,9 +133,9 @@ japan_on_character_death = {
 					create_character = {
 						template = eafp_jap_tokugawa_iesada_template
 						ruler = yes
+						save_scope_as = iesada_scope
 						on_created = {
 							set_character_busy_and_immortal = yes
-							save_scope_as = iesada_scope
 						}
 					}
 				}
@@ -158,7 +158,7 @@ japan_on_character_death = {
 							}
 						}
 						random_scope_character = {
-						limit = { has_template = eafp_jap_tokugawa_iemochi_template }
+							limit = { has_template = eafp_jap_tokugawa_iemochi_template }
 							set_character_as_ruler = yes
 							set_character_busy_and_immortal = yes
 							save_scope_as = iemochi_scope
@@ -168,9 +168,9 @@ japan_on_character_death = {
 						create_character = {
 							template = eafp_jap_tokugawa_iemochi_template
 							ruler = yes
+							save_scope_as = iemochi_scope
 							on_created = {
 								set_character_busy_and_immortal = yes
-								save_scope_as = iemochi_scope
 							}
 						}
 					}
@@ -193,9 +193,7 @@ japan_on_character_death = {
 						create_character = {
 							template = eafp_jap_tokugawa_yoshinobu_template
 							ruler = yes
-							on_created = {
-								save_scope_as = yoshinobu_scope
-							}
+							save_scope_as = yoshinobu_scope
 						}
 					}
 					trigger_event = { id = eafp_japan.2105 popup = yes }
@@ -228,9 +226,7 @@ japan_on_character_death = {
 						create_character = {
 							template = eafp_jap_tokugawa_iesato_template
 							ruler = yes
-							on_created = {
-								save_scope_as = iesato_scope
-							}
+							save_scope_as = iesato_scope
 						}
 					}
 					trigger_event = { id = eafp_japan.2108 popup = yes }
@@ -252,9 +248,7 @@ japan_on_character_death = {
 						create_character = {
 							template = eafp_jap_tokugawa_yoshinobu_template
 							ruler = yes
-							on_created = {
-								save_scope_as = yoshinobu_scope
-							}
+							save_scope_as = yoshinobu_scope
 						}
 					}
 					trigger_event = { id = eafp_japan.2109 popup = yes }
@@ -285,9 +279,7 @@ japan_on_character_death = {
 					create_character = {
 						template = eafp_jap_tokugawa_iesato_template
 						ruler = yes
-						on_created = {
-							save_scope_as = iesato_scope
-						}
+						save_scope_as = iesato_scope
 					}
 				}
 				trigger_event = { id = eafp_japan.2110 popup = yes }
@@ -296,7 +288,7 @@ japan_on_character_death = {
 		else_if = { # 대로, 노중수좌, 노중
 			limit = {
 				owner = { has_journal_entry = je_bakuhantaisei }
-				has_variable = eafp_bakuhantaisei_politician_influence
+				is_bakufu_politician = yes
 			}
 			remove_bakufu_politician_role = yes
 		}
@@ -314,7 +306,7 @@ japan_on_new_ruler = {
 					has_law = law_type:law_monarchy
 				}
 				is_ruler = yes
-				NOT = { owner = { has_journal_entry = je_bakuhantaisei } }
+				NOT = { owner = { has_law = law_type:law_bakufu } }
 			}
 			if = {
 				limit = {
@@ -358,7 +350,7 @@ japan_on_monthly_pulse_character = {
 	}
 	effect = {
 		if = { # 막번체제 정치인
-			limit = { has_variable = eafp_bakuhantaisei_politician_influence }
+			limit = { is_bakufu_politician = yes }
 			save_scope_as = actor
 			if = {
 				limit = {
@@ -412,25 +404,25 @@ japan_on_monthly_pulse_character = {
 							}
 							if = { # 성격
 								limit = {
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.1
+								}
+								add = 100
+							}
+							if = { # 성격
+								limit = {
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
+								}
+								add = 100
+							}
+							if = { # 성격
+								limit = {
 									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 								}
 								add = 100
 							}
 							if = { # 성격
 								limit = {
-									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
-								}
-								add = 100
-							}
-							if = { # 성격
-								limit = {
-									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
-								}
-								add = 100
-							}
-							if = { # 성격
-								limit = {
-									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 								}
 								add = 100
 							}
@@ -468,7 +460,7 @@ japan_on_monthly_pulse_character = {
 					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
 					owner = {
 						any_scope_character = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 						}
 					}
@@ -476,7 +468,7 @@ japan_on_monthly_pulse_character = {
 				owner = {
 					random_scope_character = {
 						limit = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 						}
 						random_list = {
@@ -527,19 +519,19 @@ japan_on_monthly_pulse_character = {
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 										}
 										add = 50
 									}
@@ -620,7 +612,7 @@ japan_on_monthly_pulse_character = {
 					var:eafp_bakuhantaisei_politician_influence >= 75 # 실행하고도 50만큼의 여유분이 있을 때
 					owner = {
 						any_scope_character = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 							OR = { # 자기 당파만
 								AND = {
@@ -638,7 +630,7 @@ japan_on_monthly_pulse_character = {
 				owner = {
 					random_scope_character = {
 						limit = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 							OR = {
 								AND = {
@@ -669,19 +661,19 @@ japan_on_monthly_pulse_character = {
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 										}
 										add = 50
 									}
@@ -790,19 +782,19 @@ japan_on_monthly_pulse_character = {
 							}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
 								}
 								add = 50
 							}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 								}
 								add = 50
 							}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 								}
 								add = 50
 							}
@@ -880,19 +872,19 @@ japan_on_monthly_pulse_character = {
 								}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
 								}
 								add = 50
 							}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 								}
 								add = 50
 							}
 							if = { # 성격
 								limit = {
-									bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+									bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 								}
 								add = 50
 							}
@@ -939,7 +931,7 @@ japan_on_monthly_pulse_character = {
 				limit = {
 					owner = {
 						any_scope_character = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 							NOT = { has_modifier = modifier_bakufu_recently_appointed }
 							var:eafp_bakuhantaisei_politician_influence < {
@@ -953,7 +945,7 @@ japan_on_monthly_pulse_character = {
 				owner = {
 					random_scope_character = {
 						limit = {
-							has_variable = eafp_bakuhantaisei_politician_influence
+							is_bakufu_politician = yes
 							NOT = { THIS = ROOT }
 							NOT = { has_modifier = modifier_bakufu_recently_appointed }
 							var:eafp_bakuhantaisei_politician_influence < {
@@ -1010,19 +1002,19 @@ japan_on_monthly_pulse_character = {
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.3
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.15
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.4
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.2
 										}
 										add = 50
 									}
 									if = { # 성격
 										limit = {
-											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.5
+											scope:actor.bakufu_kaikaku_bakufu_politicians_activeness >= 0.25
 										}
 										add = 50
 									}
@@ -1118,6 +1110,221 @@ japan_on_diplomatic_demand = {
 			scope:actor = { save_scope_as = country_scope }
 			scope:recipient = {
 				trigger_event = { id = eafp_japan.4001 }
+			}
+		}
+	}
+}
+
+japan_on_revolution_start = {
+	effect = {
+		if = {
+			limit = {
+				c:JAP ?= ROOT
+				ROOT = {
+					any_civil_war = {
+						is_civil_war_type = revolution
+						political_movement ?= {
+							is_political_movement_type = eafp_movement_sonno_joi
+						}
+					}
+				}
+			}
+			scope:target ?= {
+				set_state_religion = rel:confucian
+				ig:ig_landowners = {
+					set_interest_group_name = ig_daimyo
+				}
+				ig:ig_devout = {
+					set_interest_group_name = ig_kokugakusha
+				}
+				ig:ig_intelligentsia = {
+					set_interest_group_name = ig_rangakusha
+				}
+				ig:ig_petty_bourgeoisie = {
+					set_interest_group_name = ig_kashin
+				}
+				ig:ig_trade_unions = {
+					set_interest_group_name = ig_shokunin
+				}
+				ig:ig_industrialists = {
+					set_interest_group_name = ig_shonin
+				}
+				if = {
+					limit = {
+						year < 1852
+					}
+					create_character = { # 수정
+						template = eafp_jap_ninko_template
+						ruler = yes
+					}
+					create_character = { # 수정
+						template = eafp_jap_komei_template
+						heir = yes
+					}
+				}
+				else_if = {
+					limit = {
+						year >= 1852
+						year < 1879
+					}
+					create_character = { # 수정
+						template = eafp_jap_komei_template
+						ruler = yes
+					}
+					create_character = { # 수정
+						template = eafp_jap_meiji_template
+						heir = yes
+					}
+					set_variable = heir_meiji_spawned
+				}
+				else_if = {
+					limit = {
+						year >= 1879
+						year < 1912
+					}
+					create_character = { # 수정
+						template = eafp_jap_meiji_template
+						ruler = yes
+					}
+					create_character = { # 수정
+						template = eafp_jap_taisho_template
+						heir = yes
+					}
+					set_variable = heir_meiji_spawned
+					set_variable = taisho_born
+				}
+				else_if = {
+					limit = {
+						year >= 1912
+						year < 1928
+					}
+					create_character = { # 수정
+						template = eafp_jap_taisho_template
+						ruler = yes
+					}
+					create_character = { # 수정
+						template = eafp_jap_showa_template
+						heir = yes
+					}
+					set_variable = heir_meiji_spawned
+					set_variable = taisho_born
+					set_variable = showa_born
+				}
+				else_if = {
+					limit = {
+						year >= 1928
+						year < 1989
+					}
+					create_character = { # 수정
+						template = eafp_jap_showa_template
+						ruler = yes
+					}
+					set_variable = heir_meiji_spawned
+					set_variable = taisho_born
+					set_variable = showa_born
+				}
+				every_scope_state = {
+					create_building={
+						building="building_port"
+						add_ownership={
+							country={
+								country="c:NIP"
+								levels=1
+							}
+						}
+						reserves=1
+						activate_production_methods={ "pm_basic_port" }
+					}
+				}
+				capital = {
+					create_building={
+						building="building_trade_center"
+						activate_production_methods={ "pm_trade_center_trade_quantity_normal" }
+						add_ownership={
+							country={
+								country="c:NIP"
+								levels=2
+							}
+						}
+						reserves=1
+					}
+				}
+				every_scope_character = {
+					limit = {
+						is_bakufu_politician = yes
+					}
+					remove_bakufu_politician_role = yes
+				}
+				add_modifier = {
+					name = modifier_japan_hiring_bonus
+					months = 24
+				}
+			}
+		}
+	}
+}
+
+japan_on_civil_war_won = {
+	effect = {
+		if = {
+			limit = {
+				c:JAP ?= ROOT
+				has_law = law_type:law_bakufu
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_TOHOKU }
+					exists = s:STATE_TOHOKU.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_TOHOKU }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_KANTO }
+					exists = s:STATE_KANTO.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_KANTO }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_CHUBU }
+					exists = s:STATE_CHUBU.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_CHUBU }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_KANSAI }
+					exists = s:STATE_KANSAI.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_KANSAI }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_KYUSHU }
+					exists = s:STATE_KYUSHU.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_KYUSHU }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
+					exists = s:STATE_CHUGOKU.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_CHUGOKU }
+			}
+			if = {
+				limit = {
+					NOT = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
+					exists = s:STATE_SHIKOKU.region_state:JAP
+				}
+				add_journal_entry = { type = je_bakuhantaisei_SHIKOKU }
+			}
+		}
+		else_if = {
+			limit = {
+				c:JAP ?= ROOT
+				NOT = { has_law = law_type:law_bakufu }
 			}
 		}
 	}

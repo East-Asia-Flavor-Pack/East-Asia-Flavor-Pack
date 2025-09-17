@@ -1,0 +1,244 @@
+﻿ryukyu_split = {
+	kind = mutual
+	cost = 0
+
+	icon = "gfx/interface/icons/diplomatic_treaties_articles_icons/transfer_state.dds"
+
+	usage_limit = once_per_treaty
+
+	unlocked_by_technologies = {
+		international_relations
+	}
+
+	visible = {
+		OR = {
+			has_journal_entry = je_ryukyu_disposition
+			has_journal_entry = je_ryukyu_disposition_chi
+		}
+		scope:other_country = {
+			OR = {
+				has_journal_entry = je_ryukyu_disposition
+				has_journal_entry = je_ryukyu_disposition_chi
+			}
+		}
+	}
+
+	possible = {
+		OR = {
+			has_journal_entry = je_ryukyu_disposition
+			has_journal_entry = je_ryukyu_disposition_chi
+		}
+		scope:other_country = {
+			OR = {
+				has_journal_entry = je_ryukyu_disposition
+				has_journal_entry = je_ryukyu_disposition_chi
+			}
+		}
+	}
+
+	non_fulfillment = {
+        consequences = freeze
+
+        conditions = {
+            weekly = {
+				scope:first_country = {
+					has_war_with = scope:second_country
+				}
+            }
+        }
+    }
+
+	on_entry_into_force = {
+		# 분할 이벤트 강제
+		s:STATE_RYUKYU_ISLANDS = {
+			create_state = {
+				country = c:JAP
+				owned_provinces = {
+					xF0D080
+				}
+			}
+		}
+		
+		# 대신 해방
+		if = {
+			limit = {
+				c:RYU = {
+					has_diplomatic_pact = {
+						who = c:JAP
+						type = tributary
+					}
+				}
+			}
+			c:RYU = {
+				remove_diplomatic_pact = {
+					country = c:JAP
+					type = tributary
+				}
+			}
+		}
+		if = {
+			limit = {
+				c:RYU = {
+					has_diplomatic_pact = {
+						who = c:JAP
+						type = vassal
+					}
+				}
+			}
+			c:RYU = {
+				remove_diplomatic_pact = {
+					country = c:JAP
+					type = vassal
+				}
+			}
+		}
+		if = {
+			limit = {
+				c:RYU = {
+					has_diplomatic_pact = {
+						who = c:JAP
+						type = protectorate
+					}
+				}
+			}
+			c:RYU = {
+				remove_diplomatic_pact = {
+					country = c:JAP
+					type = protectorate
+				}
+			}
+		}
+		if = {
+			limit = {
+				c:RYU = {
+					has_diplomatic_pact = {
+						who = c:JAP
+						type = puppet
+					}
+				}
+			}
+			c:RYU = {
+				remove_diplomatic_pact = {
+					country = c:JAP
+					type = puppet
+				}
+			}
+		}
+		if = {
+			limit = {
+				c:RYU = {
+					has_diplomatic_pact = {
+						who = c:JAP
+						type = dominion
+					}
+				}
+			}
+			c:RYU = {
+				remove_diplomatic_pact = {
+					country = c:JAP
+					type = dominion
+				}
+			}
+		}
+
+		# 류큐 합병 외교전 끝내고 류큐와 20년간 전쟁 X
+		every_diplomatic_play = {
+			limit = {
+				initiator_is = c:JAP
+				target_is = c:RYU
+				has_play_goal = annex_country
+			}
+			end_play = yes
+		}
+		c:RYU = {
+			create_bidirectional_truce = { country = s:JAP months = 240 }
+			create_bidirectional_truce = { country = s:CHI months = 240 }
+		}
+		
+	}
+
+	on_break = {
+		scope:withdrawing_country = {
+			change_relations = {
+				country = scope:non_withdrawing_country
+				value = {
+					add = -5
+					multiply = {
+						value = scope:treaty_options.remaining_binding_period
+						min = 365
+						divide = 365
+					}
+					max = -10
+					min = -50
+				}
+			}
+			change_infamy = {
+				value = {
+					add = 1
+					multiply = {
+						value = scope:treaty_options.remaining_binding_period
+						min = 365
+						divide = 365
+					}
+					max = 25
+					min = 5
+				}
+			}
+		}
+	}
+
+
+	ai = {
+
+		treaty_categories = {
+			expansion
+		}
+
+		evaluation_chance = {
+			value = 0.1
+		}
+
+		article_ai_usage = {
+            request
+        }
+
+		inherent_accept_score = {
+			value = 0
+
+			if = {
+				limit = {
+					exists = s:STATE_RYUKYU_ISLANDS.region_state:RYU
+					scope:first_country ?= this
+					NOT = { exists = scope:is_treaty_active }
+				}
+				subtract = {
+					desc = "DIPLOMATIC_ACCEPTANCE_TRADE_STATE_SOURCE"
+					value = 5
+
+					if = {
+						limit = {
+							scope:first_country.country_rank > scope:second_country.country_rank
+						}
+						multiply = {
+							add = scope:first_country.country_rank
+							subtract = scope:second_country.country_rank
+							divide = 10
+							add = 1
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = {
+					exists = s:STATE_RYUKYU_ISLANDS.region_state:RYU
+					scope:second_country ?= this
+					NOT = { exists = scope:is_treaty_active }
+				}
+				add = {
+					value = 5
+					desc = "DIPLOMATIC_ACCEPTANCE_TRADE_STATE_TARGET"
+				}
+			}
+		}
+	}
+}
