@@ -98,7 +98,7 @@ je_chinese_westernization_army = {
 			has_variable = chi_military_academy_established
 			var:chi_military_academy_established >= 3
 		}
-		has_law = law_type:law_professional_army
+		has_law_or_variant = law_type:law_professional_army
 		any_scope_building = {
 			is_building_type = building_arms_industry
 			count >= 5
@@ -149,8 +149,8 @@ je_chinese_westernization_army = {
 					add_ideology = ideology_jingoist
 				}
 				if = {
-					limit = { has_ideology = ideology:ideology_stratocratic }
-					remove_ideology = ideology_stratocratic
+					limit = { has_ideology = ideology:ideology_hierarchic }
+					remove_ideology = ideology_hierarchic
 				}
 			}
 		}
@@ -181,7 +181,7 @@ je_chinese_westernization_army = {
 			if = {
 				limit = {
 					NOT = { has_variable = chi_bannermen_law_professional_army }
-					has_law = law_type:law_professional_army
+					has_law_or_variant = law_type:law_professional_army
 				}
 				decrease_decadent_bannermen_effect = yes
 				set_variable = chi_bannermen_law_professional_army
@@ -205,7 +205,7 @@ je_chinese_westernization_navy = {
 			text = chi_naval_academy_established_tt
 			has_variable = chi_naval_academy_established
 		}
-		NOT = { has_law = law_type:law_peasant_levies }
+		NOT = { has_law_or_variant = law_type:law_peasant_levies }
 		any_scope_building = {
 			is_building_type = building_shipyards
 			count >= 5
@@ -469,24 +469,33 @@ je_chinese_westernization_government_reform = {
 
 	complete = {
 		OR = {
-			custom_tooltip = {
-				text = country_acceptance_shared_cultural_trait_add_above_30
-				modifier:country_acceptance_shared_cultural_trait_add >= 30
+			#custom_tooltip = {
+			#	text = country_acceptance_shared_cultural_trait_add_above_30
+			#	modifier:country_acceptance_shared_cultural_trait_add >= 30
+			#}
+			cultural_acceptance_base = {
+				target = cu:han
+				value >= {
+					value = acceptance_status_4
+					subtract = modifier:country_acceptance_homeland_add
+					subtract = modifier:country_acceptance_state_religion_add
+				}
 			}
+
 			custom_tooltip = {
 				text = country_political_strength_full_acceptance_mult_below_625
 				modifier:country_political_strength_full_acceptance_mult <= 6.25
 			}
 		}
 		NOR = { 
-			has_law = law_type:law_hereditary_bureaucrats
+			has_law_or_variant = law_type:law_hereditary_bureaucrats
 
-			has_law = law_type:law_serfdom
+			has_law_or_variant = law_type:law_serfdom
 			
-			has_law = law_type:law_traditionalism
+			has_law_or_variant = law_type:law_traditionalism
 
-			has_law = law_type:law_land_based_taxation
-			has_law = law_type:law_consumption_based_taxation
+			has_law_or_variant = law_type:law_land_based_taxation
+			has_law_or_variant = law_type:law_consumption_based_taxation
 
 			any_civil_war = {
 				civil_war_progress > 0.1
@@ -506,7 +515,14 @@ je_chinese_westernization_government_reform = {
 			limit = {
 				NOT = { has_variable = chi_bannermen_han_accepted }
 				OR = {
-					modifier:country_acceptance_shared_cultural_trait_add >= 30
+					cultural_acceptance_base = {
+						target = cu:han
+						value >= {
+							value = acceptance_status_4
+							subtract = modifier:country_acceptance_homeland_add
+							subtract = modifier:country_acceptance_state_religion_add
+						}
+					}
 					modifier:country_political_strength_full_acceptance_mult <= 6.25
 				}
 			}
@@ -538,7 +554,14 @@ je_chinese_westernization_government_reform = {
 				limit = {
 					NOT = { has_variable = chi_bannermen_han_accepted }
 					OR = {
-						modifier:country_acceptance_shared_cultural_trait_add >= 30
+						cultural_acceptance_base = {
+							target = cu:han
+							value >= {
+								value = acceptance_status_4
+								subtract = modifier:country_acceptance_homeland_add
+								subtract = modifier:country_acceptance_state_religion_add
+							}
+						}
 						modifier:country_political_strength_full_acceptance_mult <= 6.25
 					}
 				}
@@ -979,7 +1002,7 @@ je_new_army = {
 				percent >= 0.1
 			}
 		}
-		has_law = law_type:law_professional_army
+		has_law_or_variant = law_type:law_professional_army
 		has_technology_researched = napoleonic_warfare
 		has_technology_researched = general_staff
 		has_technology_researched = shell_gun
@@ -993,7 +1016,7 @@ je_new_army = {
 					text = chinese_westernization.181.tt
 					set_interest_group_name = ig_beiyang_army
 				}
-				remove_ideology = ideology_stratocratic
+				remove_ideology = ideology_hierarchic
 				remove_ideology = ideology_patriarchal
 				add_ideology = ideology_jingoist
 				add_ideology = ideology_loyalist

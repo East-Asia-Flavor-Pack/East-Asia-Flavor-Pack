@@ -36,7 +36,7 @@ heavenly.1 = {
 					is_treaty_port = yes
 					owner = {
 						religion = {
-							has_discrimination_trait = christian
+							has_discrimination_trait = heritage_christian
 						}
 					}
 				}
@@ -47,7 +47,7 @@ heavenly.1 = {
 					is_treaty_port = yes
 					owner = {
 						religion = {
-							has_discrimination_trait = christian
+							has_discrimination_trait = heritage_christian
 						}
 					}
 				}
@@ -62,6 +62,16 @@ heavenly.1 = {
 	option = {
 		name = heavenly.1.a
 		default_option = yes
+		ai_chance = {
+			base = 20
+
+			modifier = {
+				trigger = {
+					has_modifier = opium_wars_lost
+				}
+				add = 80
+			}
+		}
 		scope:missionary_state = {
 			add_modifier = {
 				name = missionary_schools_hospitals
@@ -75,6 +85,10 @@ heavenly.1 = {
 	}
 	option = {
 		name = heavenly.1.b
+		ai_chance = {
+			base = 20
+		}
+
 		change_relations = {
 			country = scope:treaty_port_owner
 			value = -10
@@ -126,13 +140,11 @@ heavenly.2 = {
 	option = {
 		name = heavenly.2.a
 		scope:cult_state = {
-			# Already added when the Journal Entry activated, but we're going to remove it and add it again to make it visible to the player
-			hidden_effect = {
-				remove_modifier = god_worshippers
-			}
-			add_modifier = {
-				name = god_worshippers
-				days = short_modifier_time
+			show_as_tooltip = {
+				add_modifier = {
+					name = god_worshippers
+					days = short_modifier_time
+				}
 			}
 			convert_population = {
 				target = rel:protestant value = 0.1
@@ -516,7 +528,7 @@ heavenly.4 = {
 			origin = this
 			state = scope:heavenly_kingdom_spawn
 			on_created = {
-				ig:ig_devout = {
+				ig:ig_devout ?= {
 					set_interest_group_name = ig_taiping_god_worshippers
 					remove_ideology = ideology_moralist
 					add_ideology = ideology_heavenly_kingdom_theocratic
@@ -532,7 +544,7 @@ heavenly.4 = {
 							has_ruling_interest_group = ig_devout
 						}
 					}
-					ig:ig_devout = {
+					ig:ig_devout ?= {
 						leader = {
 							set_ideology = ideology:ideology_theocrat
 						}
@@ -665,28 +677,25 @@ heavenly.4 = {
 		name = heavenly.4.a
 		default_option = yes
 		ai_chance = { base = 1 }
+		#add_journal_entry = {
+		#	type = je_taiping
+		#}
 		add_journal_entry = { # 추가
 			type = je_hui_revolt_pre
 		}
 		add_journal_entry = { # 추가
 			type = je_taiping_pre
 		}
-		c:TPG = {
-			add_journal_entry = { # 추가
-				type = je_taiping_revolution_pre
-			}
-		}
-		#add_journal_entry = { # 타이머 추가
-		#	type = je_taiping_timer
-		#}
-		#add_journal_entry = {
-		#	type = je_taiping
-		#}
 		#c:TPG = {
 		#	add_journal_entry = {
 		#		type = je_taiping_revolution
 		#	}
 		#}
+		c:TPG = {
+			add_journal_entry = { # 추가
+				type = je_taiping_revolution_pre
+			}
+		}
 		assign_taiping_states = yes
 		#scope:heavenly_kingdom_scope ?= { 새 저널로 옮김
 		#	create_diplomatic_play = {
@@ -735,28 +744,25 @@ heavenly.4 = {
 	option = {
 		name = heavenly.4.b
 		ai_chance = { base = 0 }
+		#add_journal_entry = {
+		#	type = je_taiping
+		#}
 		add_journal_entry = { # 추가
 			type = je_hui_revolt_pre
 		}
 		add_journal_entry = { # 추가
 			type = je_taiping_pre
 		}
-		c:TPG = {
-			add_journal_entry = { # 추가
-				type = je_taiping_revolution_pre
-			}
-		}
-		#add_journal_entry = { # 타이머 추가
-		#	type = je_taiping_timer
-		#}
-		#add_journal_entry = {
-		#	type = je_taiping
-		#}
 		#c:TPG = {
 		#	add_journal_entry = {
 		#		type = je_taiping_revolution
 		#	}
 		#}
+		c:TPG = {
+			add_journal_entry = { # 추가
+				type = je_taiping_revolution_pre
+			}
+		}
 		assign_taiping_states = yes
 		#scope:heavenly_kingdom_scope = { 새 저널로 옮김
 		#	create_diplomatic_play = {
@@ -914,7 +920,7 @@ heavenly.5 = {
 			limit = {
 				country_rank >= rank_value:great_power
 				religion = {
-					has_discrimination_trait = christian
+					has_discrimination_trait = heritage_christian
 				}
 			}
 			order_by = country_rank
@@ -928,7 +934,7 @@ heavenly.5 = {
 			limit = {
 				country_rank >= rank_value:great_power
 				religion = {
-					has_discrimination_trait = christian
+					has_discrimination_trait = heritage_christian
 				}
 			}
 			change_relations = {
@@ -996,7 +1002,7 @@ heavenly.6 = {
 		}
 		if = {
 			limit = {
-				ig:ig_intelligentsia = {
+				ig:ig_intelligentsia ?= {
 					leader = {
 						OR = {
 							has_ideology = ideology:ideology_reformer
@@ -1005,7 +1011,7 @@ heavenly.6 = {
 					}
 				}
 			}
-			ig:ig_intelligentsia = {
+			ig:ig_intelligentsia ?= {
 				leader = {
 					save_scope_as = hong_rengan_scope
 				}
@@ -1032,7 +1038,7 @@ heavenly.6 = {
 		name = heavenly.6.b
 		trigger = {
 			NOT = {
-				ig:ig_intelligentsia = {
+				ig:ig_intelligentsia ?= {
 					leader = {
 						OR = {
 							has_ideology = ideology:ideology_reformer
@@ -1042,7 +1048,7 @@ heavenly.6 = {
 				}
 			}
 		}
-		ig:ig_intelligentsia = {
+		ig:ig_intelligentsia ?= {
 			add_modifier = {
 				name = modifier_accepted_new_treatise
 				days = normal_modifier_time
@@ -1056,7 +1062,7 @@ heavenly.6 = {
 	option = {
 		name = heavenly.6.b1
 		trigger = {
-			ig:ig_intelligentsia = {
+			ig:ig_intelligentsia ?= {
 				leader = {
 					OR = {
 						has_ideology = ideology:ideology_reformer
@@ -1065,7 +1071,7 @@ heavenly.6 = {
 				}
 			}
 		}
-		ig:ig_intelligentsia = {
+		ig:ig_intelligentsia ?= {
 			add_modifier = {
 				name = modifier_accepted_new_treatise
 				days = normal_modifier_time
@@ -1081,7 +1087,7 @@ heavenly.6 = {
 		trigger = {
 			exists = c:CHI
 		}
-		ig:ig_armed_forces = {
+		ig:ig_armed_forces ?= {
 			leader = {
 				set_ideology = ideology:ideology_jingoist
 			}
@@ -1101,7 +1107,7 @@ heavenly.6 = {
 			limit = {
 				country_rank >= rank_value:great_power
 				religion = {
-					has_discrimination_trait = christian
+					has_discrimination_trait = heritage_christian
 				}
 			}
 			change_relations = {
@@ -1461,7 +1467,7 @@ CHI_missionaries.2 = {
 
 	trigger = {
 		NOT = {
-			has_law = law_type:law_closed_borders
+			has_law_or_variant = law_type:law_closed_borders
 		}
 		any_scope_state = {
 			any_neighbouring_state = {
@@ -1651,6 +1657,9 @@ CHI_missionaries.3 = {
 	}
 	option = {
 		name = CHI_missionaries.3.a
+		ai_chance = {
+			base = 2
+		}
 		scope:missionary_schools_state = {
 			add_modifier = {
 				name = modifier_chi_missionary_schools
@@ -1665,6 +1674,9 @@ CHI_missionaries.3 = {
 	option = {
 		name = CHI_missionaries.3.b
 		default_option = yes
+		ai_chance = {
+			base = 1
+		}
 		scope:missionary_schools_state = {
 			add_modifier = {
 				name = modifier_chi_rebuked_christian_missionaries
@@ -1717,6 +1729,9 @@ CHI_missionaries.4 = {
 	}
 	option = {
 		name = CHI_missionaries.4.a
+		ai_chance = {
+			base = 2
+		}
 		scope:missionary_hospitals_state = {
 			add_modifier = {
 				name = modifier_chi_missionary_hospitals
@@ -1731,6 +1746,9 @@ CHI_missionaries.4 = {
 	option = {
 		name = CHI_missionaries.4.b
 		default_option = yes
+		ai_chance = {
+			base = 1
+		}
 		scope:missionary_hospitals_state = {
 			add_modifier = {
 				name = modifier_chi_rebuked_christian_missionaries
