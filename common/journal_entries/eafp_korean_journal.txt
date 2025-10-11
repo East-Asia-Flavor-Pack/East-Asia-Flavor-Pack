@@ -320,7 +320,7 @@ je_yangjeon = {
 		}
 		add_modifier = {
 			name = eafp_modi_yangjeon_cost
-			multiplier = 3000
+			multiplier = 2000
 		}
 	}
 
@@ -991,7 +991,7 @@ je_king_cheoljong_education = {
 }
 ##수렴청정
 je_korean_regent = {
-	icon = "gfx/interface/icons/law_icons/sedo_politics.dds"
+	icon = "gfx/interface/icons/eafp_icons/sedo_politics.dds"
 
 	group = je_group_historical_content
 
@@ -1074,7 +1074,7 @@ je_korean_regent = {
 
 ##세도정치
 je_sedo_politics = {
-	icon = "gfx/interface/icons/law_icons/sedo_politics.dds"
+	icon = "gfx/interface/icons/eafp_icons/sedo_politics.dds"
 
 	group = je_group_historical_content
 
@@ -1414,103 +1414,41 @@ je_korean_confu = {
 
 ##서원
 je_korean_seowon = {
-	icon = "gfx/interface/icons/eafp_icons/seowon_pm_brown.png"
+	icon = "gfx/interface/icons/law_icons/seowon.dds"
 
 	group = je_group_historical_content
-	
-	scripted_progress_bar = eafp_progress_bar_seowon_abolish
-	scripted_progress_bar = eafp_progress_bar_seowon_backlash
 
-	scripted_button = eafp_scripted_button_seowon1
-	scripted_button = eafp_scripted_button_seowon2
-	scripted_button = eafp_scripted_button_seowon3
-	scripted_button = eafp_scripted_button_seowon4
-	scripted_button = eafp_scripted_button_seowon5
-	
-	modifiers_while_active = {
-		eafp_modi_seowon_problem_base
-	}
-	
-	is_shown_when_inactive = {
-		country_has_primary_culture = cu:korean
-		any_scope_state = {
-			any_scope_building = {
-				has_active_production_method = pm_manor_house_seowon_ownership
-			}
-		}
-	}
-
-	possible = {
-		country_has_primary_culture = cu:korean
-		OR = {
-			any_scope_building = {
-				is_building_type = building_manor_house
-				NOT = { has_active_production_method = pm_manor_house_seowon_ownership }
-			}
-			custom_tooltip = {
-				text = je_korean_land_problem_complete_cond_tt
-				has_variable = eafp_var_sam_all_clear
-			}
-			NOT = { has_journal_entry = je_sedo_politics }
-		}
-	}
-
-	immediate = {
-		add_modifier = {
-			name = eafp_modi_seowon_problem_backlash
-			multiplier = 30
-		}
-		trigger_event = { id = eafp_kor_mainline.150 }
+	is_shown_in_lobby = {
+		c:KOR ?= THIS
 	}
 	
 	complete = {
 		custom_tooltip = {
-			text = je_korean_seowon_complete_button_tt
-			has_variable = eafp_scripted_button_seowon1_var
-			has_variable = eafp_scripted_button_seowon2_var
-			has_variable = eafp_scripted_button_seowon3_var
-			has_variable = eafp_scripted_button_seowon4_var
-			has_variable = eafp_scripted_button_seowon5_var
+			text = je_korean_land_problem_complete_cond_tt
+			has_variable = eafp_var_sam_all_clear
 		}
-		any_scope_building = {
-			count = all
-			OR = {
-				NOT = { is_building_type = building_manor_house }
-				NOT = { has_active_production_method = pm_manor_house_seowon_ownership }
-			}
+		NOT = { has_journal_entry = je_sedo_politics }
+		ig:ig_devout ?= {
+			ig_clout <= 0.1
+			is_in_government = no
 		}
-		custom_tooltip = {
-			text = je_korean_seowon_complete_backlash_tt
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 0
-			}
-		}
+		NOT = { has_law = law_type:law_serfdom }
 	}
 
 	on_complete = {
-		set_variable = eafp_kor_seowon_complete
-		remove_modifier = eafp_modi_seowon_problem_backlash
-		trigger_event = { id = eafp_kor_mainline.159 }
+		activate_law = law_type:law_religious_schools
+		trigger_event = eafp_kor_mainline.152
 	}
 
-	on_weekly_pulse = {
-		effect = {
-			remove_modifier = eafp_modi_seowon_problem_backlash
-			add_modifier = {
-				name = eafp_modi_seowon_problem_backlash
-				multiplier = eafp_progress_bar_seowon_backlash_progress_bar_value
-			}
-			if = {
-				limit = { is_ai = yes }
-				activate_production_method = {
-					building_type = building_manor_house
-					production_method = pm_manor_house_clergy_ownership
-				}
-			}
-		}
+	fail = {
+		NOT = { has_law = law_type:law_seowon }
 	}
 
-	weight = 1000
+	on_fail = {
+		trigger_event = eafp_kor_mainline.151
+	}
+
+	weight = 100
 	
 	should_be_pinned_by_default = yes
 }

@@ -6,9 +6,85 @@ idle = {
 	male = {
 		default = { head = "idle_entry" torso = "idle_entry" }
 
+		smoker_character_idle = {
+			animation = { head = "idle_entry" torso = "idle_entry" }
+
+	        weight = {
+	            base = 0
+	            modifier = {
+	                add = 90000
+
+	                has_dlc_feature = ep1_cosmetics
+
+	                scope:character ?= {
+	                    age >= define:NCharacters|ADULT_AGE # always refer to the Defines entry rather than set an arbitrary figure, just to keep things consistent
+	                    OR = {
+		                    has_trait = grifter
+		                    has_trait = expensive_tastes
+		                    has_trait = hedonist
+		                }
+		                is_historical = no
+		                owner ?= {
+		                	NOT = {
+		                		is_country_type = decentralized
+		                	}
+							market ?= {
+								mg:tobacco ?= {
+									market_goods_sell_orders > 0
+								}
+							}
+		                }
+	                }
+	            }
+				modifier = {
+	                add = 10000
+	                scope:character ?= {
+	                    has_template = GBR_isambard_kingdom_brunel
+	                }
+           		}
+	        }
+			portrait_modifier = { animations_props = smoking_attachment }
+		}
+
 		###################################
 		# POP Animations  #
 		###################################
+
+		hatacademic_pop_idle = {
+			animation = { head = "idle_head_pop_hatacademic" torso = "idle_body_hatacademic" }
+
+			weight = {
+				base = 0
+
+				modifier = {
+					add = 200
+
+				    exists = scope:pop
+				    scope:pop = {
+						is_pop_type = academics
+					}
+					struggling_pop_trigger = no
+				}
+			}
+		}
+
+		hatacademic_pop_idle_struggle = {
+			animation = { head = "idle_head_struggle_pop_hatacademic" torso = "idle_body_struggle_hatacademic" }
+
+			weight = {
+				base = 0
+
+				modifier = {
+					add = 200
+
+				    exists = scope:pop
+				    scope:pop = {
+						is_pop_type = academics
+					}
+					struggling_pop_trigger = yes
+				}
+			}
+		}
 
 		basket_pop_idle = {
 			animation = { head = "idle_head_pop_basket" torso = "idle_body_basket" }
@@ -23,8 +99,8 @@ idle = {
 				}
 			}
 			portrait_modifier = { animations_props = basket_attachment	 }
-		}		
-		
+		}
+
 		saber_pop_idle= {
 			animation = { head = "idle_head_pop_saber" torso = "idle_body_saber" }
 
@@ -37,14 +113,14 @@ idle = {
 					struggling_pop_trigger = no
 				}
 			}
-			portrait_modifier = { 
-				animations_props = saber_attachment	
+			portrait_modifier = {
+				animations_props = saber_attachment
 			}
 		}
 
 		shovels_pop_idle = {
 			animation = { head = "idle_head_pop_hattop" torso = "idle_body_shovels" }
-				
+
 
 			weight = {
 				base = 0
@@ -52,12 +128,36 @@ idle = {
 				modifier = {
 					add = 100
 					laborers_clothes_pop_trigger = yes
-					struggling_pop_trigger = no				
+					struggling_pop_trigger = no
 				}
 			}
 			portrait_modifier = { animations_props = shovel_attachment	}
 
-		}	
+		}
+
+		clergy_india_idle = {
+			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_emotions_boastful" }
+
+			weight = {
+				base = 0
+
+				modifier = {
+					add = 5000
+
+					OR = {
+		                hindu_clothes_pop_trigger = yes
+		                buddhist_clothes_pop_trigger = yes
+		                scope:pop ?= {
+		                	religion = {
+			                	rel:animist = this
+			                }
+		                }
+		            }
+	                clergy_clothes_pop_trigger = yes
+					struggling_pop_trigger = no
+				}
+			}
+		}
 
 		holyscripture_pop_idle = {
 			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_holyscripture" }
@@ -88,6 +188,31 @@ idle = {
 			}
 		}
 
+		rifle_pop_idle_hajduk = {
+			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_shovels" }
+
+			weight = {
+				base = 0
+
+				modifier = {
+					add = 5000
+					soldier_clothes_pop_trigger = yes
+					struggling_pop_trigger = no
+
+					has_dlc_feature = ip3_cosmetics
+					montenegrin_clothes_pop_trigger = yes
+					scope:pop ?= {
+						owner ?= {
+							NOT = {
+								has_technology_researched = bolt_action_rifles
+							}
+						}
+					}
+				}
+			}
+			portrait_modifier = { animations_props = rifle_attachment }
+		}
+
 		rifle_pop_idle = {
 			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_rifle" }
 
@@ -96,52 +221,56 @@ idle = {
 
 				modifier = {
 					add = 110
-					exists = scope:pop
-					scope:pop = {
-						home_country = {
-							exists = capital
-							OR = {
-								capital = {
-									state_is_in_east_asia = no
-								}
-								has_technology_researched = rifling
-							}
-						}
-					}
 					soldier_clothes_pop_trigger = yes
 					struggling_pop_trigger = no
-					#always = no
 				}
-				#modifier = {
-				#	add = -110
-				#	scope:pop = {
-				#		home_country = {
-				#			exists = capital
-				#			capital = {
-				#				state_is_in_east_asia = yes
-				#			}
-				#			NOT = { has_technology_researched = rifling }
-				#		}
-				#	}
-				#}
 			}
 			portrait_modifier = { animations_props = rifle_attachment }
 		}
-		birdgun_pop_idle = {	#추가댐 - 조총
+
+		birdgun_pop_idle_hajduk = {	#추가 - 조총
+			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_shovels" }
+		
+			weight = {
+				base = 0
+		
+				modifier = {
+					add = 50000
+					soldier_clothes_pop_trigger = yes
+					struggling_pop_trigger = no
+
+					has_dlc_feature = ip3_cosmetics
+					montenegrin_clothes_pop_trigger = yes
+					scope:pop ?= {
+						owner ?= {
+							capital ?= {
+								state_is_in_east_asia = yes
+							}
+							NOT = { has_technology_researched = rifling }
+							NOT = {
+								has_technology_researched = bolt_action_rifles
+							}
+						}
+					}
+				}
+			}
+			portrait_modifier = { animations_props = eafp_birdgun_attachment }
+		}
+
+		birdgun_pop_idle = {	#추가 - 조총
 			animation = { head = "idle_head_pop_holyscripture" torso = "idle_body_rifle" }
 		
 			weight = {
 				base = 0
 		
 				modifier = {
-					add = 115
-					exists = scope:pop
+					add = 1100
 					soldier_clothes_pop_trigger = yes
 					struggling_pop_trigger = no
-					scope:pop = {
-						home_country = {
-							exists = capital
-							capital = {
+
+					scope:pop ?= {
+						owner ?= {
+							capital ?= {
 								state_is_in_east_asia = yes
 							}
 							NOT = { has_technology_researched = rifling }
@@ -180,7 +309,6 @@ idle = {
 			}
 			portrait_modifier = { animations_props = shackles_attachment }
 		}
-
 
 		crudehoe_pop_idle = {
 			animation = { head = "idle_head_pop_pitchfork" torso = "idle_body_pitchfork" }
@@ -317,7 +445,7 @@ idle = {
 			}
 			portrait_modifier = { animations_props = handheldfan_attachment }
 		}
-		
+
 		flowers_pop_idle = {
 			animation = { head = "idle_head_pop_flowers" torso = "idle_body_flowers" }
 
@@ -332,7 +460,7 @@ idle = {
 			}
 			portrait_modifier = { animations_props = bundleofflowers_attachment	 }
 		}
-		
+
 		apron_pop_idle = {
 			animation = { head = "idle_head_pop_apron" torso = "idle_body_apron" }
 
@@ -344,9 +472,9 @@ idle = {
 					shopkeepers_clothes_pop_trigger = yes
 					struggling_pop_trigger = no
 				}
-			}																
+			}
 		}
-		
+
 		hattop_pop_idle = {
 			animation = { head = "idle_head_pop_hattop" torso = "idle_body_hattop" }
 
@@ -359,25 +487,9 @@ idle = {
 					european_clothes_pop_trigger = yes
 					struggling_pop_trigger = no
 				}
-			}																
-		}		
-	
-
-		hatacademic_pop_idle = {
-			animation = { head = "idle_head_pop_hatacademic" torso = "idle_body_hatacademic" }
-
-			weight = {
-				base = 0
-
-				modifier = {
-					add = 100
-					upper_clothes_pop_trigger = yes
-					european_clothes_pop_trigger = yes
-					struggling_pop_trigger = no
-				}
-			}							
+			}
 		}
-				
+
 		hatmonocle_pop_idle = {
 			animation = { head = "idle_head_pop_hatmonocle" torso = "idle_body_hatmonocle" }
 			weight = {
@@ -389,16 +501,16 @@ idle = {
 					european_clothes_pop_trigger = yes
 					struggling_pop_trigger = no
 				}
-			}									
+			}
 		}
 
 
-		
-		
+
+
 		###################################
 		# POP Animations  for Struggling/Starving
 		###################################
-		
+
 		saber_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_saber" torso = "idle_body_struggle_saber" }
 
@@ -411,14 +523,14 @@ idle = {
 					struggling_pop_trigger = yes
 				}
 			}
-			portrait_modifier = { 
-				animations_props = saber_attachment	
+			portrait_modifier = {
+				animations_props = saber_attachment
 			}
 		}
 
 		shovels_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_shovels" torso = "idle_body_struggle_shovels" }
-				
+
 			weight = {
 				base = 0
 
@@ -429,7 +541,26 @@ idle = {
 				}
 			}
 			portrait_modifier = { animations_props = shovel_attachment }
-		}	
+		}
+
+		clergy_india_idle_struggle = {
+			animation = { head = "idle_head_struggle_pop_pitchfork" torso = "idle_body_struggle_hatmonocle" }
+
+			weight = {
+				base = 0
+
+				modifier = {
+					add = 5000
+
+					OR = {
+		                hindu_clothes_pop_trigger = yes
+		                buddhist_clothes_pop_trigger = yes
+		            }
+	                clergy_clothes_pop_trigger = yes
+					struggling_pop_trigger = yes
+				}
+			}
+		}
 
 		holyscripture_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_holyscripture" torso = "idle_body_struggle_holyscripture" }
@@ -469,50 +600,27 @@ idle = {
 
 				modifier = {
 					add = 150
-					exists = scope:pop
 					soldier_clothes_pop_trigger = yes
 					struggling_pop_trigger = yes
-					scope:pop = {
-						home_country = {
-							exists = capital
-							OR = {
-								capital = {
-									state_is_in_east_asia = no
-								}
-								has_technology_researched = rifling
-							}
-						}
-					}
 				}
-				#modifier = {
-				#	add = -150
-				#	scope:pop = {
-				#		home_country = {
-				#			exists = capital
-				#			capital = {
-				#				state_is_in_east_asia = yes
-				#			}
-				#			NOT = { has_technology_researched = rifling }
-				#		}
-				#	}
-				#}
 			}
 			portrait_modifier = { animations_props = rifle_attachment }
 		}
-		birdgun_pop_idle_struggle = {	#추가댐 - 조총
+
+		birdgun_pop_idle_struggle = {	#추가 - 조총
 			animation = { head = "idle_head_struggle_pop_pitchfork" torso = "idle_body_struggle_shovels" }
 
 			weight = {
 				base = 0
 
 				modifier = {
-					add = 155
+					add = 1500
 					soldier_clothes_pop_trigger = yes
 					struggling_pop_trigger = yes
-					scope:pop = {
-						home_country = {
-							exists = capital
-							capital = {
+
+					scope:pop ?= {
+						owner ?= {
+							capital ?= {
 								state_is_in_east_asia = yes
 							}
 							NOT = { has_technology_researched = rifling }
@@ -536,7 +644,7 @@ idle = {
 				}
 			}
 			portrait_modifier = { animations_props = pitchfork_attachment }
-		}	
+		}
 
 
 
@@ -709,18 +817,18 @@ idle = {
 
 		apron_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_apron" torso = "idle_body_struggle_apron" }
-	
+
 			weight = {
 				base = 0
-	
+
 				modifier = {
 					add = 150
 					shopkeepers_clothes_pop_trigger = yes
 					struggling_pop_trigger = yes
 				}
-			}								
+			}
 		}
-								
+
 		hattop_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_hattop" torso = "idle_body_struggle_hattop" }
 
@@ -734,23 +842,8 @@ idle = {
 					struggling_pop_trigger = yes
 				}
 			}
-		}						
-		
-		hatacademic_pop_idle_struggle = {
-			animation = { head = "idle_head_struggle_pop_hatacademic" torso = "idle_body_struggle_hatacademic" }
-
-			weight = {
-				base = 0
-
-				modifier = {
-					add = 150
-					upper_clothes_pop_trigger = yes
-					european_clothes_pop_trigger = yes
-					struggling_pop_trigger = yes
-				}
-			}
 		}
-		
+
 		hatmonocle_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_hatmonocle" torso = "idle_body_struggle_hatmonocle" }
 
@@ -794,7 +887,7 @@ idle = {
 
 	female = {
 		default = { head = "idle3" torso = "idle3" }
-		
+
 		###################################
 		# POP Animations  #
 		###################################
@@ -904,7 +997,7 @@ idle = {
 			}
 			portrait_modifier = { animations_props = shackles_attachment }
 		}
-		
+
 		pitchfork_pop_idle = {
 			animation = { head = "idle_head_pop_hattop" torso = "idle_body_pitchfork" }
 
@@ -979,7 +1072,7 @@ idle = {
 		###################################
 		# POP Animations  for Struggling/Starving#
 		###################################
-		
+
 		parasol_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_parasol" torso = "idle_body_struggle_parasol" }
 
@@ -1043,18 +1136,18 @@ idle = {
 
 		apron_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_apron" torso = "idle_body_struggle_hatmonocle" }
-	
+
 			weight = {
 				base = 0
-	
+
 				modifier = {
 					add = 150
 					laborers_clothes_pop_trigger = yes
 					struggling_pop_trigger = yes
 				}
-			}								
+			}
 		}
-			
+
 					crudehoe_pop_idle_struggle = {
 			animation = { head = "idle_head_struggle_pop_hatmonocle" torso = "idle_body_struggle_crudehoe" }
 
@@ -1101,10 +1194,10 @@ idle = {
 		####general_emotions_proud_idle = {
 	########					animation = { head = "idle_head_emotions_proud" torso = "idle_body_emotions_proud" }
 	########	}
-		
+
 
 	}
-	
+
 	girl = boy
 
 	adolescent_boy = {
@@ -1120,25 +1213,25 @@ idle = {
 
 ### COMMANDER VS LEFT
 commander_vs_left = {
-	
+
 	male = {
 		default = { head = "idle_entry" torso = "idle_entry" }
-		
+
 		General_VS_Left_Saber= {
 
 			animation = { head = "idle_head_General_VS_Left_Saber" torso = "idle_body_General_VS_Left_Saber" }
 
-			portrait_modifier = { 
-				animations_props = saber_attachment	
+			portrait_modifier = {
+				animations_props = saber_attachment
 			}
 		}
 
 		General_VS_Left_Point = {
 			animation = { head = "idle_head_General_VS_Left_Point" torso = "idle_body_General_VS_Left_Point" }
-		}	
+		}
 
 		General_VS_Left_Fist = {
-			animation = { head = "idle_head_General_VS_Left_Fist" torso = "idle_body_General_VS_Left_Fist" }	
+			animation = { head = "idle_head_General_VS_Left_Fist" torso = "idle_body_General_VS_Left_Fist" }
 		}
 
 		General_VS_Left_Cross = {
@@ -1149,11 +1242,11 @@ commander_vs_left = {
 			animation = { head = "idle_head_General_VS_Left_HandsHips" torso = "idle_body_General_VS_Left_HandsHips" }
 		}
 	}
-	
+
 	female = {
 		default = { head = "idle_entry" torso = "idle_entry" }
 	}
-	
+
 	boy = {
 		default = { head = "idle1" torso = "idle1" }
 	}
@@ -1172,21 +1265,21 @@ commander_vs_left = {
 
 ### COMMANDER VS RIGHT
 commander_vs_right = {
-	
+
 	male = {
 		default = { head = "idle_entry" torso = "idle_entry" }
-		
+
 		General_VS_Right_Saber= {
 			animation = { head = "idle_head_General_VS_Right_Saber" torso = "idle_body_General_VS_Right_Saber" }
-			
-			portrait_modifier = { 
-				animations_props = saber_attachment	
+
+			portrait_modifier = {
+				animations_props = saber_attachment
 			}
 		}
 
 		General_VS_Right_Point = {
 			animation = { head = "idle_head_General_VS_Right_Point" torso = "idle_body_General_VS_Right_Point" }
-		}	
+		}
 
 		General_VS_Right_Fist = {
 			animation = { head = "idle_head_General_VS_Right_Fist" torso = "idle_body_General_VS_Right_Fist" }
@@ -1200,11 +1293,11 @@ commander_vs_right = {
 			animation = { head = "idle_head_General_VS_Right_HandsHips" torso = "idle_body_General_VS_Right_HandsHips" }
 		}
 	}
-	
+
 	female = {
-		default = { head = "idle_entry" torso = "idle_entry" }  
+		default = { head = "idle_entry" torso = "idle_entry" }
 	}
-	
+
 	boy = {
 		default = { head = "idle1" torso = "idle1" }
 	}
