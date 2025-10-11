@@ -10,16 +10,7 @@ eafp_progress_bar_kings_health = {
 	weekly_progress = {
 		add = {	#기존 주간 스트레스 자연증가량
 			desc = "eafp_progress_bar_kings_health_base_add"
-			value = 0.3
-		}
-		if = {
-			limit = {
-				is_ai = yes
-			}
-			add = {
-				desc = "eafp_this_is_ai"
-				value = -0.1
-			}
+			value = 0.4
 		}
 		if = {
 			limit = {
@@ -29,7 +20,7 @@ eafp_progress_bar_kings_health = {
 			}
 			add = {
 				desc = "eafp_progress_bar_kings_health_bad_body"
-				value = 0.15
+				value = 0.2
 			}
 		}
 	}
@@ -211,6 +202,286 @@ eafp_progress_bar_kings_health = {
 	max_value = 500
 }
 
+## 삼정의 문란
+
+eafp_progress_bar_land_problem_landexp_civ = {
+	name = "eafp_progress_bar_land_problem_landexp_civ"
+	desc = "eafp_progress_bar_land_problem_landexp_civ_desc"
+
+	default = yes
+
+	monthly_progress = {
+		add = {
+			desc = "WAR_EXHAUSTION_BASE"
+			value = 2
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_civ_from_agriculture"
+			value = 0
+			every_scope_building = {
+				limit = {
+					OR = {
+						AND = {
+							is_building_group = bg_agriculture
+							NOT = { is_building_group = bg_subsistence_agriculture }
+						}
+						AND = {
+							is_building_group = bg_ranching
+							NOT = { is_building_group = bg_subsistence_ranching }
+						}
+						is_building_group = bg_plantations
+					}
+				}
+				add = THIS.level
+			}
+			multiply = 0.05	#농장 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_civ_from_gdp_per_capita"
+			value = gdp
+			divide = total_population
+			multiply = 5	#gdp 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_civ_from_radicals"
+			value = radical_fraction
+			multiply = -5	#갈등 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_civ_from_other_status"
+			value = {
+				value = eafp_val_land_problem_mil
+				add = eafp_val_land_problem_adm
+				divide = 2
+				subtract = eafp_val_land_problem_civ
+				multiply = 0.01	#타 현황 비교 계수
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_sedo_politics
+			}
+			add = {
+				desc = "je_sedo_politics"
+				value = -3
+			}
+		}
+		add = {
+			desc = "concept_modifiers"
+			value = modifier:country_eafp_val_landexp_comp_civ_monthly_add
+		}
+		if = {
+			limit = {
+				is_ai = yes
+			}
+			add = {
+				desc = "eafp_this_is_ai"
+				value = 0
+			}
+		}
+	}
+
+	start_value = 300
+	min_value = 0
+	max_value = 2000
+}
+
+eafp_progress_bar_land_problem_landexp_adm = {
+	name = "eafp_progress_bar_land_problem_landexp_adm"
+	desc = "eafp_progress_bar_land_problem_landexp_adm_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		add = {
+			desc = "WAR_EXHAUSTION_BASE"
+			value = 2
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_adm_from_bureaucracy"
+			value = 0
+			every_scope_building = {
+				limit = {
+					is_building_group = bg_bureaucracy
+				}
+				add = THIS.level
+			}
+			multiply = 0.1	#청사 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_adm_from_infrastructure"
+			value = 0
+			every_scope_state = {
+				add = infrastructure
+			}
+			multiply = 0.004	#인프라 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_adm_from_government_wage_level"
+			if = {
+				limit = {
+					government_wage_level = very_low
+				}
+				value = -5
+			}
+			if = {
+				limit = {
+					government_wage_level = low
+				}
+				value = -2.5
+			}
+			if = {
+				limit = {
+					government_wage_level = medium
+				}
+				value = 0
+			}
+			if = {
+				limit = {
+					government_wage_level = high
+				}
+				value = 2.5
+			}
+			if = {
+				limit = {
+					government_wage_level = very_high
+				}
+				value = 5
+			}
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_adm_from_other_status"
+			value = {
+				value = eafp_val_land_problem_mil
+				add = eafp_val_land_problem_civ
+				divide = 2
+				subtract = eafp_val_land_problem_adm
+				multiply = 0.01	#타 현황 비교 계수
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_sedo_politics
+			}
+			add = {
+				desc = "je_sedo_politics"
+				value = -3
+			}
+		}
+		add = {
+			desc = "concept_modifiers"
+			value = modifier:country_eafp_val_landexp_comp_adm_monthly_add
+		}
+		if = {
+			limit = {
+				is_ai = yes
+			}
+			add = {
+				desc = "eafp_this_is_ai"
+				value = 5
+			}
+		}
+	}
+
+	start_value = 500
+	min_value = 0
+	max_value = 2000
+}
+
+eafp_progress_bar_land_problem_landexp_mil = {
+	name = "eafp_progress_bar_land_problem_landexp_mil"
+	desc = "eafp_progress_bar_land_problem_landexp_mil_desc"
+
+	default_green = yes
+
+	monthly_progress = {
+		add = {
+			desc = "WAR_EXHAUSTION_BASE"
+			value = 2
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_mil_from_army"
+			value = 0
+			every_scope_building = {
+				limit = {
+					is_building_group = bg_army
+				}
+				add = THIS.level
+			}
+			multiply = 0.02	#병영 계수
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_mil_from_military_wage_level"
+			if = {
+				limit = {
+					military_wage_level = very_low
+				}
+				value = -5
+			}
+			if = {
+				limit = {
+					military_wage_level = low
+				}
+				value = -2.5
+			}
+			if = {
+				limit = {
+					military_wage_level = medium
+				}
+				value = 0
+			}
+			if = {
+				limit = {
+					military_wage_level = high
+				}
+				value = 2.5
+			}
+			if = {
+				limit = {
+					military_wage_level = very_high
+				}
+				value = 5
+			}
+		}
+		add = {
+			desc = "eafp_progress_bar_land_problem_landexp_mil_from_other_status"
+			value = {
+				value = eafp_val_land_problem_adm
+				add = eafp_val_land_problem_civ
+				divide = 2
+				subtract = eafp_val_land_problem_mil
+				multiply = 0.01	#타 현황 비교 계수
+			}
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_sedo_politics
+			}
+			add = {
+				desc = "je_sedo_politics"
+				value = -3
+			}
+		}
+		add = {
+			desc = "concept_modifiers"
+			value = modifier:country_eafp_val_landexp_comp_mil_monthly_add
+		}
+		if = {
+			limit = {
+				is_ai = yes
+			}
+			add = {
+				desc = "eafp_this_is_ai"
+				value = 5
+			}
+		}
+	}
+
+	start_value = 400
+	min_value = 0
+	max_value = 2000
+}
+
 ## 양전
 
 eafp_progress_bar_yangjeon = {
@@ -221,7 +492,7 @@ eafp_progress_bar_yangjeon = {
 
 	weekly_progress = {
 		add = {
-			desc = "eafp_progress_bar_confu_base"
+			desc = "WAR_EXHAUSTION_BASE"
 			value = var:eafp_var_yangjeon_weekly
 		}
 	}
@@ -324,7 +595,7 @@ eafp_progress_bar_imsul_spread = {
 				has_law = law_type:law_censorship
 			}
 			add = {
-				desc = "eafp_progress_bar_imsul_spread_law_1"
+				desc = "law_censorship"
 				value = -1
 			}
 		}
@@ -333,7 +604,7 @@ eafp_progress_bar_imsul_spread = {
 				has_law = law_type:law_outlawed_dissent
 			}
 			add = {
-				desc = "eafp_progress_bar_imsul_spread_law_2"
+				desc = "law_outlawed_dissent"
 				value = -2
 			}
 		}
@@ -342,7 +613,7 @@ eafp_progress_bar_imsul_spread = {
 				has_law = law_type:law_migration_controls
 			}
 			add = {
-				desc = "eafp_progress_bar_imsul_spread_law_3"
+				desc = "law_migration_controls"
 				value = -1
 			}
 		}
@@ -351,7 +622,7 @@ eafp_progress_bar_imsul_spread = {
 				has_law = law_type:law_closed_borders
 			}
 			add = {
-				desc = "eafp_progress_bar_imsul_spread_law_4"
+				desc = "law_closed_borders"
 				value = -2
 			}
 		}
@@ -599,64 +870,4 @@ eafp_progress_bar_confu = {
 	start_value = 0
 	min_value = 0
 	max_value = 1000
-}
-
-eafp_progress_bar_seowon_abolish = {
-	name = "eafp_progress_bar_seowon_abolish"
-	desc = "eafp_progress_bar_seowon_abolish_desc"
-
-	default_green = yes
-
-	start_value = 0
-	min_value = 0
-	max_value = 5
-}
-
-eafp_progress_bar_seowon_backlash = {
-	name = "eafp_progress_bar_seowon_backlash"
-	desc = "eafp_progress_bar_seowon_backlash_desc"
-
-	default_bad = yes
-
-	weekly_progress = {
-		add = {
-			desc = "eafp_progress_bar_seowon_backlash_base"
-			value = -0.5
-		}
-		if = {
-			limit = {
-				has_journal_entry = je_protect_righteousness
-			}
-			add = {
-				desc = "[Localize('je_protect_righteousness')] [concept_journal_entry]"
-				value = 0.15
-			}
-		}
-	}
-
-	start_value = 30
-	min_value = 0
-	max_value = 100
-}
-
-## 당백전
-
-eafp_progress_bar_dangbaek_inflation = {
-	name = "eafp_progress_bar_dangbaek_inflation"
-	desc = "eafp_progress_bar_dangbaek_inflation_desc"
-
-	default_bad = yes
-
-	monthly_progress = {
-		add = {
-			value = var:eafp_var_dangbaek
-			multiply = 30000000
-			divide = root.gdp
-		}
-		
-	}
-
-	start_value = 0
-	min_value = 0
-	max_value = 100
 }

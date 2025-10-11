@@ -11,30 +11,8 @@
 	}
 
 	effect = {
-		trigger_event = eafp_kor_mainline.1501
+		trigger_event = { id = eafp_kor_mainline.1501 }
 		remove_variable = eafp_var_wonnap_possible
-	}
-}
-eafp_scripted_button_dangbaek = {
-	name = "eafp_scripted_button_dangbaek"
-	desc = "eafp_scripted_button_dangbaek_desc"
-
-	visible = {
-		has_variable = eafp_var_dangbaek_possible
-	}
-
-	possible = {
-		has_variable = eafp_var_dangbaek_possible
-		owns_entire_state_region = STATE_SEOUL
-		exists = c:KOR
-		this = c:KOR
-	}
-
-	effect = {
-		add_journal_entry = {
-			type = je_rlg_seoul_dangbaek
-		}
-		remove_variable = eafp_var_dangbaek_possible
 	}
 }
 ###아래는 초기 삼정개혁 버튼
@@ -48,183 +26,28 @@ eafp_scripted_button_sam_jeon = {
 	}
 
 	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_sam_jeon_cond_tt
+		hidden_trigger = {
 			NOT = { has_variable = eafp_var_sam_jeon_clear }
-			calc_true_if = {
-				amount >= 4
-				AND = {
-					owns_entire_state_region = STATE_SEOUL
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SEOUL_adm >= 2
-							var:eafp_kor_landexp_SEOUL_adm >= 80
-						}
-						var:eafp_kor_landlvl_SEOUL_adm >= 3
-					}
-					var:eafp_kor_landlvl_SEOUL_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_YANGHO
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_YANGHO_adm >= 2
-							var:eafp_kor_landexp_YANGHO_adm >= 80
-						}
-						var:eafp_kor_landlvl_YANGHO_adm >= 3
-					}
-					var:eafp_kor_landlvl_YANGHO_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_BUSAN
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_BUSAN_adm >= 2
-							var:eafp_kor_landexp_BUSAN_adm >= 80
-						}
-						var:eafp_kor_landlvl_BUSAN_adm >= 3
-					}
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_PYONGYANG
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-							var:eafp_kor_landexp_PYONGYANG_adm >= 80
-						}
-						var:eafp_kor_landlvl_PYONGYANG_adm >= 3
-					}
-					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-				}
-				AND = {
-					owns_entire_state_region = STATE_SARIWON
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SARIWON_adm >= 2
-							var:eafp_kor_landexp_SARIWON_adm >= 80
-						}
-						var:eafp_kor_landlvl_SARIWON_adm >= 3
-					}
-					var:eafp_kor_landlvl_SARIWON_civ >= 2
-				}
-			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_sam_jeon_cond_tt1
+			eafp_val_land_problem_adm >= eafp_val_land_problem_threshold4
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_sam_jeon_cond_tt2
+			eafp_val_land_problem_civ >= eafp_val_land_problem_threshold3
 		}
 	}
 
 	effect = {
+		set_variable = eafp_var_sam_jeon_clear
 		add_journal_entry = {
 			type = je_yangjeon
 		}
 		show_as_tooltip = {
 			add_modifier = {
 				name = eafp_modi_yangjeon_cost
-				multiplier = 3000
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SEOUL
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SEOUL_adm >= 2
-							var:eafp_kor_landexp_SEOUL_adm >= 80
-						}
-						var:eafp_kor_landlvl_SEOUL_adm >= 3
-					}
-					var:eafp_kor_landlvl_SEOUL_civ >= 2
-				}
-			}
-			s:STATE_SEOUL.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_jeon_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_YANGHO
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_YANGHO_adm >= 2
-							var:eafp_kor_landexp_YANGHO_adm >= 80
-						}
-						var:eafp_kor_landlvl_YANGHO_adm >= 3
-					}
-					var:eafp_kor_landlvl_YANGHO_civ >= 2
-				}
-			}
-			s:STATE_YANGHO.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_jeon_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_BUSAN_adm >= 2
-							var:eafp_kor_landexp_BUSAN_adm >= 80
-						}
-						var:eafp_kor_landlvl_BUSAN_adm >= 3
-					}
-					var:eafp_kor_landlvl_BUSAN_civ >= 2
-				}
-			}
-			s:STATE_BUSAN.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_jeon_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-							var:eafp_kor_landexp_PYONGYANG_adm >= 80
-						}
-						var:eafp_kor_landlvl_PYONGYANG_adm >= 3
-					}
-					var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-				}
-			}
-			s:STATE_PYONGYANG.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_jeon_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SARIWON_adm >= 2
-							var:eafp_kor_landexp_SARIWON_adm >= 80
-						}
-						var:eafp_kor_landlvl_SARIWON_adm >= 3
-					}
-					var:eafp_kor_landlvl_SARIWON_civ >= 2
-				}
-			}
-			s:STATE_SARIWON.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_jeon_failstate
-					months = 120
-				}
+				multiplier = 2000
 			}
 		}
 	}
@@ -242,159 +65,18 @@ eafp_scripted_button_sam_gun = {
 	}
 
 	possible = {
+		hidden_trigger = {
+			NOT = { has_variable = eafp_var_sam_gun_clear }
+		}
 		custom_tooltip = {
 			text = eafp_scripted_button_sam_gun_cond_tt
-			NOT = { has_variable = eafp_var_sam_gun_clear }
-			calc_true_if = {
-				amount >= 4
-				AND= {
-					owns_entire_state_region = STATE_SEOUL
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SEOUL_mil >= 2
-							var:eafp_kor_landexp_SEOUL_mil >= 80
-						}
-						var:eafp_kor_landlvl_SEOUL_mil >= 3
-					}
-				}
-				AND= {
-					owns_entire_state_region = STATE_YANGHO
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_YANGHO_mil >= 2
-							var:eafp_kor_landexp_YANGHO_mil >= 80
-						}
-						var:eafp_kor_landlvl_YANGHO_mil >= 3
-					}
-				}
-				AND= {
-					owns_entire_state_region = STATE_BUSAN
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_BUSAN_mil >= 2
-							var:eafp_kor_landexp_BUSAN_mil >= 80
-						}
-						var:eafp_kor_landlvl_BUSAN_mil >= 3
-					}
-				}
-				AND= {
-					owns_entire_state_region = STATE_PYONGYANG
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_PYONGYANG_mil >= 2
-							var:eafp_kor_landexp_PYONGYANG_mil >= 80
-						}
-						var:eafp_kor_landlvl_PYONGYANG_mil >= 3
-					}
-				}
-				AND= {
-					owns_entire_state_region = STATE_SARIWON
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SARIWON_mil >= 2
-							var:eafp_kor_landexp_SARIWON_mil >= 80
-						}
-						var:eafp_kor_landlvl_SARIWON_mil >= 3
-					}
-				}
-			}
+			eafp_val_land_problem_adm >= eafp_val_land_problem_threshold4
 		}
 	}
 
 	effect = {
 		set_variable = eafp_var_sam_gun_clear
 		remove_modifier = eafp_modi_land_problem_mil_country
-
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SEOUL
-				NOR = {
-					AND = {
-						var:eafp_kor_landlvl_SEOUL_mil >= 2
-						var:eafp_kor_landexp_SEOUL_mil >= 80
-					}
-					var:eafp_kor_landlvl_SEOUL_mil >= 3
-				}
-			}
-			s:STATE_SEOUL.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_gun_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_YANGHO
-				NOR = {
-					AND = {
-						var:eafp_kor_landlvl_YANGHO_mil >= 2
-						var:eafp_kor_landexp_YANGHO_mil >= 80
-					}
-					var:eafp_kor_landlvl_YANGHO_mil >= 3
-				}
-			}
-			s:STATE_YANGHO.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_gun_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NOR = {
-					AND = {
-						var:eafp_kor_landlvl_BUSAN_mil >= 2
-						var:eafp_kor_landexp_BUSAN_mil >= 80
-					}
-					var:eafp_kor_landlvl_BUSAN_mil >= 3
-				}
-			}
-			s:STATE_BUSAN.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_gun_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NOR = {
-					AND = {
-						var:eafp_kor_landlvl_PYONGYANG_mil >= 2
-						var:eafp_kor_landexp_PYONGYANG_mil >= 80
-					}
-					var:eafp_kor_landlvl_PYONGYANG_mil >= 3
-				}
-			}
-			s:STATE_PYONGYANG.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_gun_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NOR = {
-					AND = {
-						var:eafp_kor_landlvl_SARIWON_mil >= 2
-						var:eafp_kor_landexp_SARIWON_mil >= 80
-					}
-					var:eafp_kor_landlvl_SARIWON_mil >= 3
-				}
-			}
-			s:STATE_SARIWON.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_gun_failstate
-					months = 120
-				}
-			}
-		}
 	}
 
 	ai_chance = {
@@ -410,177 +92,21 @@ eafp_scripted_button_sam_hwan = {
 	}
 
 	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_sam_hwan_cond_tt
+		hidden_trigger = {
 			NOT = { has_variable = eafp_var_sam_hwan_clear }
-			calc_true_if = {
-				amount >= 4
-				AND= {
-					owns_entire_state_region = STATE_SEOUL
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SEOUL_civ >= 2
-							var:eafp_kor_landexp_SEOUL_civ >= 80
-						}
-						var:eafp_kor_landlvl_SEOUL_civ >= 3
-					}
-					var:eafp_kor_landlvl_SEOUL_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_YANGHO
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_YANGHO_civ >= 2
-							var:eafp_kor_landexp_YANGHO_civ >= 80
-						}
-						var:eafp_kor_landlvl_YANGHO_civ >= 3
-					}
-					var:eafp_kor_landlvl_YANGHO_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_BUSAN
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_BUSAN_civ >= 2
-							var:eafp_kor_landexp_BUSAN_civ >= 80
-						}
-						var:eafp_kor_landlvl_BUSAN_civ >= 3
-					}
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_PYONGYANG
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-							var:eafp_kor_landexp_PYONGYANG_civ >= 80
-						}
-						var:eafp_kor_landlvl_PYONGYANG_civ >= 3
-					}
-					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-				}
-				AND= {
-					owns_entire_state_region = STATE_SARIWON
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SARIWON_civ >= 2
-							var:eafp_kor_landexp_SARIWON_civ >= 80
-						}
-						var:eafp_kor_landlvl_SARIWON_civ >= 3
-					}
-					var:eafp_kor_landlvl_SARIWON_adm >= 2
-				}
-			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_sam_hwan_cond_tt1
+			eafp_val_land_problem_adm >= eafp_val_land_problem_threshold3
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_sam_hwan_cond_tt2
+			eafp_val_land_problem_civ >= eafp_val_land_problem_threshold4
 		}
 	}
 
 	effect = {
 		set_variable = eafp_var_sam_hwan_clear
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SEOUL
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SEOUL_civ >= 2
-							var:eafp_kor_landexp_SEOUL_civ >= 80
-						}
-						var:eafp_kor_landlvl_SEOUL_civ >= 3
-					}
-					var:eafp_kor_landlvl_SEOUL_adm >= 2
-				}
-			}
-			s:STATE_SEOUL.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_hwan_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_YANGHO
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_YANGHO_civ >= 2
-							var:eafp_kor_landexp_YANGHO_civ >= 80
-						}
-						var:eafp_kor_landlvl_YANGHO_civ >= 3
-					}
-					var:eafp_kor_landlvl_YANGHO_adm >= 2
-				}
-			}
-			s:STATE_YANGHO.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_hwan_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_BUSAN
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_BUSAN_civ >= 2
-							var:eafp_kor_landexp_BUSAN_civ >= 80
-						}
-						var:eafp_kor_landlvl_BUSAN_civ >= 3
-					}
-					var:eafp_kor_landlvl_BUSAN_adm >= 2
-				}
-			}
-			s:STATE_BUSAN.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_hwan_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_PYONGYANG
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_PYONGYANG_civ >= 2
-							var:eafp_kor_landexp_PYONGYANG_civ >= 80
-						}
-						var:eafp_kor_landlvl_PYONGYANG_civ >= 3
-					}
-					var:eafp_kor_landlvl_PYONGYANG_adm >= 2
-				}
-			}
-			s:STATE_PYONGYANG.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_hwan_failstate
-					months = 120
-				}
-			}
-		}
-		if = {
-			limit = {
-				owns_entire_state_region = STATE_SARIWON
-				NAND = {
-					OR = {
-						AND = {
-							var:eafp_kor_landlvl_SARIWON_civ >= 2
-							var:eafp_kor_landexp_SARIWON_civ >= 80
-						}
-						var:eafp_kor_landlvl_SARIWON_civ >= 3
-					}
-					var:eafp_kor_landlvl_SARIWON_adm >= 2
-				}
-			}
-			s:STATE_SARIWON.region_state:KOR = {
-				add_modifier = {
-					name = eafp_modi_sam_hwan_failstate
-					months = 120
-				}
-			}
-		}
 	}
 
 	ai_chance = {
@@ -601,6 +127,10 @@ eafp_scripted_button_sam_all = {
 			has_variable = eafp_var_sam_jeon_clear
 			has_variable = eafp_var_sam_gun_clear
 			has_variable = eafp_var_sam_hwan_clear
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_sam_all_cond_yangjeon_tt
+			NOT = { has_modifier = eafp_modi_land_problem_adm_country }
 		}
 	}
 
@@ -633,10 +163,10 @@ eafp_scripted_button_yangjeon = {
 				value = var:eafp_var_yangjeon_weekly
 				multiply = var:eafp_var_yangjeon_weekly
 				multiply = root.gdp
-				divide = 600000
+				divide = 1000000
 				round = yes
-				multiply = 1000
-				add = 3000
+				multiply = 200
+				add = 2000
 			}
 		}
 		change_variable = {
@@ -673,10 +203,10 @@ eafp_scripted_button_yangjeon2 = {
 					subtract = 2
 				}
 				multiply = root.gdp
-				divide = 600000
+				divide = 1000000
 				round = yes
-				multiply = 1000
-				add = 3000
+				multiply = 200
+				add = 2000
 			}
 		}
 		change_variable = {
@@ -937,19 +467,8 @@ eafp_scripted_button_imsul_lockdown = {
 	}
 
 	effect = {
-		every_scope_state = {
-			limit = {
-				OR = {
-					state_region = s:STATE_SEOUL
-					state_region = s:STATE_YANGHO
-					state_region = s:STATE_BUSAN
-					state_region = s:STATE_PYONGYANG
-					state_region = s:STATE_SARIWON
-				}
-			}
-			eafp_effect_option_gain_civ = {
-				CIV = -10
-			}
+		eafp_effect_option_gain_civ = {
+			CIV = -50
 		}
 		every_scope_state = {
 			limit = {
@@ -1005,7 +524,7 @@ eafp_scripted_button_imsul_final = {
 	}
 
 	effect = {
-		trigger_event = eafp_kor_mainline.221
+		trigger_event = { id = eafp_kor_mainline.221 }
 		set_global_variable = eafp_global_var_imsul_finish
 	}
 	ai_chance = {
@@ -1138,7 +657,240 @@ eafp_scripted_button_sedo_politics_balance_authority = {
 	desc = "eafp_scripted_button_sedo_politics_balance_authority_desc"
 
 	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		authority >= 100
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_authority } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_authority
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+			remove_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_modifier = {
+				name = eafp_modi_sedo_politics_balance_authority
+				months = 12
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			post_notification = eafp_message_sedo_politics_balance_authority
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_authority
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_bureaucracy = {
+	name = "eafp_scripted_button_sedo_politics_balance_bureaucracy"
+	desc = "eafp_scripted_button_sedo_politics_balance_bureaucracy_desc"
+
+	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		bureaucracy >= 0
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_money
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+			remove_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_modifier = {
+				name = eafp_modi_sedo_politics_balance_bureaucracy
+				months = 12
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			post_notification = eafp_message_sedo_politics_balance_bureaucracy
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_money = {
+	name = "eafp_scripted_button_sedo_politics_balance_money"
+	desc = "eafp_scripted_button_sedo_politics_balance_money_desc"
+
+	visible = {
+		is_ai = no
+	}
+
+	possible = {
+		scaled_gold_reserves >= 0.1
+		OR = {
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_cooltime_tt
+				NOT = { has_variable = eafp_var_button_regent_balance_cooltime }
+			}
+			custom_tooltip = {
+				text = eafp_scripted_button_sedo_politics_balance_other_tt
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+				}
+			}
+		}
+		hidden_trigger = { NOT = { has_variable = eafp_scripted_button_sedo_politics_balance_money } }
+	}
+
+	selected = {
+		has_variable = eafp_scripted_button_sedo_politics_balance_money
+	}
+
+	effect = {
+		if = {
+			limit = {
+				OR = {
+					has_variable = eafp_scripted_button_sedo_politics_balance_authority
+					has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+				}
+			}
+			remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+			remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		}
+		else = {
+			eafp_effect_option_gain_balance = {
+				BALANCE = -10
+			}
+			eafp_effect_option_gain_attitude = {
+				ATTITUDE = -2
+			}
+			add_treasury = {
+				value = gold_reserves_limit
+				multiply = -0.1
+			}
+			set_variable = {	#쿨타임 3개월
+				name = eafp_var_button_regent_balance_cooltime
+				days = 90
+			}
+			save_scope_value_as = {
+				name = eafp_scripted_button_sedo_politics_balance_money_payment
+				value = {
+					value = gold_reserves_limit
+					multiply = 0.1
+				}
+			}
+			post_notification = eafp_message_sedo_politics_balance_money
+		}
+		set_variable = eafp_scripted_button_sedo_politics_balance_money
+		custom_tooltip = eafp_scripted_button_sedo_politics_balance_tt
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+eafp_scripted_button_sedo_politics_balance_remove = {
+	name = "eafp_scripted_button_sedo_politics_balance_remove"
+	desc = "eafp_scripted_button_sedo_politics_balance_remove_desc"
+
+	visible = {
+		is_ai = no
+		OR = {
+			has_variable = eafp_scripted_button_sedo_politics_balance_authority
+			has_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+			has_variable = eafp_scripted_button_sedo_politics_balance_money
+		}
+	}
+
+	possible = {
 		always = yes
+	}
+
+	effect = {
+		remove_variable = eafp_scripted_button_sedo_politics_balance_authority
+		remove_variable = eafp_scripted_button_sedo_politics_balance_bureaucracy
+		remove_variable = eafp_scripted_button_sedo_politics_balance_money
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_scripted_button_sedo_politics_balance_authority_ai = {
+	name = "eafp_scripted_button_sedo_politics_balance_authority"
+	desc = "eafp_scripted_button_sedo_politics_balance_authority_desc"
+
+	visible = {
+		is_ai = yes
 	}
 
 	possible = {
@@ -1170,12 +922,12 @@ eafp_scripted_button_sedo_politics_balance_authority = {
 		value = 100
 	}
 }
-eafp_scripted_button_sedo_politics_balance_bureaucracy = {
+eafp_scripted_button_sedo_politics_balance_bureaucracy_ai = {
 	name = "eafp_scripted_button_sedo_politics_balance_bureaucracy"
 	desc = "eafp_scripted_button_sedo_politics_balance_bureaucracy_desc"
 
 	visible = {
-		always = yes
+		is_ai = yes
 	}
 
 	possible = {
@@ -1210,12 +962,12 @@ eafp_scripted_button_sedo_politics_balance_bureaucracy = {
 		}
 	}
 }
-eafp_scripted_button_sedo_politics_balance_money = {
+eafp_scripted_button_sedo_politics_balance_money_ai = {
 	name = "eafp_scripted_button_sedo_politics_balance_money"
 	desc = "eafp_scripted_button_sedo_politics_balance_money_desc"
 
 	visible = {
-		always = yes
+		is_ai = yes
 	}
 
 	possible = {
@@ -1249,9 +1001,9 @@ eafp_scripted_button_sedo_politics_balance_money = {
 }
 ###아래는 건강저널 관련 버튼
 #대외활동
-eafp_scripted_button_health_out = {
-	name = "eafp_scripted_button_health_out"
-	desc = "eafp_scripted_button_health_out_desc"
+eafp_scripted_button_health_walk = {
+	name = "eafp_scripted_button_health_walk"
+	desc = "eafp_scripted_button_health_walk_desc"
 
 	visible = {
 		always = yes
@@ -1268,236 +1020,173 @@ eafp_scripted_button_health_out = {
 	}
 
 	effect = {
+		set_variable = {	#쿨타임 1년
+			name = eafp_var_button_health_cooltime
+			months = 12
+		}
+		eafp_effect_option_gain_stress = {
+			STRESS = -5
+		}
+	}
+}
+eafp_scripted_button_health_inspectation_tour = {
+	name = "eafp_scripted_button_health_inspectation_tour"
+	desc = "eafp_scripted_button_health_inspectation_tour_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		ruler = {
+			age >= define:NCharacters|ADULT_AGE
+		}
 		custom_tooltip = {
-			text = eafp_scripted_button_health_out_tt
+			text = eafp_scripted_button_health_cooltime_tt
+			NOT = { has_variable = eafp_var_button_health_cooltime }
+		}
+	}
+
+	effect = {
+		set_variable = {	#쿨타임 1년
+			name = eafp_var_button_health_cooltime
+			months = 12
+		}
+		add_treasury = -50000	#임시수치
+		eafp_effect_option_gain_mil = {
+			MIL = 25
+		}
+		eafp_effect_option_gain_adm = {
+			ADM = 25
+		}
+		eafp_effect_option_gain_civ = {
+			CIV = 25
+		}
+		eafp_effect_option_gain_stress = {
+			STRESS = 5
+		}
+		random_list = {
+			1 = {
+				trigger_event = {
+					id = eafp_kor_mainline.40
+				}
+			}
+			5 = {
+			}
+		}
+	}
+}
+eafp_scripted_button_health_hunting = {
+	name = "eafp_scripted_button_health_hunting"
+	desc = "eafp_scripted_button_health_hunting_desc"
+
+	visible = {
+		always = yes
+	}
+
+	possible = {
+		ruler = {
+			age >= define:NCharacters|ADULT_AGE
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_health_cooltime_tt
+			NOT = { has_variable = eafp_var_button_health_cooltime }
+		}
+	}
+
+	effect = {
+		hidden_effect = {
+			if = {
+				limit = { NOT = { has_variable = hunting_var } }
+				set_variable = {
+					name = hunting_var
+					value = 1
+				}
+			}
+			else = {
+				change_variable = {
+					name = hunting_var
+					add = 1
+				}
+			}
 		}
 		set_variable = {	#쿨타임 1년
 			name = eafp_var_button_health_cooltime
 			months = 12
 		}
-		trigger_event = {
-			id = eafp_kor_mainline.40 #활동선택지
+		add_treasury = -50000	#임시수치
+		eafp_effect_option_gain_mil = {
+			MIL = -25
+		}
+		eafp_effect_option_gain_adm = {
+			ADM = -25
+		}
+		eafp_effect_option_gain_civ = {
+			CIV = -25
+		}
+		eafp_effect_option_gain_stress = {
+			STRESS = -10
+		}
+		hidden_effect = {
+			if = {
+				limit = {
+					exists = var:hunting_var
+					var:hunting_var >= 5
+				}
+				set_variable = {
+					name = hunting_var
+					value = 3
+				}
+				trigger_event = {
+					id = eafp_kor_mainline.43
+				}
+			}
+		}
+		random_list = {
+			2 = {
+				trigger_event = {
+					id = eafp_kor_mainline.41
+				}
+			}
+			1 = {
+				trigger_event = {
+					id = eafp_kor_mainline.42
+				}
+			}
+			7 = {
+			}
 		}
 	}
 }
-###아래는 서원 철폐 관련 버튼
-eafp_scripted_button_seowon1 = {
-	name = "eafp_scripted_button_seowon1"
-	desc = "eafp_scripted_button_seowon1_desc"
+eafp_scripted_button_health_tomb_tour = {
+	name = "eafp_scripted_button_health_tomb_tour"
+	desc = "eafp_scripted_button_health_tomb_tour_desc"
 
 	visible = {
-		NOT = { has_variable = eafp_scripted_button_seowon1_var }
+		always = yes
 	}
 
 	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_80_tt
-			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
-			}
+		ruler = {
+			age >= define:NCharacters|ADULT_AGE
 		}
 		custom_tooltip = {
-			text = eafp_scripted_button_seowon_cooltime_tt
-			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
+			text = eafp_scripted_button_health_cooltime_tt
+			NOT = { has_variable = eafp_var_button_health_cooltime }
 		}
 	}
 
 	effect = {
-		set_variable = {
-			name = eafp_scripted_button_seowon_cooltime
-			days = 30
+		set_variable = {	#쿨타임 1년
+			name = eafp_var_button_health_cooltime
+			months = 12
 		}
-		set_variable = eafp_scripted_button_seowon1_var
-		trigger_event = eafp_kor_mainline.151
-		custom_tooltip = {
-			text = eafp_progress_bar_seowon_abolish_advance_tt
-			je:je_korean_seowon ?= {
-				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
-			}
+		add_treasury = -50000	#임시수치
+		eafp_effect_option_gain_balance = {
+			BALANCE = -5
 		}
-	}
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = { je:je_korean_seowon = { "scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 30 } }
-			add = 100
-		}
-	}
-}
-eafp_scripted_button_seowon2 = {
-	name = "eafp_scripted_button_seowon2"
-	desc = "eafp_scripted_button_seowon2_desc"
-
-	visible = {
-		NOT = { has_variable = eafp_scripted_button_seowon2_var }
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_80_tt
-			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
-			}
-		}
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_cooltime_tt
-			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
-		}
-	}
-
-	effect = {
-		set_variable = {
-			name = eafp_scripted_button_seowon_cooltime
-			days = 30
-		}
-		set_variable = eafp_scripted_button_seowon2_var
-		trigger_event = eafp_kor_mainline.152
-		custom_tooltip = {
-			text = eafp_progress_bar_seowon_abolish_advance_tt
-			je:je_korean_seowon ?= {
-				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
-			}
-		}
-	}
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = { je:je_korean_seowon = { "scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 30 } }
-			add = 100
-		}
-	}
-}
-eafp_scripted_button_seowon3 = {
-	name = "eafp_scripted_button_seowon3"
-	desc = "eafp_scripted_button_seowon3_desc"
-
-	visible = {
-		NOT = { has_variable = eafp_scripted_button_seowon3_var }
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_80_tt
-			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
-			}
-		}
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_cooltime_tt
-			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
-		}
-	}
-
-	effect = {
-		set_variable = {
-			name = eafp_scripted_button_seowon_cooltime
-			days = 30
-		}
-		set_variable = eafp_scripted_button_seowon3_var
-		trigger_event = eafp_kor_mainline.153
-		custom_tooltip = {
-			text = eafp_progress_bar_seowon_abolish_advance_tt
-			je:je_korean_seowon ?= {
-				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
-			}
-		}
-	}
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = { je:je_korean_seowon = { "scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 30 } }
-			add = 100
-		}
-	}
-}
-eafp_scripted_button_seowon4 = {
-	name = "eafp_scripted_button_seowon4"
-	desc = "eafp_scripted_button_seowon4_desc"
-
-	visible = {
-		NOT = { has_variable = eafp_scripted_button_seowon4_var }
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_80_tt
-			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
-			}
-		}
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_cooltime_tt
-			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
-		}
-	}
-
-	effect = {
-		set_variable = {
-			name = eafp_scripted_button_seowon_cooltime
-			days = 30
-		}
-		set_variable = eafp_scripted_button_seowon4_var
-		trigger_event = eafp_kor_mainline.154
-		custom_tooltip = {
-			text = eafp_progress_bar_seowon_abolish_advance_tt
-			je:je_korean_seowon ?= {
-				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
-			}
-		}
-	}
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = { je:je_korean_seowon = { "scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 30 } }
-			add = 100
-		}
-	}
-}
-eafp_scripted_button_seowon5 = {
-	name = "eafp_scripted_button_seowon5"
-	desc = "eafp_scripted_button_seowon5_desc"
-
-	visible = {
-		NOT = { has_variable = eafp_scripted_button_seowon5_var }
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_backlash_below_80_tt
-			je:je_korean_seowon ?= {
-				"scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <=80
-			}
-		}
-		custom_tooltip = {
-			text = eafp_scripted_button_seowon_cooltime_tt
-			NOT = { has_variable = eafp_scripted_button_seowon_cooltime }
-		}
-	}
-
-	effect = {
-		set_variable = {
-			name = eafp_scripted_button_seowon_cooltime
-			days = 30
-		}
-		set_variable = eafp_scripted_button_seowon5_var
-		trigger_event = eafp_kor_mainline.155
-		custom_tooltip = {
-			text = eafp_progress_bar_seowon_abolish_advance_tt
-			je:je_korean_seowon ?= {
-				add_progress = { value = 1 name = eafp_progress_bar_seowon_abolish }
-			}
-		}
-	}
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = { je:je_korean_seowon = { "scripted_bar_progress(eafp_progress_bar_seowon_backlash)" <= 30 } }
-			add = 100
+		eafp_effect_option_gain_stress = {
+			STRESS = 5
 		}
 	}
 }
@@ -1641,67 +1330,5 @@ eafp_scripted_button_educating = {
 
 	ai_chance = {
 		value = 1
-	}
-}
-
-## 당백전
-
-eafp_scripted_button_increase_dangbaek_supply = {
-	name = "eafp_scripted_button_increase_dangbaek_supply"
-	desc = "eafp_scripted_button_increase_dangbaek_supply_desc"
-
-	visible = {
-		has_journal_entry = je_rlg_seoul_dangbaek
-		var:eafp_var_dangbaek < 3
-	}
-
-	possible = {
-		var:eafp_var_dangbaek < 3
-		authority >= 50
-	}
-
-	effect = {
-		remove_modifier = eafp_modi_dangbaek
-		add_modifier = {
-			name = eafp_modi_dangbaek
-			multiplier = {
-				value = var:eafp_var_dangbaek
-				add = 1
-			}
-		}
-		change_variable = {
-			name = eafp_var_dangbaek
-			add = 1
-		}
-	}
-}
-eafp_scripted_button_decrease_dangbaek_supply = {
-	name = "eafp_scripted_button_decrease_dangbaek_supply"
-	desc = "eafp_scripted_button_decrease_dangbaek_supply_desc"
-
-	visible = {
-		has_journal_entry = je_rlg_seoul_dangbaek
-		var:eafp_var_dangbaek > 0
-	}
-
-	possible = {
-		var:eafp_var_dangbaek > 0
-	}
-
-	effect = {
-		s:STATE_SEOUL.region_state:KOR = {
-			remove_modifier = eafp_modi_seoul_improvement_project_cost
-			add_modifier = {
-				name = eafp_modi_seoul_improvement_project_cost
-				multiplier = {
-					value = var:eafp_var_dangbaek
-					subtract = 1
-				}
-			}
-		}
-		change_variable = {
-			name = eafp_var_dangbaek
-			subtract = 1
-		}
 	}
 }

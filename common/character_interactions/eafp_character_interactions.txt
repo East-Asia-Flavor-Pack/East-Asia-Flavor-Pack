@@ -1,4 +1,78 @@
-﻿exile_character = { # 수정
+﻿grant_command_to_agitator = { # 수정
+	icon = "gfx/interface/character_panel/grant_command.dds"
+	clicksound = "event:/SFX/UI/Military/command_grant"
+
+	potential = {
+		has_dlc_feature = agitators
+		has_role = agitator
+		NOT = { has_role = general }
+		NOT = { has_role = admiral }
+		owner ?= scope:actor
+	}
+
+	possible = {
+		age >= define:NCharacters|ADULT_AGE
+		is_female = no
+		exists = owner.capital.land_hq
+		trigger_if = { # 추가, 비밀선교사가 아니거나 완전분리 제정
+			limit = { c:KOR ?= scope:actor }
+			OR = {
+				NOT = { has_ideology = ideology:ideology_eafp_missionary }
+				owner = {
+					has_law = law_type:law_total_separation
+				}
+			}
+		}
+	}
+
+	effect = {
+		add_character_role = general
+	}
+
+	cooldown = { days = normal_modifier_time }
+
+	ai_chance = {
+		value = 0
+		if = {
+			limit = {
+				has_commander_traits = yes
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				is_interest_group_type = ig_armed_forces
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				NOT = {
+					owner ?= {
+						any_scope_general = {
+							exists = this
+						}
+					}
+				}
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				owner ?= {
+					any_scope_war = {
+						any_scope_front = {
+							is_vulnerable_front = root
+						}
+					}
+				}
+			}
+			add = 100
+		}
+	}
+}
+
+exile_character = { # 수정
 	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
 
 	potential = {
@@ -24,9 +98,11 @@
 			limit = { c:CHI ?= scope:actor }
 			NOT = { has_template = eafp_chi_xingzhen_yehe_nara_template }
 		}
+
 		owner ?= {
-			NOT = {
-				has_law = law_type:law_protected_speech
+			NOR = {
+				has_law_or_variant = law_type:law_protected_speech
+				has_law_or_variant = law_type:law_guaranteed_liberties
 			}
 		}
 		is_busy = no
@@ -34,15 +110,15 @@
 			limit = {
 				has_role = agitator
 			}
-			
+
 			political_movement ?= { is_insurrectionary = no }
 		}
 		trigger_else = {
-			interest_group = {
+			interest_group ?= {
 				is_in_government = no
 				is_insurrectionary = no
 				is_marginal = no
-			}	
+			}
 		}
 		custom_tooltip = {
 			text = ideology_not_too_close_tt
@@ -84,7 +160,7 @@
 	}
 
 	effect = {
-		this.interest_group = {
+		this.interest_group ?= {
 			save_scope_as = relevant_ig
 		}
 		this = {
@@ -110,13 +186,13 @@
 		if = {
 			limit = {
 				owner ?= { has_journal_entry = je_caudillo }
-				interest_group = {
+				interest_group ?= {
 					is_interest_group_type = ig_armed_forces
 				}
 			}
 			if = {
 				limit = {
-					interest_group = {
+					interest_group ?= {
 						leader = {
 							this = ROOT
 						}
@@ -198,7 +274,7 @@
 		# Standard radicals from having Right of Assembly
 		if = {
 			limit = {
-				owner ?= { has_law = law_type:law_right_of_assembly }
+				owner ?= { has_law_or_variant = law_type:law_right_of_assembly }
 			}
 			owner ?= {
 				add_radicals = {
@@ -210,7 +286,7 @@
 		# Fewer radicals from Censorship
 		else_if = {
 			limit = {
-				owner ?= { has_law = law_type:law_censorship }
+				owner ?= { has_law_or_variant = law_type:law_censorship }
 			}
 			owner ?= {
 				add_radicals = {
@@ -279,164 +355,147 @@
 	show_confirmation_box = yes
 
 	ai_chance = {
-		value = -50
+		value = 0
+
 		if = {
 			limit = {
-				interest_group = {
-					ig_approval <= -5
-				}		
-			}
-			add = 25
-		}
-		if = {
-			limit = {
-				interest_group = {
-					ig_approval <= -10
-				}		
-			}
-			add = 30
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					NOR = {
-						has_law = law_type:law_autocracy
-						has_law = law_type:law_oligarchy
-						has_law = law_type:law_single_party_state
+				OR = {
+					interest_group ?= {
+						ig_approval < 0
 					}
-				}			
-			}
-			add = -25
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_secret_police
-				}			
-			}
-			add = 30
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_national_guard
-				}			
-			}
-			add = 15
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_guaranteed_liberties
-				}			
-			}
-			add = -100
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_outlawed_dissent
-				}			
-			}
-			add = 30
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_censorship
-				}			
-			}
-			add = 10
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_right_of_assembly
-				}			
-			}
-			add = -10
-		}
-		if = {
-			limit = {
-				scope:actor ?= {
-					has_law = law_type:law_protected_speech
-				}			
-			}
-			add = -20
-		}
-	}
-}
-
-grant_command_to_agitator = { # 수정
-	icon = "gfx/interface/character_panel/grant_command.dds"
-	clicksound = "event:/SFX/UI/Military/command_grant"
-
-	potential = {
-		has_dlc_feature = agitators
-		has_role = agitator
-		NOT = { has_role = general }
-		NOT = { has_role = admiral }
-		owner ?= scope:actor
-	}
-
-	possible = {
-		age >= define:NCharacters|ADULT_AGE
-		is_female = no
-		exists = owner.capital.land_hq
-		trigger_if = { # 추가, 비밀선교사가 아니거나 완전분리 제정
-			limit = { c:KOR ?= scope:actor }
-			OR = {
-				NOT = { has_ideology = ideology:ideology_eafp_missionary }
-				owner = {
-					has_law = law_type:law_total_separation
+					political_movement ?= {
+						is_being_suppressed = yes
+					}
 				}
 			}
-		}
-	}
 
-	effect = {
-		add_character_role = general
-	}
-
-	cooldown = { days = normal_modifier_time }
-
-	ai_chance = {
-		value = 0
-		if = {
-			limit = {
-				has_commander_traits = yes
+			add = {
+				value = popularity
+				multiply = 0.2
 			}
-			add = 50
-		}	
-		if = {
-			limit = {
-				is_interest_group_type = ig_armed_forces
-			}
-			add = 25
-		}	
-		if = {
-			limit = {
-				NOT = {
-					owner ?= {	
-						any_scope_general = {
-							exists = this
-						}
+
+			if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_outlawed_dissent
 					}
-				}	
+				}
+				multiply = 1.5
 			}
-			add = 25
-		}
-		if = {
-			limit = {
-				owner ?= {
-					any_scope_war = {
-						any_scope_front = {
-							is_vulnerable_front = root
-						}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_censorship
 					}
-				}	
+				}
+				multiply = 1.25
 			}
-			add = 100
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_right_of_assembly
+					}
+				}
+				multiply = 0.75
+			}
+
+			if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_secret_police
+					}
+				}
+				multiply = 1.5
+			}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_national_guard
+					}
+				}
+				multiply = 1.25
+			}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_law_or_variant = law_type:law_no_home_affairs
+					}
+				}
+				multiply = 0.5
+			}
+
+			if = {
+				limit = {
+					interest_group ?= {
+						ig_approval <= -5
+					}
+				}
+				multiply = 1.25
+			}
+			else_if = {
+				limit = {
+					interest_group ?= {
+						ig_approval <= -10
+					}
+				}
+				multiply = 1.5
+			}
+
+			if = { # If we are Conservative dont immediately hang any Liberal politician and so on
+				limit = {
+					scope:actor ?= {
+						has_strategy = ai_strategy_conservative_agenda
+					}
+					has_liberal_ideology = yes
+				}
+				multiply = 0.5
+			}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_strategy = ai_strategy_progressive_agenda
+					}
+					OR = {
+						has_liberal_ideology = yes
+						has_progressive_ideology = yes
+					}
+				}
+				multiply = 0.5
+			}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_strategy = ai_strategy_egalitarian_agenda
+						NOT = { has_law_or_variant = law_type:law_council_republic }
+					}
+					OR = {
+						has_liberal_ideology = yes
+						has_progressive_ideology = yes
+						has_socialist_ideology = yes
+					}
+				}
+				multiply = 0.5
+			}
+			else_if = {
+				limit = {
+					scope:actor ?= {
+						has_strategy = ai_strategy_egalitarian_agenda
+					}
+					OR = {
+						has_progressive_ideology = yes
+						has_socialist_ideology = yes
+					}
+				}
+				multiply = 0.5
+			}
+
+
+			if = { # Be less inclined to toss out politicians
+				limit = {
+					NOT = { has_role = agitator }
+				}
+				multiply = 0.25
+			}
 		}
 	}
 }

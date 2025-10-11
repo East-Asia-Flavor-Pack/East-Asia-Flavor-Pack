@@ -18,24 +18,20 @@ boshin_war.1 = { # 대정봉환
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
+	cooldown = { days = never_fire_again_modifier_time }
+
 	immediate = {
 		trigger_event = {
 			id = boshin_war.2
-			days = { 7 15 }
+			days = { 7 50 }
 		}
 		trigger_event = {
 			id = boshin_war.3
-			days = { 15 30 }
-			popup = yes
+			days = { 7 50 }
 		}
 		trigger_event = {
 			id = boshin_war.4
-			days = { 15 30 }
-		}
-		trigger_event = {
-			id = boshin_war.5
-			days = { 30 45 }
-			popup = yes
+			days = { 7 50 }
 		}
 	}
 
@@ -62,6 +58,14 @@ boshin_war.2 = { # 도막파의 폭동
 	}
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		c:NIP = {
+			is_revolutionary = yes
+			is_diplomatic_play_enemy_of = ROOT
+		}
+		has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi
+	}
 
 	immediate = {
 		capital.state_region = {
@@ -99,49 +103,16 @@ boshin_war.3 = { # 왕정복고 쿠데타
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
-	immediate = {
-		create_country = {
-			tag = NIP
-			origin = this
-			province = p:x8EC4C9
-			on_created = {
-				change_relations = {
-					country = c:JAP
-					value = -50
-				}
-			}
-		}
+	trigger = {
 		c:NIP = {
-			random_scope_state = {
-				create_building={
-					building="building_barracks"
-					level=2
-					reserves=1
-				}
-			}
-			create_bidirectional_truce = {
-				country = c:JAP
-				months = 36
-			}
-			#ig:ig_landowners = {
-			#	set_interest_group_name = ig_daimyo
-			#}
-			#ig:ig_devout = {
-			#	set_interest_group_name = ig_kokugakusha
-			#}
-			#ig:ig_intelligentsia = {
-			#	set_interest_group_name = ig_rangakusha
-			#}
-			#ig:ig_petty_bourgeoisie = {
-			#	set_interest_group_name = ig_kashin
-			#}
-			#ig:ig_trade_unions = {
-			#	set_interest_group_name = ig_shokunin
-			#}
-			#ig:ig_industrialists = {
-			#	set_interest_group_name = ig_shonin
-			#}
+			is_revolutionary = yes
+			is_diplomatic_play_enemy_of = ROOT
 		}
+		has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi
+	}
+
+	immediate = {
+		
 	}
 
 	option = {
@@ -168,6 +139,14 @@ boshin_war.4 = { # 저택에서의 전투
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
+	trigger = {
+		c:NIP = {
+			is_revolutionary = yes
+			is_diplomatic_play_enemy_of = ROOT
+		}
+		has_civil_war_from_movement_type = movement_type:eafp_movement_sonno_joi
+	}
+
 	immediate = {
 		
 	}
@@ -175,221 +154,6 @@ boshin_war.4 = { # 저택에서의 전투
 	option = {
 		name = boshin_war.4.a
 		default_option = yes
-	}
-}
-
-boshin_war.5 = { # 막부 타도 선언
-	type = country_event
-	placement = root
-
-	title = boshin_war.5.t
-	desc = boshin_war.5.d
-	flavor = boshin_war.5.f
-
-	duration = 1
-
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
-
-	event_image = {
-		video = "eafp_taisei_hokan"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	immediate = {
-		assign_tobaku_hans = yes
-		c:NIP = { trigger_event = { id = boshin_war.6 days = 15 } }
-		trigger_event = { id = boshin_war.7 days = 30 }
-		c:NIP = { trigger_event = { id = boshin_war.8 days = 30 } }
-	}
-
-	option = {
-		name = boshin_war.5.a
-		default_option = yes
-	}
-
-	option = {
-		name = boshin_war.5.b
-
-		play_as = c:NIP
-	}
-
-	after = {
-		c:NIP = {
-			trigger_event = {
-				id = eafp_japan.5001
-				popup = yes
-			}
-		}
-	}
-}
-
-boshin_war.6 = { # 의견일치
-	type = country_event
-	placement = root
-
-	title = boshin_war.6.t
-	desc = boshin_war.6.d
-	flavor = boshin_war.6.f
-
-	duration = 1
-
-	icon = "gfx/interface/icons/event_icons/event_default.dds"
-
-	event_image = {
-		video = "eafp_taisei_hokan"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	immediate = {
-		if = { # 신정부 사라지는 버그 방지용
-			limit = { NOT = { exists = c:NIP } }
-			create_country = {
-				tag = NIP
-				origin = this
-				province = p:x8EC4C9
-				on_created = {
-					change_relations = {
-						country = c:JAP
-						value = -50
-					}
-				}
-			}
-			c:NIP = {
-				random_scope_state = {
-					create_building={
-						building="building_barracks"
-						level=2
-						reserves=1
-					}
-				}
-				create_bidirectional_truce = {
-					country = c:JAP
-					months = 36
-				}
-				#ig:ig_landowners = {
-				#	set_interest_group_name = ig_daimyo
-				#}
-				#ig:ig_devout = {
-				#	set_interest_group_name = ig_kokugakusha
-				#}
-				#ig:ig_intelligentsia = {
-				#	set_interest_group_name = ig_rangakusha
-				#}
-				#ig:ig_petty_bourgeoisie = {
-				#	set_interest_group_name = ig_kashin
-				#}
-				#ig:ig_trade_unions = {
-				#	set_interest_group_name = ig_shokunin
-				#}
-				#ig:ig_industrialists = {
-				#	set_interest_group_name = ig_shonin
-				#}
-			}
-		}
-		every_country = {
-			limit = {
-				NOT = { THIS = c:NIP }
-				has_variable = tobaku_han_var
-			}
-			c:NIP = {
-				annex = PREV
-			}
-		}
-		every_scope_state = {
-			limit = {
-				state_is_in_japan = yes
-			}
-			set_state_type = incorporated
-		}
-		c:NIP = {
-			add_technology_researched = napoleonic_warfare
-			add_technology_researched = general_staff
-		}
-		add_modifier = {
-			name = modifier_japan_hiring_bonus
-			months = 6
-		}
-		while = {
-			count = 10
-			create_character = {
-				culture = cu:japanese
-				is_general = yes
-				hq = region_japan
-				commander_rank = commander_rank_1
-			}
-		}
-	}
-
-	option = {
-		name = boshin_war.6.a
-		default_option = yes
-	}
-}
-
-boshin_war.7 = { # 전쟁의 시작
-	type = country_event
-	placement = root
-
-	title = boshin_war.7.t
-	desc = boshin_war.7.d
-	flavor = boshin_war.7.f
-
-	duration = 1
-
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	event_image = {
-		video = "europenorthamerica_before_the_battle"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	immediate = {
-		create_diplomatic_play = {
-			target_country = c:NIP
-			type = dp_annex_war
-			escalation = 80
-			add_war_goal = { holder = c:NIP target_country = c:JAP type = annex_country }
-		}
-		change_infamy = -200
-	}
-
-	option = {
-		name = boshin_war.7.a
-		default_option = yes
-
-		add_journal_entry = { type = je_boshin_war_sabaku }
-	}
-}
-
-boshin_war.8 = { # 전쟁의 시작
-	type = country_event
-	placement = root
-
-	title = boshin_war.8.t
-	desc = boshin_war.8.d
-	flavor = boshin_war.8.f
-
-	duration = 1
-
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	event_image = {
-		video = "europenorthamerica_before_the_battle"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	immediate = {
-	}
-
-	option = {
-		name = boshin_war.8.a
-		default_option = yes
-
-		add_journal_entry = { type = je_boshin_war_tobaku }
 	}
 }
 
@@ -412,55 +176,6 @@ boshin_war.9 = { # 신정부의 항복
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	immediate = {
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_TOHOKU }
-				exists = s:STATE_TOHOKU.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_TOHOKU }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_KANTO }
-				exists = s:STATE_KANTO.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_KANTO }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_CHUBU }
-				exists = s:STATE_CHUBU.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_CHUBU }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_KANSAI }
-				exists = s:STATE_KANSAI.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_KANSAI }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_KYUSHU }
-				exists = s:STATE_KYUSHU.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_KYUSHU }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_CHUGOKU }
-				exists = s:STATE_CHUGOKU.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_CHUGOKU }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_bakuhantaisei_SHIKOKU }
-				exists = s:STATE_SHIKOKU.region_state:JAP
-			}
-			add_journal_entry = { type = je_bakuhantaisei_SHIKOKU }
-		}
 		trigger_event = {
 			id = boshin_war.11
 			days = 1
@@ -473,6 +188,9 @@ boshin_war.9 = { # 신정부의 항복
 		trigger_event = {
 			id = boshin_war.10
 			days = { 3 7 }
+		}
+		add_bakuhantaisei_bakufu_authority = {
+			VALUE = 1000
 		}
 	}
 }
@@ -1554,5 +1272,28 @@ boshin_war.11 = { # boshin_war.9 이후 막번체제 값 조절용 히든 이벤
 			remove_variable = bakuhantaisei_SHIKOKU_independency_progress_bar_value_saved
 			remove_variable = bakuhantaisei_SHIKOKU_goryo_progress_bar_value_saved
 		}
+	}
+}
+
+boshin_war.12 = { # 존황양이파 혁명 터진후 봉기군에게 뜰 이벤트. on_action에 박으니까 안되더라
+	type = country_event
+	placement = root
+
+	title = boshin_war.12.t
+	desc = boshin_war.12.d
+	flavor = boshin_war.12.f
+
+	duration = 1
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	event_image = {
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	immediate = {
+				
 	}
 }

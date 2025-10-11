@@ -1,64 +1,100 @@
-﻿viet_cambodian_journal_2 = { #캄보디아 문제 - 동화
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+﻿je_khmer_issue = { # 크메르 문제
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	group = je_group_historical_content
 
+	is_shown_in_lobby = {
+		c:DAI ?= THIS
+	}
+
 	immediate = {
-		add_radicals = {
-			value = 0.4
-			culture = cu:khmer
+		c:CAM = { save_scope_as = cambodia_country_scope }
+		cu:khmer = {
+			save_scope_as = khmer_culture_scope
 		}
+	}
+
+	modifiers_while_active = {
+		dai_raging_rebellion_modifier
 	}
 	
 	complete = {
+		NOT = { exists = c:CAM }
 		any_scope_state = {
-			state_region = s:STATE_CAMBODIA
+			filter = {
+				state_region = { is_homeland = cu:khmer }
+				culture_percent_state = {
+					target = cu:khmer
+					value > 0
+				}
+			}
+			count = all
+			state_region = { is_homeland = cu:khmer }
 			is_incorporated = yes
-			OR = {
+			loyalist_fraction = {
+				value >= 0.20
+				culture = cu:khmer
+			}
+		}
+		OR = {
+			any_scope_state = {
+				filter = {
+					state_region = { is_homeland = cu:khmer }
+					culture_percent_state = {
+						target = cu:khmer
+						value > 0
+					}
+				}
+				count = all
+				state_region = { is_homeland = cu:khmer }
 				culture_percent_state = {
 					target = cu:vietnamese
 					value >= 0.2
 				}
-				radical_fraction = {
-					value <= 0.20
-					culture = cu:khmer
-				}
 			}
+			cultural_acceptance_base = { target = cu:khmer value >= acceptance_status_4 }
 		}
-	}
-	fail = {
-		NOT = { has_state_in_state_region = STATE_CAMBODIA }
 	}
 
 	on_complete = {
+		trigger_event = { id = khmer_issue_events.1 }
+	}
 
+	fail = {
+		# je_khmer_issue_fail
+		c:CAM ?= {
+			NOT = { is_subject_of = c:DAI }
+		}
 	}
 
 	on_fail = {
-		add_radicals = {
-			value = 0.1
-			culture = cu:vietnamese
+		trigger_event = { id = khmer_issue_events.2 }
+	}
+
+	invalid = {
+		hidden_trigger = {
+			NAND = {
+				exists = c:CAM
+				any_diplomatic_play = {
+					initiator = c:CAM
+					target = ROOT
+					is_diplomatic_play_type = dp_secession
+				}
+			}
 		}
-		add_radicals = {
-			value = 0.2
-			culture = cu:khmer
+		NOT = {
+			any_scope_state = {
+				state_region = { is_homeland = cu:khmer }
+			}
 		}
 	}
 
-    possible = {
-		exists = c:DAI
-		this = c:DAI
-	}
-	is_shown_when_inactive = {
-		exists = c:DAI
-		this = c:DAI
-	}
-	on_timeout = {
-		trigger_event = {
-			id = viet_event.3
+	on_monthly_pulse = {
+		effect = {
+			
 		}
 	}
-	timeout = 3285
+
 	weight = 100
 
 	should_be_pinned_by_default = yes

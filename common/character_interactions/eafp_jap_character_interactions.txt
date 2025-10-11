@@ -20,14 +20,14 @@ eafp_remove_bakufu_politician = { # 막부 정치인 해임
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		scope:actor ?= {
 			authority >= 100
@@ -82,14 +82,14 @@ eafp_reduce_influence_bakufu_politician = { # 영향력 약화
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		scope:actor ?= {
 			authority >= 50
@@ -137,14 +137,14 @@ eafp_return_bakufu_politician = { # 임무 중단
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		has_bakufu_politician_mission = yes
 	}
@@ -170,14 +170,14 @@ eafp_oversee_daimyo_domains = { # 다이묘 영지 감독
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_roju = yes
 		has_bakufu_politician_mission = no
@@ -196,7 +196,11 @@ eafp_oversee_daimyo_domains = { # 다이묘 영지 감독
 	show_confirmation_box = no
 
 	ai_chance = {
-		value = 0
+		value = 100
+		if = {
+			limit = { is_rojushuza = yes }
+			multiply = 0
+		}
 	}
 }
 
@@ -208,14 +212,14 @@ eafp_reaffirm_daimyos_loyalty = { # 다이묘 충성심 재확인
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_roju = yes
 		has_bakufu_politician_mission = no
@@ -234,7 +238,11 @@ eafp_reaffirm_daimyos_loyalty = { # 다이묘 충성심 재확인
 	show_confirmation_box = no
 
 	ai_chance = {
-		value = 0
+		value = 100
+		if = {
+			limit = { is_rojushuza = yes }
+			multiply = 0
+		}
 	}
 }
 
@@ -246,14 +254,14 @@ eafp_improve_relation_with_court = { # 조정과의 관계 개선
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		OR = {
 			is_roju = yes
@@ -270,13 +278,6 @@ eafp_improve_relation_with_court = { # 조정과의 관계 개선
 	}
 
 	effect = {
-		custom_tooltip = {
-			text = eafp_improve_relation_with_court.tt
-			set_variable = {
-				name = eafp_bakuhantaisei_politician_current_mission
-				value = flag:eafp_improve_relation_with_court
-			}
-		}
 		owner = {
 			if = {
 				limit = {
@@ -298,6 +299,15 @@ eafp_improve_relation_with_court = { # 조정과의 관계 개선
 				limit = { has_modifier = modifier_improve_relation_with_court }
 				remove_modifier = modifier_improve_relation_with_court
 			}
+		}
+		custom_tooltip = {
+			text = eafp_improve_relation_with_court.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_improve_relation_with_court
+			}
+		}
+		owner = {
 			if = {
 				limit = { ROOT ?= { is_rojushuza = yes } }
 				custom_tooltip = rojushuza_task.tt
@@ -313,6 +323,7 @@ eafp_improve_relation_with_court = { # 조정과의 관계 개선
 
 	ai_chance = {
 		value = 0
+
 	}
 }
 
@@ -324,14 +335,14 @@ eafp_focus_on_administration = { # 내부 소요 중재
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		OR = {
 			is_roju = yes
@@ -348,13 +359,6 @@ eafp_focus_on_administration = { # 내부 소요 중재
 	}
 
 	effect = {
-		custom_tooltip = {
-			text = eafp_focus_on_administration.tt
-			set_variable = {
-				name = eafp_bakuhantaisei_politician_current_mission
-				value = flag:eafp_focus_on_administration
-			}
-		}
 		owner = {
 			if = {
 				limit = {
@@ -376,6 +380,15 @@ eafp_focus_on_administration = { # 내부 소요 중재
 				limit = { has_modifier = modifier_focus_on_administration }
 				remove_modifier = modifier_focus_on_administration
 			}
+		}
+		custom_tooltip = {
+			text = eafp_focus_on_administration.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_focus_on_administration
+			}
+		}
+		owner = {
 			if = {
 				limit = { ROOT ?= { is_rojushuza = yes } }
 				custom_tooltip = rojushuza_task.tt
@@ -390,7 +403,11 @@ eafp_focus_on_administration = { # 내부 소요 중재
 	show_confirmation_box = no
 
 	ai_chance = {
-		value = 0
+		value = 10
+		if = {
+			limit = { is_rojushuza = yes }
+			multiply = 0
+		}
 	}
 }
 
@@ -402,14 +419,14 @@ eafp_bill_review = { # 법안 검토
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		OR = {
 			is_roju = yes
@@ -426,13 +443,6 @@ eafp_bill_review = { # 법안 검토
 	}
 
 	effect = {
-		custom_tooltip = {
-			text = eafp_bill_review.tt
-			set_variable = {
-				name = eafp_bakuhantaisei_politician_current_mission
-				value = flag:eafp_bill_review
-			}
-		}
 		owner = {
 			if = {
 				limit = {
@@ -454,6 +464,15 @@ eafp_bill_review = { # 법안 검토
 				limit = { has_modifier = modifier_bill_review }
 				remove_modifier = modifier_bill_review
 			}
+		}
+		custom_tooltip = {
+			text = eafp_bill_review.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_bill_review
+			}
+		}
+		owner = {
 			if = {
 				limit = { ROOT ?= { is_rojushuza = yes } }
 				custom_tooltip = rojushuza_task.tt
@@ -469,6 +488,14 @@ eafp_bill_review = { # 법안 검토
 
 	ai_chance = {
 		value = 0
+		if = {
+			owner ?= { enacting_any_law = yes }
+			add = 10
+		}
+		if = {
+			limit = { is_rojushuza = yes }
+			multiply = 0
+		}
 	}
 }
 
@@ -480,14 +507,14 @@ eafp_grease_administration = { # 행정에 기름칠하기
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		OR = {
 			is_roju = yes
@@ -504,13 +531,6 @@ eafp_grease_administration = { # 행정에 기름칠하기
 	}
 
 	effect = {
-		custom_tooltip = {
-			text = eafp_grease_administration.tt
-			set_variable = {
-				name = eafp_bakuhantaisei_politician_current_mission
-				value = flag:eafp_grease_administration
-			}
-		}
 		owner = {
 			if = {
 				limit = {
@@ -532,6 +552,15 @@ eafp_grease_administration = { # 행정에 기름칠하기
 				limit = { has_modifier = modifier_grease_administration }
 				remove_modifier = modifier_grease_administration
 			}
+		}
+		custom_tooltip = {
+			text = eafp_grease_administration.tt
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission
+				value = flag:eafp_grease_administration
+			}
+		}
+		owner = {
 			if = {
 				limit = { ROOT ?= { is_rojushuza = yes } }
 				custom_tooltip = rojushuza_task.tt
@@ -547,6 +576,14 @@ eafp_grease_administration = { # 행정에 기름칠하기
 
 	ai_chance = {
 		value = 0
+		if = {
+			limit = { owner = { bureaucracy <= 0 } }
+			add = 100
+		}
+		if = {
+			limit = { is_rojushuza = yes }
+			multiply = 0
+		}
 	}
 }
 
@@ -560,14 +597,14 @@ eafp_increase_investment = { # 투자 촉진
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_rojushuza = yes
 		has_bakufu_politician_mission = no
@@ -593,6 +630,7 @@ eafp_increase_investment = { # 투자 촉진
 
 	ai_chance = {
 		value = 0
+
 	}
 }
 
@@ -604,14 +642,14 @@ eafp_collect_tax = { # 조세 수금
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_rojushuza = yes
 		has_bakufu_politician_mission = no
@@ -636,7 +674,8 @@ eafp_collect_tax = { # 조세 수금
 	show_confirmation_box = no
 
 	ai_chance = {
-		value = 0
+		value = 100
+
 	}
 }
 
@@ -650,14 +689,14 @@ eafp_appoint_roju = { # 노중 등용
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_tairo = yes
 		has_bakufu_politician_mission = no
@@ -791,13 +830,7 @@ eafp_appoint_roju = { # 노중 등용
 			owner = {
 				custom_tooltip = {
 					text = eafp_appoint_roju.appoint_hitotsuhashiha.tt
-					if = {
-						limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-						create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hitotsubashiha }
-					}
-					else = {
-						create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_kaikakuha }
-					}
+					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:hitotsubashiha }
 				}
 			}
 		}
@@ -806,13 +839,7 @@ eafp_appoint_roju = { # 노중 등용
 			owner = {
 				custom_tooltip = {
 					text = eafp_appoint_roju.appoint_nankiha.tt
-					if = {
-						limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-						create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_nankiha }
-					}
-					else = {
-						create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_hoshuha }
-					}
+					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:nankiha }
 				}
 			}
 		}
@@ -820,7 +847,7 @@ eafp_appoint_roju = { # 노중 등용
 			owner = {
 				custom_tooltip = {
 					text = eafp_appoint_roju.appoint_moderate.tt
-					create_bakufu_politician_character = { POSITION = flag:roju IDEOLOGY = ideology_moderate }
+					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:moderate }
 				}
 			}
 		}
@@ -853,6 +880,7 @@ eafp_appoint_roju = { # 노중 등용
 
 	ai_chance = {
 		value = 0
+
 	}
 }
 
@@ -864,14 +892,14 @@ eafp_push_bill = { # 법안 밀어붙이기
 		scope:actor ?= {
 			has_journal_entry = je_bakuhantaisei
 		}
-		has_variable = eafp_bakuhantaisei_politician_influence
+		is_bakufu_politician = yes
 	}
 
 	show_requirements = yes
 
 	possible = {
 		hidden_trigger = {
-			NOT = { has_variable = recruiting_bakufu_politicians }
+			owner ?= { NOT = { has_variable = recruiting_bakufu_politicians } }
 		}
 		is_tairo = yes
 		has_bakufu_politician_mission = no
@@ -924,5 +952,9 @@ eafp_push_bill = { # 법안 밀어붙이기
 
 	ai_chance = {
 		value = 0
+		if = {
+			owner ?= { enacting_any_law = yes }
+			add = 10
+		}
 	}
 }

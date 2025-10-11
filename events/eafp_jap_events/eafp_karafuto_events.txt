@@ -1,0 +1,57 @@
+﻿namespace = karafuto_events
+
+karafuto_events.1 = { # 러시아의 개척 시작
+	type = country_event
+	placement = s:STATE_SAKHALIN.region_state:JAP
+
+	title = karafuto_events.1.t
+	desc = karafuto_events.1.d
+	flavor = karafuto_events.1.f
+
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+	
+	duration = 3
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		c:RUS ?= {
+			OR = {
+				AND = {
+					is_ai = yes
+					NOT = { has_law = law_type:law_no_colonial_affairs }
+					has_state_in_state_region = STATE_OUTER_MANCHURIA
+				}
+				has_state_in_state_region = STATE_SAKHALIN
+			}
+		}
+	}
+	
+	immediate = {
+		if = {
+			limit = {
+				c:RUS = {
+					NOT = { has_state_in_state_region = STATE_SAKHALIN }
+				}
+			}
+			s:STATE_SAKHALIN = {
+				create_state = {
+					country = c:RUS
+					owned_provinces = { xF1B27F }
+					state_type = unincorporated
+				}
+			}
+		}
+	}
+	
+	option = {
+		default_option = yes
+		name = karafuto_events.1.a
+	}
+}

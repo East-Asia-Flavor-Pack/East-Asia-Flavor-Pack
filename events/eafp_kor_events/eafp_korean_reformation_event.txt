@@ -1314,6 +1314,13 @@ eafp_korean_reformation_events.399 = { #
 	
  	duration = 3
 
+	immediate = {
+		ordered_scope_state = {
+			order_by = total_urbanization
+			save_scope_as = state_scope
+		}
+	}
+
  	option = { 
 		name = eafp_korean_reformation_events.399.a
 		default_option = yes
@@ -1456,7 +1463,7 @@ eafp_korean_reformation_events.504 = { #
  	flavor = eafp_korean_reformation_events.504.f
 	
  	event_image = {
-		video = "unspecific_naval_battle"
+		video = "europenorthamerica_london_center"
 	}
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
@@ -1490,7 +1497,7 @@ eafp_korean_reformation_events.505 = { #
  	flavor = eafp_korean_reformation_events.505.f
 	
  	event_image = {
-		video = "unspecific_naval_battle"
+		video = "europenorthamerica_london_center"
 	}
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
@@ -1898,10 +1905,24 @@ gunmin_dongchi_events.2 = { #
 	}
 
 	immediate = {
-		set_variable = { name = petitioning_ig value = ig:ig_rural_folk }
-		random_list = {
-			1 = { set_variable = { name = desired_law_var value = law_type:law_law_wealth_voting } }
-			1 = { set_variable = { name = desired_law_var value = law_type:law_census_voting } }
+		ig:ig_rural_folk = {
+			set_variable = petitioning_ig
+			save_scope_as = government_petition_ig
+		}
+		random_law = {
+			limit = {
+				OR = {
+					type = law_type:law_wealth_voting
+					type = law_type:law_census_voting
+				}
+			}
+			PREV = {
+				set_variable = {
+					name = desired_law_var
+					value = PREV
+				}
+			}
+			save_scope_as = government_petition_law
 		}
 	}
 
@@ -1913,6 +1934,7 @@ gunmin_dongchi_events.2 = { #
 				name = modifier_donghak_petition_rejected
 				days = normal_modifier_time
 			}
+			remove_variable = petitioning_ig
 		}
 		capital = {
 			add_radicals_in_state = {
@@ -1920,7 +1942,6 @@ gunmin_dongchi_events.2 = { #
 				strata = lower
 			}
 		}
-		remove_variable = petitioning_ig
 		remove_variable = desired_law_var
 	}
 
@@ -2035,7 +2056,7 @@ gunmin_dongchi_events.4 = { #
 		name = gunmin_dongchi_events.4.b
 		
 		capital = {
-			add_loyalists_in_state = {
+			add_radicals_in_state = {
 				value = small_radicals
 				strata = lower
 			}
