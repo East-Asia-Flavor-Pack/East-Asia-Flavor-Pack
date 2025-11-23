@@ -76,6 +76,8 @@ seikanron_events.2 = { # 유언비어
 		}
 	}
 
+	cooldown = { days = normal_modifier_time }
+
 	trigger = {
 		exists = c:KOR
 		OR = {
@@ -153,7 +155,7 @@ seikanron_events.3 = { # 교섭 거부
 		c:KOR = { save_scope_as = korea_scope }
 	}
 
-	trigger = {}
+	cooldown = { days = normal_modifier_time }
 	
 	option = {
 		name = seikanron_events.3.a
@@ -220,7 +222,7 @@ seikanron_events.4 = { # 전령서
 		c:KOR = { save_scope_as = korea_scope }
 	}
 
-	trigger = {}
+	cooldown = { days = normal_modifier_time }
 	
 	option = {
 		name = seikanron_events.4.a
@@ -286,6 +288,8 @@ seikanron_events.5 = { # 계몽운동가의 사설
 	immediate = {
 		c:KOR = { save_scope_as = korea_scope }
 	}
+
+	cooldown = { days = normal_modifier_time }
 
 	trigger = {
 		NOT = {
@@ -366,6 +370,8 @@ seikanron_events.6 = { # 장교들의 사직
 			save_scope_as = character_scope
 		}
 	}
+
+	cooldown = { days = normal_modifier_time }
 
 	trigger = {
 		any_political_lobby = {
@@ -486,6 +492,8 @@ seikanron_events.7 = { # 수상한 움직임
 		}
 	}
 
+	cooldown = { days = normal_modifier_time }
+
 	trigger = {
 		any_political_lobby = {
 			is_political_lobby_type = lobby_anti_country
@@ -585,6 +593,8 @@ seikanron_events.8 = { # 정한파 자객
 		}
 	}
 
+	cooldown = { days = normal_modifier_time }
+
 	trigger = {
 		OR = {
 			AND = {
@@ -675,6 +685,8 @@ seikanron_events.9 = { # 벽보
 		}
 	}
 
+	cooldown = { days = normal_modifier_time }
+
 	trigger = {
 		any_political_lobby = {
 			is_political_lobby_type = lobby_anti_country
@@ -726,223 +738,6 @@ seikanron_events.9 = { # 벽보
 	}
 }
 
-seikanron_events.10 = { # 대만 원정?
-	type = country_event
-	placement = ROOT
-
-	title = seikanron_events.10.t
-	desc = seikanron_events.10.d
-	flavor = seikanron_events.10.f
-
-	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = {
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		s:STATE_FORMOSA = {
-			save_scope_as = taiwan_scope
-		}
-		set_variable = seikanron_events_10_var
-		random_scope_character = {
-			limit = {
-				is_busy = no
-				is_ruler = no
-				has_role = general
-			}
-			save_scope_as = general_scope
-			set_character_busy_and_immortal = yes
-		}
-		random_scope_character = {
-			limit = {
-				is_busy = no
-				is_ruler = no
-				has_role = admiral
-			}
-			save_scope_as = admiral_scope
-			set_character_busy_and_immortal = yes
-		}
-	}
-
-	trigger = {
-		any_political_lobby = {
-			is_political_lobby_type = lobby_anti_country
-			target = c:KOR
-			appeasement <= -5
-		}
-		NOT = {
-			any_country = {
-				owns_entire_state_region = STATE_FORMOSA
-			}
-		}
-		NOT = { exists = s:STATE_FORMOSA.region_state:JAP }
-		NOT = { has_variable = seikanron_events_10_var }
-		any_scope_character = {
-			is_busy = no
-			is_ruler = no
-			has_role = general
-		}
-		any_scope_character = {
-			is_busy = no
-			is_ruler = no
-			has_role = admiral
-		}
-		is_diplomatic_play_committed_participant = no
-	}
-	
-	option = {
-		name = seikanron_events.10.a
-
-		default_option = yes
-
-		random_political_lobby = {
-			limit = {
-				is_political_lobby_type = lobby_anti_country
-				target = c:KOR
-			}
-			change_appeasement = {
-				amount = 1
-				factor = appeasement_special_events_positive
-			}
-		}
-
-		random_list = {
-			2 = {
-				trigger_event = {
-					id = seikanron_events.11
-					days = { 60 90 }
-				}
-			}
-			1 = {
-				trigger_event = {
-					id = seikanron_events.12
-					days = { 60 90 }
-				}
-			}
-		}
-
-		ai_chance = {
-			base = 1
-		}
-	}
-
-	option = {
-		name = seikanron_events.10.b
-
-		random_political_lobby = {
-			limit = {
-				is_political_lobby_type = lobby_anti_country
-				target = c:KOR
-			}
-			change_appeasement = {
-				amount = -2
-				factor = appeasement_special_events_negative
-			}
-		}
-
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-seikanron_events.11 = { # 대만 원정
-	type = country_event
-	placement = ROOT
-
-	title = seikanron_events.11.t
-	desc = seikanron_events.11.d
-	flavor = seikanron_events.11.f
-
-	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		
-	}
-
-	trigger = {}
-	
-	option = {
-		name = seikanron_events.11.a
-
-		default_option = yes
-
-		random_political_lobby = {
-			limit = {
-				is_political_lobby_type = lobby_anti_country
-				target = c:KOR
-			}
-			change_appeasement = {
-				amount = 2
-				factor = appeasement_special_events_positive
-			}
-		}
-
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-seikanron_events.12 = { # 대만 원정
-	type = country_event
-	placement = ROOT
-
-	title = seikanron_events.12.t
-	desc = seikanron_events.12.d
-	flavor = seikanron_events.12.f
-
-	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		
-	}
-
-	trigger = {}
-	
-	option = {
-		name = seikanron_events.12.a
-
-		default_option = yes
-
-		random_political_lobby = {
-			limit = {
-				is_political_lobby_type = lobby_anti_country
-				target = c:KOR
-			}
-			change_appeasement = {
-				amount = -3
-				factor = appeasement_special_events_positive
-			}
-		}
-
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
 seikanron_events.13 = { # 사학교
 	type = country_event
 	placement = ROOT
@@ -964,6 +759,8 @@ seikanron_events.13 = { # 사학교
 	immediate = {
 		
 	}
+
+	cooldown = { days = normal_modifier_time }
 
 	trigger = {
 		any_political_lobby = {
@@ -1044,6 +841,8 @@ seikanron_events.14 = { # 정한당의 난
 		}
 	}
 
+	cooldown = { days = normal_modifier_time }
+
 	trigger = {
 		any_political_lobby = {
 			is_political_lobby_type = lobby_anti_country
@@ -1116,6 +915,8 @@ seikanron_events.15 = { # 확전 요구
 	immediate = {
 		c:KOR = { save_scope_as = korea_scope }
 	}
+
+	cooldown = { days = normal_modifier_time }
 
 	trigger = {
 		is_diplomatic_play_enemy_of = c:KOR
@@ -1245,7 +1046,25 @@ seikanron_events.99 = { # 정한론: 결과
 			desc = seikanron_events.99.d5
 		}
 	}
-	flavor = seikanron_events.99.f
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				desc = seikanron_events.99.f
+				trigger = {
+					any_scope_state = {
+						count >= 3
+						OR = {
+							s:STATE_SEOUL.region_state:JAP ?= THIS
+							s:STATE_BUSAN.region_state:JAP ?= THIS
+							s:STATE_YANGHO.region_state:JAP ?= THIS
+							s:STATE_SARIWON.region_state:JAP ?= THIS
+							s:STATE_PYONGYANG.region_state:JAP ?= THIS
+						}
+					}
+				}
+			}
+		}
+	}
 
 	event_image = {
 		video = "africa_prosperous_farm"

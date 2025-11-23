@@ -51,9 +51,127 @@ appoint_tairo_effect = {
 appoint_rojushuza_effect = {
 	if = {
 		limit = { has_variable = hide_bakufu_politician_recuiting_var }
-		save_scope_value_as = {
-			name = shogun_influence
-			value = 0
+		hidden_effect = {
+			# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 100 5명, 강한 지지 = 기본 인물 정치력 100 2.5명
+			set_variable = recruiting_bakufu_politicians
+			set_variable = {
+				name = hitotsubashiha_invested_influence
+				value = var:hitotsubashiha_influence_var
+			}
+			set_variable = {
+				name = nankiha_invested_influence
+				value = var:nankiha_influence_var
+			}
+			save_scope_value_as = {
+				name = random_influence
+				value = { -100 100 }
+			}
+			# 정치인마다 정치력 투자 계산
+			every_scope_character = {
+				limit = { is_bakufu_politician = yes }
+				if = {
+					limit = { is_hitotsubashiha = yes }
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+					c:JAP = {
+						change_variable = {
+							name = hitotsubashiha_invested_influence
+							add = PREV.var:invested_influence
+						}
+					}
+				}
+				else_if = {
+					limit = { is_nankiha = yes }
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+					c:JAP = {
+						change_variable = {
+							name = nankiha_invested_influence
+							add = PREV.var:invested_influence
+						}
+					}
+				}
+				else = {
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+				}
+			}
+			# 노중 스코프 저장
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						is_hitotsubashiha = yes
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = { is_hitotsubashiha = yes }
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = hitotsubashiha_candidate
+				}
+			}
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						is_nankiha = yes
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = { is_nankiha = yes }
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = nankiha_candidate
+				}
+			}
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						has_ideology = ideology:ideology_moderate
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = {
+						has_ideology = ideology:ideology_moderate
+					}
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = moderate_candidate
+				}
+			}
+			# 변수 정리
+			save_scope_value_as = {
+				name = nankiha_invested_influence
+				value = var:nankiha_invested_influence
+			}
+			save_scope_value_as = {
+				name = hitotsubashiha_invested_influence
+				value = var:hitotsubashiha_invested_influence
+			}
+			remove_variable = hitotsubashiha_invested_influence
+			remove_variable = nankiha_invested_influence
+
+			save_scope_value_as = {
+				name = shogun_influence
+				value = 0
+			}
 		}
 		trigger_event = { id = eafp_japan.5 }
 	}
@@ -65,6 +183,79 @@ appoint_rojushuza_effect = {
 appoint_roju_effect = {
 	if = {
 		limit = { has_variable = hide_bakufu_politician_recuiting_var }
+		hidden_effect = {
+			# 기본적으로 파벌 지지 100의 힘 = 기본 인물 정치력 100 5명, 강한 지지 = 기본 인물 정치력 100 2.5명
+			set_variable = recruiting_bakufu_politicians
+			set_variable = {
+				name = hitotsubashiha_invested_influence
+				value = var:hitotsubashiha_influence_var
+			}
+			set_variable = {
+				name = nankiha_invested_influence
+				value = var:nankiha_influence_var
+			}
+			save_scope_value_as = {
+				name = random_influence
+				value = { -100 100 }
+			}
+			# 정치인마다 정치력 투자 계산
+			every_scope_character = {
+				limit = { is_bakufu_politician = yes }
+				if = {
+					limit = { is_hitotsubashiha = yes }
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+					c:JAP = {
+						change_variable = {
+							name = hitotsubashiha_invested_influence
+							add = PREV.var:invested_influence
+						}
+					}
+				}
+				else_if = {
+					limit = { is_nankiha = yes }
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+					c:JAP = {
+						change_variable = {
+							name = nankiha_invested_influence
+							add = PREV.var:invested_influence
+						}
+					}
+				}
+				else = {
+					set_variable = {
+						name = invested_influence
+						value = {
+							value = var:eafp_bakuhantaisei_politician_influence
+							multiply = bakufu_kaikaku_bakufu_politicians_activeness
+						}
+					}
+				}
+			}
+			# 변수 정리
+			save_scope_value_as = {
+				name = nankiha_invested_influence
+				value = var:nankiha_invested_influence
+			}
+			save_scope_value_as = {
+				name = hitotsubashiha_invested_influence
+				value = var:hitotsubashiha_invested_influence
+			}
+			remove_variable = hitotsubashiha_invested_influence
+			remove_variable = nankiha_invested_influence
+		}
+
 		save_scope_value_as = {
 			name = shogun_influence
 			value = 0
@@ -218,6 +409,9 @@ create_bakufu_politician_character = {
 			}
 		}
 	}
+	scope:new_politician_scope = {
+		apply_saved_bakufu_politician_mission = yes
+	}
 }
 
 create_bakufu_politician_character_with_variant = {
@@ -273,6 +467,7 @@ assign_CHARACTER_LIFE_EXPECTANCY_STDDEV_value = { # 막부 정치인이기만 �
 }
 
 remove_bakufu_politician_role = { # scope = character
+	save_bakufu_politician_mission = yes
 	if = {
 		limit = { has_variable = eafp_bakuhantaisei_politician_current_mission }
 		remove_bakufu_politician_mission = yes
@@ -435,6 +630,257 @@ remove_bakufu_politician_mission = { # scope = character
 						remove_modifier = modifier_collect_tax
 					}
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
+				}
+			}
+		}
+	}
+}
+
+apply_saved_bakufu_politician_mission = { # scope = character
+	hidden_effect = {
+		c:JAP = {
+			if = {
+				limit = { PREV = { is_rojushuza = yes } }
+				if = {
+					limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs }
+					PREV = {
+						set_variable = {
+							name = eafp_bakuhantaisei_politician_current_mission
+							value = c:JAP.var:eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+					}
+					if = {
+						limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs }
+						PREV = {
+							set_variable = {
+								name = eafp_bakuhantaisei_politician_current_mission_location
+								value = c:JAP.var:eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+							}
+						}
+					}
+					switch = {
+						trigger = var:eafp_bakuhantaisei_politician_current_mission_temp_rs
+						flag:eafp_oversee_daimyo_domains = {
+							var:eafp_bakuhantaisei_politician_current_mission_location_temp_rs = {
+								add_modifier = modifier_oversee_daimyo_domains
+							}
+							switch = {
+								trigger = var:eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+								s:STATE_TOHOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_TOHOKU multiplier = 1.5 } }
+								}
+								s:STATE_KANTO.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_KANTO multiplier = 1.5 } }
+								}
+								s:STATE_CHUBU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_CHUBU multiplier = 1.5 } }
+								}
+								s:STATE_KANSAI.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_KANSAI multiplier = 1.5 } }
+								}
+								s:STATE_KYUSHU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_KYUSHU multiplier = 1.5 } }
+								}
+								s:STATE_CHUGOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_CHUGOKU multiplier = 1.5 } }
+								}
+								s:STATE_SHIKOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_oversee_daimyo_domains_SHIKOKU multiplier = 1.5 } }
+								}
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+						}
+						flag:eafp_reaffirm_daimyos_loyalty = {
+							var:eafp_bakuhantaisei_politician_current_mission_location_temp_rs = {
+								add_modifier = modifier_reaffirm_daimyos_loyalty
+							}
+							switch = {
+								trigger = var:eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+								s:STATE_TOHOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_TOHOKU multiplier = 1.5 } }
+								}
+								s:STATE_KANTO.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KANTO multiplier = 1.5 } }
+								}
+								s:STATE_CHUBU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_CHUBU multiplier = 1.5 } }
+								}
+								s:STATE_KANSAI.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KANSAI multiplier = 1.5 } }
+								}
+								s:STATE_KYUSHU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KYUSHU multiplier = 1.5 } }
+								}
+								s:STATE_CHUGOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_CHUGOKU multiplier = 1.5 } }
+								}
+								s:STATE_SHIKOKU.region_state:JAP = {
+									owner = { add_modifier = { name = modifier_reaffirm_daimyos_loyalty_SHIKOKU multiplier = 1.5 } }
+								}
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+						}
+						flag:eafp_improve_relation_with_court = {
+							owner = {
+								add_modifier = { name = modifier_improve_relation_with_court multiplier = 1.5 }
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+						flag:eafp_focus_on_administration = {
+							owner = {
+								add_modifier = { name = modifier_focus_on_administration multiplier = 1.5 }
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+						flag:eafp_bill_review = {
+							owner = {
+								add_modifier = { name = modifier_bill_review multiplier = 1.5 }
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+						flag:eafp_grease_administration = {
+							owner = {
+								add_modifier = { name = modifier_grease_administration multiplier = 1.5 }
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+						flag:eafp_increase_investment = {
+							owner = {
+								add_modifier = modifier_increase_investment
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+						flag:eafp_collect_tax = {
+							owner = {
+								add_modifier = modifier_collect_tax
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+						}
+					}
+				}
+			}
+			else_if = {
+				limit = { PREV = { is_roju = yes } }
+				if = {
+					limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_temp }
+					PREV = {
+						set_variable = {
+							name = eafp_bakuhantaisei_politician_current_mission
+							value = c:JAP.var:eafp_bakuhantaisei_politician_current_mission_temp
+						}
+					}
+					if = {
+						limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_location_temp }
+						PREV = {
+							set_variable = {
+								name = eafp_bakuhantaisei_politician_current_mission_location
+								value = c:JAP.var:eafp_bakuhantaisei_politician_current_mission_location_temp
+							}
+						}
+					}
+					switch = {
+						trigger = var:eafp_bakuhantaisei_politician_current_mission_temp
+						flag:eafp_oversee_daimyo_domains = {
+							var:eafp_bakuhantaisei_politician_current_mission_location_temp = {
+								add_modifier = modifier_oversee_daimyo_domains
+							}
+							switch = {
+								trigger = var:eafp_bakuhantaisei_politician_current_mission_location_temp
+								s:STATE_TOHOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_TOHOKU }
+								}
+								s:STATE_KANTO.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_KANTO }
+								}
+								s:STATE_CHUBU.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_CHUBU }
+								}
+								s:STATE_KANSAI.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_KANSAI }
+								}
+								s:STATE_KYUSHU.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_KYUSHU }
+								}
+								s:STATE_CHUGOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_CHUGOKU }
+								}
+								s:STATE_SHIKOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_oversee_daimyo_domains_SHIKOKU }
+								}
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp
+						}
+						flag:eafp_reaffirm_daimyos_loyalty = {
+							var:eafp_bakuhantaisei_politician_current_mission_location_temp = {
+								add_modifier = modifier_reaffirm_daimyos_loyalty
+							}
+							switch = {
+								trigger = var:eafp_bakuhantaisei_politician_current_mission_location_temp
+								s:STATE_TOHOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_TOHOKU }
+								}
+								s:STATE_KANTO.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_KANTO }
+								}
+								s:STATE_CHUBU.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_CHUBU }
+								}
+								s:STATE_KANSAI.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_KANSAI }
+								}
+								s:STATE_KYUSHU.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_KYUSHU }
+								}
+								s:STATE_CHUGOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_CHUGOKU }
+								}
+								s:STATE_SHIKOKU.region_state:JAP = {
+									owner = { add_modifier = modifier_reaffirm_daimyos_loyalty_SHIKOKU }
+								}
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp
+						}
+						flag:eafp_improve_relation_with_court = {
+							owner = {
+								add_modifier = modifier_improve_relation_with_court
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+						flag:eafp_focus_on_administration = {
+							owner = {
+								add_modifier = modifier_focus_on_administration
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+						flag:eafp_bill_review = {
+							owner = {
+								add_modifier = modifier_bill_review
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+						flag:eafp_grease_administration = {
+							owner = {
+								add_modifier = modifier_grease_administration
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+						flag:eafp_increase_investment = {
+							owner = {
+								add_modifier = modifier_increase_investment
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+						flag:eafp_collect_tax = {
+							owner = {
+								add_modifier = modifier_collect_tax
+							}
+							remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+						}
+					}
 				}
 			}
 		}
@@ -610,6 +1056,52 @@ add_bakuhantaisei_politician_influence_calc_moderate = { # 중도파 등용
 		}
 		add_bakuhantaisei_politician_influence = { VALUE = var:add_bakuhantaisei_politician_influence_value_var }
 		remove_variable = add_bakuhantaisei_politician_influence_value_var
+	}
+}
+
+save_bakufu_politician_mission = { # scope = character
+	# 인물 임무를 임시로 저장해서 나중에 뽑히는 인물이 자동으로 임무를 가질 수 있게 함
+	if = {
+		limit = {
+			is_rojushuza = yes
+			has_variable = eafp_bakuhantaisei_politician_current_mission
+		}
+		c:JAP = {
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_temp_rs
+				value = PREV.var:eafp_bakuhantaisei_politician_current_mission
+			}
+		}
+		if = {
+			limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_location }
+			c:JAP = {
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+					value = PREV.var:eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			is_roju = yes
+			has_variable = eafp_bakuhantaisei_politician_current_mission
+		}
+		c:JAP = {
+			set_variable = {
+				name = eafp_bakuhantaisei_politician_current_mission_temp
+				value = PREV.var:eafp_bakuhantaisei_politician_current_mission
+			}
+		}
+		if = {
+			limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_location }
+			c:JAP = {
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_current_mission_location_temp
+					value = PREV.var:eafp_bakuhantaisei_politician_current_mission_location
+				}
+			}
+		}
 	}
 }
 

@@ -1,0 +1,129 @@
+﻿gunmin_dongchi_var_update_effect = {
+	# support는 정치운동 지지 합, activism은 정치운동의 지지 가중 참여 확률 평균
+	set_local_variable = {
+		name = enlightenment_support
+		value = 0
+	}
+	set_local_variable = {
+		name = antiwestern_support
+		value = 0
+	}
+	set_local_variable = {
+		name = enlightenment_activism
+		value = 0
+	}
+	set_local_variable = {
+		name = antiwestern_activism
+		value = 0
+	}
+
+	every_political_movement = {
+		limit = {
+			OR = {
+				movement_is_liberal = yes
+				movement_is_socialist = yes
+			}
+		}
+		change_local_variable = {
+			name = enlightenment_support
+			add = political_movement_support
+		}
+		change_local_variable = {
+			name = enlightenment_activism
+			add = {
+				value = political_movement_support
+				multiply = political_movement_radicalism
+			}
+		}
+	}
+	every_political_movement = {
+		limit = {
+			movement_is_conservative = yes
+		}
+		change_local_variable = {
+			name = antiwestern_support
+			add = political_movement_support
+		}
+		change_local_variable = {
+			name = antiwestern_activism
+			add = {
+				value = political_movement_support
+				multiply = political_movement_radicalism
+			}
+		}
+	}
+
+	set_variable = {
+		name = eafp_var_gunmin_dongchi_enlightenment_support
+		value = local_var:enlightenment_support
+	}
+	set_variable = {
+		name = eafp_var_gunmin_dongchi_antiwestern_support
+		value = local_var:antiwestern_support
+	}
+
+	set_variable = {
+		name = eafp_var_gunmin_dongchi_enlightenment_activism
+		value = {
+			value = local_var:enlightenment_activism
+			divide = local_var:enlightenment_support
+		}
+	}
+	set_variable = {
+		name = eafp_var_gunmin_dongchi_antiwestern_activism
+		value = {
+			value = local_var:antiwestern_activism
+			divide = local_var:antiwestern_support
+		}
+	}
+}
+
+gunmin_dongchi_enlightenment_coup_law_effect = {
+	if = {
+		limit = { has_law_or_variant = law_type:law_serfdom }
+		activate_law = law_type:law_tenant_farmers
+	}
+	if = {
+		limit = { has_law_or_variant = law_type:law_traditionalism }
+		activate_law = law_type:law_interventionism
+	}
+	if = {
+		limit = { has_law_or_variant = law_type:law_isolationism }
+		activate_law = law_type:law_mercantilism
+	}
+	if = {
+		limit = { has_law_or_variant = law_type:law_land_based_taxation }
+		activate_law = law_type:law_per_capita_based_taxation
+	}
+}
+
+gunmin_dongchi_antiwestern_coup_law_effect = {
+	if = {
+		limit = { NOT = { has_law_or_variant = law_type:law_autocracy } }
+		activate_law = law_type:law_autocracy
+	}
+	if = {
+		limit = { NOT = { has_law_or_variant = law_type:law_state_religion } }
+		activate_law = law_type:law_state_religion
+	}
+	if = {
+		limit = { NOT = { has_law_or_variant = law_type:law_isolationism } }
+		activate_law = law_type:law_isolationism
+	}
+	if = {
+		limit = { NOT = { has_law_or_variant = law_type:law_censorship } }
+		activate_law = law_type:law_censorship
+	}
+}
+
+gunmin_dongchi_clean_effect = {
+	remove_variable = eafp_var_gunmin_dongchi_enlightenment_support
+	remove_variable = eafp_var_gunmin_dongchi_antiwestern_support
+	remove_variable = eafp_var_gunmin_dongchi_enlightenment_activism
+	remove_variable = eafp_var_gunmin_dongchi_antiwestern_activism
+
+	remove_modifier = eafp_modi_support_enlightenment
+	remove_modifier = eafp_modi_support_antiwestern
+
+	clear_variable_list = gunmin_dongchi_initial_lawtype_varlist
+}

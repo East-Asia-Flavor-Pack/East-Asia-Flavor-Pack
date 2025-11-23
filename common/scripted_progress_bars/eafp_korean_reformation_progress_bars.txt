@@ -1,4 +1,5 @@
-﻿eafp_progress_bar_seoul_improvement_project = {
+﻿# 한성개조사업
+eafp_progress_bar_seoul_improvement_project = {
 	name = "eafp_progress_bar_seoul_improvement_project"
 	desc = "eafp_progress_bar_seoul_improvement_project_desc"
 
@@ -17,4 +18,327 @@
 	start_value = 0
 	min_value = 0
 	max_value = 200
+}
+
+# 군민동치
+eafp_progress_bar_gunmin_dongchi_enlightenment = {
+	name = "eafp_progress_bar_gunmin_dongchi_enlightenment"
+	desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_desc"
+
+	default = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_gunmin_dongchi }
+			je:je_gunmin_dongchi ?= {
+				add = {
+					desc = "WAR_EXHAUSTION_BASE"
+					value = "scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_enlightenment)"
+					multiply = -0.05
+				}
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_support"
+				value = var:eafp_var_gunmin_dongchi_enlightenment_support
+				multiply = 10
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_activism"
+				value = var:eafp_var_gunmin_dongchi_enlightenment_activism
+				multiply = 10
+			}
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_intelligentsia_approval"
+			value = ig:ig_intelligentsia.ig_approval
+			multiply = -0.5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_industrialists_approval"
+			value = ig:ig_industrialists.ig_approval
+			multiply = -0.5
+		}
+
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_enlightenment
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_popularity"
+				value = ruler.popularity
+				add = 50
+				divide = -10
+			}
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 100
+}
+
+eafp_progress_bar_gunmin_dongchi_antiwestern = {
+	name = "eafp_progress_bar_gunmin_dongchi_antiwestern"
+	desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_gunmin_dongchi }
+			je:je_gunmin_dongchi ?= {
+				add = {
+					desc = "WAR_EXHAUSTION_BASE"
+					value = "scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_antiwestern)"
+					multiply = -0.05
+				}
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_support"
+				value = var:eafp_var_gunmin_dongchi_antiwestern_support
+				multiply = 10
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_activism"
+				value = var:eafp_var_gunmin_dongchi_antiwestern_activism
+				multiply = 10
+			}
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_landowners_approval"
+			value = ig:ig_landowners.ig_approval
+			multiply = -0.5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_devout_approval"
+			value = ig:ig_devout.ig_approval
+			multiply = -0.5
+		}
+
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_antiwestern
+			}
+			add = {
+				desc = "eafp_progress_bar_gunmin_dongchi_popularity"
+				value = ruler.popularity
+				add = 50
+				divide = -10
+			}
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 100
+}
+
+eafp_progress_bar_gunmin_dongchi_enlightenment_coup_progress = {
+	name = "eafp_progress_bar_gunmin_dongchi_enlightenment_coup_progress"
+	desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_coup_progress_desc"
+
+	default = yes
+
+	monthly_progress = {
+		if = {
+			limit = {
+				OR = {
+					ig:ig_intelligentsia ?= { is_in_government = yes }
+					ig:ig_industrialists ?= { is_in_government = yes }
+				}
+			}
+			add = {
+				desc = "WAR_EXHAUSTION_BASE"
+				value = 1
+			}
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 60
+}
+
+eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup = {
+	name = "eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup"
+	desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup_desc"
+
+	default_bad = yes
+
+	weekly_progress = {
+		if = {
+			limit = { has_journal_entry = je_gunmin_dongchi_enlightenment_coup }
+			je:je_gunmin_dongchi_enlightenment_coup = {
+				add = {
+					desc = "WAR_EXHAUSTION_BASE"
+					value = "scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup)"
+					multiply = -0.05
+				}
+			}
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_support"
+			value = var:eafp_var_gunmin_dongchi_enlightenment_support
+			multiply = -10
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_activism"
+			value = var:eafp_var_gunmin_dongchi_enlightenment_activism
+			multiply = -10
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_support"
+			value = var:eafp_var_gunmin_dongchi_antiwestern_support
+			multiply = 10
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_activism"
+			value = var:eafp_var_gunmin_dongchi_antiwestern_activism
+			multiply = 10
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_intelligentsia_clout"
+			value = ig:ig_intelligentsia.ig_clout
+			multiply = -5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_industrialists_clout"
+			value = ig:ig_industrialists.ig_clout
+			multiply = -5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_landowners_clout"
+			value = ig:ig_landowners.ig_clout
+			multiply = 5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_devout_clout"
+			value = ig:ig_devout.ig_clout
+			multiply = 5
+		}
+
+		add = {
+			desc = "serbian_dethrone_loyalist_fraction_tt"
+			value = loyalist_fraction
+			multiply = -10
+		}
+		add = {
+			desc = "serbian_dethrone_radical_fraction_tt"
+			value = radical_fraction
+			multiply = 10
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 100
+}
+
+eafp_progress_bar_gunmin_dongchi_antiwestern_coup_progress = {
+	name = "eafp_progress_bar_gunmin_dongchi_antiwestern_coup_progress"
+	desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_coup_progress_desc"
+
+	default = yes
+
+	monthly_progress = {
+		if = {
+			limit = {
+				OR = {
+					ig:ig_landowners ?= { is_in_government = yes }
+					ig:ig_devout ?= { is_in_government = yes }
+				}
+			}
+			add = {
+				desc = "WAR_EXHAUSTION_BASE"
+				value = 1
+			}
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 60
+}
+
+eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup = {
+	name = "eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup"
+	desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup_desc"
+
+	default_bad = yes
+
+	weekly_progress = {
+		if = {
+			limit = { has_journal_entry = je_gunmin_dongchi_antiwestern_coup }
+			je:je_gunmin_dongchi_antiwestern_coup = {
+				add = {
+					desc = "WAR_EXHAUSTION_BASE"
+					value = "scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup)"
+					multiply = -0.05
+				}
+			}
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_support"
+			value = var:eafp_var_gunmin_dongchi_antiwestern_support
+			multiply = -10
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_antiwestern_from_movement_activism"
+			value = var:eafp_var_gunmin_dongchi_antiwestern_activism
+			multiply = -10
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_support"
+			value = var:eafp_var_gunmin_dongchi_enlightenment_support
+			multiply = 10
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_enlightenment_from_movement_activism"
+			value = var:eafp_var_gunmin_dongchi_enlightenment_activism
+			multiply = 10
+		}
+
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_landowners_clout"
+			value = ig:ig_landowners.ig_clout
+			multiply = -5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_devout_clout"
+			value = ig:ig_devout.ig_clout
+			multiply = -5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_intelligentsia_clout"
+			value = ig:ig_intelligentsia.ig_clout
+			multiply = 5
+		}
+		add = {
+			desc = "eafp_progress_bar_gunmin_dongchi_from_industrialists_clout"
+			value = ig:ig_industrialists.ig_clout
+			multiply = 5
+		}
+
+		add = {
+			desc = "serbian_dethrone_loyalist_fraction_tt"
+			value = loyalist_fraction
+			multiply = -10
+		}
+		add = {
+			desc = "serbian_dethrone_radical_fraction_tt"
+			value = radical_fraction
+			multiply = 10
+		}
+	}
+
+	start_value = 0
+	min_value = 0
+	max_value = 100
 }

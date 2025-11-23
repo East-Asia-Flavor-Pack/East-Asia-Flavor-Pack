@@ -549,8 +549,10 @@ eafp_scripted_button_royal_lecture = {
 			name = eafp_var_je_king_cheoljong_education_royal_lecture
 			value = 1
 		}
-		add_modifier = {
-			name = eafp_modi_cheoljong_royal_lecture
+		ruler = {
+			add_modifier = {
+				name = eafp_modi_cheoljong_royal_lecture
+			}
 		}
 	}
 	ai_chance = {
@@ -573,7 +575,7 @@ eafp_scripted_button_royal_lecture2 = {
 
 	effect = {
 		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
-		remove_modifier = eafp_modi_cheoljong_royal_lecture
+		ruler = { remove_modifier = eafp_modi_cheoljong_royal_lecture }
 	}
 	ai_chance = {
 		value = 0
@@ -592,15 +594,17 @@ eafp_scripted_button_royal_lecture3 = {
 	}
 
 	effect = {
-		remove_modifier = eafp_modi_cheoljong_royal_lecture
-		add_modifier = {
-			name = eafp_modi_cheoljong_royal_lecture
-			multiplier = {
-				value = var:eafp_var_je_king_cheoljong_education_royal_lecture
-				add = 1
-				multiply = {
-					value = var:eafp_var_je_king_cheoljong_education_royal_lecture
+		ruler = {
+			remove_modifier = eafp_modi_cheoljong_royal_lecture
+			add_modifier = {
+				name = eafp_modi_cheoljong_royal_lecture
+				multiplier = {
+					value = PREV.var:eafp_var_je_king_cheoljong_education_royal_lecture
 					add = 1
+					multiply = {
+						value = PREV.var:eafp_var_je_king_cheoljong_education_royal_lecture
+						add = 1
+					}
 				}
 			}
 		}
@@ -629,15 +633,17 @@ eafp_scripted_button_royal_lecture4 = {
 	}
 
 	effect = {
-		remove_modifier = eafp_modi_cheoljong_royal_lecture
-		add_modifier = {
-			name = eafp_modi_cheoljong_royal_lecture
-			multiplier = {
-				value = var:eafp_var_je_king_cheoljong_education_royal_lecture
-				add = -1
-				multiply = {
-					value = var:eafp_var_je_king_cheoljong_education_royal_lecture
+		ruler = {
+			remove_modifier = eafp_modi_cheoljong_royal_lecture
+			add_modifier = {
+				name = eafp_modi_cheoljong_royal_lecture
+				multiplier = {
+					value = PREV.var:eafp_var_je_king_cheoljong_education_royal_lecture
 					add = -1
+					multiply = {
+						value = PREV.var:eafp_var_je_king_cheoljong_education_royal_lecture
+						add = -1
+					}
 				}
 			}
 		}
@@ -1034,7 +1040,7 @@ eafp_scripted_button_health_inspectation_tour = {
 	desc = "eafp_scripted_button_health_inspectation_tour_desc"
 
 	visible = {
-		always = yes
+		has_journal_entry = je_korean_land_problem
 	}
 
 	possible = {
@@ -1045,6 +1051,9 @@ eafp_scripted_button_health_inspectation_tour = {
 			text = eafp_scripted_button_health_cooltime_tt
 			NOT = { has_variable = eafp_var_button_health_cooltime }
 		}
+		hidden_trigger = {
+			has_journal_entry = je_korean_land_problem
+		}
 	}
 
 	effect = {
@@ -1054,13 +1063,13 @@ eafp_scripted_button_health_inspectation_tour = {
 		}
 		add_treasury = -50000	#임시수치
 		eafp_effect_option_gain_mil = {
-			MIL = 25
+			MIL = 15
 		}
 		eafp_effect_option_gain_adm = {
-			ADM = 25
+			ADM = 15
 		}
 		eafp_effect_option_gain_civ = {
-			CIV = 25
+			CIV = 15
 		}
 		eafp_effect_option_gain_stress = {
 			STRESS = 5
@@ -1114,18 +1123,29 @@ eafp_scripted_button_health_hunting = {
 			name = eafp_var_button_health_cooltime
 			months = 12
 		}
-		add_treasury = -50000	#임시수치
-		eafp_effect_option_gain_mil = {
-			MIL = -25
+		if = {
+			limit = { has_journal_entry = je_korean_land_problem }
+			add_treasury = -50000	#임시수치
+			eafp_effect_option_gain_mil = {
+				MIL = -10
+			}
+			eafp_effect_option_gain_adm = {
+				ADM = -10
+			}
+			eafp_effect_option_gain_civ = {
+				CIV = -10
+			}
 		}
-		eafp_effect_option_gain_adm = {
-			ADM = -25
-		}
-		eafp_effect_option_gain_civ = {
-			CIV = -25
+		else = {
+			add_treasury = {
+				value = eafp_val_stress_cost
+				multiply = 20
+				add = -50000
+				max = 1000000
+			}
 		}
 		eafp_effect_option_gain_stress = {
-			STRESS = -10
+			STRESS = -20
 		}
 		hidden_effect = {
 			if = {
@@ -1163,7 +1183,7 @@ eafp_scripted_button_health_tomb_tour = {
 	desc = "eafp_scripted_button_health_tomb_tour_desc"
 
 	visible = {
-		always = yes
+		has_journal_entry = je_sedo_politics
 	}
 
 	possible = {
@@ -1174,6 +1194,9 @@ eafp_scripted_button_health_tomb_tour = {
 			text = eafp_scripted_button_health_cooltime_tt
 			NOT = { has_variable = eafp_var_button_health_cooltime }
 		}
+		hidden_trigger = {
+			has_journal_entry = je_sedo_politics
+		}
 	}
 
 	effect = {
@@ -1183,7 +1206,7 @@ eafp_scripted_button_health_tomb_tour = {
 		}
 		add_treasury = -50000	#임시수치
 		eafp_effect_option_gain_balance = {
-			BALANCE = -5
+			BALANCE = -15
 		}
 		eafp_effect_option_gain_stress = {
 			STRESS = 5

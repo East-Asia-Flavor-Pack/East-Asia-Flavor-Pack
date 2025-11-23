@@ -1,7 +1,7 @@
 ﻿namespace = meiji
 
 # Emperor takes power
-meiji.1 = {
+meiji.1 = { # 법률 제정으로 유신했을 때
 	type = country_event
 	placement = root
 	title = meiji.1.t
@@ -30,13 +30,86 @@ meiji.1 = {
 			name = meiji_var
 			value = 0
 		}
-		#ig:ig_landowners ?= {
-		#	save_scope_as = shogunate_ig
-		#	leader = {
-		#		save_scope_as = shogunate_ig_leader
-		#	}
-		#}
-		# 인물 설정 파트 삭제
+		ig:ig_landowners ?= {
+			save_scope_as = shogunate_ig
+			leader = {
+				save_scope_as = shogunate_ig_leader
+			}
+		}
+		if = { # 적당히 수정
+			limit = {
+				year < 1852
+			}
+			create_character = { # 수정
+				template = eafp_jap_ninko_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_komei_template
+				heir = yes
+			}
+		}
+		else_if = {
+			limit = {
+				year >= 1852
+				year < 1879
+			}
+			create_character = { # 수정
+				template = eafp_jap_komei_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_meiji_template
+				heir = yes
+			}
+			set_variable = heir_meiji_spawned
+		}
+		else_if = {
+			limit = {
+				year >= 1879
+				year < 1912
+			}
+			create_character = { # 수정
+				template = eafp_jap_meiji_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_taisho_template
+				heir = yes
+			}
+			set_variable = heir_meiji_spawned
+			set_variable = taisho_born
+		}
+		else_if = {
+			limit = {
+				year >= 1912
+				year < 1928
+			}
+			create_character = { # 수정
+				template = eafp_jap_taisho_template
+				ruler = yes
+			}
+			create_character = { # 수정
+				template = eafp_jap_showa_template
+				heir = yes
+			}
+			set_variable = heir_meiji_spawned
+			set_variable = taisho_born
+			set_variable = showa_born
+		}
+		else_if = {
+			limit = {
+				year >= 1928
+				year < 1989
+			}
+			create_character = { # 수정
+				template = eafp_jap_showa_template
+				ruler = yes
+			}
+			set_variable = heir_meiji_spawned
+			set_variable = taisho_born
+			set_variable = showa_born
+		}
 		ruler = {
 			save_scope_as = meiji_ruler
 		}
@@ -46,6 +119,7 @@ meiji.1 = {
 		}
 
 		# 이하 추가
+		
 		ig:ig_landowners ?= {
 			save_scope_as = shogunate_ig
 		}
@@ -58,16 +132,34 @@ meiji.1 = {
         ig:ig_petty_bourgeoisie ?= {
             save_scope_as = kashin_ig
         }
-		save_scope_value_as = {
-			name = gold_reserves_scope
-			value = {
-				value = gold_reserves
-				multiply = -1
-			}
-		}
 		s:STATE_SAKHALIN = {
 			add_claim = root
 		}
+
+		# 막번체제 저널용 변화요인 삭제
+		every_scope_state = {
+			limit = { has_modifier = legacy_of_sekigahara_modifier }
+			remove_modifier = legacy_of_sekigahara_modifier
+		}
+		je_bakuhantaisei_STATE_clear = { STATE = TOHOKU }
+		je_bakuhantaisei_STATE_clear = { STATE = KANTO }
+		je_bakuhantaisei_STATE_clear = { STATE = CHUBU }
+		je_bakuhantaisei_STATE_clear = { STATE = KANSAI }
+		je_bakuhantaisei_STATE_clear = { STATE = KYUSHU }
+		je_bakuhantaisei_STATE_clear = { STATE = CHUGOKU }
+		je_bakuhantaisei_STATE_clear = { STATE = SHIKOKU }
+		every_scope_state = {
+			limit = { has_modifier = modifier_oversee_daimyo_domains }
+			remove_modifier = modifier_oversee_daimyo_domains
+		}
+		every_scope_state = {
+			limit = { has_modifier = modifier_reaffirm_daimyos_loyalty }
+			remove_modifier = modifier_reaffirm_daimyos_loyalty
+		}
+		remove_modifier = bakufu_corruption_mil
+		remove_modifier = bakufu_corruption_adm
+		remove_modifier = bakufu_corruption_fin
+		remove_modifier = bakufu_corruption_dip
 	}
 
 	option = { # favour the industrialists
@@ -141,18 +233,91 @@ meiji.1 = {
 			}
 			create_political_movement = { type = movement_modernizer }
 		}
-		# 저널 관련 부분 삭제함
-		# 이하 추가
-		add_loyalists = {
-			value = 0.1
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_economy }
+				in_default = no
+				any_scope_state = {
+					filter = {
+						is_incorporated = yes
+					}
+					any_scope_building = {
+						is_building_type = building_urban_center
+						level >= 5
+					}
+					has_building = building_railway
+					percent > 0.7
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_economy # If the player manages to skip je_meiji_economy we still need to set the variable
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_economy
+			}
 		}
 		if = {
-			limit = { gold_reserves < 0 }
-			add_treasury = scope:gold_reserves_scope
+			limit = {
+				NOT = { has_law_or_variant = law_type:law_serfdom }
+				ig:ig_armed_forces ?= {
+					is_powerful = no
+					is_in_government = no
+				}
+				has_technology_researched = napoleonic_warfare
+				NOT = {
+					any_scope_building = {
+						is_building_type = building_barracks
+						OR = {
+							has_active_production_method = pm_no_organization
+							# has_active_production_method = pm_no_artillery
+							# has_active_production_method = pm_cannon_artillery
+						}
+					}
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			trigger_event = {
+				id = meiji.3
+			}
 		}
-		set_strategy = ai_strategy_industrial_expansion
-		set_strategy = ai_strategy_meiji_restoration 
-		set_strategy = ai_strategy_maintain_power_balance
+		else = {
+			add_journal_entry = {
+				type = je_meiji_army
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_diplomacy }
+				NOT = { is_country_type = unrecognized }
+				NOT = { has_law_or_variant = law_type:law_isolationism }
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_diplomacy # If the player manages to skip je_meiji_diplomacy we still need to set the variable
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_diplomacy
+			}
+		}
+		# 이하 추가
+		add_loyalists = {
+			value = 0.2
+		}
+		hidden_effect = {
+			set_strategy = ai_strategy_industrial_expansion
+			set_strategy = ai_strategy_meiji_restoration 
+			set_strategy = ai_strategy_maintain_power_balance
+		}
 	}
 	# option b 삭제
 

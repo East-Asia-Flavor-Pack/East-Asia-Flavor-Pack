@@ -27,6 +27,7 @@
 			trigger_event = {
 				id = gunmin_dongchi_events.1
 				months = { 6 12 }
+				popup = yes
 			}
 		}
 		add_journal_entry = {
@@ -136,7 +137,7 @@ je_korean_reformation_society = {
 		hidden_effect = {
 			trigger_event = { id = eafp_korean_reformation_events.101 }
 			trigger_event = { id = eafp_korean_reformation_events.102 }
-			trigger_event = { id = eafp_korean_reformation_events.103 }
+			#trigger_event = { id = eafp_korean_reformation_events.103 }
 			trigger_event = { id = eafp_korean_reformation_events.104 }
 			trigger_event = { id = eafp_korean_reformation_events.105 }
 		}
@@ -146,7 +147,7 @@ je_korean_reformation_society = {
 		events = {
 			eafp_korean_reformation_events.101 # 경무청
 			eafp_korean_reformation_events.102 # 소학교령
-			eafp_korean_reformation_events.103 # 문관전고소
+			#eafp_korean_reformation_events.103 # 문관전고소
 			eafp_korean_reformation_events.104 # 국문이냐 한문이냐
 			eafp_korean_reformation_events.105 # 노비들의 운명
 		}
@@ -435,7 +436,7 @@ je_korean_reformation_diplomacy = {
 je_seoul_improvement_project = {
     icon = "gfx/interface/icons/event_icons/event_trade.dds"
 
-    group = je_group_historical_content
+    group = je_group_internal_affairs
 
     is_shown_when_inactive = {
         c:KOR ?= this
@@ -532,99 +533,6 @@ je_seoul_improvement_project = {
     should_be_pinned_by_default = yes
 }
 
-je_protect_righteousness = {
-    icon = "gfx/interface/icons/event_icons/event_protest.dds"
-
-    group = je_group_historical_content
-
-    is_shown_when_inactive = {
-        c:KOR ?= this
-		has_journal_entry = je_korean_confu
-    }
-
-	possible = {
-		has_journal_entry = je_korean_confu
-		OR = {
-			has_journal_entry = je_korean_reformation
-			AND = {
-				enacting_any_law = yes
-				OR = {
-					custom_description = {
-						text = is_same_law_group_as_currently_enacting_law_desc
-						subject = law_type:law_isolationism
-						enacting_any_law = yes
-						law_type:law_isolationism = {
-							is_same_law_group_as = PREV.currently_enacting_law.type
-						}
-					}
-					custom_description = {
-						text = is_same_law_group_as_currently_enacting_law_desc
-						subject = law_type:law_traditionalism
-						enacting_any_law = yes
-						law_type:law_traditionalism = {
-							is_same_law_group_as = PREV.currently_enacting_law.type
-						}
-					}
-					custom_description = {
-						text = is_same_law_group_as_currently_enacting_law_desc
-						subject = law_type:law_state_religion
-						enacting_any_law = yes
-						law_type:law_state_religion = {
-							is_same_law_group_as = PREV.currently_enacting_law.type
-						}
-					}
-				}
-			}
-		}
-	}
-
-    immediate = {
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = eafp_modi_protect_righteousness_political_movement
-		}
-    }
-
-    modifiers_while_active = {
-        eafp_modi_protect_righteousness
-    }
-
-    complete = {
-        NOT = { has_journal_entry = je_korean_confu }
-    }
-
-    on_complete = {
-        every_political_movement = {
-			limit = { has_modifier = eafp_modi_protect_righteousness_political_movement }
-			remove_modifier = eafp_modi_protect_righteousness_political_movement
-		}
-    }
-
-	on_weekly_pulse = {
-		effect = {
-			every_political_movement = {
-				limit = {
-					is_political_movement_type = movement_religious_majority
-					NOT = { has_modifier = eafp_modi_protect_righteousness_political_movement }
-				}
-				add_modifier = eafp_modi_protect_righteousness_political_movement
-			}
-		}
-	}
-
-    on_monthly_pulse = {
-        random_events = {
-            100 = 0
-			10 = protect_righteousness_events.1
-			10 = protect_righteousness_events.2
-			10 = protect_righteousness_events.3
-        }
-    }
-
-    weight = 1000
-    should_be_pinned_by_default = yes
-}
-
 je_gunmin_dongchi = {
     icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
@@ -641,46 +549,800 @@ je_gunmin_dongchi = {
 		}
 	}
 
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_enlightenment
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_antiwestern
+
+	scripted_button = eafp_scripted_button_gunmin_dongchi_support_enlightenment
+	scripted_button = eafp_scripted_button_gunmin_dongchi_cease_support
+	scripted_button = eafp_scripted_button_gunmin_dongchi_support_antiwestern
+
     immediate = {
-        
+        if = {
+			limit = {
+				NOT = {
+					any_political_movement = {
+						is_political_movement_type = movement_liberal
+					}
+				}
+			}
+			create_political_movement = { type = movement_liberal }
+		}
+		gunmin_dongchi_var_update_effect = yes
     }
 
     modifiers_while_active = {
         modifier_suffrage_support_socdem_party
     }
 
+	custom_completion_header = je_gunmin_dongchi_complete_header
+
     complete = {
-        country_has_voting_franchise = yes
+        custom_tooltip = {
+			text = je_gunmin_dongch_complete_tt
+			je:je_gunmin_dongchi ?= {
+				"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_enlightenment)" >= 100
+			}
+		}
     }
+
+	custom_on_completion_header = je_gunmin_dongchi_on_complete_header
 
     on_complete = {
-        trigger_event = { id = gunmin_dongchi_events.10 popup = yes }
+        trigger_event = { id = gunmin_dongchi_events.2 popup = yes }
+		show_as_tooltip = {
+			if = {
+				limit = { is_subject = yes }
+				add_liberty_desire = 50
+			}
+			gunmin_dongchi_enlightenment_coup_law_effect = yes
+
+			add_modifier = {
+				name = eafp_modi_gunmin_dongchi_enlightenment_coup
+				days = normal_modifier_time
+			}
+			recalculate_pop_ig_support = yes
+
+			every_political_movement = {
+				limit = {
+					movement_is_conservative = yes
+				}
+				add_modifier = {
+					name = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+					days = short_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
     }
 
+	custom_failure_header = je_gunmin_dongchi_fail_header
+
 	fail = {
-		NOT = { has_law_or_variant = law_type:law_monarchy }
 		custom_tooltip = {
-			text = sps_no_party_tt
-			country_has_voting_franchise = no
+			text = je_gunmin_dongch_fail_tt
+			je:je_gunmin_dongchi ?= {
+				"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_antiwestern)" >= 100
+			}
+		}
+	}
+
+	custom_on_failure_header = je_gunmin_dongchi_on_fail_header
+
+	on_fail = {
+		trigger_event = { id = gunmin_dongchi_events.3 popup = yes }
+		show_as_tooltip = {
+			if = {
+				limit = { is_subject = yes }
+				add_liberty_desire = 50
+			}
+			gunmin_dongchi_antiwestern_coup_law_effect = yes
+
+			add_modifier = {
+				name = eafp_modi_gunmin_dongchi_antiwestern_coup
+				days = normal_modifier_time
+			}
+			recalculate_pop_ig_support = yes
+
+			every_political_movement = {
+				limit = {
+					OR = {
+						movement_is_liberal = yes
+						movement_is_socialist = yes
+					}
+				}
+				add_modifier = {
+					name = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+					days = short_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
 		}
 	}
 
     timeout = 7300
 
     on_timeout = {
-        #trigger_event = { id = communal_divides_events.2 popup = yes }
+        if = {
+			limit = { country_has_voting_franchise = yes }
+			trigger_event = { id = gunmin_dongchi_events.4 popup = yes }
+		}
+		else = {
+			trigger_event = { id = gunmin_dongchi_events.5 popup = yes }
+		}
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
     }
 
-    on_monthly_pulse = {
-        random_events = {
-            100 = 0
-            10 = gunmin_dongchi_events.2
-            10 = gunmin_dongchi_events.3
-            10 = gunmin_dongchi_events.4
-            10 = gunmin_dongchi_events.5
-        }
-    }
+	invalid = {
+		NOT = { has_law_or_variant = law_type:law_monarchy }
+	}
+
+	on_invalid = {
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			gunmin_dongchi_var_update_effect = yes
+		}
+	}
 
     weight = 1000
     should_be_pinned_by_default = yes
+}
+je_gunmin_dongchi_enlightenment_coup = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+    group = je_group_historical_content
+
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_enlightenment_coup_progress
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup
+
+	immediate = {
+		#실패 시 저널 추가할 때 법률로 롤백.
+		every_active_law = {
+			ROOT = {
+				add_to_variable_list = {
+					name = gunmin_dongchi_initial_lawtype_varlist
+					target = PREV.type
+				}
+			}
+		}
+
+		if = {
+			limit = { is_subject = yes }
+			add_liberty_desire = 50
+		}
+		gunmin_dongchi_enlightenment_coup_law_effect = yes
+
+		add_modifier = {
+			name = eafp_modi_gunmin_dongchi_enlightenment_coup
+			days = normal_modifier_time
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				movement_is_conservative = yes
+			}
+			add_modifier = {
+				name = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+				days = short_modifier_time
+				is_decaying = yes
+			}
+		}
+
+		gunmin_dongchi_var_update_effect = yes
+	}
+
+    complete = {
+		has_law_or_variant = law_type:law_dedicated_police
+		has_law_or_variant = law_type:law_professional_army
+		NOT = { has_law_or_variant = law_type:law_outlawed_dissent }
+		NOT = { has_law_or_variant = law_type:law_censorship }
+		NOT = { has_law_or_variant = law_type:law_no_womens_rights }
+		NOT = { has_law_or_variant = law_type:law_state_religion }
+		NOT = { has_law_or_variant = law_type:law_guild_system }
+		country_has_voting_franchise = yes
+
+        custom_tooltip = {
+			text = je_gunmin_dongchi_enlightenment_coup_complete_tt
+			je:je_gunmin_dongchi_enlightenment_coup ?= {
+				"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_enlightenment_coup_progress)" >= 60
+			}
+		}
+		OR = {
+			ig:ig_intelligentsia ?= { is_in_government = yes }
+			ig:ig_industrialists ?= { is_in_government = yes }
+		}
+    }
+
+    on_complete = {
+        trigger_event = { id = gunmin_dongchi_events.101 popup = yes }
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+    }
+
+	fail = {
+		OR = {
+			has_law_or_variant = law_type:law_serfdom
+			has_law_or_variant = law_type:law_traditionalism
+			has_law_or_variant = law_type:law_isolationism
+			has_law_or_variant = law_type:law_land_based_taxation
+			custom_tooltip = {
+				text = je_gunmin_dongchi_enlightenment_coup_fail_tt
+				je:je_gunmin_dongchi_enlightenment_coup ?= {
+					"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_enlightenment_coup_anticoup)" >= 100
+				}
+			}
+		}
+	}
+
+	on_fail = {
+		trigger_event = { id = gunmin_dongchi_events.102 popup = yes }
+
+		custom_tooltip = je_gunmin_dongchi_enlightenment_coup_on_fail_tt
+		every_in_list = {
+			limit = { ROOT = { NOT = { has_law = PREV } } }
+			variable = gunmin_dongchi_initial_lawtype_varlist
+
+			ROOT = {
+				if = {
+					limit = { PREV = law_type:law_seowon }
+					if = {
+						limit = {
+							custom_tooltip = {
+								text = je_korean_land_problem_complete_cond_tt
+								has_variable = eafp_var_sam_all_clear
+							}
+							NOT = { has_journal_entry = je_sedo_politics }
+							ig:ig_devout ?= {
+								ig_clout <= 0.1
+								is_in_government = no
+							}
+							NOT = { has_law = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_religious_schools
+					}
+					else = {
+						activate_law = law_type:law_seowon
+						add_journal_entry = {
+							type = je_korean_seowon
+						}
+					}
+				}
+				else_if = {
+					limit = { PREV = law_type:law_scholar_bureaucrats }
+					if = {
+						limit = {
+							NOT = { has_law_or_variant = law_type:law_state_religion }
+							NOT = { has_law_or_variant = law_type:law_peasant_levies }
+							NOT = { has_law_or_variant = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_appointed_bureaucrats
+					}
+					else = {
+						activate_law = law_type:law_scholar_bureaucrats
+						add_journal_entry = {
+							type = je_scholar_bureaucrats
+						}
+					}
+				}
+				else = {
+					activate_law = PREV
+				}
+			}
+		}
+
+		if = {
+			limit = { has_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup }
+			remove_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				has_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+			}
+			remove_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+		}
+
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+	}
+
+    timeout = 3650
+
+    on_timeout = {
+        trigger_event = { id = gunmin_dongchi_events.102 popup = yes }
+
+		custom_tooltip = je_gunmin_dongchi_enlightenment_coup_on_fail_tt
+		every_in_list = {
+			limit = { ROOT = { NOT = { has_law = PREV } } }
+			variable = gunmin_dongchi_initial_lawtype_varlist
+
+			ROOT = {
+				if = {
+					limit = { PREV = law_type:law_seowon }
+					if = {
+						limit = {
+							custom_tooltip = {
+								text = je_korean_land_problem_complete_cond_tt
+								has_variable = eafp_var_sam_all_clear
+							}
+							NOT = { has_journal_entry = je_sedo_politics }
+							ig:ig_devout ?= {
+								ig_clout <= 0.1
+								is_in_government = no
+							}
+							NOT = { has_law = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_religious_schools
+					}
+					else = {
+						activate_law = law_type:law_seowon
+						add_journal_entry = {
+							type = je_korean_seowon
+						}
+					}
+				}
+				else_if = {
+					limit = { PREV = law_type:law_scholar_bureaucrats }
+					if = {
+						limit = {
+							NOT = { has_law_or_variant = law_type:law_state_religion }
+							NOT = { has_law_or_variant = law_type:law_peasant_levies }
+							NOT = { has_law_or_variant = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_appointed_bureaucrats
+					}
+					else = {
+						activate_law = law_type:law_scholar_bureaucrats
+						add_journal_entry = {
+							type = je_scholar_bureaucrats
+						}
+					}
+				}
+				else = {
+					activate_law = PREV
+				}
+			}
+		}
+
+		if = {
+			limit = { has_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup }
+			remove_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				has_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+			}
+			remove_modifier = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+		}
+
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+    }
+
+	invalid = {
+		NOT = { has_law_or_variant = law_type:law_monarchy }
+	}
+
+	on_invalid = {
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			gunmin_dongchi_var_update_effect = yes
+		}
+	}
+
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+je_gunmin_dongchi_antiwestern_coup = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+    group = je_group_historical_content
+
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_antiwestern_coup_progress
+	scripted_progress_bar = eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup
+
+	immediate = {
+		#실패 시 저널 추가할 때 법률로 롤백.
+		every_active_law = {
+			ROOT = {
+				add_to_variable_list = {
+					name = gunmin_dongchi_initial_lawtype_varlist
+					target = PREV.type
+				}
+			}
+		}
+
+		if = {
+			limit = { is_subject = yes }
+			add_liberty_desire = 50
+		}
+		gunmin_dongchi_antiwestern_coup_law_effect = yes
+
+		add_modifier = {
+			name = eafp_modi_gunmin_dongchi_antiwestern_coup
+			days = normal_modifier_time
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				OR = {
+					movement_is_liberal = yes
+					movement_is_socialist = yes
+				}
+			}
+			add_modifier = {
+				name = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+				days = short_modifier_time
+				is_decaying = yes
+			}
+		}
+
+		gunmin_dongchi_var_update_effect = yes
+	}
+
+    complete = {
+		has_law_or_variant = law_type:law_no_womens_rights
+
+        custom_tooltip = {
+			text = je_gunmin_dongchi_antiwestern_coup_complete_tt
+			je:je_gunmin_dongchi_antiwestern_coup ?= {
+				"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_antiwestern_coup_progress)" >= 60
+			}
+		}
+		OR = {
+			ig:ig_landowners ?= { is_in_government = yes }
+			ig:ig_devout ?= { is_in_government = yes }
+		}
+    }
+
+    on_complete = {
+        trigger_event = { id = gunmin_dongchi_events.101 popup = yes }
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+    }
+
+	fail = {
+		OR = {
+			NOT = { has_law_or_variant = law_type:law_autocracy }
+			NOT = { has_law_or_variant = law_type:law_state_religion }
+			NOT = { has_law_or_variant = law_type:law_isolationism }
+			NOT = { has_law_or_variant = law_type:law_censorship }
+			custom_tooltip = {
+				text = je_gunmin_dongchi_antiwestern_coup_fail_tt
+				je:je_gunmin_dongchi_antiwestern_coup ?= {
+					"scripted_bar_progress(eafp_progress_bar_gunmin_dongchi_antiwestern_coup_anticoup)" >= 100
+				}
+			}
+		}
+	}
+
+	on_fail = {
+		trigger_event = { id = gunmin_dongchi_events.102 popup = yes }
+		
+		custom_tooltip = je_gunmin_dongchi_antiwestern_coup_on_fail_tt
+		every_in_list = {
+			limit = { ROOT = { NOT = { has_law = PREV } } }
+			variable = gunmin_dongchi_initial_lawtype_varlist
+
+			ROOT = {
+				if = {
+					limit = { PREV = law_type:law_seowon }
+					if = {
+						limit = {
+							custom_tooltip = {
+								text = je_korean_land_problem_complete_cond_tt
+								has_variable = eafp_var_sam_all_clear
+							}
+							NOT = { has_journal_entry = je_sedo_politics }
+							ig:ig_devout ?= {
+								ig_clout <= 0.1
+								is_in_government = no
+							}
+							NOT = { has_law = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_religious_schools
+					}
+					else = {
+						activate_law = law_type:law_seowon
+						add_journal_entry = {
+							type = je_korean_seowon
+						}
+					}
+				}
+				else_if = {
+					limit = { PREV = law_type:law_scholar_bureaucrats }
+					if = {
+						limit = {
+							NOT = { has_law_or_variant = law_type:law_state_religion }
+							NOT = { has_law_or_variant = law_type:law_peasant_levies }
+							NOT = { has_law_or_variant = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_appointed_bureaucrats
+					}
+					else = {
+						activate_law = law_type:law_scholar_bureaucrats
+						add_journal_entry = {
+							type = je_scholar_bureaucrats
+						}
+					}
+				}
+				else = {
+					activate_law = PREV
+				}
+			}
+		}
+
+		if = {
+			limit = { has_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup }
+			remove_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				has_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+			}
+			remove_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+		}
+
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+	}
+
+    timeout = 3650
+
+    on_timeout = {
+        trigger_event = { id = gunmin_dongchi_events.102 popup = yes }
+		
+		custom_tooltip = je_gunmin_dongchi_antiwestern_coup_on_fail_tt
+		every_in_list = {
+			limit = { ROOT = { NOT = { has_law = PREV } } }
+			variable = gunmin_dongchi_initial_lawtype_varlist
+
+			ROOT = {
+				if = {
+					limit = { PREV = law_type:law_seowon }
+					if = {
+						limit = {
+							custom_tooltip = {
+								text = je_korean_land_problem_complete_cond_tt
+								has_variable = eafp_var_sam_all_clear
+							}
+							NOT = { has_journal_entry = je_sedo_politics }
+							ig:ig_devout ?= {
+								ig_clout <= 0.1
+								is_in_government = no
+							}
+							NOT = { has_law = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_religious_schools
+					}
+					else = {
+						activate_law = law_type:law_seowon
+						add_journal_entry = {
+							type = je_korean_seowon
+						}
+					}
+				}
+				else_if = {
+					limit = { PREV = law_type:law_scholar_bureaucrats }
+					if = {
+						limit = {
+							NOT = { has_law_or_variant = law_type:law_state_religion }
+							NOT = { has_law_or_variant = law_type:law_peasant_levies }
+							NOT = { has_law_or_variant = law_type:law_serfdom }
+						}
+						activate_law = law_type:law_appointed_bureaucrats
+					}
+					else = {
+						activate_law = law_type:law_scholar_bureaucrats
+						add_journal_entry = {
+							type = je_scholar_bureaucrats
+						}
+					}
+				}
+				else = {
+					activate_law = PREV
+				}
+			}
+		}
+
+		if = {
+			limit = { has_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup }
+			remove_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup
+		}
+		recalculate_pop_ig_support = yes
+
+		every_political_movement = {
+			limit = {
+				has_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+			}
+			remove_modifier = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+		}
+
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+    }
+
+	invalid = {
+		NOT = { has_law_or_variant = law_type:law_monarchy }
+	}
+
+	on_invalid = {
+		hidden_effect = {
+			gunmin_dongchi_clean_effect = yes
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			gunmin_dongchi_var_update_effect = yes
+		}
+	}
+
+    weight = 1000
+    should_be_pinned_by_default = yes
+}
+
+je_korean_reclamation = {
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    group = je_group_internal_affairs
+
+    is_shown_when_inactive = {
+        c:KOR ?= this
+    }
+
+	possible = {
+		c:KOR ?= this
+		owns_entire_state_region = STATE_SEOUL
+		owns_entire_state_region = STATE_PYONGYANG
+		owns_entire_state_region = STATE_YANGHO
+		has_technology_researched = steel_frame_buildings
+		has_technology_researched = concrete_fortifications
+		has_technology_researched = dynamite
+	}
+
+    complete = {
+        s:STATE_SEOUL.region_state:KOR = {
+			has_building = building_korean_reclamation
+		}
+		s:STATE_PYONGYANG.region_state:KOR = {
+			has_building = building_korean_reclamation
+		}
+		s:STATE_YANGHO.region_state:KOR = {
+			has_building = building_korean_reclamation
+		}
+    }
+
+    on_complete = {
+		every_state = {
+			limit = { has_building = building_korean_reclamation }
+			remove_building = building_korean_reclamation
+		}
+        s:STATE_SEOUL.region_state:KOR = {
+			add_arable_land = 5
+		}
+		s:STATE_PYONGYANG.region_state:KOR = {
+			add_arable_land = 12
+		}
+		s:STATE_YANGHO.region_state:KOR = {
+			add_arable_land = 18
+		}
+    }
+
+	fail = {
+		NAND = {
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_PYONGYANG
+			owns_entire_state_region = STATE_YANGHO
+		}
+	}
+
+	on_fail = {
+		every_state = {
+			limit = { has_building = building_korean_reclamation }
+			remove_building = building_korean_reclamation
+		}
+	}
+
+    weight = 1000
+    should_be_pinned_by_default = no
+}
+
+je_gando_ambition = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+    group = je_group_foreign_affairs
+
+    is_shown_when_inactive = {
+        c:KOR ?= ROOT
+    }
+
+	possible = {
+		c:KOR ?= ROOT
+		owns_entire_state_region = STATE_SEOUL
+		owns_entire_state_region = STATE_PYONGYANG
+		owns_entire_state_region = STATE_SARIWON
+		is_subject = no
+		has_technology_researched = pan-nationalism
+		custom_tooltip = {
+			text = je_korean_land_problem_complete_cond_tt
+			has_variable = eafp_var_sam_all_clear
+		}
+		c:CHI ?= {
+			country_or_subject_owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+		}
+		NOT = {
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+	}
+
+    complete = {
+        
+    }
+
+    on_complete = {
+		
+    }
+
+	fail = {
+		NAND = {
+			c:KOR ?= ROOT
+			owns_entire_state_region = STATE_SEOUL
+			owns_entire_state_region = STATE_PYONGYANG
+			owns_entire_state_region = STATE_SARIWON
+			is_subject = no
+			has_technology_researched = pan-nationalism
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
+			c:CHI ?= {
+				country_or_subject_owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+			}
+			NOT = {
+				custom_tooltip = {
+					text = china_shatters_tt
+					has_global_variable = china_shatters
+				}
+			}
+		}
+	}
+
+	timeout = 7300
+
+    weight = 1000
+    should_be_pinned_by_default = no
 }

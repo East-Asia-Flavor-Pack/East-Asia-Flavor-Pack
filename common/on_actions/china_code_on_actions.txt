@@ -1,21 +1,33 @@
-﻿je_chinese_reunification_start_check = {
+﻿je_reunify_china_start_check = {
 	effect = {
-		every_scope_play_involved = {
+		if = {
 			limit = {
-				OR = {
-					THIS = c:CHI
-					country_has_primary_culture = cu:han
-				}
-				aggressive_diplomatic_plays_permitted = yes
 				any_country = {
-					is_diplomatic_play_enemy_of = PREV
+					count = 2
 					OR = {
-						PREV = c:CHI
+						c:CHI ?= THIS
 						country_has_primary_culture = cu:han
+					}
+					any_scope_state = {
+						state_is_in_china_proper = yes
 					}
 				}
 			}
-			add_journal_entry = { type = je_chinese_reunification }
+			every_country = {
+				limit = {
+					OR = {
+						c:CHI ?= THIS
+						country_has_primary_culture = cu:han
+					}
+					any_scope_state = {
+						state_is_in_china_proper = yes
+					}
+					NOT = { has_journal_entry = je_reunify_china }
+				}
+				add_journal_entry = {
+					type = je_reunify_china
+				}
+			}
 		}
 	}
 }

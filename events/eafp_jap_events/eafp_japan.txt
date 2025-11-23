@@ -120,24 +120,15 @@ eafp_japan.2 = { # 대로 임명용 이벤트
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
-			value = 0
+			value = var:hitotsubashiha_influence_var
 		}
 		set_variable = {
 			name = nankiha_invested_influence
-			value = 0
+			value = var:nankiha_influence_var
 		}
-		if = { # 랜덤 요소
-			limit = { is_ai = yes }
-			save_scope_value_as = {
-				name = random_influence
-				value = { -100 100 }
-			}
-		}
-		else = {
-			save_scope_value_as = {
-				name = random_influence
-				value = { -50 50 }
-			}
+		save_scope_value_as = {
+			name = random_influence
+			value = { -100 100 }
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -746,24 +737,15 @@ eafp_japan.4 = { # 노중수좌 임명용 이벤트
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
-			value = 0
+			value = var:hitotsubashiha_influence_var
 		}
 		set_variable = {
 			name = nankiha_invested_influence
-			value = 0
+			value = var:nankiha_influence_var
 		}
-		if = { # 랜덤 요소
-			limit = { is_ai = yes }
-			save_scope_value_as = {
-				name = random_influence
-				value = { -100 100 }
-			}
-		}
-		else = {
-			save_scope_value_as = {
-				name = random_influence
-				value = { -50 50 }
-			}
+		save_scope_value_as = {
+			name = random_influence
+			value = { -100 100 }
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -1434,6 +1416,60 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 	hidden = yes
 
 	immediate = {
+		# 만약 저장된 노중 스코프 없이 넘어왔으면...
+		if = {
+			limit = {
+				NOT = { exists = scope:hitotsubashiha_candidate }
+				NOT = { exists = scope:nankiha_candidate }
+				NOT = { exists = scope:moderate_candidate }
+			}
+			# 노중 스코프 저장
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						is_hitotsubashiha = yes
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = { is_hitotsubashiha = yes }
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = hitotsubashiha_candidate
+				}
+			}
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						is_nankiha = yes
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = { is_nankiha = yes }
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = nankiha_candidate
+				}
+			}
+			if = {
+				limit = {
+					any_in_list = {
+						variable = roju_varlist
+						has_ideology = ideology:ideology_moderate
+					}
+				}
+				ordered_in_list = {
+					variable = roju_varlist
+					limit = {
+						has_ideology = ideology:ideology_moderate
+					}
+					order_by = var:eafp_bakuhantaisei_politician_influence
+					save_scope_as = moderate_candidate
+				}
+			}
+		}
+
 		# 누가 뽑힐까?
 		if = {
 			limit = {
@@ -1470,6 +1506,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 					name = modifier_bakufu_recently_appointed
 					months = { 12 36 }
 				}
+				save_scope_as = new_politician_scope
 			}
 		}
 		else_if = {
@@ -1507,6 +1544,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 					name = modifier_bakufu_recently_appointed
 					months = { 12 36 }
 				}
+				save_scope_as = new_politician_scope
 			}
 		}
 		else_if = {
@@ -1528,6 +1566,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 					name = modifier_bakufu_recently_appointed
 					months = { 12 36 }
 				}
+				save_scope_as = new_politician_scope
 			}
 		}
 		else_if = {
@@ -1565,6 +1604,7 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 					name = modifier_bakufu_recently_appointed
 					months = { 12 36 }
 				}
+				save_scope_as = new_politician_scope
 			}
 		}
 		else = {
@@ -1584,11 +1624,37 @@ eafp_japan.5 = { # 노중수좌 임명용 이벤트
 					name = eafp_bakuhantaisei_politician_influence_max
 					add = 50
 				}
+				save_scope_as = new_politician_scope
 			}
 		}
 
 		scope:new_politician_scope = { # 알림
 			post_notification = eafp_bakufu_politician_rojushuza_appointed_notification
+		}
+
+		scope:new_politician_scope = { # 임무 저장
+			if = {
+				limit = {
+					has_variable = eafp_bakuhantaisei_politician_current_mission
+				}
+				c:JAP = {
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_current_mission_temp
+						value = PREV.var:eafp_bakuhantaisei_politician_current_mission
+					}
+				}
+				if = {
+					limit = { has_variable = eafp_bakuhantaisei_politician_current_mission_location }
+					c:JAP = {
+						set_variable = {
+							name = eafp_bakuhantaisei_politician_current_mission_location_temp
+							value = PREV.var:eafp_bakuhantaisei_politician_current_mission_location
+						}
+					}
+				}
+				remove_bakufu_politician_mission = yes
+			}
+			apply_saved_bakufu_politician_mission = yes
 		}
 
 		# 변수 정리
@@ -1625,24 +1691,15 @@ eafp_japan.6 = { # 노중 임명용 이벤트
 		set_variable = recruiting_bakufu_politicians
 		set_variable = {
 			name = hitotsubashiha_invested_influence
-			value = 0
+			value = var:hitotsubashiha_influence_var
 		}
 		set_variable = {
 			name = nankiha_invested_influence
-			value = 0
+			value = var:nankiha_influence_var
 		}
-		if = { # 랜덤 요소
-			limit = { is_ai = yes }
-			save_scope_value_as = {
-				name = random_influence
-				value = { -100 100 }
-			}
-		}
-		else = {
-			save_scope_value_as = {
-				name = random_influence
-				value = { -50 50 }
-			}
+		save_scope_value_as = {
+			name = random_influence
+			value = { -100 100 }
 		}
 		# 정치인마다 정치력 투자 계산
 		every_scope_character = {
@@ -2495,10 +2552,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.TOHOKU.tt2
+				s:STATE_TOHOKU.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_TOHOKU
+				}
 				scope:TOHOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_TOHOKU.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_TOHOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2510,6 +2584,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.KANTO
 		
@@ -2534,10 +2609,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.KANTO.tt2
+				s:STATE_KANTO.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_KANTO
+				}
 				scope:KANTO_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KANTO.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_KANTO multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2549,6 +2641,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.CHUBU
 		
@@ -2573,10 +2666,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.CHUBU.tt2
+				s:STATE_CHUBU.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_CHUBU
+				}
 				scope:CHUBU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_CHUBU.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_CHUBU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2588,6 +2698,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.KANSAI
 		
@@ -2612,10 +2723,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.KANSAI.tt2
+				s:STATE_KANSAI.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_KANSAI
+				}
 				scope:KANSAI_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KANSAI.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_KANSAI multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2627,6 +2755,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.KYUSHU
 		
@@ -2651,10 +2780,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.KYUSHU.tt2
+				s:STATE_KYUSHU.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_KYUSHU
+				}
 				scope:KYUSHU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KYUSHU.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_KYUSHU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2666,6 +2812,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.CHUGOKU
 		
@@ -2690,10 +2837,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.CHUGOKU.tt2
+				s:STATE_CHUGOKU.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_CHUGOKU
+				}
 				scope:CHUGOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_CHUGOKU.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_CHUGOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2705,6 +2869,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.11.SHIKOKU
 		
@@ -2729,10 +2894,27 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 			custom_tooltip = {
 				text = eafp_japan.11.SHIKOKU.tt2
+				s:STATE_SHIKOKU.region_state:JAP = {
+					remove_modifier = modifier_oversee_daimyo_domains
+				}
+				owner = {
+					remove_modifier = modifier_oversee_daimyo_domains_SHIKOKU
+				}
 				scope:SHIKOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_SHIKOKU.region_state:JAP = {
+				add_modifier = { name = modifier_oversee_daimyo_domains multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_oversee_daimyo_domains_SHIKOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2744,6 +2926,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 			}
 		}
 	}
+
 	option = {
 		name = eafp_japan.11.z
 		default_option = yes
@@ -2909,10 +3092,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.TOHOKU.tt2
+				s:STATE_TOHOKU.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_TOHOKU
+				}
 				scope:TOHOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_TOHOKU.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_TOHOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2924,6 +3124,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.KANTO
 		
@@ -2948,10 +3149,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.KANTO.tt2
+				s:STATE_KANTO.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_KANTO
+				}
 				scope:KANTO_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KANTO.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KANTO multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -2963,6 +3181,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.CHUBU
 		
@@ -2987,10 +3206,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.CHUBU.tt2
+				s:STATE_CHUBU.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_CHUBU
+				}
 				scope:CHUBU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_CHUBU.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_CHUBU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -3002,6 +3238,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.KANSAI
 		
@@ -3026,10 +3263,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.KANSAI.tt2
+				s:STATE_KANSAI.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_KANSAI
+				}
 				scope:KANSAI_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KANSAI.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KANSAI multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -3041,6 +3295,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.KYUSHU
 		
@@ -3065,10 +3320,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.KYUSHU.tt2
+				s:STATE_KYUSHU.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_KYUSHU
+				}
 				scope:KYUSHU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_KYUSHU.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_KYUSHU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -3080,6 +3352,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.CHUGOKU
 		
@@ -3104,10 +3377,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.CHUGOKU.tt2
+				s:STATE_CHUGOKU.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_CHUGOKU
+				}
 				scope:CHUGOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_CHUGOKU.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_CHUGOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -3119,6 +3409,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.SHIKOKU
 		
@@ -3143,10 +3434,27 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 			custom_tooltip = {
 				text = eafp_japan.12.SHIKOKU.tt2
+				s:STATE_SHIKOKU.region_state:JAP = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty
+				}
+				owner = {
+					remove_modifier = modifier_reaffirm_daimyos_loyalty_SHIKOKU
+				}
 				scope:SHIKOKU_character_scope = {
 					remove_variable = eafp_bakuhantaisei_politician_current_mission
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
+			}
+		}
+		
+		if = {
+			limit = { is_rojushuza = yes }
+			custom_tooltip = rojushuza_task.tt
+			s:STATE_SHIKOKU.region_state:JAP = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty multiplier = 1.5 }
+			}
+			owner = {
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_SHIKOKU multiplier = 1.5 }
 			}
 		}
 		else = {
@@ -3158,6 +3466,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 			}
 		}
 	}
+	
 	option = {
 		name = eafp_japan.12.z
 		default_option = yes
@@ -3300,7 +3609,7 @@ eafp_japan.1002 = { # 밀무역 적발
 		}
 
 		ai_chance = {
-			base = 0
+			base = 1
 		}
 	}
 	option = {
@@ -3645,6 +3954,10 @@ eafp_japan.1006 = { # 위조화폐 제조
 				value = 0.05
 			}
 		}
+
+		ai_chance = {
+			base = 1
+		}
 	}
 	option = {
 		name = eafp_japan.1006.b
@@ -3655,6 +3968,10 @@ eafp_japan.1006 = { # 위조화폐 제조
 		add_modifier = {
 			name = counterfeiting_continues_modifier
 			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 	option = {
@@ -3672,6 +3989,10 @@ eafp_japan.1006 = { # 위조화폐 제조
 			add_radicals_in_state = {
 				value = 0.1
 			}
+		}
+
+		ai_chance = {
+			base = 0
 		}
 	}
 }
@@ -3774,7 +4095,9 @@ eafp_japan.1009 = { # 고도칸 개설
 		
 	}
 
-	trigger = {}
+	trigger = {
+		has_law_or_variant = law_type:law_bakufu
+	}
 	
 	option = {
 		name = eafp_japan.1009.a
@@ -4002,7 +4325,9 @@ eafp_japan.1014 = { # 존 만지로
 	}
 
 	immediate = {
-		create_character = {		
+		create_character = {
+			first_name = "John"
+			last_name = "Manjiro"
 			save_scope_as = manjiro_scope
 			on_created = {
 				place_character_in_void = 10000
@@ -4028,9 +4353,11 @@ eafp_japan.1014 = { # 존 만지로
 			}
 		}
 
-		scope:manjiro_scope = {
-			kill_character = {
-				hidden = yes
+		hidden_effect = {
+			scope:manjiro_scope = {
+				kill_character = {
+					hidden = yes
+				}
 			}
 		}
 	}
@@ -4487,7 +4814,9 @@ eafp_japan.2002 = { # 양위
 		}
 	}
 
-	trigger = {}
+	trigger = {
+		has_law_or_variant = law_type:law_bakufu
+	}
 	
 	option = {
 		default_option = yes
@@ -4567,6 +4896,10 @@ eafp_japan.2004 = { # 오고쇼의 서거
 	}
 	
 	duration = 3
+
+	trigger = {
+		has_law_or_variant = law_type:law_bakufu
+	}
 	
 	immediate = {
 		ruler = {
@@ -4588,6 +4921,10 @@ eafp_japan.2004 = { # 오고쇼의 서거
 eafp_japan.2005 = { # 이에사다의 즉위 용 히든 이벤트
 	type = country_event
 	hidden = yes
+
+	trigger = {
+		has_law_or_variant = law_type:law_bakufu
+	}
 
 	immediate = {
 		ruler = {
@@ -4788,7 +5125,9 @@ eafp_japan.2101 = { # 일엽지추 1853년 1월 1일
 		}
 	}
 
-	trigger = {}
+	trigger = {
+		has_law_or_variant = law_type:law_bakufu
+	}
 	
 	option = {
 		name = eafp_japan.2101.a
@@ -5396,6 +5735,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 		scope:target_character1 = {
 			if = {
 				limit = { is_roju = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:nankiha }
@@ -5403,6 +5743,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 			}
 			else_if = {
 				limit = { is_rojushuza = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:rojushuza IDEOLOGY_FLAG = flag:nankiha }
@@ -5415,6 +5756,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 		scope:target_character2 = {
 			if = {
 				limit = { is_roju = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:nankiha }
@@ -5422,6 +5764,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 			}
 			else_if = {
 				limit = { is_rojushuza = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:rojushuza IDEOLOGY_FLAG = flag:nankiha }
@@ -5434,6 +5777,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 		scope:target_character3 = {
 			if = {
 				limit = { is_roju = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:roju IDEOLOGY_FLAG = flag:nankiha }
@@ -5441,6 +5785,7 @@ eafp_japan.2183 = { # 히토츠바시파 축출
 			}
 			else_if = {
 				limit = { is_rojushuza = yes }
+				save_bakufu_politician_mission = yes
 				remove_bakufu_politician_role_without_appointment = yes
 				ROOT = {
 					create_bakufu_politician_character_with_variant = { POSITION = flag:rojushuza IDEOLOGY_FLAG = flag:nankiha }
@@ -7292,8 +7637,8 @@ eafp_japan.4005 = { # 외국인 살해
 		default_option = yes
 
 		add_treasury = {
-			value = money_amount_multiplier_medium
-			multiply = -1
+			value = money_amount_multiplier_very_large
+			multiply = -10
 		}
 		add_bakuhantaisei_state_independency = {
 			TARGET = scope:state_scope
@@ -7350,10 +7695,12 @@ eafp_japan.4005 = { # 외국인 살해
 	}
 
 	after = {
-		scope:character_scope = {
-			free_character_from_void = yes
-			kill_character = {
-				hidden = yes
+		hidden_effect = {
+			scope:character_scope = {
+				free_character_from_void = yes
+				kill_character = {
+					hidden = yes
+				}
 			}
 		}
 	}
@@ -7711,7 +8058,7 @@ eafp_japan.5003 = {
 		name = eafp_japan.5003.a
 		default_option = yes
 
-		activate_law = law_type:law_oligarchy
+		activate_law = law_type:law_hanbatsu_oligarchy
 		activate_law = law_type:law_tenant_farmers
 		activate_law = law_type:law_protectionism
 		activate_law = law_type:law_interventionism

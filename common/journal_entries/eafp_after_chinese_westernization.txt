@@ -1,0 +1,317 @@
+﻿je_chinese_water_system = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_internal_affairs
+
+	is_shown_in_lobby = {
+		c:CHI ?= THIS
+	}
+
+	is_shown_when_inactive = {
+		c:CHI ?= THIS
+	}
+
+	possible = {
+		c:CHI ?= THIS
+		sr:region_north_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		OR = {
+			custom_tooltip = {
+				text = finished_chinese_westernization_tt
+				has_variable = chinese_westernization_complete
+			}
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = chinese_water_system_var
+			value = 0
+		}
+		add_journal_entry = { type = je_chinese_water_system_grand_canal }
+		add_journal_entry = { type = je_chinese_water_system_yellow_river }
+		add_journal_entry = { type = je_chinese_water_system_yangtze_river }
+		add_journal_entry = { type = je_chinese_water_system_pearl_river }
+	}
+
+	complete = {
+		scope:journal_entry = {
+			is_goal_complete = yes
+		}
+	}
+
+	on_complete = {
+		set_variable = chinese_water_system_complete
+		trigger_event = chinese_water_system.1
+		remove_variable = chinese_water_system_var
+	}
+
+	current_value = {
+		value = var:chinese_water_system_var
+	}
+
+	goal_add_value = {
+		add = 4
+	}
+	
+	progressbar = yes
+
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_chinese_water_system_grand_canal = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_internal_affairs
+
+	complete = {
+		sr:region_north_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		any_scope_state = {
+			filter = {
+				has_state_trait = state_trait_grand_canal_destroyed
+			}
+			percent = 1
+			has_building = building_chinese_water_system
+		}
+	}
+
+	on_complete = {
+		trigger_event = chinese_water_system.5
+		custom_tooltip = je_chinese_water_system_advance
+		change_variable = {
+			name = chinese_water_system_var
+			add = 1
+		}
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { has_state_trait = state_trait_grand_canal_destroyed }
+				state_region = {
+					remove_state_trait = state_trait_grand_canal_destroyed
+					add_state_trait = state_trait_grand_canal
+				}
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_chinese_water_system_yellow_river = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_internal_affairs
+
+	complete = {
+		sr:region_north_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		s:STATE_HENAN.region_state:CHI = {
+			state_has_building_type_levels = {
+				target = bt:building_power_plant
+				value >= 20
+			}
+		}
+		any_scope_state = {
+			filter = {
+				has_state_trait = state_trait_yellow_river
+			}
+			percent = 1
+			has_building = building_chinese_water_system
+		}
+	}
+
+	on_complete = {
+		trigger_event = chinese_water_system.2
+		custom_tooltip = je_chinese_water_system_advance
+		change_variable = {
+			name = chinese_water_system_var
+			add = 1
+		}
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { has_state_trait = state_trait_yellow_river }
+				state_region = {
+					add_arable_land = 30
+				}
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_chinese_water_system_yangtze_river = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_internal_affairs
+
+	complete = {
+		sr:region_north_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		s:STATE_WESTERN_HUBEI.region_state:CHI = {
+			state_has_building_type_levels = {
+				target = bt:building_power_plant
+				value >= 20
+			}
+		}
+		any_scope_state = {
+			filter = {
+				has_state_trait = state_trait_yangtze_river
+			}
+			percent = 1
+			has_building = building_chinese_water_system
+		}
+	}
+
+	on_complete = {
+		trigger_event = chinese_water_system.3
+		custom_tooltip = je_chinese_water_system_advance
+		change_variable = {
+			name = chinese_water_system_var
+			add = 1
+		}
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { has_state_trait = state_trait_yangtze_river }
+				state_region = {
+					add_arable_land = 20
+				}
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_chinese_water_system_pearl_river = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_internal_affairs
+
+	complete = {
+		sr:region_north_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		sr:region_south_china = {
+			any_scope_state = {
+				filter = {
+					state_is_in_china_proper = yes
+				}
+				percent = 1
+				owner = ROOT
+			}
+		}
+		s:STATE_GUANGXI.region_state:CHI = {
+			state_has_building_type_levels = {
+				target = bt:building_power_plant
+				value >= 20
+			}
+		}
+		any_scope_state = {
+			filter = {
+				has_state_trait = state_trait_pearl_river
+			}
+			percent = 1
+			has_building = building_chinese_water_system
+		}
+	}
+
+	on_complete = {
+		trigger_event = chinese_water_system.4
+		custom_tooltip = je_chinese_water_system_advance
+		change_variable = {
+			name = chinese_water_system_var
+			add = 1
+		}
+		show_as_tooltip = {
+			every_scope_state = {
+				limit = { has_state_trait = state_trait_pearl_river }
+				state_region = {
+					add_arable_land = 30
+				}
+			}
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default = yes
+}

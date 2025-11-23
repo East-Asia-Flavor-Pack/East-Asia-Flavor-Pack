@@ -1,5 +1,4 @@
-﻿
-# 한성개조사업
+﻿# 한성개조사업
 eafp_scripted_button_seoul_improvement_project = {
 	name = "eafp_scripted_button_seoul_improvement_project"
 	desc = "eafp_scripted_button_seoul_improvement_project_desc"
@@ -71,6 +70,181 @@ eafp_scripted_button_seoul_improvement_project2 = {
 		change_variable = {
 			name = eafp_var_seoul_improvement_project_weekly
 			subtract = 1
+		}
+	}
+}
+
+# 군민동치
+eafp_scripted_button_gunmin_dongchi_support_enlightenment = {
+	name = "eafp_scripted_button_gunmin_dongchi_support_enlightenment"
+	desc = "eafp_scripted_button_gunmin_dongchi_support_enlightenment_desc"
+
+	visible = {
+		has_journal_entry = je_gunmin_dongchi
+		NOT = { has_modifier = eafp_modi_support_enlightenment }
+	}
+
+	possible = {
+		NOT = { has_modifier = eafp_modi_support_enlightenment }
+		trigger_if = {
+			limit = { NOT = { has_modifier = eafp_modi_support_antiwestern } }
+			authority >= 50
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_antiwestern
+			}
+			remove_modifier = eafp_modi_support_antiwestern
+		}
+		add_modifier = eafp_modi_support_enlightenment
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_scripted_button_gunmin_dongchi_support_antiwestern = {
+	name = "eafp_scripted_button_gunmin_dongchi_support_antiwestern"
+	desc = "eafp_scripted_button_gunmin_dongchi_support_antiwestern_desc"
+
+	visible = {
+		has_journal_entry = je_gunmin_dongchi
+		NOT = { has_modifier = eafp_modi_support_antiwestern }
+	}
+
+	possible = {
+		NOT = { has_modifier = eafp_modi_support_antiwestern }
+		trigger_if = {
+			limit = { NOT = { has_modifier = eafp_modi_support_enlightenment } }
+			authority >= 50
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_enlightenment
+			}
+			remove_modifier = eafp_modi_support_enlightenment
+		}
+		add_modifier = eafp_modi_support_antiwestern
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+eafp_scripted_button_gunmin_dongchi_cease_support = {
+	name = "eafp_scripted_button_gunmin_dongchi_cease_support"
+	desc = "eafp_scripted_button_gunmin_dongchi_cease_support_desc"
+
+	visible = {
+		has_journal_entry = je_gunmin_dongchi
+		OR = {
+			has_modifier = eafp_modi_support_enlightenment
+			has_modifier = eafp_modi_support_antiwestern
+		}
+	}
+
+	possible = {
+		OR = {
+			has_modifier = eafp_modi_support_enlightenment
+			has_modifier = eafp_modi_support_antiwestern
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_enlightenment
+			}
+			remove_modifier = eafp_modi_support_enlightenment
+		}
+		if = {
+			limit = {
+				has_modifier = eafp_modi_support_antiwestern
+			}
+			remove_modifier = eafp_modi_support_antiwestern
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+# 간도 야망
+eafp_scripted_button_gando_ambition_gando_acquisition = {
+	name = "eafp_scripted_button_gando_ambition_gando_acquisition"
+	desc = "eafp_scripted_button_gando_ambition_gando_acquisition_desc"
+
+	visible = {
+		has_journal_entry = je_gando_ambition
+
+		c:KOR ?= ROOT
+		owns_entire_state_region = STATE_SEOUL
+		owns_entire_state_region = STATE_PYONGYANG
+		owns_entire_state_region = STATE_SARIWON
+		is_subject = no
+		has_technology_researched = pan-nationalism
+		custom_tooltip = {
+			text = je_korean_land_problem_complete_cond_tt
+			has_variable = eafp_var_sam_all_clear
+		}
+		c:CHI ?= {
+			country_or_subject_owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+		}
+		NOT = {
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+	}
+
+	possible = {
+		has_journal_entry = je_gando_ambition
+		c:CHI ?= {
+			country_rank < ROOT.country_rank
+			custom_tooltip = {
+				text = china_explosion_point_75_tt
+				var:china_warlord_explosion_sum <= 0.75
+			}
+			OR = {
+				is_subject = no
+				is_subject_of = ROOT
+			}
+			OR = {
+				custom_tooltip = {
+					text = war_with_china_not_korea_tt
+					any_enemy_in_war = {
+						NOT = {
+							c:KOR ?= this
+						}
+					}
+				}
+				custom_tooltip = {
+					text = owes_korea_obligation_tt
+					c:KOR = {
+						is_owed_obligation_by = c:CHI
+					}
+				}
+			}
+		}
+	}
+
+	effect = {
+		s:STATE_SOUTHERN_MANCHURIA = {
+			create_state = {
+				country = c:KOR
+				owned_provinces = { xE43B63 xA05646 xF956C5 xDB90DD xA05162 x778CFB x733A27 xBAD550 x78B1C2 x74C59F x031AD1 x129A7C x30FE34 xA7C578 x54C0A3 x8D3DE0 x03E1AF x35396E x13A54F x4CA710 }
+				state_type = incorporated
+			}
 		}
 	}
 }

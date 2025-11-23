@@ -86,15 +86,15 @@ eafp_korean_reformation_events.103 = { #문관전고소
 	
  	duration = 3
 
- 	trigger = {
-		NOT = { has_variable = korref103_delay }
- 	}
-
  	cooldown = { days = never_fire_again_modifier_time }
 
  	option = { 
 		name = eafp_korean_reformation_events.103.a
 		default_option = yes
+
+		activate_law = law_type:law_appointed_bureaucrats
+
+		set_variable = imperial_examination_abolished
 		
 		ai_chance = {
 			base = 1
@@ -880,11 +880,25 @@ eafp_korean_reformation_events.303 = { #탄광 개발
 			}
 			save_scope_as = first_modern_mine_state
 		}
+		random_country = {
+			limit = { country_rank >= rank_value:great_power }
+			save_scope_as = miner_country
+		}
+		scope:miner_country = {
+			random_primary_culture = {
+				save_scope_as = primary_culture_scope
+			}
+		}
+		generate_1_common_name = {
+			CULTURE_1 = scope:primary_culture_scope
+		}
  	}
 
  	option = { 
 		name = eafp_korean_reformation_events.303.a
 		default_option = yes
+
+		clear_generated_names = yes
 		
 		ai_chance = {
 			base = 1
@@ -1395,7 +1409,7 @@ eafp_korean_reformation_events.502 = { #
  	flavor = eafp_korean_reformation_events.502.f
 	
  	event_image = {
-		video = "unspecific_naval_battle"
+		video = "europenorthamerica_london_center"
 	}
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
@@ -1596,247 +1610,6 @@ seoul_improvement_project_events.1 = { #
 	}
 }
 
-namespace = protect_righteousness_events
-
-protect_righteousness_events.1 = { #
- 	type = country_event
- 	placement = ROOT
-	
- 	title = protect_righteousness_events.1.t
- 	desc = protect_righteousness_events.1.d
- 	flavor = protect_righteousness_events.1.f
-	
- 	event_image = {
-		video = "ep1_donghak_rebellion"
-	}
-
-	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
-	
- 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-	
- 	duration = 3
-
-	cooldown = { days = short_modifier_time }
-
-	immediate = {
-		
-	}
-
- 	option = { 
-		name = protect_righteousness_events.1.a
-		default_option = yes
-
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = {
-				name = eafp_modi_protect_righteousness_petition_rejected
-				days = short_modifier_time
-			}
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-
-	option = { 
-		name = protect_righteousness_events.1.b
-
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = {
-				name = eafp_modi_protect_righteousness_petition_accepted
-				days = short_modifier_time
-			}
-		}
-		add_modifier = {
-			name = eafp_modi_slowed_enlightenment
-			days = short_modifier_time
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-protect_righteousness_events.2 = { #
- 	type = country_event
- 	placement = ROOT
-	
- 	title = protect_righteousness_events.2.t
- 	desc = protect_righteousness_events.2.d
- 	flavor = protect_righteousness_events.2.f
-	
- 	event_image = {
-		video = "ep1_donghak_rebellion"
-	}
-
-	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
-	
- 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-	
- 	duration = 3
-
-	cooldown = { days = short_modifier_time }
-
-	trigger = {
-		any_country = {
-			country_rank >= rank_value:great_power
-			OR = {
-				country_has_state_religion = rel:protestant
-				country_has_state_religion = rel:catholic
-				country_has_state_religion = rel:orthodox
-			}
-		}
-	}
-
-	immediate = {
-		if = {
-			limit = {
-				any_country = {
-					country_rank >= rank_value:great_power
-					OR = {
-						country_has_state_religion = rel:protestant
-						country_has_state_religion = rel:catholic
-						country_has_state_religion = rel:orthodox
-					}
-					has_interest_marker_in_region = region_manchuria
-				}
-			}
-			random_country = {
-				limit = {
-					country_rank >= rank_value:great_power
-					OR = {
-						country_has_state_religion = rel:protestant
-						country_has_state_religion = rel:catholic
-						country_has_state_religion = rel:orthodox
-					}
-					has_interest_marker_in_region = region_manchuria
-				}
-				save_scope_as = country_scope
-			}
-		}
-		else = {
-			random_country = {
-				limit = {
-					country_rank >= rank_value:great_power
-					OR = {
-						country_has_state_religion = rel:protestant
-						country_has_state_religion = rel:catholic
-						country_has_state_religion = rel:orthodox
-					}
-				}
-				save_scope_as = country_scope
-			}
-		}
-	}
-
- 	option = { 
-		name = protect_righteousness_events.2.a
-		default_option = yes
-
-		add_treasury = {
-			value = root.gdp
-			divide = 100000
-			round = yes
-			multiply = -1000
-		}
-		scope:country_scope = {
-			add_treasury = {
-				value = root.gdp
-				divide = 100000
-				round = yes
-				multiply = 1000
-			}
-		}
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = {
-				name = eafp_modi_instigator_punished
-				days = short_modifier_time
-			}
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-
-	option = { 
-		name = protect_righteousness_events.2.b
-
-		scope:country_scope = {
-			create_diplomatic_catalyst = {  
-				type = catalyst_event_positive
-				target = root
-			}
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
-protect_righteousness_events.3 = { #
- 	type = country_event
- 	placement = ROOT
-	
- 	title = protect_righteousness_events.3.t
- 	desc = protect_righteousness_events.3.d
- 	flavor = protect_righteousness_events.3.f
-	
- 	event_image = {
-		video = "ep1_donghak_rebellion"
-	}
-
-	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
-	
- 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-	
- 	duration = 3
-
-	cooldown = { days = short_modifier_time }
-
-	immediate = {
-
-	}
-
- 	option = { 
-		name = protect_righteousness_events.3.a
-		default_option = yes
-
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = {
-				name = eafp_modi_instigator_punished
-				days = short_modifier_time
-			}
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-
-	option = { 
-		name = protect_righteousness_events.3.b
-
-		every_political_movement = {
-			limit = { is_political_movement_type = movement_religious_majority }
-			add_modifier = {
-				name = eafp_modi_gathering_crowds
-				days = short_modifier_time
-			}
-		}
-		
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
 namespace = gunmin_dongchi_events
 
 gunmin_dongchi_events.1 = { #
@@ -1873,6 +1646,27 @@ gunmin_dongchi_events.1 = { #
 				type = je_gunmin_dongchi
 			}
 		}
+		je:je_gunmin_dongchi ?= {
+			add_progress = { value = 25 name = eafp_progress_bar_gunmin_dongchi_enlightenment }
+		}
+		
+		ai_chance = {
+			base = 1
+		}
+	}
+
+	option = { 
+		name = gunmin_dongchi_events.1.b
+		default_option = yes
+		
+		show_as_tooltip = {
+			add_journal_entry = {
+				type = je_gunmin_dongchi
+			}
+		}
+		je:je_gunmin_dongchi ?= {
+			add_progress = { value = 25 name = eafp_progress_bar_gunmin_dongchi_antiwestern }
+		}
 		
 		ai_chance = {
 			base = 1
@@ -1880,15 +1674,13 @@ gunmin_dongchi_events.1 = { #
 	}
 }
 
-gunmin_dongchi_events.2 = { #
+gunmin_dongchi_events.2 = { # 개화파 정변
  	type = country_event
  	placement = ROOT
 	
  	title = gunmin_dongchi_events.2.t
  	desc = gunmin_dongchi_events.2.d
  	flavor = gunmin_dongchi_events.2.f
-
-	cooldown = { days = long_modifier_time }
 	
  	event_image = {
 		video = "ep1_donghak_rebellion"
@@ -1896,74 +1688,56 @@ gunmin_dongchi_events.2 = { #
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
 	
- 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+ 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 	
  	duration = 3
 
-	trigger = {
-		NOT = { has_journal_entry = je_government_petition }
-	}
-
 	immediate = {
-		ig:ig_rural_folk = {
-			set_variable = petitioning_ig
-			save_scope_as = government_petition_ig
-		}
-		random_law = {
-			limit = {
-				OR = {
-					type = law_type:law_wealth_voting
-					type = law_type:law_census_voting
-				}
-			}
-			PREV = {
-				set_variable = {
-					name = desired_law_var
-					value = PREV
-				}
-			}
-			save_scope_as = government_petition_law
-		}
+		
 	}
 
 	option = {
-		name = gg_korea.4.a
+		name = gunmin_dongchi_events.2.a
 		default_option = yes
-		ig:ig_rural_folk = {
+
+		add_journal_entry = {
+			type = je_gunmin_dongchi_enlightenment_coup
+		}
+
+		show_as_tooltip = {
+			if = {
+				limit = { is_subject = yes }
+				add_liberty_desire = 50
+			}
+			gunmin_dongchi_enlightenment_coup_law_effect = yes
+
 			add_modifier = {
-				name = modifier_donghak_petition_rejected
+				name = eafp_modi_gunmin_dongchi_enlightenment_coup
 				days = normal_modifier_time
 			}
-			remove_variable = petitioning_ig
-		}
-		capital = {
-			add_radicals_in_state = {
-				value = medium_radicals
-				strata = lower
-			}
-		}
-		remove_variable = desired_law_var
-	}
+			recalculate_pop_ig_support = yes
 
-	option = {
-		name = gg_korea.4.b
-		
-		custom_tooltip = government_petition_tt
-		add_journal_entry = {
-			type = je_government_petition
+			every_political_movement = {
+				limit = {
+					movement_is_conservative = yes
+				}
+				add_modifier = {
+					name = eafp_modi_gunmin_dongchi_enlightenment_coup_movement
+					days = short_modifier_time
+					is_decaying = yes
+				}
+			}
 		}
 	}
 }
 
-gunmin_dongchi_events.3 = { #
+gunmin_dongchi_events.3 = { # 척사파 정변
  	type = country_event
  	placement = ROOT
 	
  	title = gunmin_dongchi_events.3.t
  	desc = gunmin_dongchi_events.3.d
  	flavor = gunmin_dongchi_events.3.f
-
-	cooldown = { days = long_modifier_time }
 	
  	event_image = {
 		video = "ep1_donghak_rebellion"
@@ -1971,7 +1745,7 @@ gunmin_dongchi_events.3 = { #
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
 	
- 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+ 	icon = "gfx/interface/icons/event_icons/event_protest.dds"
 	
  	duration = 3
 
@@ -1979,209 +1753,254 @@ gunmin_dongchi_events.3 = { #
 		name = gunmin_dongchi_events.3.a
 		default_option = yes
 
-		ig:ig_rural_folk = {
-			add_modifier = {
-				name = modifier_donghak_petition_rejected
-				days = normal_modifier_time
-				multiplier = 0.5
-			}
+		add_journal_entry = {
+			type = je_gunmin_dongchi_enlightenment_coup
 		}
-	}
 
-	option = {
-		name = gunmin_dongchi_events.3.b
-		
-		capital = {
-			add_loyalists_in_state = {
-				value = small_radicals
-				strata = lower
+		show_as_tooltip = {
+			if = {
+				limit = { is_subject = yes }
+				add_liberty_desire = 50
 			}
-		}
-	}
+			gunmin_dongchi_antiwestern_coup_law_effect = yes
 
-	option = {
-		name = gunmin_dongchi_events.3.c
-		
-		capital = {
-			add_radicals_in_state = {
-				value = small_radicals
-				strata = lower
-			}
-		}
-		ig:ig_rural_folk = {
 			add_modifier = {
-				name = modifier_donghak_petition_rejected
+				name = eafp_modi_gunmin_dongchi_antiwestern_coup
 				days = normal_modifier_time
+			}
+			recalculate_pop_ig_support = yes
+
+			every_political_movement = {
+				limit = {
+					OR = {
+						movement_is_liberal = yes
+						movement_is_socialist = yes
+					}
+				}
+				add_modifier = {
+					name = eafp_modi_gunmin_dongchi_antiwestern_coup_movement
+					days = short_modifier_time
+					is_decaying = yes
+				}
 			}
 		}
 	}
 }
 
-gunmin_dongchi_events.4 = { #
+gunmin_dongchi_events.4 = { # 정변 없이 완료 - 정당 O
  	type = country_event
  	placement = ROOT
 	
  	title = gunmin_dongchi_events.4.t
  	desc = gunmin_dongchi_events.4.d
  	flavor = gunmin_dongchi_events.4.f
-
-	cooldown = { days = long_modifier_time }
 	
  	event_image = {
-		video = "votp_monarch_holding_court"
+		video = "europenorthamerica_london_center"
 	}
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
 	
- 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+ 	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 	
  	duration = 3
-
-	trigger = {
-		enacting_any_law = no
-	}
-
-	immediate = {
-		
-	}
 
 	option = {
 		name = gunmin_dongchi_events.4.a
 		default_option = yes
 
-		start_enactment = law_type:law_wealth_voting
-	}
-
-	option = {
-		name = gunmin_dongchi_events.4.b
-		
-		capital = {
-			add_radicals_in_state = {
-				value = small_radicals
-				strata = lower
-			}
+		add_loyalists = {
+			value = small_radicals
+		}
+		add_modifier = {
+			name = eafp_modi_age_of_compromise
+			days = long_modifier_time
 		}
 	}
 }
 
-gunmin_dongchi_events.5 = { #
+gunmin_dongchi_events.5 = { # 정변 없이 완료 - 정당 X
  	type = country_event
  	placement = ROOT
 	
  	title = gunmin_dongchi_events.5.t
  	desc = gunmin_dongchi_events.5.d
  	flavor = gunmin_dongchi_events.5.f
-
-	cooldown = { days = long_modifier_time }
 	
  	event_image = {
-		video = "votp_monarch_holding_court"
+		video = "europenorthamerica_london_center"
 	}
 
 	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
 	
- 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+ 	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
 	
  	duration = 3
-
-	trigger = {
-		enacting_any_law = no
-	}
-
-	immediate = {
-		
-	}
 
 	option = {
 		name = gunmin_dongchi_events.5.a
 		default_option = yes
 
-		start_enactment = law_type:law_landed_voting
+		add_loyalists = {
+			value = small_radicals
+		}
+		ruler = {
+			add_modifier = {
+				name = eafp_modi_emperor_with_iron_will
+				days = long_modifier_time
+			}
+		}
 		add_modifier = {
-			name = eafp_modi_council_petition_accepted
-			days = short_modifier_time
+			name = eafp_modi_palace_guided_modernity
+			days = long_modifier_time
+		}
+	}
+}
+
+gunmin_dongchi_events.101 = { #
+	type = country_event
+	placement = ROOT
+
+	title = gunmin_dongchi_events.101.t
+	desc = gunmin_dongchi_events.101.d
+	flavor = gunmin_dongchi_events.101.f
+
+	event_image = {
+		video = "ip3_official_reading_dictate"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	duration = 3
+
+	option = {
+		name = gunmin_dongchi_events.101.a
+		default_option = yes
+		
+		add_loyalists = {
+			value = medium_radicals
+		}
+		add_modifier = {
+			name = eafp_modi_enlightenment_achieved
+			days = long_modifier_time
 		}
 	}
 
 	option = {
-		name = gunmin_dongchi_events.5.b
+		name = gunmin_dongchi_events.101.b
+		
+		add_loyalists = {
+			value = medium_radicals
+		}
+		add_modifier = {
+			name = eafp_modi_enlightening_mass
+			days = long_modifier_time
+		}
+	}
+}
+
+gunmin_dongchi_events.102 = { #
+	type = country_event
+	placement = ROOT
+
+	title = gunmin_dongchi_events.102.t
+	desc = gunmin_dongchi_events.102.d
+	flavor = gunmin_dongchi_events.102.f
+
+	event_image = {
+		video = "votp_barricade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
+
+	option = {
+		name = gunmin_dongchi_events.102.a
+		default_option = yes
 		
 		add_modifier = {
-			name = eafp_modi_council_petition_rejected
-			days = short_modifier_time
+			name = eafp_modi_purge_enlightenment_faction
+			days = long_modifier_time
+			is_decaying = yes
 		}
 	}
 }
 
-gunmin_dongchi_events.10 = { #
- 	type = country_event
- 	placement = ROOT
-	
- 	title = gunmin_dongchi_events.10.t
- 	desc = gunmin_dongchi_events.10.d
- 	flavor = gunmin_dongchi_events.10.f
-	
- 	event_image = {
-		video = "unspecific_signed_contract"
+gunmin_dongchi_events.201 = { #
+	type = country_event
+	placement = ROOT
+
+	title = gunmin_dongchi_events.201.t
+	desc = gunmin_dongchi_events.201.d
+	flavor = gunmin_dongchi_events.201.f
+
+	event_image = {
+		video = "ip3_official_reading_dictate"
 	}
 
-	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
-	
- 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-	
- 	duration = 3
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	duration = 3
 
 	option = {
-		name = gunmin_dongchi_events.10.a
+		name = gunmin_dongchi_events.201.a
 		default_option = yes
+		
+		add_loyalists = {
+			value = medium_radicals
+		}
+		add_modifier = {
+			name = eafp_modi_conservative_restored
+			days = long_modifier_time
+		}
 	}
 
-	after = {
-		trigger_event = {
-			id = gunmin_dongchi_events.11
-			days = { 20 40 }
+	option = {
+		name = gunmin_dongchi_events.201.b
+		
+		add_loyalists = {
+			value = medium_radicals
+		}
+		add_modifier = {
+			name = eafp_modi_strengthening_tradition
+			days = long_modifier_time
 		}
 	}
 }
 
-gunmin_dongchi_events.11 = { #
- 	type = country_event
- 	placement = ROOT
-	
- 	title = gunmin_dongchi_events.11.t
- 	desc = gunmin_dongchi_events.11.d
- 	flavor = gunmin_dongchi_events.11.f
-	
- 	event_image = {
-		video = "unspecific_signed_contract"
+gunmin_dongchi_events.202 = { #
+	type = country_event
+	placement = ROOT
+
+	title = gunmin_dongchi_events.202.t
+	desc = gunmin_dongchi_events.202.d
+	flavor = gunmin_dongchi_events.202.f
+
+	event_image = {
+		video = "votp_barricade"
 	}
 
-	on_created_soundeffect = "event:/sfx/ui/alerts/event_appear"
-	
- 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-	
- 	duration = 3
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	duration = 3
 
 	option = {
-		name = gunmin_dongchi_events.11.a
+		name = gunmin_dongchi_events.202.a
 		default_option = yes
-
-		ig:ig_armed_forces = {
-			add_modifier = {
-				name = eafp_modi_army_emperor_control
-				days = very_long_modifier_time
-			}
-		}
-	}
-
-	option = {
-		name = gunmin_dongchi_events.11.b
-
-		ig:ig_armed_forces = {
-			add_modifier = {
-				name = eafp_modi_army_council_control
-				days = very_long_modifier_time
-			}
+		
+		add_modifier = {
+			name = eafp_modi_purge_antiwestern_faction
+			days = long_modifier_time
+			is_decaying = yes
 		}
 	}
 }
