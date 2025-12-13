@@ -7,6 +7,43 @@
 		c:CHI ?= THIS
 	}
 
+	is_shown_when_inactive = {
+		NOT = { has_variable = chiwes1 }
+		c:CHI ?= THIS
+	}
+
+	possible = {
+		hidden_trigger = { NOT = { has_variable = chiwes1 } }
+		OR = {
+			custom_tooltip = {
+    			text = je_chinese_westernization_possible_tt #
+		    	any_state = {
+					filter = {
+						OR = {
+							state_region = { is_homeland = cu:manchu }
+							is_in_geographic_region = geographic_region_china_proper
+						}
+					}
+					count >= 1
+
+					NOT = { owner = { top_overlord = ROOT } }
+					NOT = { owner = ROOT }
+					OR = {
+						is_treaty_port = no
+						owner = { country_rank >= rank_value:great_power }
+					}
+				}
+		    }
+			ruler = {
+				has_modifier = old_summer_palace_destroyed_ruler_modifier
+			}
+			custom_tooltip = {
+				text = china_explosion_point_75_tt2
+				var:china_warlord_explosion_sum <= 0.75
+			}
+		}
+	}
+
 	immediate = {
 		set_variable = {
 			name = chinese_westernization_var
@@ -32,6 +69,8 @@
 			limit = { NOT = { has_journal_entry = je_chinese_westernization_international_prestige } }
 			add_journal_entry = { type = je_chinese_westernization_international_prestige }
 		}
+
+		trigger_event = chinese_westernization.1
 	}
 
 	complete = {
@@ -291,7 +330,7 @@ je_chinese_westernization_industry = {
 
 	complete = {
 		any_scope_state = {
-			filter = { state_is_in_china_proper = yes }
+			filter = { is_in_geographic_region = geographic_region_china_proper }
 			percent >= 0.5
 			any_scope_building = { is_building_type = building_railway }
 		}
@@ -301,7 +340,7 @@ je_chinese_westernization_industry = {
 		}
 
 		any_scope_state = {
-			filter = { state_is_in_china_proper = yes }
+			filter = { is_in_geographic_region = geographic_region_china_proper }
 			percent >= 0.5
 			any_scope_building = {
 				is_building_type = building_urban_center
@@ -309,7 +348,7 @@ je_chinese_westernization_industry = {
 			}
 		}
 		any_scope_state = {
-			filter = { state_is_in_china_proper = yes }
+			filter = { is_in_geographic_region = geographic_region_china_proper }
 			percent >= 0.1
 			any_scope_building = {
 				is_building_type = building_urban_center
@@ -612,7 +651,7 @@ je_chinese_westernization_international_prestige = {
 			text = je_chinese_westernization_international_prestige.tt2
 			NOT = {
 				any_state = {
-					state_is_in_china_proper = yes
+					is_in_geographic_region = geographic_region_china_proper
 					NAND = {
 						owner = ROOT
 						controller = ROOT

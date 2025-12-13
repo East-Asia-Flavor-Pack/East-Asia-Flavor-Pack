@@ -17,7 +17,7 @@ Root scope is AI country, scope:law contains the relevant law for that country
 	
 		if = {
 			limit = { 
-				this = c:GBR
+				c:GBR ?= THIS
 				exists = var:GBR_favorite_law
 				scope:law = var:GBR_favorite_law
 			}

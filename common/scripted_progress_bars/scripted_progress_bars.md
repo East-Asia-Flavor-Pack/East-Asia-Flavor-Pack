@@ -11,7 +11,7 @@
         
        # Use one of these types of progressbars:
         double_sided_gold = yes
-       default_green = yes
+        default_green = yes
         default_bad = yes
         default = yes
         double_sided_gold = yes
