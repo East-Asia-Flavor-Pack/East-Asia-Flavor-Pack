@@ -1,9 +1,49 @@
 ﻿eafp_headgear = {
 	usage = game
-	priority = 99
 	selection_behavior = weighted_random
-	#fallback = no_headgear
-	
+
+	eafp_korean_yangban_headgear = {
+		dna_modifiers = {
+			accessory = {
+				mode = add
+				gene = eafp_headgear
+				template = eafp_korean_yangban_headgear
+				range = { 0 1 } # For the randomness to work correctly
+			}
+		}
+
+		weight = {
+			base = 0
+			modifier = {
+				add = 1
+				OR = {
+					korean_clothes_trigger = yes
+					AND = {
+						korean_clothes_pop_trigger = yes
+						OR = {
+							middle_clothes_pop_trigger = yes
+							upper_clothes_pop_trigger = yes
+						}
+					}
+					scope:character ?= {
+						has_ideology = ideology:ideology_eafp_missionary
+					}
+				}
+				NOR = {
+					scope:character ?= {
+						has_trait = kor_i_am_your_father
+						owner ?={
+							NOT = { has_variable = KOR_korean_empire_declared }
+							NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+						}
+					}
+					ruler_clothes_trigger = yes
+					monarchy_clothes_trigger = yes
+				}
+			}
+		}
+	}
+
 	eafp_korean_gwanmo_headgear = { # 추가 24.07.24
 		dna_modifiers = {
 			accessory = {
@@ -17,7 +57,7 @@
 		weight = {
 			base = 0
 			modifier = {
-				add = 1000
+				add = 10000
 				scope:character ?= {
 					has_trait = kor_i_am_your_father
 					owner ?={
@@ -42,11 +82,72 @@
 		weight = {
 			base = 0
 			modifier = {
-				add = 1000
+				add = 10000
 				korean_clothes_trigger = yes
 				ruler_clothes_trigger = yes
 				monarchy_clothes_trigger = yes
 				scope:character ?= {
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+			}
+		}
+	}
+
+	eafp_korean_soldier_headgear = { # 추가
+		dna_modifiers = {
+			accessory = {
+				mode = add
+				gene = eafp_headgear
+				template = eafp_korean_soldier_headgear
+				range = { 0 1 } # For the randomness to work correctly
+			}
+		}
+
+		weight = {
+			base = 0
+			modifier = {
+				add = 1
+				korean_clothes_trigger = yes
+				OR = {
+					soldier_clothes_pop_trigger = yes
+					officers_clothes_pop_trigger = yes
+				}
+				scope:character ?= {
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+			}
+		}
+	}
+
+	eafp_korean_general_headgear = { # 추가
+		dna_modifiers = {
+			accessory = {
+				mode = add
+				gene = eafp_headgear
+				template = eafp_korean_general_headgear
+				range = { 0 1 } # For the randomness to work correctly
+			}
+		}
+
+		weight = {
+			base = 0
+			modifier = {
+				add = 1
+				korean_clothes_trigger = yes
+				scope:character ?= {
+					OR = {
+						military_clothes_trigger = yes
+						AND = {
+							armed_forces_clothes_trigger = yes
+							politician_clothes_trigger = yes
+						}
+					}
 					owner ?={
 						NOT = { has_variable = KOR_korean_empire_declared }
 						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용

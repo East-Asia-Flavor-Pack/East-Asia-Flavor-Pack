@@ -117,7 +117,7 @@ je_korean_kings_health = {
 				}
 				random_list = {
 					30 = {}
-					50 = {
+					60 = {
 						trigger = {
 							ruler = {
 								calc_true_if = {
@@ -132,7 +132,7 @@ je_korean_kings_health = {
 							}
 						}
 					}
-					70 = {
+					90 = {
 						trigger = {
 							ruler = {
 								calc_true_if = {
@@ -147,7 +147,7 @@ je_korean_kings_health = {
 							}
 						}
 					}
-					90 = {
+					120 = {
 						trigger = {
 							ruler = {
 								calc_true_if = {
@@ -162,7 +162,7 @@ je_korean_kings_health = {
 							}
 						}
 					}
-					110 = {
+					150 = {
 						trigger = {
 							ruler = {
 								calc_true_if = {
@@ -177,7 +177,7 @@ je_korean_kings_health = {
 							}
 						}
 					}
-					130 = {
+					180 = {
 						trigger = {
 							ruler = {
 								calc_true_if = {
@@ -488,6 +488,7 @@ je_korean_imsul_uprising = {
 					}
 				}
 				order_by = radical_fraction
+				position = 0
 				save_scope_as = eafp_imsul_rising_target_state
 			}
 			ordered_scope_state = {
@@ -1004,6 +1005,10 @@ je_korean_regent = {
 		
 		# eafp_var_je_regent_character는 인물 히스토리에서
 	}
+
+	modifiers_while_active = {
+		modifier_regency_landowners
+	}
 	
 	invalid = {
 		country_je_sedo_politics_is_invalid = yes
@@ -1120,9 +1125,9 @@ je_sedo_politics = {
 			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
 			ig:ig_landowners.leader = {
 				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
-			}
-			kill_character = {
-				hidden = yes
+				kill_character = {
+					hidden = yes
+				}
 			}
 		}
 	}
@@ -1147,9 +1152,9 @@ je_sedo_politics = {
 			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
 			ig:ig_landowners.leader = {
 				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
-			}
-			kill_character = {
-				hidden = yes
+				kill_character = {
+					hidden = yes
+				}
 			}
 		}
 	}
@@ -1334,7 +1339,10 @@ je_korean_confu = {
 	}
 
 	on_complete = {
-		remove_modifier = eafp_modi_catholic_plague
+		if = {
+			limit = { has_modifier = eafp_modi_catholic_plague }
+			remove_modifier = eafp_modi_catholic_plague
+		}
 		remove_variable = eafp_progress_bar_confu_from_trade_var
 		trigger_event = { id = eafp_kor_mainline.171 }
 		show_as_tooltip = {
@@ -1356,9 +1364,9 @@ je_korean_confu = {
 		hidden_effect = {
 			every_scope_character = {
 				limit = {
-					has_role = agitator
 					has_ideology = ideology:ideology_eafp_missionary
 				}
+				set_character_busy_and_immortal = no
 				kill_character = {
 					hidden = yes
 				}
@@ -1371,14 +1379,17 @@ je_korean_confu = {
 	}
 
 	on_invalid = {
-		remove_modifier = eafp_modi_catholic_plague
+		if = {
+			limit = { has_modifier = eafp_modi_catholic_plague }
+			remove_modifier = eafp_modi_catholic_plague
+		}
 		remove_variable = eafp_progress_bar_confu_from_trade_var
 		hidden_effect = {
 			every_scope_character = {
 				limit = {
-					has_role = agitator
 					has_ideology = ideology:ideology_eafp_missionary
 				}
+				set_character_busy_and_immortal = no
 				kill_character = {
 					hidden = yes
 				}
@@ -1428,44 +1439,6 @@ je_korean_confu = {
 	}
 
 	weight = 1000
-	
-	should_be_pinned_by_default = yes
-}
-##서원
-je_korean_seowon = {
-	icon = "gfx/interface/icons/law_icons/seowon.dds"
-
-	group = je_group_internal_affairs
-
-	complete = {
-		custom_tooltip = {
-			text = je_korean_land_problem_complete_cond_tt
-			has_variable = eafp_var_sam_all_clear
-		}
-		NOT = { has_journal_entry = je_sedo_politics }
-		ig:ig_devout ?= {
-			ig_clout <= 0.1
-			is_in_government = no
-		}
-		NOT = { has_law = law_type:law_serfdom }
-	}
-
-	on_complete = {
-		activate_law = law_type:law_religious_schools
-		trigger_event = eafp_kor_mainline.152
-		set_variable = je_korean_seowon_complete
-	}
-
-	fail = {
-		NOT = { has_law = law_type:law_seowon }
-	}
-
-	on_fail = {
-		trigger_event = eafp_kor_mainline.151
-		set_variable = je_korean_seowon_complete
-	}
-
-	weight = 100
 	
 	should_be_pinned_by_default = yes
 }

@@ -2,46 +2,63 @@
 
 	icon = "gfx/interface/icons/event_icons/event_map.dds"
 
-	group = je_group_foreign_affairs
+	group = je_group_global_international_situations
 
 	is_shown_when_inactive = {
-		exists = c:KOR
+		c:KOR ?= { is_country_type = unrecognized }
 		has_strategic_adjacency = c:KOR
-		trigger_if = {
-			limit = { c:CHI ?= ROOT }
-			NOT = { has_global_variable = china_shatters }
+		any_country = {
+			capital ?= {
+				is_in_geographic_region = geographic_region_east_asia
+			}
+			is_power_bloc_leader = yes 
+			has_strategic_adjacency = c:KOR
 		}
-		NOT = { has_global_variable = scramble_for_korea_finished }
+	}
+
+	should_be_involved = {
+		has_interest_marker_in_region = region_manchuria
+		is_power_bloc_leader = yes
+		OR = {
+			country_rank >= rank_value:great_power
+			capital ?= {
+				is_in_geographic_region = geographic_region_east_asia
+			}
+		}
+	}
+
+	should_show_when_not_involved = {
+		is_power_bloc_leader = yes 
+		OR = {
+			country_rank >= rank_value:great_power
+			capital ?= {
+				is_in_geographic_region = geographic_region_east_asia
+			}
+		}
+		NOT = {
+			has_variable = ignore_scramble_for_korea
+		}
 	}
 
 	possible = {
-		c:KOR ?= { is_subject = no }
-		has_strategic_adjacency = c:KOR
-		trigger_if = {
-			limit = { c:CHI ?= ROOT }
-			NOT = { has_global_variable = china_shatters }
+		c:KOR ?= {
+			is_country_type = unrecognized
+			is_subject = no
 		}
-		is_power_bloc_leader = yes
+		any_country = {
+			filter = {
+				capital ?= {
+					is_in_geographic_region = geographic_region_east_asia
+				}
+			}
+			is_power_bloc_leader = yes 
+			has_strategic_adjacency = c:KOR
+			count >= 2
+		}
 	}
 
 	immediate = {
 		trigger_event = { id = scramble_for_korea_events.1 }
-		save_scope_as = scramble_for_korea_self
-		add_to_global_variable_list = {
-			name = scramble_for_korea_participants
-			target = THIS
-		}
-		if = {
-			limit = { NOT = { has_global_variable = je_scramble_for_korea_participants_globalvar } }
-			set_global_variable = {
-				name = je_scramble_for_korea_participants_globalvar
-				value = 0
-			}
-		}
-		change_global_variable = {
-			name = je_scramble_for_korea_participants_globalvar
-			add = 1
-		}
 	}
 
 	complete = {
@@ -74,23 +91,13 @@
 	}
 
 	fail = {
-		aggressive_diplomatic_plays_permitted = no
+		c:KOR ?= { is_country_type = recognized }
 	}
 
+	custom_on_failure_header = je_scramble_for_korea_korea_victory
+
 	on_fail = {
-		remove_list_global_variable = {
-			name = scramble_for_korea_participants
-			target = ROOT
-		}
-		change_global_variable = {
-			name = je_scramble_for_korea_participants_globalvar
-			add = -1
-		}
-		if = {
-			limit = { global_var:je_scramble_for_korea_participants_globalvar = 0 }
-			remove_global_variable = je_scramble_for_korea_participants_globalvar
-			set_global_variable = scramble_for_korea_finished
-		}
+		set_global_variable = scramble_for_korea_finished
 	}
 
 	on_monthly_pulse = {
@@ -108,6 +115,27 @@
 			10 = africa_colonial_events.51
 			10 = africa_colonial_events.53
 			10 = africa_colonial_events.54
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			scope:journal_entry = {
+				every_scope_je_involved = {
+					limit = {
+						NOR = {
+							has_interest_marker_in_region = region_manchuria
+							OR = {
+								country_rank >= rank_value:great_power
+								capital ?= {
+									is_in_geographic_region = geographic_region_east_asia
+								}
+							}
+						}
+					}
+					scope:journal_entry = { remove_involved_country = prev }
+				}
+			}
 		}
 	}
 

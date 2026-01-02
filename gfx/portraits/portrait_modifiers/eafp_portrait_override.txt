@@ -1,0 +1,149 @@
+﻿# 모드 옷 지정하면서 바닐라 옷 삭제, 안하면 겹쳐져서 이상하게 보임
+
+eafp_headgear_override = {
+	usage = game
+	selection_behavior = weighted_random
+
+	eafp_headgear_override = {
+		dna_modifiers = {
+			accessory = {
+				mode = add
+				gene = headgear
+				template = no_headgear
+				value = 0
+			}
+		}
+		weight = {
+			base = 0
+			modifier = { # eafp_korean_yangban_headgear
+				add = 1
+				OR = {
+					korean_clothes_trigger = yes
+					AND = {
+						korean_clothes_pop_trigger = yes
+						OR = {
+							middle_clothes_pop_trigger = yes
+							upper_clothes_pop_trigger = yes
+						}
+					}
+					scope:character ?= {
+						has_ideology = ideology:ideology_eafp_missionary
+					}
+				}
+				NOR = {
+					scope:character ?= {
+						has_trait = kor_i_am_your_father
+						owner ?={
+							NOT = { has_variable = KOR_korean_empire_declared }
+							NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+						}
+					}
+					ruler_clothes_trigger = yes
+					monarchy_clothes_trigger = yes
+				}
+			}
+			modifier = { # eafp_korean_gwanmo_headgear
+				add = 10000
+				scope:character ?= {
+					has_trait = kor_i_am_your_father
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+			}
+			modifier = { # eafp_korean_king_headgear
+				add = 10000
+				korean_clothes_trigger = yes
+				ruler_clothes_trigger = yes
+				monarchy_clothes_trigger = yes
+				scope:character ?= {
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+				NAND = {
+                    korean_clothes_trigger = yes
+                    scope:character ?= {
+                        age >= define:NCharacters|ADULT_AGE
+                        owner ?= {
+                            has_variable = KOR_korean_empire_declared
+                        }
+                    }
+                    OR = {
+                        military_clothes_trigger = yes
+                        monarchy_clothes_trigger = yes
+                        AND = {
+                            armed_forces_clothes_trigger = yes
+                            OR = {
+                                politician_clothes_trigger = yes
+                                junta_clothes_trigger = yes
+                            }
+                        }
+                    }
+                }
+			}
+			modifier = { # eafp_korean_soldier_headgear
+				add = 1
+				korean_clothes_trigger = yes
+				OR = {
+					soldier_clothes_pop_trigger = yes
+					officers_clothes_pop_trigger = yes
+				}
+				scope:character ?= {
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+			}
+			modifier = { # eafp_korean_general_headgear
+				add = 1
+				korean_clothes_trigger = yes
+				scope:character ?= {
+					OR = {
+						military_clothes_trigger = yes
+						AND = {
+							armed_forces_clothes_trigger = yes
+							politician_clothes_trigger = yes
+						}
+					}
+					owner ?={
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}
+				}
+			}
+		}
+	}
+}
+
+eafp_clothes_override = {
+	usage = game
+	selection_behavior = weighted_random
+
+	eafp_clothes_override = {
+		dna_modifiers = {
+			accessory = {
+				mode = add
+				gene = outfits
+				template = no_outfit
+				value = 0
+			}
+		}
+		weight = {
+			base = 0
+			modifier = { # eafp_korean_daewongun_outfits
+				add = 10000
+				scope:character ?= {
+					has_trait = kor_i_am_your_father
+					owner ?= {
+						NOT = { has_variable = KOR_korean_empire_declared }
+						NOT = { has_variable = WCR_westernized_nation } # Western Clothes Redux 호환용
+					}						
+				}
+			}
+		}
+	}
+}

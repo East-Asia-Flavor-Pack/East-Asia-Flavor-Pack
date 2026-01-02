@@ -74,7 +74,7 @@ eafp_land_problem_add_modifier_comp = {
 eafp_land_problem_add_modifier_building = {
 	every_scope_building = {
 		limit = {
-			is_building_type = building_barracks
+			is_building_type = building_barrack
 		}
 		remove_modifier = eafp_modi_land_problem_building_mil_lvl_0
 		remove_modifier = eafp_modi_land_problem_building_mil_lvl_1
@@ -89,7 +89,7 @@ eafp_land_problem_add_modifier_building = {
 		}
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_0
@@ -104,7 +104,7 @@ eafp_land_problem_add_modifier_building = {
 		}
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_1
@@ -119,7 +119,7 @@ eafp_land_problem_add_modifier_building = {
 		}
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_2
@@ -134,7 +134,7 @@ eafp_land_problem_add_modifier_building = {
 		}
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_3
@@ -149,7 +149,7 @@ eafp_land_problem_add_modifier_building = {
 		}
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_4
@@ -160,7 +160,7 @@ eafp_land_problem_add_modifier_building = {
 	else = {
 		every_scope_building = {
 			limit = {
-				is_building_type = building_barracks
+				is_building_type = building_barrack
 			}
 			add_modifier = {
 				name = eafp_modi_land_problem_building_mil_lvl_5
@@ -1840,6 +1840,7 @@ eafp_effect_missionary_spawn = {	#선교사 스폰
 								name = eafp_modi_missionary_stealth
 								months = 36
 							}
+							set_character_busy_and_immortal = yes
 						}
 					}
 				}
@@ -1867,6 +1868,7 @@ eafp_effect_missionary_spawn = {	#선교사 스폰
 								name = eafp_modi_missionary_stealth
 								months = 36
 							}
+							set_character_busy_and_immortal = yes
 						}
 					}
 				}
@@ -1877,7 +1879,6 @@ eafp_effect_missionary_spawn = {	#선교사 스폰
 eafp_effect_catholic_spread = {	#선교사 있을시 선교사마다 매월 포교
 	every_scope_character = {
 		limit = {
-			has_role = agitator
 			has_ideology = ideology:ideology_eafp_missionary
 		}
 		owner = {
@@ -1908,7 +1909,10 @@ eafp_effect_catholic_spread = {	#선교사 있을시 선교사마다 매월 포�
 }
 eafp_effect_cal_catholic_modi_mult = {
 	#국가 천주교 신자 비율에 따른 모디파이어 계수 산정 식. 기본형 >> output = 1-{1/(50x+1)}, x = religion_percent_country .
-	remove_modifier = eafp_modi_catholic_plague
+	if = {
+		limit = { has_modifier = eafp_modi_catholic_plague }
+		remove_modifier = eafp_modi_catholic_plague
+	}
 
 	set_local_variable = {
 		name  = total_religion
@@ -1985,7 +1989,6 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 	}
 	every_scope_character = {
 		limit = {
-			has_role = agitator
 			has_ideology = ideology:ideology_eafp_missionary
 			NOT = { has_modifier = eafp_modi_missionary_stealth }
 			OR = {
@@ -2009,6 +2012,7 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 				target = ROOT
 			}
 		}
+		hidden_effect = { set_character_busy_and_immortal = no }
 		kill_character = yes
 	}
 	custom_tooltip = {

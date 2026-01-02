@@ -16,6 +16,11 @@
 		random_scope_character = {
 			limit = { has_template = eafp_chi_xingzhen_yehe_nara_template }
 			save_scope_as = Xingzhen_Yehe_Nara_scope
+			set_character_busy_and_immortal = yes
+			trigger_event = {
+				id = dowager_cixi_events.31
+				months = 1 # 테스트
+			}
 		}
 		set_variable = {
 			name = cixi_coup
@@ -27,27 +32,27 @@
 		custom_tooltip = {
 			text = je_dowager_cixi_goal
 			scope:Xingzhen_Yehe_Nara_scope = {
-				is_character_alive = no
-				has_variable = cixi_removed
+				has_variable = cixi_complete
 			}
 		}
 	}
 	on_complete = {
+		trigger_event = dowager_cixi_events.4
 		hidden_effect = {
 			remove_variable = cixi_coup
 		}
 	}
 	fail = {
-		scope:Xingzhen_Yehe_Nara_scope = {
-			is_character_alive = no
-			custom_tooltip = {
-				text = cixi_not_removed
-				NOT = { has_variable = cixi_removed }
+		custom_tooltip = {
+			text = cixi_not_removed
+			scope:Xingzhen_Yehe_Nara_scope = {
+				has_variable = cixi_fail
 			}
+			
 		}
 	}
 	on_fail = {
-		trigger_event = { id = dowager_cixi_events.3 }
+		trigger_event = dowager_cixi_events.3
 		hidden_effect = {
 			remove_variable = cixi_coup
 		}
@@ -168,8 +173,13 @@ je_remove_cixi = {
 		scope:Xingzhen_Yehe_Nara_scope.popularity <= ruler.popularity
 	}
 	on_complete = {
-		trigger_event = { id = dowager_cixi_events.4 }
+		show_as_tooltip = {
+			trigger_event = dowager_cixi_events.4
+		}
 		hidden_effect = {
+			scope:Xingzhen_Yehe_Nara_scope = {
+				set_variable = cixi_complete
+			}
 			remove_variable = remove_cixi_progress
 		}
 	}

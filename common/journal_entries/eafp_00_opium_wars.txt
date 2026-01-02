@@ -1,0 +1,118 @@
+﻿REPLACE:je_opium_wars = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_foreign_affairs
+
+	complete = {
+		OR = {
+			scope:target ?= {
+				has_law_or_variant = law_type:law_free_trade
+			}
+			has_treaty_foreign_investment_rights_with = { TARGET = scope:target }
+			any_scope_state = {
+				is_treaty_port = yes
+				state_region = {
+					any_scope_state = {
+						owner = scope:target
+					}
+				}
+			}
+		}
+		hidden_trigger = {
+			scope:target = {
+				has_modifier = opium_wars_lost
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = {
+			id = opium_wars.5
+			days = 5
+		}
+		hidden_effect = { # 추가
+			if = {
+				limit = {
+					this = c:GBR
+					scope:target = c:CHI
+				}
+				save_scope_as = gbr_scope
+				c:CHI = {
+					save_scope_as = chi_scope
+				}		
+				every_country = {
+					limit = {
+						OR = {
+							country_rank = rank_value:great_power
+							country_rank = rank_value:major_power
+							country_rank = rank_value:unrecognized_major_power
+							country_rank = rank_value:unrecognized_regional_power
+						}
+						NOT = { this = c:GBR }
+						NOT = { this = c:KOR }
+						NOT = { this = c:CHI }
+						NOT = { this = c:JAP }
+					}
+					trigger_event = {
+						id = eafp_event_rtc.1
+						days = { 3 7 }
+					}			
+				}	
+				c:KOR = {
+					trigger_event = {
+						id = eafp_event_rtc.2
+						days = { 3 7 }
+					}
+				}
+				c:JAP = {
+					trigger_event = {
+						id = eafp_japan.2007
+						days = { 3 7 }
+					}
+				}
+			}
+		}
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = opium_wars_fail_tt
+			scope:target = {
+				NOT = {
+					any_primary_culture = {
+						has_cultural_obsession = opium
+					}
+				}
+			}
+		}
+	}
+
+	invalid = {
+		NOT = {
+			exists = scope:target
+		}
+	}
+
+	on_invalid = {
+		remove_variable = opium_wars_aggressor
+	}
+
+	on_fail = {
+		custom_tooltip = {
+			text = opium_wars_fail_invalid_tt
+			remove_variable = opium_wars_aggressor
+		}
+	}
+
+	on_timeout = {
+		custom_tooltip = {
+			text = opium_wars_fail_invalid_tt
+			remove_variable = opium_wars_aggressor
+		}
+	}
+
+	weight = 10000
+	should_be_pinned_by_default = yes
+
+	timeout = 3650
+}
