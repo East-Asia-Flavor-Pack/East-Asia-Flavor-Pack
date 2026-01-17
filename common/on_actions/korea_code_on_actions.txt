@@ -132,6 +132,49 @@ korea_on_character_death = {
 			owner = {
 				eafp_effect_regent_assign = yes
 				trigger_event = { id = eafp_kor_mainline.100 popup = yes }
+
+				# 왜 여기서 인물을 추가하냐?? 그래야 바닐라 섭정 시스템 비활성 ㄱㄴ
+				if = {
+					limit = {
+						has_journal_entry = je_korean_kings_health
+						scope:ruler = { has_template = eafp_kor_yi_hwan_character_template }
+					}
+					create_character = {
+						template = eafp_kor_yi_byeon_character_template
+						heir = yes
+						on_created = {
+							set_character_busy_and_immortal = yes
+							set_variable = regency_complete
+						}
+					}
+					trigger_event = { id = eafp_kor_mainline.111 }
+					# 이벤트 내에서 세도정치 있을 때만 수렴청정 저널 추가함.
+					# 추가 안하면 regency_complete 변수 삭제
+				}
+				else_if = {
+					limit = {
+						has_journal_entry = je_korean_kings_health
+						scope:ruler = { has_template = eafp_kor_yi_byeon_character_template }
+					}
+					create_character = {
+						template = eafp_kor_yi_hyeong_character_template
+						heir = yes
+						on_created = {
+							set_character_busy_and_immortal = yes
+							set_variable = regency_complete
+						}
+					}
+					trigger_event = { id = eafp_kor_mainline.114 }
+					# 이벤트 내에서 세도정치 있을 때만 수렴청정 저널 추가함.
+					# 추가 안하면 regency_complete 변수 삭제
+				}
+				else_if = {
+					limit = {
+						has_journal_entry = je_korean_kings_health
+						has_journal_entry = je_sedo_politics
+					}
+					add_journal_entry = { type = je_korean_regent }
+				}
 			}
 		}
 		##

@@ -937,8 +937,8 @@ je_king_cheoljong_education = {
 			ruler = {
 				add_trait = erudite
 				if = {
-					limit = { has_modifier = eafp_modi_puppet_king_imsi }
-					remove_modifier = eafp_modi_puppet_king_imsi
+					limit = { has_modifier = eafp_modi_blood_of_traitors }
+					remove_modifier = eafp_modi_blood_of_traitors
 				}
 				if = {
 					limit = { has_modifier = eafp_modi_puppet_king }
@@ -1002,12 +1002,12 @@ je_korean_regent = {
 				value = 1
 			}
 		}
-		
+		ruler ?= { set_variable = regency_complete }
 		# eafp_var_je_regent_character는 인물 히스토리에서
 	}
 
 	modifiers_while_active = {
-		modifier_regency_landowners
+		modifier_regency_korea
 	}
 	
 	invalid = {
@@ -1067,6 +1067,52 @@ je_korean_regent = {
 	on_weekly_pulse = {
 		effect = {
 			eafp_regent_lifespan_pulse = yes  # 대왕대비 등장&퇴장
+		}
+	}
+
+	weight = 1000
+	
+	should_be_pinned_by_default = yes
+}
+je_korean_regent_inactive = { # 수렴청정 저널이 없을때 저널 창에 비활성상태로 떠있을 저널 
+	icon = "gfx/interface/icons/eafp_icons/sedo_politics.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		has_journal_entry = je_korean_kings_health
+		has_journal_entry = je_sedo_politics
+		NOT = { has_journal_entry = je_korean_regent }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = je_korean_regent_inactive_tt
+			always = no
+		}
+		has_journal_entry = je_korean_kings_health
+		has_journal_entry = je_sedo_politics
+	}
+
+	immediate = {
+	}
+
+	modifiers_while_active = {
+		modifier_regency_landowners
+	}
+	
+	invalid = {
+		country_je_sedo_politics_is_invalid = yes
+	}
+	
+	complete = {	
+		custom_tooltip = {
+			text = je_korean_regent_complete_tt1
+			ruler.age >= define:NCharacters|ADULT_AGE
+		}
+		custom_tooltip = {
+			text = je_korean_regent_complete_tt2
+			always = no
 		}
 	}
 
@@ -1431,7 +1477,7 @@ je_korean_confu = {
 		}
 		events = {
 			eafp_kor_mainline.120
-			eafp_kor_mainline.123
+			eafp_kor_mainline.122
 			eafp_kor_mainline.124
 			eafp_kor_mainline.127
 			eafp_kor_mainline.128

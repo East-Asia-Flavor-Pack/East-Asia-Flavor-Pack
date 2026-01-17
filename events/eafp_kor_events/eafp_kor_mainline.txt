@@ -1760,36 +1760,6 @@ eafp_kor_mainline.43 = {	#사냥: 신하들의 간언
 
 ##80번~99번 - 철종 경연 이벤트
 
-eafp_kor_mainline.80 = {	#경연
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.80.mt
-	desc = eafp_kor_mainline.80.md
-	flavor = eafp_kor_mainline.80.mf
-
-	duration = 1
-	
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
-
-	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
-
-	option = {
-		name = eafp_kor_mainline.80.oa
-		add_journal_entry = {
-			type = je_king_cheoljong_education
-		}
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
 eafp_kor_mainline.81 = {	#경연
 	type = country_event
 	placement = ROOT
@@ -2598,28 +2568,6 @@ eafp_kor_mainline.100 = {	#임금 사망 이벤트
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
 	immediate = {
-		if = {
-			limit = {
-				has_journal_entry = je_korean_regent
-			}
-			eafp_effect_regent_assign = yes
-		}
-
-		if = {
-			limit = {
-				has_journal_entry = je_korean_kings_health
-				scope:ruler = { has_template = eafp_kor_yi_hwan_character_template }
-			}
-			trigger_event = { id = eafp_kor_mainline.111 }
-		}
-		if = {
-			limit = {
-				has_journal_entry = je_korean_kings_health
-				scope:ruler = { has_template = eafp_kor_yi_byeon_character_template }
-			}
-			trigger_event = { id = eafp_kor_mainline.114 }
-		}
-
 		random_list = {
 			10000 = {
 				trigger = {
@@ -3548,12 +3496,12 @@ eafp_kor_mainline.101 = {	#철종즉위
 
 	duration = 2
 	
+	gui_window = event_window_1char_tabloid
 
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
+	left_icon = ruler
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
@@ -3615,12 +3563,12 @@ eafp_kor_mainline.102 = {	#고종즉위
 
 	duration = 2
 	
+	gui_window = event_window_1char_tabloid
 
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
+	left_icon = ruler
 
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
@@ -3806,13 +3754,6 @@ eafp_kor_mainline.111 = {	#헌종사망후 대왕대비1
 				save_scope_as = eafp_char_yangban_leader
 			}
 		}
-		create_character = {
-			template = eafp_kor_yi_byeon_character_template
-			ruler = yes
-			on_created = {
-				set_character_busy_and_immortal = yes
-			}
-		}
 	}
 
 	option = {
@@ -3826,6 +3767,9 @@ eafp_kor_mainline.111 = {	#헌종사망후 대왕대비1
 		}
 		else = {
 			trigger_event = { id = eafp_kor_mainline.101 popup = yes }
+			hidden_effect = {
+				ruler = { remove_variable = regency_complete }
+			}
 		}
 
 		default_option = yes
@@ -3896,13 +3840,6 @@ eafp_kor_mainline.114 = {
 				add = -1851
 			}
 		}
-		create_character = {
-			template = eafp_kor_yi_hyeong_character_template
-			ruler = yes
-			on_created = {
-				set_character_busy_and_immortal = yes
-			}
-		}
 	}
 
 	option = {
@@ -3915,6 +3852,9 @@ eafp_kor_mainline.114 = {
 		}
 		else = {
 			trigger_event = { id = eafp_kor_mainline.102 popup = yes }
+			hidden_effect = {
+				ruler = { remove_variable = regency_complete }
+			}
 		}
 	}
 }
@@ -3975,16 +3915,6 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 	}
 
 	immediate = {
-		every_scope_character = {
-			limit = {
-				has_modifier = eafp_modi_missionary_stealth
-				OR = {
-					has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
-					has_template = eafp_kor_pierre_maubant_character_template
-				}
-			}
-			remove_modifier = eafp_modi_missionary_stealth
-		}
 	}
 
 	cooldown = { days = never_fire_again_modifier_time }
@@ -4375,16 +4305,6 @@ eafp_kor_mainline.127 = {	#서학도 색출
 	}
 
 	immediate = {
-		every_scope_character = {
-			limit = {
-				has_modifier = eafp_modi_missionary_stealth
-				OR = {
-					has_template = eafp_kor_laurent_joseph_marius_imbert_character_template
-					has_template = eafp_kor_pierre_maubant_character_template
-				}
-			}
-			remove_modifier = eafp_modi_missionary_stealth
-		}
 	}
 
 	cooldown = { days = never_fire_again_modifier_time }
@@ -7146,6 +7066,9 @@ eafp_kor_mainline.323 = {	#철종초
 		hidden_effect = {
 			trigger_event = { id = eafp_kor_mainline.324 }
 		}
+		add_journal_entry = {
+			type = je_king_cheoljong_education
+		}
 		eafp_effect_option_gain_stress = {
 			STRESS = 10
 		}
@@ -7182,10 +7105,6 @@ eafp_kor_mainline.324 = {	#철종초2
 			leader = {
 				save_scope_as = eafp_char_yangban_leader
 			}
-		}
-		trigger_event = {
-			id = eafp_kor_mainline.80
-			days = 15
 		}
 	}
 
@@ -7351,7 +7270,7 @@ eafp_kor_mainline.328 = {	#세초
 	trigger = {
 		ruler = {
 			has_template = eafp_kor_yi_byeon_character_template
-			has_modifier = eafp_modi_puppet_king_imsi
+			has_modifier = eafp_modi_blood_of_traitors
 		}
 	}
 	
@@ -7361,7 +7280,7 @@ eafp_kor_mainline.328 = {	#세초
 	option = {
 		name = eafp_kor_mainline.328.oa
 		ruler = {
-			remove_modifier = eafp_modi_puppet_king_imsi
+			remove_modifier = eafp_modi_blood_of_traitors
 		}
 		default_option = yes
 	}
