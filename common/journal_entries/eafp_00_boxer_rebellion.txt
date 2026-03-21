@@ -1,240 +1,202 @@
-﻿REPLACE:je_boxer_rebellion = {
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
+﻿REPLACE:je_boxer_rebellion = { # 비활성화. ai부분은 나중에 따로 다뤄야 할듯. TODO
+    icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	group = je_group_qing
 
 	is_shown_in_lobby = {
         c:CHI ?= THIS
     }
+}
+
+je_boxer_rebellion_pre = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_qing
 
 	is_shown_when_inactive = {
-		exists = c:CHI
-		THIS = c:CHI
-		has_technology_researched = pan-nationalism
-		country_has_primary_culture = cu:manchu
+		NOT = { has_global_variable = boxer_rebellion_happened }
+		has_journal_entry = je_warlord_china
 	}
+
 	possible = {
-		has_technology_researched = political_agitation
+		has_journal_entry = je_warlord_china
+		OR = {
+			has_technology_researched = political_agitation
+			AND = {
+				has_technology_researched = nationalism
+				custom_tooltip = {
+					text = china_explosion_point_25_tt2
+					has_variable = china_warlord_explosion_sum
+					var:china_warlord_explosion_sum <= 0.25
+				}
+			}
+		}
 		any_state = {
 			state_region = { is_homeland = cu:han }
-			NOT = { owner = ROOT }
+			NOT = { owner = PREV }
 		}
 	}
+
 	immediate = {
-		trigger_event = { id = boxer_rebellion_events.1 } # The Yihetuan Movement
+		set_global_variable = boxer_rebellion_happened
+		trigger_event = { id = boxer_rebellion_events.1 } 
 	}
-	#complete = {
-	#	custom_tooltip = {
-	#		text = qing_owns_all_han_states_tt
-	#		NOT = {
-	#			any_state = {
-	#				state_region = { is_homeland = cu:han }
-	#				NOT = { owner = ROOT }
-	#			}
-	#		}
-	#	}
-	#}
-	#on_complete = {
-	#	trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
-	#}
-	#timeout = 1825
-	#on_timeout = {
-	#	trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
-	#}
+
+	complete = {
+		OR = {
+			has_journal_entry = je_boxer_rebellion_western
+			has_journal_entry = je_boxer_rebellion_bxr
+		}
+	}
+
 	on_monthly_pulse = {
-		effect = {
-			random_list = {
-				10 = {}
-				2 = { trigger_event = { id = boxer_rebellion_events.101 } }
-				1 = { trigger_event = { id = boxer_rebellion_events.102 } }
-				2 = { trigger_event = { id = boxer_rebellion_events.103 } }
-			}
+		random_events = {
+			10 = 0
+			2 = boxer_rebellion_events.101
+			1 = boxer_rebellion_events.102
+			3 = boxer_rebellion_events.103
 		}
 	}
 	weight = 1000
 	should_be_pinned_by_default = yes
 }
 
-je_boxer_rebellion2_chi = { # 추가, 의화단 청 vs 열강에서 청용
+je_boxer_rebellion_western = { # 청나라가 서양 열강 편을 듦.
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
-	group = je_group_qing
+	group = je_group_global_international_situations
 
-	immediate = {
-	}
-	complete = {
-		custom_tooltip = {
-			text = qing_owns_all_han_states_tt
-			NOT = {
-				any_state = {
-					state_region = { is_homeland = cu:han }
-					NOT = { owner = ROOT }
+	should_be_involved = {
+		OR = {
+			c:CHI ?= THIS
+			c:BXR ?= THIS
+			AND = {
+				country_rank >= rank_value:great_power
+				OR = {
+					has_interest_marker_in_region = sr:region_north_china
+					has_interest_marker_in_region = sr:region_south_china
 				}
 			}
 		}
-		#custom_tooltip = {
-		#	text = qing_owns_all_concessions_tt
-		#	NOT = {
-		#		any_scope_state = { has_variable_list = concession_owner_varlist }
-		#	}
-		#}
 	}
-	fail = {
-		custom_tooltip = {
-			text = boxer_rebellion_ended_tt
-			has_global_variable = boxer_rebellion_ended
+
+	should_show_when_not_involved = {
+		any_country = {
+			is_involved_in_journal_entry = je_boxer_rebellion
+		}
+		country_rank >= rank_value:great_power
+		OR = {
+			has_interest_marker_in_region = sr:region_north_china
+			has_interest_marker_in_region = sr:region_south_china
 		}
 	}
-	on_fail = {
-	}
-	timeout = 1825
-	on_timeout = {
-	}
-	weight = 1000
-	should_be_pinned_by_default = yes
-}
-
-je_boxer_rebellion2_others = { # 추가, 의화단 청 vs 열강에서 열강용
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
 
 	immediate = {
-		c:CHI = { save_scope_as = chi_scope }
+		c:BXR = {
+			save_scope_as = taiping_scope # 텍스트 돌려쓰려고.
+		}
 	}
+
 	complete = {
 		custom_tooltip = {
-			text = boxer_rebellion_ended_tt
-			has_global_variable = boxer_rebellion_ended
-		}
-	}
-	fail = {
-		custom_tooltip = {
-			text = boxer_rebellion_ended_tt
-			has_global_variable = boxer_rebellion_ended
-		}
-		custom_tooltip = {
-			text = qing_owns_all_han_states_tt_third
-			NOT = {
-				any_state = {
-					state_region = { is_homeland = cu:han }
-					NOT = { owner = c:CHI }
+			text = taiping_destroyed
+			hidden_trigger = {
+				NOT = {
+					exists = c:BXR
 				}
 			}
 		}
-		#custom_tooltip = {
-		#	text = qing_owns_all_concessions_tt_third
-		#	c:CHI = {
-		#		NOT = {
-		#			any_scope_state = { has_variable_list = concession_owner_varlist }
-		#		}
-		#	}
-		#}
 	}
-	on_fail = {
-		add_radicals = {
-			value = small_radicals
+
+	on_complete = {
+		c:CHI ?= {
+			trigger_event = { id = boxer_rebellion_events.106 }
 		}
 	}
-	timeout = 1825
-	on_timeout = {
-		add_radicals = {
-			value = small_radicals
-		}
-	}
-	weight = 1000
-	should_be_pinned_by_default = yes
-}
-
-je_boxer_rebellion3_chi = { # 추가, 의화단 vs 청 열강에서 청용
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_qing
-
+	
 	fail = {
 		exists = c:BXR
-		c:BXR = {
-			is_diplomatic_play_committed_participant = no
-			is_at_war = no
+		OR = {
+			c:CHI ?= { has_truce_with = c:BXR }
+			NOT = { exists = c:CHI }
+		}
+	}
+	on_fail = {
+		c:CHI ?= {
+			trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
 		}
 	}
 
-	on_fail = {
+	weight = 1000
+	should_be_pinned_by_default = yes
+}
+
+je_boxer_rebellion_bxr = { # 청나라가 의화단 편을 듦.
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_global_international_situations
+
+	should_be_involved = {
+		OR = {
+			c:CHI ?= THIS
+			c:BXR ?= THIS
+			AND = {
+				country_rank >= rank_value:great_power
+				OR = {
+					has_interest_marker_in_region = sr:region_north_china
+					has_interest_marker_in_region = sr:region_south_china
+				}
+			}
+		}
 		
 	}
 
-	complete = {
-		NOT = { exists = c:BXR }
-	}
-	
-	on_complete = {
-	}
-
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-je_boxer_rebellion3_others = { # 추가, 의화단 vs 청 열강에서 열강용
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	fail = {
-		exists = c:BXR
-		c:BXR = {
-			is_diplomatic_play_committed_participant = no
-			is_at_war = no
+	should_show_when_not_involved = {
+		any_country = {
+			is_involved_in_journal_entry = je_boxer_rebellion
+		}
+		country_rank >= rank_value:great_power
+		OR = {
+			has_interest_marker_in_region = sr:region_north_china
+			has_interest_marker_in_region = sr:region_south_china
 		}
 	}
 
-	on_fail = {
-
+	complete = {
+		c:CHI ?= {
+			custom_tooltip = {
+				text = qing_owns_all_han_states_tt
+				NOT = {
+					any_state = {
+						state_region = { is_homeland = cu:han }
+						NOT = { owner = c:CHI }
+					}
+				}
+			}
+		}
 	}
 
-	complete = {
-		NOT = { exists = c:BXR }
+	on_complete = {
+		c:CHI ?= {
+			trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
+		}
 	}
 	
-	on_complete = {
+	timeout = 1825
+
+	on_timeout = {
+		c:CHI ?= {
+			trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
+		}
 	}
 
 	invalid = {
-		c:BXR = { is_at_war = yes }
-		NOT = {
-			is_diplomatic_play_involved_with = c:BXR
+		custom_tooltip = {
+			text = china_shatters_tt
+			has_global_variable = china_shatters
 		}
 	}
 
 	weight = 1000
 	should_be_pinned_by_default = yes
-
-	transferable = no
-}
-
-je_boxer_rebellion3_boxer = { # 추가, 의화단 vs 청 열강에서 의화단용
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_historical_content
-
-	fail = {
-		NOT = { exists = c:BXR }
-	}
-
-	on_fail = {
-	}
-
-	complete = {
-		is_diplomatic_play_committed_participant = no
-		is_at_war = no
-	}
-	
-	on_complete = {
-	}
-
-	weight = 1000
-	should_be_pinned_by_default = yes
-
-	transferable = no
 }
