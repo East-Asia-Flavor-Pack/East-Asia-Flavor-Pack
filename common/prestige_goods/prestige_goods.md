@@ -2,7 +2,7 @@
 # game/common/prestige_goods/prestige_goods.md
 # prestige_goods types
 	
-	# is_possible = {
+	# possible = {
 	
 	# }
 	

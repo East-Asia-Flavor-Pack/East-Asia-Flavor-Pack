@@ -54,6 +54,9 @@ some_treaty_article = {
     relations_improvement_max = 200
     relations_improvement_min = 100
 
+	max_target_involvement = x # The maximum involvement level the target country can have from this pact
+	target_involvement_applies_to = <source_country|target_country|mutual> # Whether the involvement level applies to the source country, target country or both (mutual), default source_country
+
     icon = path/to/icon
 
     maintenance_paid_by = source_country | target_country
@@ -126,7 +129,7 @@ some_treaty_article = {
     on_enforced = { effect block } # Executes in ADDITION to on_entry_into_force when treaty is imposed via play etc
 
     on_withdrawal = { effect block } # Executes when treaty is withdrawn from
-    on_break = { effect block } # Executes in ADDITION to on_withdrawal when treaty is withdrawn from within the binding period
+    on_break = { effect block } # Executes in ADDITION to on_withdrawal when treaty is intentionally broken within the binding period
 
     ai = {
         # Categories exist for AI evaluations and are as follows: economy, trade, military, military_defense, ideology, expansion, power_bloc and other
@@ -148,6 +151,7 @@ some_treaty_article = {
         building_type_input_filter = {}
         law_type_input_filter = {}
         country_input_filter = {}
+        ship_input_filter = {}
 
         # Value AI will pick
         quantity_input_value = { script value }
@@ -231,6 +235,8 @@ Currently, these are the supported flags:
 - `is_no_subventions`
 - `is_treaty_port`
 - `is_law_commitment`
+- `is_non_piracy_agreement`
+- `is_abandon_piracy`
 - `can_be_renegotiated`
 - `can_be_enforced`
 - `causes_state_transfer`
@@ -264,6 +270,7 @@ Currently, article types support these possible inputs
 - `building_type`
 - `law_type`
 - `country`
+- `ship`
 
 ### valid_triggers
 Triggers for each input that determine which subsection of that category of inputs is actually valid in this situation.

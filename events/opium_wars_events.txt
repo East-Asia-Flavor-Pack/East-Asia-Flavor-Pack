@@ -168,6 +168,7 @@ opium_wars.1 = {
 		add_radicals = {
 			value = medium_radicals
 		}
+		set_variable = opium_wars_gave_in
 		#if = {
 		#	limit = { has_journal_entry = je_warlord_china }
 		#	chi_remove_1_fragile_unity = yes
@@ -231,6 +232,10 @@ opium_wars.2 = {
 			type = je_opium_wars
 			target = scope:opium_wars_target_country
 		}
+		add_involvement = {
+			strategic_region = sr:region_south_china
+			value = 2500
+		}
 		hidden_effect = {
 			every_country = {
 				limit = {
@@ -265,6 +270,8 @@ opium_wars.2 = {
 			country = scope:opium_wars_target_country
 			value = 50
 		}
+
+		set_variable = opium_wars_ignored_ban
 
 		every_subject_or_below = {
 			limit = {
@@ -355,6 +362,7 @@ opium_wars.3 = {
 	}
 
 	immediate = {
+		set_variable = opium_wars_won
 		if = {
 			limit = { has_modifier = opium_wars_addiction_modifier }
 			remove_modifier = opium_wars_addiction_modifier
@@ -487,6 +495,7 @@ opium_wars.4 = {
 	}
 
 	immediate = {
+		save_scope_as = opium_wars_defeated_country
 		if = {
 			limit = { has_modifier = opium_wars_addiction_modifier }
 			remove_modifier = opium_wars_addiction_modifier
@@ -496,8 +505,11 @@ opium_wars.4 = {
 				any_country = {
 					has_variable = opium_wars_aggressor
 					any_scope_state = {
-						market = {
-							owner = ROOT
+						is_treaty_port = yes
+						state_region = {
+							any_scope_state = {
+								owner = root
+							}
 						}
 					}
 				}
@@ -506,8 +518,11 @@ opium_wars.4 = {
 				limit = {
 					has_variable = opium_wars_aggressor
 					any_scope_state = {
-						market = {
-							owner = ROOT
+						is_treaty_port = yes
+						state_region = {
+							any_scope_state = {
+								owner = root
+							}
 						}
 					}
 				}
@@ -522,6 +537,21 @@ opium_wars.4 = {
 						}
 					}
 					save_scope_as = treaty_port_state
+				}
+			}
+		}
+		if = {
+			limit = {
+				scope:opium_wars_defeated_country ?= c:CHI
+				OR = {
+					scope:opium_wars_treaty_port_winner ?= c:GBR
+					c:CHI ?= { has_law_or_variant = law_type:law_free_trade }
+				}
+			}
+			c:JAP ?= {
+				trigger_event = {
+					id = tenpo_events.6
+					popup = yes
 				}
 			}
 		}
