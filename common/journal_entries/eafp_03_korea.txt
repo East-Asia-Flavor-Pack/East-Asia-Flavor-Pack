@@ -191,11 +191,31 @@ REPLACE:je_gyojo_shinwon = {
 }
 
 REPLACE:je_korean_rebellion = {
-		
-	should_be_pinned_by_default_uninvolved_or_context = yes
+	should_be_pinned_by_default_uninvolved_or_context = no
+	should_be_pinned_by_default_involved = yes
 	icon = "gfx/interface/icons/event_icons/event_fire.dds"
 
-	group = je_group_crises
+	group = je_group_global_international_situations
+
+	should_be_involved = {
+		OR = {
+			c:KOR ?= this
+			civil_war_origin_country ?= c:KOR
+		}
+		# Japan and China are added by event
+	}
+
+	should_show_when_not_involved = {
+		OR = {
+			has_strategic_region_interest_tier = {
+				strategic_region = sr:region_northeast_asia
+				value >= 3
+			}
+			capital ?= {
+				is_in_geographic_region = geographic_region_northeast_asia
+			}
+		}
+	}
 
 	# Added by event
 
@@ -205,6 +225,12 @@ REPLACE:je_korean_rebellion = {
 			ruler = {
 				save_scope_as = korea_ruler_scope
 			}
+			overlord = {
+				save_scope_as = china_scope
+			}
+		}
+		c:JAP ?= {
+			save_scope_as = japan_scope
 		}
 		random_country = {
 			limit = {
@@ -214,149 +240,121 @@ REPLACE:je_korean_rebellion = {
 		}
 	}
 
+	custom_completion_header = je_korean_rebellion_government_victory
+
 	complete = {
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_gov
-			}
-			scope:korea_scope = {
-				has_revolution = no
-				custom_tooltip = {
-					text = korean_ruler_retained_tt
-					scope:korea_ruler_scope = {
-						is_ruler_of_own_country = yes
-					}
-				}
-			}
-		}
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_rebels
-			}
-			scope:korea_scope = {
-				has_revolution = no
-				custom_tooltip = {
-					text = korean_ruler_deposed_tt
-					NOT = {
-						scope:korea_ruler_scope ?= {
-							is_ruler_of_own_country = yes
-						}
-					}
+		scope:korea_scope ?= {
+			has_revolution = no
+			custom_tooltip = {
+				text = korean_ruler_retained_tt
+				scope:korea_ruler_scope = {
+					is_ruler_of_own_country = yes
 				}
 			}
 		}
 	}
+
+	custom_on_completion_header = je_korean_rebellion_on_government_victory	
 
 	on_complete = {
 		if = {
 			limit = {
-				c:JAP ?= this
+				scope:japan_scope ?= {
+					is_involved_in_journal_entry = je_korean_rebellion
+				}
 				c:KOR ?= {
 					is_subject = yes
-					overlord ?= {
-						OR = {
-							country_has_primary_culture = cu:han
-							country_has_primary_culture = cu:manchu
-						}
-					}
+					scope:china_scope ?= overlord
 				}
 			}
 			custom_tooltip = {
 				text = japan_demands_korea_tt
-				trigger_event = { id = gg_korea.8 days = 7 popup = yes}
+				scope:japan_scope ?= {
+					trigger_event = { id = gg_korea.8 days = 7 popup = yes}
+				}
 			}
 		}
-		add_modifier = {
-			name = modifier_victory_in_korean_intervention
-			days = long_modifier_time
+		scope:journal_entry ?= {
+			every_scope_je_involved = {
+				limit = {
+					OR = {
+						scope:china_scope ?= this
+						scope:japan_scope ?= this
+					}
+					has_variable = sided_with_korean_gov
+				}
+				add_modifier = {
+					name = modifier_victory_in_korean_intervention
+					days = long_modifier_time
+				}
+			}
+			every_scope_je_involved = {
+				limit = {
+					OR = {
+						scope:china_scope ?= this
+						scope:japan_scope ?= this
+					}
+					has_variable = sided_with_korean_rebels
+				}
+				add_modifier = {
+					name = modifier_failed_korean_intervention
+					days = long_modifier_time
+				}
+			}
 		}
 	}
+
+	custom_failure_header = je_korean_rebellion_rebel_victory
 
 	fail = {
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_gov
-				scope:korea_scope = {
-					has_revolution = yes
-				}
-			}
-			scope:korea_rebellion_scope = {
-				custom_tooltip = {
-					text = korea_fail_condition_war_tt
-					has_war_with = scope:korea_scope
-				}
-				custom_tooltip = {
-					text = korea_fail_condition_gov_tt
-					NOT = {
-						is_diplomatic_play_enemy_of = ROOT
-					}
-				}
-			}
-		}
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_rebels
-				scope:korea_scope = {
-					has_revolution = yes
-				}
-			}
-			scope:korea_scope = {
-				custom_tooltip = {
-					text = korea_fail_condition_war_tt
-					has_war_with = scope:korea_rebellion_scope
-				}
-				custom_tooltip = {
-					text = korea_fail_condition_rebels_tt
-					NOT = {
-						is_diplomatic_play_enemy_of = ROOT
-					}
-				}
-			}
-		}
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_gov
-				scope:korea_scope = {
-					has_revolution = no
-				}
-			}
-			scope:korea_scope = {
-				has_revolution = no
-				custom_tooltip = {
-					text = korean_ruler_deposed_tt
-					NOT = {
-						scope:korea_ruler_scope ?= {
-							is_ruler_of_own_country = yes
-						}
-					}
-				}
-			}
-		}
-		trigger_if = {
-			limit = {
-				has_variable = sided_with_korean_rebels
-				scope:korea_scope = {
-					has_revolution = no
-				}
-			}
-			scope:korea_scope = {
-				has_revolution = no
-				custom_tooltip = {
-					text = korean_ruler_retained_tt
+		c:KOR ?= {
+			has_revolution = no
+			custom_tooltip = {
+				text = korean_ruler_deposed_tt
+				OR = {
+					NOT = { exists = scope:korea_ruler_scope }
 					scope:korea_ruler_scope ?= {
-						is_ruler_of_own_country = yes
+						is_ruler_of_own_country = no
 					}
 				}
 			}
 		}
 	}
 
+	custom_on_failure_header = je_korean_rebellion_on_rebel_victory	
+
 	on_fail = {
-		add_modifier = {
-			name = modifier_failed_korean_intervention
-			days = normal_modifier_time
+		scope:journal_entry ?= {
+			every_scope_je_involved = {
+				limit = {
+					OR = {
+						scope:china_scope ?= this
+						scope:japan_scope ?= this
+					}
+					has_variable = sided_with_korean_rebels
+				}
+				add_modifier = {
+					name = modifier_victory_in_korean_intervention
+					days = long_modifier_time
+				}
+			}
+			every_scope_je_involved = {
+				limit = {
+					OR = {
+						scope:china_scope ?= this
+						scope:japan_scope ?= this
+					}
+					has_variable = sided_with_korean_gov
+				}
+				add_modifier = {
+					name = modifier_failed_korean_intervention
+					days = long_modifier_time
+				}
+			}
 		}
 	}
 
 	weight = 1000
+
+	can_revolution_inherit = yes
 }
