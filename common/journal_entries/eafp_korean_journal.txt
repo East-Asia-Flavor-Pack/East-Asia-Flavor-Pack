@@ -1,4 +1,4 @@
-##왕의 건강
+﻿##왕의 건강
 je_korean_kings_health = {
 	icon = "gfx/interface/icons/eafp_icons/medicine.dds"
 
@@ -379,7 +379,6 @@ je_korean_imsul_uprising = {
 
 	possible = {
 		radical_fraction = {
-			value >= 0.25
 		}
 	}
 
@@ -884,48 +883,89 @@ je_samjeong_ijeongcheong = {
 
 	group = je_group_historical_content
 
-	scripted_progress_bar = eafp_progress_bar_samjeong_ijeongcheong_progressiveness
 	scripted_progress_bar = eafp_progress_bar_samjeong_ijeongcheong_timer
 
 	scripted_button = eafp_scripted_button_samjeong_ijeongcheong_add_timer
-	scripted_button = eafp_scripted_button_samjeong_ijeongcheong_add_progressiveness
 
 	immediate = {
+		ruler = {
+			save_scope_as = ruler_scope
+		}
 		set_variable = {
-			name = samjeong_ijeongcheong_var
-			value = 0
+			name = eafp_var_samjeong_ijeongcheong_start_gdp
+			value = root.gdp
 		}
-		add_modifier = {
-			name = eafp_modi_samjeong_ijeongcheong
-			multiplier = var:samjeong_ijeongcheong_var
-		}
+	}
+
+	modifiers_while_active = {
+		eafp_modi_samjeong_ijeongcheong
 	}
 
 	complete = {
 		custom_tooltip = {
 			text = je_samjeong_ijeongcheong_complete_tt
+			samjeong_ijeongcheong_goals_completed >= 9
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = eafp_kor_mainline.229 }
+		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = je_samjeong_ijeongcheong_fail_tt
 			scope:journal_entry = {
 				"scripted_bar_progress(eafp_progress_bar_samjeong_ijeongcheong_timer)" <= 0
 			}
 		}
 	}
 
-	on_complete = {
-		trigger_event = { id = eafp_kor_mainline.226 }
-	}
-	event_outcome_completed_effect_desc = {
-		header = eafp_kor_mainline.226.oa
-		effect = {
-			remove_modifier = eafp_modi_samjeong_ijeongcheong
-			add_modifier = {
-				name = eafp_modi_samjeong_ijeongcheong
-				multiplier = {
-					value = scope:samjeong_ijeongcheong_scope
-					multiply = 0.02
-				}
-				days = normal_modifier_time
-			}
+	on_fail = {
+		if = {
+			limit = { samjeong_ijeongcheong_goals_completed >= 7 }
+			trigger_event = { id = eafp_kor_mainline.228 }
 		}
+		else_if = {
+			limit = { samjeong_ijeongcheong_goals_completed >= 5 }
+			trigger_event = { id = eafp_kor_mainline.227 }
+		}
+		else = {
+			trigger_event = { id = eafp_kor_mainline.226 }
+		}
+		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+	}
+
+	invalid = {
+		scope:ruler_scope = {
+			is_character_alive = no
+		}
+	}
+
+	on_invalid = {
+		trigger_event = { id = eafp_kor_mainline.230 popup = yes }
+		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = eafp_kor_mainline.229.oa
+		effect = {
+			set_variable = eafp_var_sam_all_clear
+		}
+	}
+
+	event_outcome_failed_effect_desc = {
+		header = eafp_kor_mainline.226.oa
+	}
+	event_outcome_failed_effect_desc = {
+		header = eafp_kor_mainline.227.oa
+	}
+	event_outcome_failed_effect_desc = {
+		header = eafp_kor_mainline.228.oa
+	}
+	event_outcome_failed_effect_desc = {
+		header = eafp_kor_mainline.229.oa
 	}
 	
 	weight = 1000
