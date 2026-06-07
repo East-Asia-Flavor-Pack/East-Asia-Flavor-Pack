@@ -1,0 +1,75 @@
+je_korean_foreign_mission = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_historical_content
+
+	scripted_button = eafp_scripted_button_kor_foreign_mission_recall
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = kor_foreign_mission_status_returning_home
+				trigger = {
+					exists = var:eafp_kor_foreign_mission_leader_storage_var
+					OR = {
+						has_variable = eafp_kor_foreign_mission_recalled
+						has_variable = eafp_kor_foreign_mission_en_route_home
+					}
+				}
+			}
+			triggered_desc = {
+				desc = kor_foreign_mission_status_returned_home
+				trigger = {
+					has_variable = eafp_kor_foreign_mission_returned_home
+					exists = var:eafp_kor_foreign_mission_leader_storage_var
+				}
+			}
+			triggered_desc = {
+				desc = kor_foreign_mission_status_leader_and_location
+				trigger = {
+					exists = var:eafp_kor_foreign_mission_leader_storage_var
+					has_variable = eafp_kor_foreign_mission_abroad
+				}
+			}
+			triggered_desc = {
+				desc = kor_foreign_mission_status_leader
+				trigger = {
+					exists = var:eafp_kor_foreign_mission_leader_storage_var
+				}
+			}
+		}
+	}
+
+	custom_completion_header = je_korean_foreign_mission_complete_header
+
+	complete = {
+		custom_tooltip = {
+			text = kor_foreign_mission_returned_home_tt
+			AND = {
+				has_variable = eafp_kor_foreign_mission_returned_home
+				has_variable = eafp_kor_foreign_mission_complete
+			}
+		}
+	}
+
+	custom_on_completion_header = je_korean_foreign_mission_on_complete_header
+
+	on_complete = {
+		trigger_event = { id = eafp_kor_foreign_mission.6 popup = yes }
+		custom_tooltip = kor_foreign_mission_report_depends_on_leader_and_route_tt
+	}
+
+	fail = {
+		NOT = { exists = c:KOR }
+	}
+
+	on_fail = {
+		hidden_effect = {
+			eafp_kor_foreign_mission_cleanup = yes
+		}
+	}
+
+	weight = 7000
+
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}

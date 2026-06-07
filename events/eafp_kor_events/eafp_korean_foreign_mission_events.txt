@@ -1,0 +1,364 @@
+namespace = eafp_kor_foreign_mission
+
+eafp_kor_foreign_mission.1 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.1.t
+	desc = eafp_kor_foreign_mission.1.d
+	flavor = eafp_kor_foreign_mission.1.f
+
+	event_image = {
+		video = "unspecific_steam_ship"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	trigger = {
+		c:KOR ?= THIS
+	}
+
+	immediate = {
+		ordered_scope_character = {
+			limit = {
+				NOR = {
+					has_role_of_type = ruler
+					has_role_of_type = heir
+					has_role_of_type = agitator
+				}
+				is_busy = no
+				interest_group ?= {
+					is_in_government = yes
+				}
+			}
+			position = 0
+			order_by = prominence
+			save_scope_as = kor_foreign_mission_leader_1
+		}
+		ordered_scope_character = {
+			limit = {
+				NOR = {
+					has_role_of_type = ruler
+					has_role_of_type = heir
+					has_role_of_type = agitator
+				}
+				is_busy = no
+				interest_group ?= {
+					is_in_government = yes
+				}
+				NOT = {
+					scope:kor_foreign_mission_leader_1 ?= this
+				}
+			}
+			position = 0
+			order_by = prominence
+			save_scope_as = kor_foreign_mission_leader_2
+		}
+		ordered_scope_character = {
+			limit = {
+				NOR = {
+					has_role_of_type = ruler
+					has_role_of_type = heir
+					has_role_of_type = agitator
+				}
+				is_busy = no
+				interest_group ?= {
+					is_in_government = yes
+				}
+				NOR = {
+					scope:kor_foreign_mission_leader_1 ?= this
+					scope:kor_foreign_mission_leader_2 ?= this
+				}
+			}
+			position = 0
+			order_by = prominence
+			save_scope_as = kor_foreign_mission_leader_3
+		}
+		ordered_scope_character = {
+			limit = {
+				NOR = {
+					has_role_of_type = ruler
+					has_role_of_type = heir
+					has_role_of_type = agitator
+				}
+				is_busy = no
+				interest_group ?= {
+					is_in_government = yes
+				}
+				NOR = {
+					scope:kor_foreign_mission_leader_1 ?= this
+					scope:kor_foreign_mission_leader_2 ?= this
+					scope:kor_foreign_mission_leader_3 ?= this
+				}
+			}
+			position = 0
+			order_by = prominence
+			save_scope_as = kor_foreign_mission_leader_4
+		}
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.1.a
+		default_option = yes
+		trigger = { exists = scope:kor_foreign_mission_leader_1 }
+		scope:kor_foreign_mission_leader_1 = {
+			set_character_busy_and_immortal = yes
+			set_variable = eafp_kor_foreign_mission_leader_var
+			ROOT = {
+				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
+				add_journal_entry = { type = je_korean_foreign_mission }
+				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.1.b
+		trigger = { exists = scope:kor_foreign_mission_leader_2 }
+		scope:kor_foreign_mission_leader_2 = {
+			set_character_busy_and_immortal = yes
+			set_variable = eafp_kor_foreign_mission_leader_var
+			ROOT = {
+				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
+				add_journal_entry = { type = je_korean_foreign_mission }
+				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.1.c
+		trigger = { exists = scope:kor_foreign_mission_leader_3 }
+		scope:kor_foreign_mission_leader_3 = {
+			set_character_busy_and_immortal = yes
+			set_variable = eafp_kor_foreign_mission_leader_var
+			ROOT = {
+				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
+				add_journal_entry = { type = je_korean_foreign_mission }
+				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+			}
+		}
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.1.e
+		trigger = { exists = scope:kor_foreign_mission_leader_4 }
+		scope:kor_foreign_mission_leader_4 = {
+			set_character_busy_and_immortal = yes
+			set_variable = eafp_kor_foreign_mission_leader_var
+			ROOT = {
+				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
+				add_journal_entry = { type = je_korean_foreign_mission }
+				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+			}
+		}
+	}
+}
+
+eafp_kor_foreign_mission.2 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.2.t
+	desc = eafp_kor_foreign_mission.2.d
+	flavor = eafp_kor_foreign_mission.2.f
+
+	event_image = {
+		video = "unspecific_steam_ship"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		NOT = { has_variable = eafp_kor_foreign_mission_returned_home }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.2.a
+		default_option = yes
+		set_variable = eafp_kor_foreign_mission_abroad
+		set_variable = eafp_kor_foreign_mission_world_tour
+		trigger_event = { id = eafp_kor_foreign_mission.3 days = 180 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.3 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.3.t
+	desc = eafp_kor_foreign_mission.3.d
+	flavor = eafp_kor_foreign_mission.3.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.3.a
+		default_option = yes
+		set_variable = eafp_kor_foreign_mission_extended_tour
+		trigger_event = { id = eafp_kor_foreign_mission.4 days = 180 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.4 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.4.t
+	desc = eafp_kor_foreign_mission.4.d
+	flavor = eafp_kor_foreign_mission.4.f
+
+	event_image = {
+		video = "unspecific_steam_ship"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.4.a
+		default_option = yes
+		set_variable = eafp_kor_foreign_mission_en_route_home
+		trigger_event = { id = eafp_kor_foreign_mission.5 days = 180 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.5 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.5.t
+	desc = eafp_kor_foreign_mission.5.d
+	flavor = eafp_kor_foreign_mission.5.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+	}
+
+	immediate = {
+		remove_variable = eafp_kor_foreign_mission_abroad
+		set_variable = eafp_kor_foreign_mission_returned_home
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.5.a
+		default_option = yes
+		set_variable = eafp_kor_foreign_mission_complete
+	}
+}
+
+eafp_kor_foreign_mission.6 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.6.t
+	desc = eafp_kor_foreign_mission.6.d
+	flavor = eafp_kor_foreign_mission.6.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	trigger = {
+		has_variable = eafp_kor_foreign_mission_complete
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.6.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_institutional_report
+			days = normal_modifier_time
+		}
+		if = {
+			limit = {
+				has_law_or_variant = law_type:law_hereditary_bureaucrats
+			}
+			activate_law = law_type:law_appointed_bureaucrats
+		}
+		var:eafp_kor_foreign_mission_leader_storage_var = {
+			interest_group = {
+				add_modifier = {
+					name = eafp_modi_kor_foreign_mission_enlightenment_approval
+					days = normal_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		set_variable = completed_je_korean_foreign_mission
+		eafp_kor_foreign_mission_cleanup = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.6.b
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_technical_report
+			days = normal_modifier_time
+		}
+		if = {
+			limit = { has_variable = eafp_kor_foreign_mission_extended_tour }
+			add_modifier = {
+				name = eafp_modi_kor_foreign_mission_military_observers
+				days = normal_modifier_time
+			}
+		}
+		set_variable = completed_je_korean_foreign_mission
+		eafp_kor_foreign_mission_cleanup = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.6.c
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_diplomatic_report
+			days = normal_modifier_time
+		}
+		every_country = {
+			limit = {
+				NOT = { this = root }
+				OR = {
+					country_rank >= rank_value:great_power
+					country_rank >= rank_value:major_power
+				}
+			}
+			change_relations = { country = ROOT value = 10 }
+		}
+		set_variable = completed_je_korean_foreign_mission
+		eafp_kor_foreign_mission_cleanup = yes
+	}
+}

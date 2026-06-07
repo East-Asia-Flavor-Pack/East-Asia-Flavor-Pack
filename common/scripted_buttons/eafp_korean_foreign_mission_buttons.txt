@@ -1,0 +1,90 @@
+eafp_scripted_button_kor_foreign_mission_start = {
+	name = eafp_scripted_button_kor_foreign_mission_start
+	desc = eafp_scripted_button_kor_foreign_mission_start_desc
+
+	visible = {
+		has_journal_entry = je_korean_reformation_diplomacy
+		NOT = { has_variable = completed_je_korean_foreign_mission }
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_start_law_tt
+			NOT = { has_law_or_variant = law_type:law_isolationism }
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_start_port_tt
+			any_scope_building = {
+				is_building_type = building_port
+			}
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_start_active_tt
+			NOT = { has_journal_entry = je_korean_foreign_mission }
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_start_candidate_tt
+			any_scope_character = {
+				NOR = {
+					has_role_of_type = ruler
+					has_role_of_type = heir
+					has_role_of_type = agitator
+				}
+				is_busy = no
+				interest_group ?= {
+					is_in_government = yes
+				}
+			}
+		}
+	}
+
+	effect = {
+		trigger_event = { id = eafp_kor_foreign_mission.1 popup = yes }
+	}
+
+	ai_chance = {
+		value = 100
+	}
+}
+
+eafp_scripted_button_kor_foreign_mission_recall = {
+	name = eafp_scripted_button_kor_foreign_mission_recall
+	desc = eafp_scripted_button_kor_foreign_mission_recall_desc
+
+	visible = {
+		has_journal_entry = je_korean_foreign_mission
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_recall_location_tt
+			has_variable = eafp_kor_foreign_mission_abroad
+		}
+		custom_tooltip = {
+			text = eafp_scripted_button_kor_foreign_mission_recall_not_returned_tt
+			NOR = {
+				has_variable = eafp_kor_foreign_mission_en_route_home
+				has_variable = eafp_kor_foreign_mission_returned_home
+			}
+		}
+		custom_tooltip = {
+			text = not_already_used_this_interaction_tt
+			NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		}
+	}
+
+	selected = {
+		has_variable = eafp_kor_foreign_mission_recalled
+	}
+
+	effect = {
+		custom_tooltip = eafp_scripted_button_kor_foreign_mission_recall_effect_tt
+		set_variable = eafp_kor_foreign_mission_recalled
+		set_variable = eafp_kor_foreign_mission_en_route_home
+		trigger_event = { id = eafp_kor_foreign_mission.5 days = 30 popup = yes }
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
