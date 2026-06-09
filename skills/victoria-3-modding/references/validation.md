@@ -1,4 +1,4 @@
-# Victoria 3 Mod Validation
+﻿# Victoria 3 Mod Validation
 
 ## Before Editing
 

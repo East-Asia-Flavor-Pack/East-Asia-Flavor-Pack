@@ -1,4 +1,4 @@
-character_role_example = {
+﻿character_role_example = {
 	type = politician 		# Archetype for this role, valid archetypes are politician/general/admiral/executive/agitator/ruler/heir/magnate. Roles do not need to have archetypes if they are fully controlled by script.
 	priority = 1			# Used to select the primary title for a character, higher priority gets selected over lower
 

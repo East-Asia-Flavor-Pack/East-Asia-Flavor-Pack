@@ -1,4 +1,4 @@
-	is_accepted_culture_and_religion = {
+﻿	is_accepted_culture_and_religion = {
 		if = {
 			limit = {
 				is_accepted_culture = no

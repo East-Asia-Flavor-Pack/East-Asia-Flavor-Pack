@@ -1,4 +1,4 @@
-# Victoria 3 File Map
+﻿# Victoria 3 File Map
 
 Use this as a navigation aid. Confirm details against the installed game root for the user's current version.
 

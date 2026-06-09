@@ -1,4 +1,4 @@
----
+﻿---
 name: victoria-3-modding
 description: Build, edit, review, or debug Victoria 3 mods using the local Victoria 3 game files, vanilla script examples, generated trigger/effect/modifier documentation, and existing mod repository patterns. Use for Paradox/Jomini scripting tasks involving common/*.txt, events/*.txt, localization/*.yml, gui/*.gui, map_data, gfx assets, journal entries, scripted effects/triggers/buttons/progress bars, countries, history, laws, buildings, companies, diplomatic actions, or East Asia Flavor Pack content.
 ---

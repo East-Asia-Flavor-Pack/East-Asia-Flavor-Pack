@@ -1,4 +1,4 @@
-	dp_example = {
+﻿	dp_example = {
 		requires_interest_marker = yes/no # default yes
 		enable_switch_sides = no # default no
 		allow_negotiated_peace = yes # default yes

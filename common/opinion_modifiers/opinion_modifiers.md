@@ -1,4 +1,4 @@
-	opinion_modifier_name = {
+﻿	opinion_modifier_name = {
 		opinion = {		#The opinion value applied when this modifier is added
 			base = number		#The starting value applied
 			modifiers		#Modifiers to the value

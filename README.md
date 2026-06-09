@@ -1,4 +1,4 @@
-# East Asia Flavor Pack
+﻿# East Asia Flavor Pack
 
 [![Validation](https://github.com/East-Asia-Flavor-Pack/East-Asia-Flavor-Pack/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/East-Asia-Flavor-Pack/East-Asia-Flavor-Pack/actions/workflows/validation.yml)
 <!-- 여기에 빨간 불이 들어왔을 시 뭔가 문제가 있다는 것이니, 공학자 팝한테 바로 알려주기를 부탁함 -->

@@ -1,4 +1,4 @@
-# Reference
+﻿# Reference
 ```
 some_class = {
     social_hierarchy = some_hierarchy

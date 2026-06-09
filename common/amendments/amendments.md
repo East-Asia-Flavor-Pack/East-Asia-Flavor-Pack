@@ -1,4 +1,4 @@
-amendment_key = {
+﻿amendment_key = {
 	parent = law_key                                        # optional reference to a law that dictates what stances IGs and movements have toward this amendment
 
 	allowed_laws = {                                        # list of laws that the amendment can be added to

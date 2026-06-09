@@ -1,4 +1,4 @@
-
+﻿
 Discrimination traits have a type and potentially a trait group. The type can be heritage, language or tradition. Heritage and Language type traits need to have a defined trait_group with a matching type as well. Tradition traits should not have a trait group defined. Religious heritage traits work the same as Cultural heritage traits.
 
 Examples:

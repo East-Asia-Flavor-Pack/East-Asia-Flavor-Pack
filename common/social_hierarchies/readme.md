@@ -1,4 +1,4 @@
-# Reference
+﻿# Reference
 ```
 your_hierarchy_key = {
     is_default = yes / no

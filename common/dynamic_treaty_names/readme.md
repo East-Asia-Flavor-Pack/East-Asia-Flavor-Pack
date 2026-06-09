@@ -1,4 +1,4 @@
-# Notes
+﻿# Notes
 
 ## party, not party
 Unless otherwise specified, in this document any mention of "party" or

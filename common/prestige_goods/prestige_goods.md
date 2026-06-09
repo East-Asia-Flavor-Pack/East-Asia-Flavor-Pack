@@ -1,4 +1,4 @@
-
+﻿
 # game/common/prestige_goods/prestige_goods.md
 # prestige_goods types
 	

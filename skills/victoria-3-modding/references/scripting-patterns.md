@@ -1,4 +1,4 @@
-# Victoria 3 Scripting Patterns
+﻿# Victoria 3 Scripting Patterns
 
 ## General Jomini Script
 

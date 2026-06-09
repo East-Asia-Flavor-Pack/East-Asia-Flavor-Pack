@@ -1,4 +1,4 @@
-     example_progress_bar5 = {
+﻿     example_progress_bar5 = {
         name = "PROGRESS_BAR_NAME1"
         desc = "PROGRESS_BAR_TEXT3" #This will be printed on the left side of the progress bar
        second_desc = "PROGRESS_BAR_TEXT3" #This will be printed on the right side of the progress bar
