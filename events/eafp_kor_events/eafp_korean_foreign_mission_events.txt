@@ -111,7 +111,7 @@ eafp_kor_foreign_mission.1 = {
 			ROOT = {
 				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
 				add_journal_entry = { type = je_korean_foreign_mission }
-				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+				trigger_event = { id = eafp_kor_foreign_mission.10 days = 15 popup = yes }
 			}
 		}
 	}
@@ -125,7 +125,7 @@ eafp_kor_foreign_mission.1 = {
 			ROOT = {
 				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
 				add_journal_entry = { type = je_korean_foreign_mission }
-				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+				trigger_event = { id = eafp_kor_foreign_mission.10 days = 15 popup = yes }
 			}
 		}
 	}
@@ -139,7 +139,7 @@ eafp_kor_foreign_mission.1 = {
 			ROOT = {
 				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
 				add_journal_entry = { type = je_korean_foreign_mission }
-				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+				trigger_event = { id = eafp_kor_foreign_mission.10 days = 15 popup = yes }
 			}
 		}
 	}
@@ -153,9 +153,51 @@ eafp_kor_foreign_mission.1 = {
 			ROOT = {
 				set_variable = { name = eafp_kor_foreign_mission_leader_storage_var value = PREV }
 				add_journal_entry = { type = je_korean_foreign_mission }
-				trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+				trigger_event = { id = eafp_kor_foreign_mission.10 days = 15 popup = yes }
 			}
 		}
+	}
+}
+
+eafp_kor_foreign_mission.10 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.10.t
+	desc = eafp_kor_foreign_mission.10.d
+	flavor = eafp_kor_foreign_mission.10.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		NOT = { has_variable = eafp_kor_foreign_mission_abroad }
+		NOT = { has_variable = eafp_kor_foreign_mission_returned_home }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.10.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_secret_departure
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.10.b
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_public_departure
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.2 days = 15 popup = yes }
 	}
 }
 
@@ -185,7 +227,323 @@ eafp_kor_foreign_mission.2 = {
 		default_option = yes
 		set_variable = eafp_kor_foreign_mission_abroad
 		set_variable = eafp_kor_foreign_mission_world_tour
-		trigger_event = { id = eafp_kor_foreign_mission.3 days = 180 popup = yes }
+		trigger_event = { id = eafp_kor_foreign_mission.11 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.11 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.11.t
+	desc = eafp_kor_foreign_mission.11.d
+	flavor = eafp_kor_foreign_mission.11.f
+
+	event_image = {
+		video = "europenorthamerica_capitalists_meeting"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.11.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_courtly_protocol
+			days = normal_modifier_time
+		}
+		scope:kor_foreign_mission_host_country = {
+			change_relations = { country = ROOT value = 20 }
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.12 days = 45 popup = yes }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.11.b
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_diplomatic_lessons
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.12 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.12 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.12.t
+	desc = eafp_kor_foreign_mission.12.d
+	flavor = eafp_kor_foreign_mission.12.f
+
+	event_image = {
+		video = "europenorthamerica_london_center"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.12.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_electric_light
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.13 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.13 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.13.t
+	desc = eafp_kor_foreign_mission.13.d
+	flavor = eafp_kor_foreign_mission.13.f
+
+	event_image = {
+		video = "europenorthamerica_london_center"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.13.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_vertical_city
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.14 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.14 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.14.t
+	desc = eafp_kor_foreign_mission.14.d
+	flavor = eafp_kor_foreign_mission.14.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.14.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_public_curiosity
+			days = normal_modifier_time
+		}
+		scope:kor_foreign_mission_host_country = {
+			change_relations = { country = ROOT value = 15 }
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.15 days = 45 popup = yes }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.14.b
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_dress_reform
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.15 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.15 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.15.t
+	desc = eafp_kor_foreign_mission.15.d
+	flavor = eafp_kor_foreign_mission.15.f
+
+	event_image = {
+		video = "unspecific_gears_pistons"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.15.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_machine_arsenal
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.17 days = 45 popup = yes }
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.15.b
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_scientific_arsenal
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.17 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.17 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.17.t
+	desc = eafp_kor_foreign_mission.17.d
+	flavor = eafp_kor_foreign_mission.17.f
+
+	event_image = {
+		video = "europenorthamerica_london_center"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.17.a
+		default_option = yes
+		add_modifier = {
+			name = eafp_modi_kor_foreign_mission_postal_observations
+			days = normal_modifier_time
+		}
+		trigger_event = { id = eafp_kor_foreign_mission.18 days = 45 popup = yes }
+	}
+}
+
+eafp_kor_foreign_mission.18 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = eafp_kor_foreign_mission.18.t
+	desc = eafp_kor_foreign_mission.18.d
+	flavor = eafp_kor_foreign_mission.18.f
+
+	event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+		has_journal_entry = je_korean_foreign_mission
+		has_variable = eafp_kor_foreign_mission_abroad
+		NOT = { has_variable = eafp_kor_foreign_mission_recalled }
+		any_country = {
+			NOT = { THIS = ROOT }
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	immediate = {
+		eafp_kor_foreign_mission_pick_host_country = yes
+	}
+
+	option = {
+		name = eafp_kor_foreign_mission.18.a
+		default_option = yes
+		trigger_event = { id = eafp_kor_foreign_mission.3 days = 45 popup = yes }
 	}
 }
 
