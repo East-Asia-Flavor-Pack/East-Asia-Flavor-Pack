@@ -1,0 +1,98 @@
+eafp_start_chinese_interregnum_effect = {
+	hidden_effect = {
+		if = {
+			limit = {
+				exists = global_var:chinese_central_government
+				NOT = { has_global_variable = eafp_chinese_interregnum_active }
+			}
+			set_global_variable = eafp_chinese_interregnum_active
+			global_var:chinese_central_government ?= {
+				save_scope_as = eafp_chinese_central_government_scope
+				set_variable = chinese_central_government
+				eafp_create_chinese_interregnum_bloc_effect = yes
+			}
+			add_contextless_journal_entry = je_chinese_interregnum
+		}
+		eafp_add_chinese_fragments_to_interregnum_effect = yes
+	}
+}
+
+eafp_create_chinese_interregnum_bloc_effect = {
+	if = {
+		limit = { is_in_power_bloc = no }
+		create_power_bloc = {
+			name = eafp_pb_chinese_interregnum
+			map_color = hsv{ 0.03 0.80 0.75 }
+			identity = identity_eafp_chinese_interregnum
+			principle = principle_eafp_chinese_interregnum_1
+		}
+	}
+	else_if = {
+		limit = {
+			is_power_bloc_leader = yes
+			power_bloc = {
+				NOT = { has_principle = principle:principle_eafp_chinese_interregnum_1 }
+			}
+		}
+		power_bloc = {
+			add_principle = principle_eafp_chinese_interregnum_1
+		}
+	}
+}
+
+eafp_add_chinese_fragments_to_interregnum_effect = {
+	if = {
+		limit = {
+			exists = global_var:chinese_central_government
+			global_var:chinese_central_government ?= {
+				is_in_power_bloc = yes
+			}
+		}
+		every_country = {
+			limit = {
+				eafp_can_join_chinese_interregnum_bloc = yes
+				NOT = { eafp_is_chinese_central_government = yes }
+			}
+			join_power_bloc = global_var:chinese_central_government
+		}
+	}
+}
+
+eafp_collapse_chinese_interregnum_effect = {
+	set_global_variable = eafp_chinese_interregnum_collapsed
+	if = {
+		limit = {
+			exists = global_var:chinese_central_government
+			global_var:chinese_central_government ?= {
+				is_in_power_bloc = yes
+				power_bloc = {
+					has_principle = principle:principle_eafp_chinese_interregnum_1
+				}
+			}
+		}
+		global_var:chinese_central_government ?= {
+			power_bloc = {
+				remove_principle = principle_eafp_chinese_interregnum_1
+			}
+		}
+	}
+	remove_global_variable = eafp_chinese_interregnum_active
+}
+
+eafp_peaceful_chinese_reunification_effect = {
+	save_scope_as = eafp_reunifying_central_government
+	every_country = {
+		limit = {
+			eafp_is_chinese_fragment = yes
+			NOT = { THIS = scope:eafp_reunifying_central_government }
+			NOT = { has_war_with = scope:eafp_reunifying_central_government }
+			is_subject = no
+		}
+		scope:eafp_reunifying_central_government = {
+			annex = PREV
+		}
+	}
+	remove_global_variable = eafp_chinese_interregnum_active
+	remove_global_variable = chinese_central_government
+	trigger_event = { id = warlord_china_events.101 popup = yes }
+}

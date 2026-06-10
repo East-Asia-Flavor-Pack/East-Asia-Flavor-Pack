@@ -1,0 +1,56 @@
+eafp_is_chinese_central_government = {
+	exists = global_var:chinese_central_government
+	global_var:chinese_central_government ?= THIS
+}
+
+eafp_is_chinese_fragment = {
+	has_global_variable = china_shatters
+	OR = {
+		has_variable = warlord_state
+		has_variable = chinese_central_government
+		eafp_is_chinese_central_government = yes
+		AND = {
+			country_has_primary_culture = cu:han
+			OR = {
+				is_in_geographic_region = geographic_region_china
+				is_in_geographic_region = geographic_region_manchuria_old
+				is_in_geographic_region = geographic_region_central_asia
+				is_in_geographic_region = geographic_region_himalayas
+			}
+		}
+		country_has_primary_culture = cu:yi
+		country_has_primary_culture = cu:manchu
+	}
+}
+
+eafp_can_join_chinese_interregnum_bloc = {
+	has_global_variable = eafp_chinese_interregnum_active
+	eafp_is_chinese_fragment = yes
+	is_country_alive = yes
+	NOT = { has_global_variable = eafp_chinese_interregnum_collapsed }
+}
+
+eafp_can_claim_chinese_central_government = {
+	eafp_can_join_chinese_interregnum_bloc = yes
+	is_subject = no
+	aggressive_diplomatic_plays_permitted = yes
+	NOT = { eafp_is_chinese_central_government = yes }
+	global_var:chinese_central_government ?= {
+		is_country_alive = yes
+		NOT = { has_war_with = ROOT }
+	}
+}
+
+eafp_has_foreign_war_against_chinese_fragment = {
+	eafp_is_chinese_central_government = yes
+	any_scope_war = {
+		is_war_participant = ROOT
+		any_war_participant = {
+			eafp_is_chinese_fragment = yes
+		}
+		any_war_participant = {
+			NOT = { eafp_is_chinese_fragment = yes }
+		}
+	}
+}
+

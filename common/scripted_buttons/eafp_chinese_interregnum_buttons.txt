@@ -1,0 +1,273 @@
+eafp_claim_chinese_central_government_button = {
+	name = "eafp_claim_chinese_central_government_button"
+	desc = "eafp_claim_chinese_central_government_button_desc"
+
+	visible = {
+		eafp_can_claim_chinese_central_government = yes
+	}
+
+	possible = {
+		eafp_can_claim_chinese_central_government = yes
+	}
+
+	effect = {
+		set_variable = eafp_claiming_chinese_central_government
+		create_diplomatic_play = {
+			name = eafp_claim_chinese_central_government
+			target_country = global_var:chinese_central_government
+			type = dp_leadership_china
+			add_war_goal = {
+				holder = ROOT
+				type = unification_leadership
+				target_country = global_var:chinese_central_government
+				primary_demand = yes
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 5
+	}
+}
+
+eafp_central_government_intervene_in_fragment_war_button = {
+	name = "eafp_central_government_intervene_in_fragment_war_button"
+	desc = "eafp_central_government_intervene_in_fragment_war_button_desc"
+
+	visible = {
+		eafp_is_chinese_central_government = yes
+		any_scope_war = {
+			NOT = { is_war_participant = ROOT }
+			any_war_participant = {
+				eafp_is_chinese_fragment = yes
+				NOT = { THIS = ROOT }
+			}
+			any_war_participant = {
+				NOT = { eafp_is_chinese_fragment = yes }
+			}
+		}
+	}
+
+	possible = {
+		eafp_is_chinese_central_government = yes
+		any_scope_war = {
+			NOT = { is_war_participant = ROOT }
+			any_war_participant = {
+				eafp_is_chinese_fragment = yes
+				NOT = { THIS = ROOT }
+			}
+			any_war_participant = {
+				NOT = { eafp_is_chinese_fragment = yes }
+			}
+		}
+	}
+
+	effect = {
+		random_scope_war = {
+			limit = {
+				NOT = { is_war_participant = ROOT }
+				any_war_participant = {
+					eafp_is_chinese_fragment = yes
+					NOT = { THIS = ROOT }
+				}
+				any_war_participant = {
+					NOT = { eafp_is_chinese_fragment = yes }
+				}
+			}
+			random_war_participant = {
+				limit = {
+					eafp_is_chinese_fragment = yes
+					NOT = { THIS = ROOT }
+				}
+				save_scope_as = eafp_fragment_to_defend
+			}
+			join_war = {
+				target = ROOT
+				side = scope:eafp_fragment_to_defend
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 25
+	}
+}
+
+eafp_central_government_call_fragments_to_war_button = {
+	name = "eafp_central_government_call_fragments_to_war_button"
+	desc = "eafp_central_government_call_fragments_to_war_button_desc"
+
+	visible = {
+		eafp_is_chinese_central_government = yes
+		is_at_war = yes
+		is_in_power_bloc = yes
+		any_scope_war = {
+			is_war_participant = ROOT
+			any_war_participant = {
+				NOT = { eafp_is_chinese_fragment = yes }
+			}
+		}
+	}
+
+	possible = {
+		eafp_is_chinese_central_government = yes
+		is_at_war = yes
+		is_in_power_bloc = yes
+		any_scope_war = {
+			is_war_participant = ROOT
+			any_war_participant = {
+				NOT = { eafp_is_chinese_fragment = yes }
+			}
+		}
+	}
+
+	effect = {
+		random_scope_war = {
+			limit = {
+				is_war_participant = ROOT
+				any_war_participant = {
+					NOT = { eafp_is_chinese_fragment = yes }
+				}
+			}
+			save_scope_as = eafp_chinese_call_to_war
+		}
+		power_bloc = {
+			every_power_bloc_member = {
+				limit = {
+					eafp_is_chinese_fragment = yes
+					NOT = { THIS = ROOT }
+					NOT = { has_war_with = ROOT }
+				}
+				random_list = {
+					70 = {
+						modifier = {
+							if = {
+								limit = {
+									ROOT = {
+										power_bloc = {
+											current_cohesion_number >= 60
+										}
+									}
+								}
+							}
+							add = 20
+						}
+						modifier = {
+							if = {
+								limit = {
+									owes_obligation_to = ROOT
+								}
+							}
+							add = 20
+						}
+						save_scope_as = eafp_called_fragment
+						scope:eafp_chinese_call_to_war = {
+							join_war = {
+								target = scope:eafp_called_fragment
+								side = ROOT
+							}
+						}
+					}
+					30 = {
+						set_variable = eafp_refused_chinese_war_call
+						ROOT = {
+							change_relations = {
+								country = PREV
+								value = -25
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 50
+	}
+}
+
+eafp_punish_refusing_chinese_fragment_button = {
+	name = "eafp_punish_refusing_chinese_fragment_button"
+	desc = "eafp_punish_refusing_chinese_fragment_button_desc"
+
+	visible = {
+		eafp_is_chinese_central_government = yes
+		aggressive_diplomatic_plays_permitted = yes
+		any_country = {
+			has_variable = eafp_refused_chinese_war_call
+			eafp_is_chinese_fragment = yes
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	possible = {
+		eafp_is_chinese_central_government = yes
+		aggressive_diplomatic_plays_permitted = yes
+		any_country = {
+			has_variable = eafp_refused_chinese_war_call
+			eafp_is_chinese_fragment = yes
+			NOT = { has_war_with = ROOT }
+		}
+	}
+
+	effect = {
+		random_country = {
+			limit = {
+				has_variable = eafp_refused_chinese_war_call
+				eafp_is_chinese_fragment = yes
+				NOT = { has_war_with = ROOT }
+			}
+			save_scope_as = eafp_refusing_fragment
+		}
+		create_diplomatic_play = {
+			name = eafp_punish_refusing_chinese_fragment
+			target_country = scope:eafp_refusing_fragment
+			type = dp_unify_china
+			war = yes
+			add_war_goal = {
+				holder = ROOT
+				type = annex_country
+				target_country = scope:eafp_refusing_fragment
+				primary_demand = yes
+			}
+		}
+		scope:eafp_refusing_fragment = {
+			remove_variable = eafp_refused_chinese_war_call
+		}
+	}
+
+	ai_chance = {
+		value = 20
+	}
+}
+
+eafp_peaceful_chinese_reunification_button = {
+	name = "eafp_peaceful_chinese_reunification_button"
+	desc = "eafp_peaceful_chinese_reunification_button_desc"
+
+	visible = {
+		eafp_is_chinese_central_government = yes
+		is_in_power_bloc = yes
+		power_bloc = {
+			current_cohesion_number >= 100
+		}
+	}
+
+	possible = {
+		eafp_is_chinese_central_government = yes
+		is_in_power_bloc = yes
+		is_at_war = no
+		power_bloc = {
+			current_cohesion_number >= 100
+		}
+	}
+
+	effect = {
+		eafp_peaceful_chinese_reunification_effect = yes
+	}
+
+	ai_chance = {
+		value = 100
+	}
+}

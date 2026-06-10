@@ -1,0 +1,120 @@
+je_chinese_interregnum = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_global_international_situations
+
+	scripted_button = eafp_claim_chinese_central_government_button
+	scripted_button = eafp_central_government_intervene_in_fragment_war_button
+	scripted_button = eafp_central_government_call_fragments_to_war_button
+	scripted_button = eafp_punish_refusing_chinese_fragment_button
+	scripted_button = eafp_peaceful_chinese_reunification_button
+
+	widget = {
+		gui = "gui/journal_entry_widgets/eafp_je_chinese_interregnum_widgets.gui"
+		name = "eafp_chinese_interregnum_widget"
+		container = "custom_widget_container_1"
+	}
+
+	should_be_involved = {
+		OR = {
+			eafp_is_chinese_fragment = yes
+			eafp_is_chinese_central_government = yes
+		}
+	}
+
+	should_show_when_not_involved = {
+		has_global_variable = eafp_chinese_interregnum_active
+		OR = {
+			country_rank >= rank_value:major_power
+			has_interest_marker_in_region = sr:region_north_china
+			has_interest_marker_in_region = sr:region_south_china
+		}
+	}
+
+	immediate = {
+		if = {
+			limit = { exists = global_var:chinese_central_government }
+			global_var:chinese_central_government ?= {
+				save_scope_as = central_government
+			}
+		}
+	}
+
+	immediate_all_involved = {
+		if = {
+			limit = {
+				eafp_can_join_chinese_interregnum_bloc = yes
+				NOT = { eafp_is_chinese_central_government = yes }
+			}
+			join_power_bloc = global_var:chinese_central_government
+		}
+	}
+
+	invalid = {
+		OR = {
+			has_global_variable = eafp_chinese_interregnum_collapsed
+			NOT = { has_global_variable = eafp_chinese_interregnum_active }
+			NOT = { exists = global_var:chinese_central_government }
+			global_var:chinese_central_government ?= { is_country_alive = no }
+		}
+	}
+
+	on_invalid = {
+		eafp_collapse_chinese_interregnum_effect = yes
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			eafp_add_chinese_fragments_to_interregnum_effect = yes
+			if = {
+				limit = { exists = global_var:chinese_central_government }
+				global_var:chinese_central_government ?= {
+					save_scope_as = central_government
+					if = {
+						limit = {
+							is_in_power_bloc = yes
+							power_bloc = {
+								current_cohesion_number <= 0
+							}
+						}
+						eafp_collapse_chinese_interregnum_effect = yes
+					}
+				}
+			}
+		}
+	}
+
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_chinese_interregnum_status_reunification
+				trigger = {
+					exists = global_var:chinese_central_government
+					global_var:chinese_central_government ?= {
+						is_in_power_bloc = yes
+						power_bloc = {
+							current_cohesion_number >= 100
+						}
+					}
+				}
+			}
+			triggered_desc = {
+				desc = je_chinese_interregnum_status_collapse
+				trigger = {
+					exists = global_var:chinese_central_government
+					global_var:chinese_central_government ?= {
+						is_in_power_bloc = yes
+						power_bloc = {
+							current_cohesion_number <= 10
+						}
+					}
+				}
+			}
+			desc = je_chinese_interregnum_status
+		}
+	}
+
+	weight = 1000
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
