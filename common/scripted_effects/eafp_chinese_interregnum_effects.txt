@@ -1,23 +1,4 @@
-eafp_start_chinese_interregnum_effect = {
-	hidden_effect = {
-		if = {
-			limit = {
-				exists = global_var:chinese_central_government
-				NOT = { has_global_variable = eafp_chinese_interregnum_active }
-			}
-			set_global_variable = eafp_chinese_interregnum_active
-			global_var:chinese_central_government ?= {
-				save_scope_as = eafp_chinese_central_government_scope
-				set_variable = chinese_central_government
-				eafp_create_chinese_interregnum_bloc_effect = yes
-			}
-			add_contextless_journal_entry = je_chinese_interregnum
-		}
-		eafp_add_chinese_fragments_to_interregnum_effect = yes
-	}
-}
-
-eafp_create_chinese_interregnum_bloc_effect = {
+﻿eafp_create_chinese_interregnum_bloc_effect = {
 	if = {
 		limit = { is_in_power_bloc = no }
 		create_power_bloc = {
@@ -41,25 +22,16 @@ eafp_create_chinese_interregnum_bloc_effect = {
 }
 
 eafp_add_chinese_fragments_to_interregnum_effect = {
-	if = {
+	every_country = {
 		limit = {
-			exists = global_var:chinese_central_government
-			global_var:chinese_central_government ?= {
-				is_in_power_bloc = yes
-			}
+			eafp_can_join_chinese_interregnum_bloc = yes
+			NOT = { eafp_is_chinese_central_government = yes }
 		}
-		every_country = {
-			limit = {
-				eafp_can_join_chinese_interregnum_bloc = yes
-				NOT = { eafp_is_chinese_central_government = yes }
-			}
-			join_power_bloc = global_var:chinese_central_government
-		}
+		join_power_bloc = global_var:chinese_central_government
 	}
 }
 
 eafp_collapse_chinese_interregnum_effect = {
-	set_global_variable = eafp_chinese_interregnum_collapsed
 	if = {
 		limit = {
 			exists = global_var:chinese_central_government
@@ -76,7 +48,7 @@ eafp_collapse_chinese_interregnum_effect = {
 			}
 		}
 	}
-	remove_global_variable = eafp_chinese_interregnum_active
+	remove_global_variable = chinese_central_government
 }
 
 eafp_peaceful_chinese_reunification_effect = {
@@ -92,7 +64,6 @@ eafp_peaceful_chinese_reunification_effect = {
 			annex = PREV
 		}
 	}
-	remove_global_variable = eafp_chinese_interregnum_active
 	remove_global_variable = chinese_central_government
 	trigger_event = { id = warlord_china_events.101 popup = yes }
 }

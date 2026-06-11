@@ -1,4 +1,4 @@
-je_chinese_interregnum = {
+﻿je_chinese_interregnum = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	group = je_group_global_international_situations
@@ -16,48 +16,34 @@ je_chinese_interregnum = {
 	}
 
 	should_be_involved = {
-		OR = {
-			eafp_is_chinese_fragment = yes
-			eafp_is_chinese_central_government = yes
-		}
+		eafp_is_chinese_fragment = yes
 	}
 
 	should_show_when_not_involved = {
-		has_global_variable = eafp_chinese_interregnum_active
+		country_rank >= rank_value:major_power
 		OR = {
-			country_rank >= rank_value:major_power
 			has_interest_marker_in_region = sr:region_north_china
 			has_interest_marker_in_region = sr:region_south_china
 		}
 	}
 
 	immediate = {
-		if = {
-			limit = { exists = global_var:chinese_central_government }
-			global_var:chinese_central_government ?= {
-				save_scope_as = central_government
-			}
+		global_var:chinese_central_government ?= {
+			eafp_create_chinese_interregnum_bloc_effect = yes
 		}
+		#eafp_add_chinese_fragments_to_interregnum_effect = yes
 	}
 
 	immediate_all_involved = {
-		if = {
-			limit = {
-				eafp_can_join_chinese_interregnum_bloc = yes
-				NOT = { eafp_is_chinese_central_government = yes }
-			}
-			join_power_bloc = global_var:chinese_central_government
-		}
+		join_power_bloc = global_var:chinese_central_government
 	}
 
-	invalid = {
-		OR = {
-			has_global_variable = eafp_chinese_interregnum_collapsed
-			NOT = { has_global_variable = eafp_chinese_interregnum_active }
-			NOT = { exists = global_var:chinese_central_government }
-			global_var:chinese_central_government ?= { is_country_alive = no }
-		}
-	}
+	#invalid = {
+	#	OR = {
+	#		NOT = { exists = global_var:chinese_central_government }
+	#		global_var:chinese_central_government ?= { is_country_alive = no }
+	#	}
+	#}
 
 	on_invalid = {
 		eafp_collapse_chinese_interregnum_effect = yes

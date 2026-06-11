@@ -31,6 +31,7 @@ description: Build, edit, review, or debug Victoria 3 mods using the local Victo
    - Add events under `events/` with a clear namespace.
    - Add all visible strings to every required `localization/<language>/..._l_<language>.yml` file.
    - Add GUI/assets only when script-side support and localization are already wired.
+   - When creating or editing text files for the mod, save them as UTF-8 with BOM and CRLF line endings.
 
 6. Validate by search and by game logs.
    - Run targeted `rg` checks for duplicate keys, missing localization keys, and unreferenced scripted content.
@@ -48,6 +49,7 @@ Read only the reference needed for the task:
 
 - Preserve Paradox script formatting: tabs/spaces are less important than clear braces, stable keys, and readable nested scopes.
 - Do not hand-roll a parser for Jomini script unless the task needs automation; use targeted search and vanilla examples for normal edits.
+- Save created or modified mod text files as UTF-8 with BOM and CRLF line endings.
 - Keep identifiers stable once referenced by localization, events, scripted effects, GUI, or history.
 - When adding a new feature, include script definitions, event flow, localization, and validation searches in the same pass.
 - When unsure about scope, inspect a vanilla file that uses the same trigger/effect before writing.

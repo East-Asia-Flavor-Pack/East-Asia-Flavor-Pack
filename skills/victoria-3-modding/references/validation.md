@@ -12,6 +12,7 @@ rg -n "\bnew_key\b" common events localization gui map_data
 
 ## Script Checks
 
+- Encoding and line endings: created or modified mod text files should be UTF-8 with BOM and CRLF.
 - Brace balance: inspect the edited block and a few lines above/below. Most Victoria 3 script failures are unbalanced braces, misplaced `limit`, or wrong scope.
 - Duplicate keys: search the new top-level key across the mod.
 - References: every event, JE, scripted effect, trigger, button, progress bar, GUI widget, modifier, and asset reference should resolve somewhere.
@@ -28,6 +29,7 @@ rg -n "my_event\.1|my_journal_entry|my_tooltip_key" localization
 
 Check:
 
+- Localization files are UTF-8 with BOM and CRLF like other edited mod text files.
 - Loc file has the correct language header.
 - Key names match script references exactly.
 - Quotes are balanced.
