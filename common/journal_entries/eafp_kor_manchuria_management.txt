@@ -1,0 +1,194 @@
+je_eafp_manchurian_policy = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_foreign_affairs
+
+	is_shown_in_lobby = {
+		c:KOR ?= this
+	}
+
+	should_be_involved = {
+		OR = {
+			c:KOR ?= this
+			c:CHI ?= this
+			eafp_manchuria_has_manchurian_state = yes
+		}
+	}
+
+	should_show_when_not_involved = {
+		always = no
+	}
+
+	is_shown_when_inactive = {
+		c:KOR ?= {
+			eafp_kor_manchuria_policy_prerequisite = yes
+			NOT = { has_variable = eafp_manchurian_claims_granted_var }
+			NOT = { has_variable = eafp_manchurian_policy_complete_var }
+		}
+	}
+
+	possible = {
+		c:KOR ?= {
+			eafp_kor_manchuria_policy_prerequisite = yes
+			NOT = { has_variable = eafp_manchurian_claims_granted_var }
+			NOT = { has_variable = eafp_manchurian_policy_complete_var }
+		}
+	}
+
+	immediate = {
+		c:KOR ?= {
+			s:STATE_SHENGJING = { add_claim = ROOT }
+			s:STATE_SOUTHERN_MANCHURIA = { add_claim = ROOT }
+			s:STATE_NORTHERN_MANCHURIA = { add_claim = ROOT }
+			set_variable = eafp_manchurian_claims_granted_var
+		}
+		eafp_manchurian_policy_add_involved_countries = yes
+	}
+
+	status_desc = {
+		triggered_desc = {
+			desc = je_eafp_manchurian_policy_status_ready
+			trigger = { c:KOR ?= { eafp_manchuria_owns_all_manchurian_states = yes } }
+		}
+		triggered_desc = {
+			desc = je_eafp_manchurian_policy_status
+			trigger = { always = yes }
+		}
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = eafp_manchuria_owns_all_manchurian_states_tt
+			c:KOR ?= {
+				eafp_manchuria_owns_all_manchurian_states = yes
+			}
+		}
+	}
+
+	on_complete = {
+		c:KOR ?= {
+			if = {
+				limit = {
+					NOT = { is_involved_in_journal_entry = je_eafp_manchurian_management }
+					NOT = { has_inactive_journal_entry = je_eafp_manchurian_management }
+					NOT = { has_variable = eafp_manchurian_policy_complete_var }
+				}
+				add_contextless_journal_entry = je_eafp_manchurian_management
+			}
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = je_eafp_manchurian_management
+		effect = {
+			custom_tooltip = eafp_manchuria_outcome_manchurian_management_tt
+		}
+	}
+
+	invalid = {
+		NOT = { exists = c:KOR }
+	}
+
+	weight = 6000
+
+	on_weekly_pulse = {
+		effect = {
+			eafp_manchurian_policy_add_involved_countries = yes
+		}
+	}
+
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
+
+je_eafp_manchurian_management = {
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+
+	group = je_group_foreign_affairs
+
+	is_shown_in_lobby = {
+		c:KOR ?= this
+	}
+
+	should_be_involved = {
+		OR = {
+			c:KOR ?= this
+			c:CHI ?= this
+			eafp_manchuria_has_manchurian_state = yes
+		}
+	}
+
+	should_show_when_not_involved = {
+		always = no
+	}
+
+	scripted_button = button_je_eafp_manchuria_settlement
+	scripted_button = button_je_eafp_manchuria_expand_arable_land
+
+	is_shown_when_inactive = {
+		c:KOR ?= {
+			eafp_manchuria_owns_all_manchurian_states = yes
+			NOT = { has_variable = eafp_manchurian_policy_complete_var }
+		}
+	}
+
+	possible = {
+		c:KOR ?= {
+			eafp_manchuria_owns_all_manchurian_states = yes
+			NOT = { has_variable = eafp_manchurian_policy_complete_var }
+		}
+	}
+
+	immediate = {
+		eafp_manchurian_management_add_involved_countries = yes
+	}
+
+	status_desc = {
+		triggered_desc = {
+			desc = je_eafp_manchurian_management_status_ready
+			trigger = { c:KOR ?= { eafp_manchuria_management_ready = yes } }
+		}
+		triggered_desc = {
+			desc = je_eafp_manchurian_management_status
+			trigger = { always = yes }
+		}
+	}
+
+	complete = {
+		custom_tooltip = {
+			text = eafp_manchuria_management_ready_tt
+			c:KOR ?= {
+				eafp_manchuria_management_ready = yes
+			}
+		}
+	}
+
+	on_complete = {
+		c:KOR ?= {
+			set_variable = eafp_manchurian_policy_complete_var
+			trigger_event = { id = eafp_manchuria.20 popup = yes }
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = eafp_manchuria.20.a
+		effect = {
+			custom_tooltip = eafp_manchuria_outcome_manchurian_settlement_tt
+		}
+	}
+
+	invalid = {
+		NOT = { exists = c:KOR }
+	}
+
+	weight = 6000
+
+	on_weekly_pulse = {
+		effect = {
+			eafp_manchurian_management_add_involved_countries = yes
+		}
+	}
+
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}

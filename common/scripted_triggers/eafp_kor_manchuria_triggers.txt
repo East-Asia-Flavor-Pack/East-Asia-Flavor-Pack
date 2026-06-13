@@ -1,0 +1,82 @@
+eafp_manchuria_is_core_manchurian_state = {
+	OR = {
+		state_region = s:STATE_SHENGJING
+		state_region = s:STATE_SOUTHERN_MANCHURIA
+		state_region = s:STATE_NORTHERN_MANCHURIA
+	}
+}
+
+eafp_manchuria_has_manchurian_state = {
+	any_scope_state = {
+		eafp_manchuria_is_core_manchurian_state = yes
+		owner = ROOT
+	}
+}
+
+eafp_manchuria_owns_all_manchurian_states = {
+	owns_entire_state_region = STATE_SHENGJING
+	owns_entire_state_region = STATE_SOUTHERN_MANCHURIA
+	owns_entire_state_region = STATE_NORTHERN_MANCHURIA
+}
+
+eafp_kor_manchuria_policy_prerequisite = {
+	OR = {
+		has_variable = korean_reformation_complete_var
+		has_variable = completed_je_korean_reformation_military
+		AND = {
+			has_variable = korean_reformation_var
+			var:korean_reformation_var >= 2
+		}
+	}
+}
+
+eafp_manchuria_development_ready = {
+	eafp_manchuria_development_value >= 60
+}
+
+eafp_manchuria_settlement_ready = {
+	s:STATE_SHENGJING.region_state:KOR = {
+		culture_percent_state = {
+			target = cu:korean
+			value >= 0.10
+		}
+	}
+	s:STATE_SOUTHERN_MANCHURIA.region_state:KOR = {
+		culture_percent_state = {
+			target = cu:korean
+			value >= 0.10
+		}
+	}
+	s:STATE_NORTHERN_MANCHURIA.region_state:KOR = {
+		culture_percent_state = {
+			target = cu:korean
+			value >= 0.10
+		}
+	}
+}
+
+eafp_manchuria_administration_ready = {
+	s:STATE_SHENGJING.region_state:KOR = {
+		tax_capacity >= tax_capacity_usage
+	}
+	s:STATE_SOUTHERN_MANCHURIA.region_state:KOR = {
+		tax_capacity >= tax_capacity_usage
+	}
+	s:STATE_NORTHERN_MANCHURIA.region_state:KOR = {
+		tax_capacity >= tax_capacity_usage
+	}
+}
+
+eafp_manchuria_management_ready = {
+	eafp_manchuria_development_ready = yes
+	eafp_manchuria_settlement_ready = yes
+	eafp_manchuria_administration_ready = yes
+}
+
+eafp_manchurian_policy_actor = {
+	OR = {
+		c:KOR ?= this
+		c:CHI ?= this
+		eafp_manchuria_has_manchurian_state = yes
+	}
+}
