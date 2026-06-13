@@ -1,0 +1,415 @@
+﻿je_ryukyu_rivalry = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds" #TODO
+
+	group = je_group_global_international_situations
+	scripted_progress_bar = je_ryukyu_rivalry_score_bar
+	scripted_progress_bar = je_ryukyu_rivalry_progress_bar
+	
+	scripted_button = je_ryukyu_rivalry_reaffirm_suzerainty_button
+	scripted_button = je_ryukyu_rivalry_sway_merchants_button
+	scripted_button = je_ryukyu_rivalry_inspect_defenses_button
+	scripted_button = je_ryukyu_rivalry_honor_kikoeogimi_button
+	scripted_button = button_je_eafp_ryukyu_dispatch_envoys # 추가
+	scripted_button = button_je_eafp_ryukyu_arm_harbors # 추가
+
+	is_shown_in_lobby = {
+		OR = {
+			c:JAP = THIS
+			c:CHI = THIS
+			c:RYU = THIS
+			c:KOR = THIS # 추가
+		}
+		has_dlc_feature = ep2_content
+	}
+
+	is_shown_when_inactive = {
+		has_dlc_feature = ep2_content
+	}
+
+	modifiers_while_active = {
+		modifier_ryukyu_strained_diplomatic_corps
+	}
+
+	possible = {
+		c:JAP = {
+			NOR = {
+				has_law_or_variant = law_type:law_isolationism
+				has_law_or_variant = law_type:law_closed_borders
+			}
+		}
+		exists = c:RYU
+		exists = c:CHI
+	}
+
+	should_be_involved = {
+		OR = {
+			c:JAP ?= this
+			c:CHI ?= this
+			c:RYU ?= this
+			AND = { # 추가
+				c:KOR ?= this
+				has_variable = eafp_ryukyu_intervention_var
+			}
+		}
+	}
+
+	should_show_when_not_involved = {
+		capital ?= {
+			is_in_geographic_region = geographic_region_northeast_asia
+		}
+	}
+
+	immediate = {
+		c:RYU ?= {
+			save_scope_as = ryukyu_scope
+			trigger_event = { id = ryukyu_rivalry.8 popup = yes }
+		}
+		c:JAP ?= {
+			save_scope_as = japan_scope
+			add_modifier = {
+				name = modifier_ryukyu_strained_diplomatic_corps
+				days = stupidly_long_modifier_time
+			}
+			trigger_event = { id = ryukyu_rivalry.8 popup = yes }
+		}
+		c:CHI ?= {
+			save_scope_as = china_scope
+			add_modifier = {
+				name = modifier_ryukyu_strained_diplomatic_corps
+				days = stupidly_long_modifier_time
+			}
+			trigger_event = { id = ryukyu_rivalry.8 popup = yes }
+		}
+		c:KOR ?= { # 추가
+			if = {
+				limit = {
+					has_variable = eafp_var_sam_all_clear
+					NOT = { has_variable = eafp_ryukyu_intervention_offered_var }
+					NOT = { has_variable = eafp_ryukyu_intervention_var }
+					NOT = { has_variable = eafp_ryukyu_intervention_declined_var }
+				}
+				set_variable = eafp_ryukyu_intervention_offered_var
+				trigger_event = { id = eafp_ryukyu.1 days = 7 popup = yes }
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+
+		}
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			scope:journal_entry = {
+				every_scope_je_involved = {
+					limit = {
+						NOR = {
+							c:JAP ?= this
+							c:CHI ?= this
+							c:RYU ?= this
+							AND = { # 추가
+								c:KOR ?= this
+								has_variable = eafp_ryukyu_intervention_var
+							}
+							capital = {
+								is_in_geographic_region = geographic_region_south_east_asia
+							}
+						}
+					}
+					scope:journal_entry = { remove_involved_country = prev }
+				}
+			}
+			if = { # 추가
+				limit = {
+					c:KOR ?= {
+						has_variable = eafp_var_sam_all_clear
+						NOT = { has_variable = eafp_ryukyu_intervention_offered_var }
+						NOT = { has_variable = eafp_ryukyu_intervention_var }
+						NOT = { has_variable = eafp_ryukyu_intervention_declined_var }
+					}
+				}
+				c:KOR ?= {
+					set_variable = eafp_ryukyu_intervention_offered_var
+					trigger_event = { id = eafp_ryukyu.1 popup = yes }
+				}
+			}
+			if = { # 추가
+				limit = {
+					c:KOR ?= {
+						has_variable = eafp_ryukyu_intervention_var
+						NOT = { is_involved_in_journal_entry = je_ryukyu_rivalry }
+					}
+				}
+				scope:journal_entry = {
+					add_involved_country = c:KOR
+				}
+			}
+		}
+	}
+
+	custom_completion_header = je_ryukyu_rivalry_victory_japan
+
+	complete = {
+		custom_tooltip = {
+			text = ryukyu_influence_victory_japan_tt
+			scope:journal_entry = {
+			"scripted_bar_progress(je_ryukyu_rivalry_score_bar)" >= 40
+			}
+		}
+		#is_goal_complete = yes
+	}
+
+	custom_on_completion_header = je_ryukyu_rivalry_on_japan_victory
+
+	on_complete = {
+		if = {
+			limit = {
+				c:RYU ?= {
+					is_subject_of = c:JAP
+				}
+			}
+			custom_tooltip = {
+				text = ryukyu_rivalry_completion_japan_victory_tt
+			}
+			c:JAP ?= {
+				ig:ig_armed_forces = {
+					add_modifier = {
+						name = modifier_ryukyu_rivalry_southern_secured
+						days = normal_modifier_time
+					}
+				}
+			}
+		}
+		else = {
+			custom_tooltip = {
+				text = ryukyu_rivalry_completion_japan_victory_subject_tt
+			}
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+        header = ryukyu_rivalry.5.t
+        effect = {
+            c:JAP ?= {
+				add_modifier = {
+					name = modifier_ryukyu_rivalry_succeeded_ryukyu
+					days = long_modifier_time
+				}
+				ig:ig_armed_forces = {
+					add_modifier = {
+						name = modifier_ryukyu_rivalry_southern_secured
+						days = normal_modifier_time
+					}
+				}
+			}
+			c:CHI ?= {
+				add_modifier = {
+					name = modifier_ryukyu_rivalry_failed_ryukyu
+					days = long_modifier_time
+				}
+			}
+        }
+    }
+
+	on_complete_all_involved = {
+		c:JAP ?= {
+			save_scope_as = victor_scope
+		}
+		c:CHI ?= {
+			save_scope_as = loser_scope
+		}
+		if = {
+			limit = {
+				has_variable = ryukyu_rival_member
+			}
+		remove_modifier = modifier_ryukyu_strained_diplomatic_corps
+		trigger_event = { id = ryukyu_rivalry.5 popup = yes }
+		}
+	}
+
+	is_progressing = { 
+
+	}
+
+	progress_desc = {
+
+	}
+
+	custom_failure_header = je_ryukyu_rivalry_victory_china
+
+	fail = {
+		AND = {
+			exists = c:RYU
+			custom_tooltip = {
+				text = ryukyu_influence_victory_china_tt
+				scope:journal_entry = {
+				"scripted_bar_progress(je_ryukyu_rivalry_score_bar)" <= -40
+				}
+			}
+		}
+	}
+
+	on_fail = {
+		if = {
+			limit = {
+				c:RYU = {
+					is_subject_of = scope:china_scope
+				}
+			}
+			custom_tooltip = {
+				text = ryukyu_rivalry_completion_china_victory_tt
+			}
+		}
+		else = {
+			custom_tooltip = {
+				text = ryukyu_rivalry_completion_china_victory_subject_tt
+			}
+			c:CHI ?= {
+				ig:ig_intelligentsia = {
+					add_modifier = {
+						name = modifier_ryukyu_rivalry_scholars_pleased
+						days = normal_modifier_time
+					}
+				}
+			}
+		}
+	}
+
+	event_outcome_failed_effect_desc = {
+        header = ryukyu_rivalry.5.t
+        effect = {
+            c:CHI ?= {
+				add_modifier = {
+					name = modifier_ryukyu_rivalry_succeeded_ryukyu
+					days = long_modifier_time
+				}
+				ig:ig_intelligentsia = {
+					add_modifier = {
+						name = modifier_ryukyu_rivalry_scholars_pleased
+						days = normal_modifier_time
+					}
+				}
+			}
+			c:JAP ?= {
+				add_modifier = {
+					name = modifier_ryukyu_rivalry_failed_ryukyu
+					days = long_modifier_time
+				}
+			}
+        }
+    }
+
+	custom_on_failure_header = je_ryukyu_rivalry_on_china_victory
+
+	on_fail_all_involved = {
+		c:CHI ?= {
+			save_scope_as = victor_scope
+		}
+		c:JAP ?= {
+			save_scope_as = loser_scope
+		}
+		if = {
+			limit = {
+				has_variable = ryukyu_rival_member
+			}
+		remove_modifier = modifier_ryukyu_strained_diplomatic_corps
+		trigger_event = { id = ryukyu_rivalry.5 popup = yes }
+		}
+	}
+
+	invalid = {
+		OR = {
+			c:RYU ?= {
+				is_subject = yes
+				overlord = {
+					NOR = {
+						c:CHI ?= this
+						c:JAP ?= this
+					}
+				}
+			}
+			c:JAP ?= {
+				is_subject = yes
+			}
+			c:CHI ?= {
+				is_subject = yes
+			}
+			NOT = {
+				exists = c:JAP
+			}
+			NOT = {
+				exists = c:CHI
+			}
+			NOT = {
+				exists = c:RYU
+			}
+			custom_tooltip = {
+				text = ryukyu_win_tt
+				scope:journal_entry = {
+				#global_var:ryukyu_influence <= -20 #TBD
+				"scripted_bar_progress(je_ryukyu_rivalry_progress_bar)" = 100
+				}
+			}
+		}
+	}
+
+	on_invalid_all_involved = {
+		remove_modifier = modifier_ryukyu_strained_diplomatic_corps
+		if = {
+			limit = {
+				scope:journal_entry = {
+					"scripted_bar_progress(je_ryukyu_rivalry_progress_bar)" = 100
+				}
+			}
+			if = { # 추가
+				limit = {
+					c:KOR ?= {
+						has_variable = eafp_ryukyu_intervention_var
+						can_have_as_subject = { who = c:RYU type = subject_type_tributary }
+					}
+					c:RYU ?= {
+						is_subject = no
+					}
+				}
+				c:KOR ?= { # 추가
+					create_diplomatic_pact = {
+						country = c:RYU
+						type = tributary
+					}
+					if = {
+						limit = {
+							NOT = { is_involved_in_journal_entry = je_eafp_taiwan_pioneer }
+							NOT = { has_inactive_journal_entry = je_eafp_taiwan_pioneer }
+							NOT = { has_variable = eafp_taiwan_pioneer_complete_var }
+							NOT = { has_variable = eafp_taiwan_pioneer_failed_var }
+						}
+						add_contextless_journal_entry = je_eafp_taiwan_pioneer
+					}
+					trigger_event = { id = eafp_ryukyu.2 popup = yes }
+				}
+			}
+			else = {
+				trigger_event = { id = ryukyu_rivalry.7 popup = yes } # 이건 원본
+			}
+		}
+	}
+
+	current_value = {
+	}
+
+	goal_add_value = {
+		value = 120
+	}
+
+	progressbar = no
+
+	weight = 10000
+
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = no
+
+	can_revolution_inherit = yes
+
+}

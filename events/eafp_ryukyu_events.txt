@@ -1,0 +1,358 @@
+﻿namespace = eafp_ryukyu
+
+eafp_ryukyu.1 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.1.t
+	desc = eafp_ryukyu.1.d
+	flavor = eafp_ryukyu.1.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		c:KOR ?= this
+		exists = c:RYU
+		exists = c:JAP
+		exists = c:CHI
+		has_variable = eafp_var_sam_all_clear
+		has_variable = eafp_ryukyu_intervention_offered_var
+		NOT = { has_variable = eafp_ryukyu_intervention_var }
+		NOT = { has_variable = eafp_ryukyu_intervention_declined_var }
+	}
+
+	option = {
+		name = eafp_ryukyu.1.a
+		default_option = yes
+		set_variable = eafp_ryukyu_intervention_var
+		custom_tooltip = eafp_ryukyu_intervention_effect_tt
+		je:je_ryukyu_rivalry = {
+			add_involved_country = ROOT
+		}
+	}
+
+	option = {
+		name = eafp_ryukyu.1.b
+		set_variable = eafp_ryukyu_intervention_declined_var
+		custom_tooltip = eafp_ryukyu_non_intervention_effect_tt
+	}
+}
+
+eafp_ryukyu.2 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.2.t
+	desc = eafp_ryukyu.2.d
+	flavor = eafp_ryukyu.2.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		c:KOR ?= this
+		c:RYU ?= {
+			is_subject_of = ROOT
+		}
+	}
+
+	option = {
+		name = eafp_ryukyu.2.a
+		default_option = yes
+		custom_tooltip = eafp_ryukyu_tributary_outcome_tt
+	}
+}
+
+eafp_ryukyu.3 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.3.t
+	desc = eafp_ryukyu.3.d
+	flavor = eafp_ryukyu.3.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		c:KOR ?= this
+		is_involved_in_journal_entry = je_eafp_taiwan_pioneer
+		c:RYU ?= {
+			is_subject_of = ROOT
+		}
+	}
+
+	option = {
+		name = eafp_ryukyu.3.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_pioneer_start_tt
+	}
+}
+
+eafp_ryukyu.4 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.4.t
+	desc = eafp_ryukyu.4.d
+	flavor = eafp_ryukyu.4.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		c:KOR ?= this
+		has_variable = eafp_taiwan_pioneer_complete_var
+	}
+
+	option = {
+		name = eafp_ryukyu.4.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_pioneer_complete_tt
+	}
+}
+
+eafp_ryukyu.5 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.5.t
+	desc = eafp_ryukyu.5.d
+	flavor = eafp_ryukyu.5.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		c:KOR ?= this
+		has_variable = eafp_taiwan_pioneer_failed_var
+	}
+
+	option = {
+		name = eafp_ryukyu.5.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_pioneer_failed_tt
+	}
+}
+
+eafp_ryukyu.6 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.6.t
+	desc = eafp_ryukyu.6.d
+	flavor = eafp_ryukyu.6.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		c:KOR ?= this
+		is_involved_in_journal_entry = je_eafp_taiwan_pioneer
+		has_variable = eafp_taiwan_survey_active_var
+	}
+
+	option = {
+		name = eafp_ryukyu.6.a
+		default_option = yes
+		change_variable = { name = eafp_taiwan_pioneer_var add = 20 }
+		add_treasury = { value = credit multiply = -0.005 }
+		s:STATE_FORMOSA = {
+			random_scope_state = {
+				limit = { NOT = { owner = ROOT } }
+				owner = {
+					change_relations = {
+						country = root
+						value = -5
+					}
+				}
+			}
+		}
+		if = {
+			limit = { var:eafp_taiwan_pioneer_var > 100 }
+			set_variable = { name = eafp_taiwan_pioneer_var value = 100 }
+		}
+		remove_variable = on_expedition
+		remove_variable = eafp_taiwan_survey_active_var
+		custom_tooltip = eafp_taiwan_survey_force_effect_tt
+	}
+
+	option = {
+		name = eafp_ryukyu.6.b
+		change_variable = { name = eafp_taiwan_pioneer_var add = 12 }
+		add_treasury = { value = credit multiply = -0.003 }
+		c:RYU ?= {
+			change_relations = {
+				country = ROOT
+				value = 10
+			}
+		}
+		if = {
+			limit = { var:eafp_taiwan_pioneer_var > 100 }
+			set_variable = { name = eafp_taiwan_pioneer_var value = 100 }
+		}
+		remove_variable = on_expedition
+		remove_variable = eafp_taiwan_survey_active_var
+		custom_tooltip = eafp_taiwan_survey_careful_effect_tt
+	}
+}
+
+eafp_ryukyu.7 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.7.t
+	desc = eafp_ryukyu.7.d
+	flavor = eafp_ryukyu.7.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	option = {
+		name = eafp_ryukyu.7.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_demand_acceptance_chance_tt
+		remove_variable = eafp_taiwan_demand_pending_var
+		every_scope_state = {
+			limit = {
+				state_region = s:STATE_FORMOSA
+				owner = ROOT
+			}
+			set_state_owner = c:KOR
+			add_cultural_community = cu:korean
+		}
+		change_relations = { country = c:KOR value = -10 }
+		c:KOR ?= {
+			set_variable = eafp_taiwan_pioneer_resolved_var
+			set_variable = eafp_taiwan_demand_accepted_var
+			add_modifier = { name = eafp_taiwan_route_documents days = normal_modifier_time }
+			trigger_event = { id = eafp_ryukyu.8 popup = yes }
+		}
+		ai_chance = {
+			base = 50
+			modifier = { trigger = { naval_power_projection < c:KOR.naval_power_projection } add = 35 }
+			modifier = { trigger = { naval_power_projection > c:KOR.naval_power_projection } add = -35 }
+			modifier = { trigger = { is_at_war = yes } add = 15 }
+		}
+	}
+
+	option = {
+		name = eafp_ryukyu.7.b
+		custom_tooltip = eafp_taiwan_demand_refusal_chance_tt
+		remove_variable = eafp_taiwan_demand_pending_var
+		s:STATE_FORMOSA = {
+			if = {
+				limit = {
+					any_scope_state = {
+						owner = ROOT
+					}
+				}
+				add_claim = c:KOR
+			}
+		}
+		change_relations = { country = c:KOR value = -25 }
+		c:KOR ?= {
+			set_variable = eafp_taiwan_pioneer_resolved_var
+			set_variable = eafp_taiwan_demand_rejected_var
+			trigger_event = { id = eafp_ryukyu.9 popup = yes }
+		}
+		ai_chance = {
+			base = 50
+			modifier = { trigger = { naval_power_projection > c:KOR.naval_power_projection } add = 35 }
+			modifier = { trigger = { naval_power_projection < c:KOR.naval_power_projection } add = -35 }
+			modifier = { trigger = { is_at_war = yes } add = -15 }
+		}
+	}
+}
+
+eafp_ryukyu.8 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.8.t
+	desc = eafp_ryukyu.8.d
+	flavor = eafp_ryukyu.8.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		c:KOR ?= this
+		has_variable = eafp_taiwan_demand_accepted_var
+	}
+
+	option = {
+		name = eafp_ryukyu.8.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_demand_accepted_tt
+	}
+}
+
+eafp_ryukyu.9 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_ryukyu.9.t
+	desc = eafp_ryukyu.9.d
+	flavor = eafp_ryukyu.9.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	trigger = {
+		c:KOR ?= this
+		has_variable = eafp_taiwan_demand_rejected_var
+	}
+
+	option = {
+		name = eafp_ryukyu.9.a
+		default_option = yes
+		custom_tooltip = eafp_taiwan_demand_rejected_tt
+	}
+}

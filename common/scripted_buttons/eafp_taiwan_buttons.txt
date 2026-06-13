@@ -1,0 +1,46 @@
+﻿button_je_eafp_taiwan_demand = {
+	name = button_je_eafp_taiwan_demand
+	desc = button_je_eafp_taiwan_demand_desc
+
+	visible = {
+		c:KOR ?= this
+		is_involved_in_journal_entry = je_eafp_taiwan_pioneer
+		NOT = { owns_entire_state_region = STATE_FORMOSA }
+	}
+
+	cooldown = { days = 365 }
+
+	possible = {
+		custom_tooltip = {
+			text = eafp_taiwan_influence_100_tt
+			var:eafp_taiwan_pioneer_var >= 100
+		}
+		s:STATE_FORMOSA = {
+			any_scope_state = {
+				NOT = { owner = ROOT }
+			}
+		}
+	}
+
+	effect = {
+		every_scope_state = {
+			limit = {
+				state_region = s:STATE_FORMOSA
+				NOT = { owner = ROOT }
+			}
+			owner = {
+				if = {
+					limit = {
+						NOT = { has_variable = eafp_taiwan_demand_pending_var }
+					}
+					set_variable = eafp_taiwan_demand_pending_var
+					trigger_event = { id = eafp_ryukyu.7 popup = yes }
+				}
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 5
+	}
+}

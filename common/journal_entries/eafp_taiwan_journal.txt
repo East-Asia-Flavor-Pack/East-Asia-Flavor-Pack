@@ -1,0 +1,172 @@
+﻿je_eafp_taiwan_pioneer = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+
+	group = je_group_global_international_situations
+
+	is_shown_in_lobby = {
+		OR = {
+			c:KOR ?= this
+			c:RYU ?= this
+		}
+	}
+
+	should_be_involved = {
+		OR = {
+			c:KOR ?= this
+			c:RYU ?= this
+		}
+	}
+
+	should_show_when_not_involved = {
+		always = no
+	}
+
+	scripted_button = button_je_eafp_taiwan_demand
+
+	is_shown_when_inactive = {
+		c:KOR ?= {
+			NOT = { has_variable = eafp_taiwan_pioneer_complete_var }
+			NOT = { has_variable = eafp_taiwan_pioneer_failed_var }
+		}
+		c:RYU ?= { is_subject_of = c:KOR }
+	}
+
+	possible = {
+		c:RYU ?= {
+			is_subject_of = c:KOR
+		}
+	}
+
+	immediate = {
+		c:KOR ?= {
+			if = {
+				limit = {
+					NOT = { exists = var:eafp_taiwan_pioneer_var }
+				}
+				set_variable = {
+					name = eafp_taiwan_pioneer_var
+					value = 0
+				}
+			}
+			trigger_event = { id = eafp_ryukyu.3 days = 1 popup = yes }
+		}
+	}
+
+	status_desc = {
+		triggered_desc = {
+			desc = je_eafp_taiwan_pioneer_status_ready
+			trigger = {
+				c:KOR ?= {
+					var:eafp_taiwan_pioneer_var >= 100
+				}
+			}
+		}
+		triggered_desc = {
+			desc = je_eafp_taiwan_pioneer_status
+			trigger = { always = yes }
+		}
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			c:KOR ?= {
+				if = {
+					limit = {
+						var:eafp_taiwan_pioneer_var < 100
+					}
+					change_variable = {
+						name = eafp_taiwan_pioneer_var
+						add = 3
+					}
+				}
+				if = {
+					limit = {
+						c:RYU ?= {
+							relations:c:KOR >= relations_threshold:amicable
+						}
+					}
+					change_variable = {
+						name = eafp_taiwan_pioneer_var
+						add = 1
+					}
+				}
+				if = {
+					limit = {
+						naval_power_projection >= 100
+					}
+					change_variable = {
+						name = eafp_taiwan_pioneer_var
+						add = 1
+					}
+				}
+				if = {
+					limit = {
+						var:eafp_taiwan_pioneer_var > 100
+					}
+					set_variable = {
+						name = eafp_taiwan_pioneer_var
+						value = 100
+					}
+				}
+			}
+		}
+	}
+
+	complete = {
+		c:KOR ?= {
+			OR = {
+				has_variable = eafp_taiwan_pioneer_resolved_var
+				owns_entire_state_region = STATE_FORMOSA
+			}
+		}
+	}
+
+	on_complete = {
+		c:KOR ?= {
+			set_variable = eafp_taiwan_pioneer_complete_var
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = eafp_ryukyu.4.a
+		effect = {
+			custom_tooltip = eafp_taiwan_pioneer_resolved_tt
+		}
+	}
+
+	fail = {
+		c:KOR ?= {
+			NOT = { has_variable = eafp_taiwan_pioneer_resolved_var }
+			OR = {
+				NOT = { exists = c:RYU }
+				NOT = {
+					c:RYU ?= {
+						is_subject_of = c:KOR
+					}
+				}
+			}
+		}
+	}
+
+	on_fail = {
+		c:KOR ?= {
+			set_variable = eafp_taiwan_pioneer_failed_var
+			trigger_event = { id = eafp_ryukyu.5 popup = yes }
+		}
+	}
+
+	current_value = {
+		value = c:KOR.var:eafp_taiwan_pioneer_var
+	}
+
+	goal_add_value = {
+		add = 100
+	}
+
+	progressbar = yes
+
+	weight = 5000
+
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
