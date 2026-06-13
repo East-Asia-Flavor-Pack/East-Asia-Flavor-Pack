@@ -104,6 +104,59 @@ kor_sedo = {
 	}
 }
 
+kor_manchurian_policy = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_variable = eafp_var_sam_all_clear
+		NOT = { has_journal_entry = je_eafp_manchurian_policy }
+		NOT = { has_journal_entry = je_eafp_manchurian_management }
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {
+		add_journal_entry = {
+			type = je_eafp_manchurian_policy
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_own_manchuria = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		NOT = { eafp_manchuria_owns_all_manchurian_states = yes }
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {
+		every_state = {
+			limit = {
+				OR = {
+					state_region = s:STATE_SHENGJING
+					state_region = s:STATE_SOUTHERN_MANCHURIA
+					state_region = s:STATE_NORTHERN_MANCHURIA
+				}
+			}
+			set_state_owner = ROOT
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
 chi_chiwes1 = {	
 	is_shown = {
 		has_global_variable = eafp_debug_mode
@@ -185,35 +238,6 @@ chi_collapse = {
 		set_variable = {
 			name = china_warlord_explosion_sum
 			value = 0
-		}
-	}
-
-	ai_chance = {
-		value = 0
-	}
-}
-
-eafp_debug_own_manchuria = {
-	is_shown = {
-		has_global_variable = eafp_debug_mode
-		c:KOR ?= this
-		NOT = { eafp_manchuria_owns_all_manchurian_states = yes }
-	}
-
-	possible = {
-		is_player = yes
-	}
-
-	when_taken = {
-		every_state = {
-			limit = {
-				OR = {
-					state_region = s:STATE_SHENGJING
-					state_region = s:STATE_SOUTHERN_MANCHURIA
-					state_region = s:STATE_NORTHERN_MANCHURIA
-				}
-			}
-			set_state_owner = ROOT
 		}
 	}
 
