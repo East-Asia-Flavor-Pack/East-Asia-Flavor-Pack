@@ -1,0 +1,161 @@
+﻿taiping_revolutionary_fervor_progress_bar = {
+	name = "taiping_revolutionary_fervor_progress_bar_name"
+	desc = "taiping_revolutionary_fervor_progress_bar_desc"
+
+	default = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_taiping_revolution }
+			add = {
+				desc = "taiping_revolutionary_fervor_progress_bar_base"
+				value = -2
+			}
+			add = {
+				desc = "taiping_revolutionary_fervor_progress_bar_unincorporated"
+				value = 0
+				every_scope_state = {
+					limit = { is_incorporated = no }
+					add = -1
+				}
+			}
+			if = {
+				limit = { bureaucracy < 0 }
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_bureaucracy"
+					value = -3
+				}
+			}
+			if = {
+				limit = { authority < 0 }
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_authority"
+					value = -2
+				}
+			}
+			if = {
+				limit = { government_legitimacy < 50 }
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_legitimacy"
+					value = -2
+				}
+			}
+			if = {
+				limit = {
+					capital = {
+						NOT = { owner = controller }
+					}
+				}
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_capital_occupied"
+					value = -5
+				}
+			}
+			if = {
+				limit = {
+					NOT = { has_variable = taiping_fervor_beijing_taken }
+					exists = s:STATE_BEIJING.region_state:CHI
+					s:STATE_BEIJING.region_state:CHI.controller = ROOT
+				}
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_beijing_taken"
+					value = 15
+				}
+			}
+			if = {
+				limit = {
+					bureaucracy > 0
+					authority > 0
+					government_legitimacy >= 70
+					NOT = {
+						any_scope_state = {
+							is_incorporated = no
+						}
+					}
+				}
+				add = {
+					desc = "taiping_revolutionary_fervor_progress_bar_stable_order"
+					value = 2
+				}
+			}
+		}
+	}
+
+	start_value = 100
+	min_value = 0
+	max_value = 100
+}
+
+taiping_internal_conflict_progress_bar = {
+	name = "taiping_internal_conflict_progress_bar_name"
+	desc = "taiping_internal_conflict_progress_bar_desc"
+
+	default_bad = yes
+
+	monthly_progress = {
+		if = {
+			limit = { has_journal_entry = je_taiping_internal_conflict }
+			add = {
+				desc = "taiping_internal_conflict_progress_bar_base"
+				value = 2
+			}
+			if = {
+				limit = { authority < 0 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_authority"
+					value = 3
+				}
+			}
+			if = {
+				limit = { government_legitimacy < 50 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_legitimacy"
+					value = 2
+				}
+			}
+			if = {
+				limit = { bureaucracy < 0 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_bureaucracy"
+					value = 2
+				}
+			}
+			if = {
+				limit = {
+					je:je_taiping_revolution ?= {
+						"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" < 40
+					}
+				}
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_fervor"
+					value = 2
+				}
+			}
+			if = {
+				limit = { authority > 100 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_high_authority"
+					value = -1
+				}
+			}
+			if = {
+				limit = { government_legitimacy > 70 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_high_legitimacy"
+					value = -1
+				}
+			}
+			if = {
+				limit = { bureaucracy > 0 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_positive_bureaucracy"
+					value = -1
+				}
+			}
+		}
+	}
+
+	start_value = 10
+	min_value = 0
+	max_value = 100
+}

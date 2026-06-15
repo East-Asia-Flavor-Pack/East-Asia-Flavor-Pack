@@ -399,3 +399,139 @@ taiping_relocate_the_capital_set_capital = {
 		set_capital = STATE_XIAN
 	}
 }
+
+eafp_taiping_refresh_fervor_modifier = {
+	hidden_effect = {
+		remove_modifier = taiping_fervor_high_modifier
+		remove_modifier = taiping_fervor_low_modifier
+		if = {
+			limit = {
+				je:je_taiping_revolution ?= {
+					"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" > 50
+				}
+			}
+			add_modifier = {
+				name = taiping_fervor_high_modifier
+				multiplier = {
+					value = je:je_taiping_revolution.scripted_bar_progress:taiping_revolutionary_fervor_progress_bar
+					subtract = 50
+					divide = 50
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				je:je_taiping_revolution ?= {
+					"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" < 50
+				}
+			}
+			add_modifier = {
+				name = taiping_fervor_low_modifier
+				multiplier = {
+					value = 50
+					subtract = je:je_taiping_revolution.scripted_bar_progress:taiping_revolutionary_fervor_progress_bar
+					divide = 50
+				}
+			}
+		}
+	}
+}
+
+eafp_taiping_change_fervor = {
+	hidden_effect = {
+		add_progress = {
+			name = taiping_revolutionary_fervor_progress_bar
+			value = $VALUE$
+		}
+		eafp_taiping_refresh_fervor_modifier = yes
+	}
+}
+
+eafp_taiping_change_internal_conflict = {
+	hidden_effect = {
+		if = {
+			limit = { NOT = { has_variable = taiping_internal_conflict } }
+			set_variable = {
+				name = taiping_internal_conflict
+				value = 10
+			}
+		}
+		add_progress = {
+			value = $VALUE$
+			name = taiping_internal_conflict_progress_bar
+		}
+		change_variable = {
+			name = taiping_internal_conflict
+			add = $VALUE$
+		}
+		clamp_variable = {
+			name = taiping_internal_conflict
+			min = 0
+			max = 100
+		}
+	}
+}
+
+eafp_taiping_revolution_fervor_monthly = {
+	hidden_effect = {
+		if = {
+			limit = {
+				NOT = { has_variable = taiping_fervor_beijing_taken }
+				exists = s:STATE_BEIJING.region_state:CHI
+				s:STATE_BEIJING.region_state:CHI.controller = ROOT
+			}
+			set_variable = taiping_fervor_beijing_taken
+		}
+		eafp_taiping_refresh_fervor_modifier = yes
+	}
+}
+
+eafp_taiping_internal_conflict_monthly = {
+	hidden_effect = {
+		set_variable = {
+			name = taiping_internal_conflict
+			value = "scripted_bar_progress(taiping_internal_conflict_progress_bar)"
+		}
+		clamp_variable = {
+			name = taiping_internal_conflict
+			min = 0
+			max = 100
+		}
+		if = {
+			limit = {
+				var:taiping_internal_conflict >= 40
+				NOT = { has_variable = taiping_internal_conflict_warning_fired }
+			}
+			set_variable = taiping_internal_conflict_warning_fired
+			trigger_event = { id = heavenly.1006 popup = yes }
+		}
+		if = {
+			limit = {
+				var:taiping_internal_conflict >= 70
+				NOT = { has_variable = taiping_internal_conflict_crisis_fired }
+			}
+			set_variable = taiping_internal_conflict_crisis_fired
+			trigger_event = { id = heavenly.1002 popup = yes }
+		}
+		if = {
+			limit = {
+				var:taiping_internal_conflict >= 100
+				NOT = { has_variable = taiping_internal_conflict_collapse_fired }
+			}
+			set_variable = taiping_internal_conflict_collapse_fired
+			trigger_event = { id = heavenly.1008 popup = yes }
+		}
+	}
+}
+
+eafp_taiping_cleanup_administration = {
+	hidden_effect = {
+		remove_modifier = taiping_fervor_high_modifier
+		remove_modifier = taiping_fervor_low_modifier
+		remove_variable = taiping_internal_conflict
+		remove_variable = taiping_internal_conflict_warning_fired
+		remove_variable = taiping_internal_conflict_crisis_fired
+		remove_variable = taiping_internal_conflict_collapse_fired
+		remove_variable = taiping_fervor_beijing_taken
+	}
+}

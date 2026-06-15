@@ -1,5 +1,5 @@
 ﻿je_taiping_house_on_sand = {
-	icon = "gfx/interface/icons/event_icons/event_military.dds" # TODO
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	group = je_group_internal_affairs
 
@@ -7,37 +7,44 @@
 		c:CHI = {
 			save_scope_as = china_scope
 		}
+		if = {
+			limit = {
+				NOT = { has_variable = taiping_internal_conflict_resolved }
+				NOT = { has_journal_entry = je_taiping_internal_conflict }
+			}
+			add_journal_entry = { type = je_taiping_internal_conflict }
+		}
 	}
 
 	complete = {
-		bureaucracy > 0
-		authority > 0
-		NOT = {
-			any_scope_state = {
-				is_incorporated = no
+		OR = {
+			custom_tooltip = {
+				text = taiping_house_on_sand_complete
+				hidden_trigger = {
+					NOT = { exists = c:CHI }
+				}
+			}
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
 			}
 		}
 	}
 
+	invalid = {
+		NOT = { has_journal_entry = je_taiping_revolution }
+	}
+
 	on_complete = {
-
-		
+		hidden_effect = {
+			eafp_taiping_cleanup_administration = yes
+		}
 	}
 
-	fail = {
-
-	}
-
-	on_fail = {
-
-	}
-
-	on_monthly_pulse = {
-
-	}
-
-	on_weekly_pulse = {
-
+	on_invalid = {
+		hidden_effect = {
+			eafp_taiping_cleanup_administration = yes
+		}
 	}
 
 	weight = 1000
@@ -55,40 +62,75 @@ je_taiping_internal_conflict = {
 		c:CHI = {
 			save_scope_as = china_scope
 		}
+		if = {
+			limit = { NOT = { has_variable = taiping_internal_conflict } }
+			set_variable = {
+				name = taiping_internal_conflict
+				value = 10
+			}
+		}
+		set_bar_progress = {
+			name = taiping_internal_conflict_progress_bar
+			value = var:taiping_internal_conflict
+		}
 	}
 
 	complete = {
-		bureaucracy > 0
-		authority > 0
-		NOT = {
-			any_scope_state = {
-				is_incorporated = no
+		custom_tooltip = {
+			text = taiping_internal_conflict_complete
+			scope:journal_entry = { "scripted_bar_progress(taiping_internal_conflict_progress_bar)" <= 0 }
+			bureaucracy > 0
+			authority > 0
+			government_legitimacy >= 70
+			NOT = {
+				any_scope_state = {
+					is_incorporated = no
+				}
 			}
 		}
 	}
 
 	on_complete = {
-
-		
+		set_variable = taiping_internal_conflict_resolved
+		remove_modifier = internal_conflict_in_tpg
+		remove_variable = taiping_internal_conflict
+		remove_variable = taiping_internal_conflict_warning_fired
+		remove_variable = taiping_internal_conflict_crisis_fired
+		remove_variable = taiping_internal_conflict_collapse_fired
+		eafp_taiping_change_fervor = { VALUE = 15 }
+		trigger_event = { id = heavenly.1007 popup = yes }
 	}
 
 	invalid = {
-		NOR = {
-			has_law_or_variant = law_type:law_monarchy
-			has_law_or_variant = law_type:law_theocracy
+		OR = {
+			NOT = { has_journal_entry = je_taiping_house_on_sand }
+			NOR = {
+				has_law_or_variant = law_type:law_monarchy
+				has_law_or_variant = law_type:law_theocracy
+			}
 		}
 	}
 
 	on_invalid = {
-
+		remove_variable = taiping_internal_conflict
+		remove_variable = taiping_internal_conflict_warning_fired
+		remove_variable = taiping_internal_conflict_crisis_fired
+		remove_variable = taiping_internal_conflict_collapse_fired
 	}
 
 	on_monthly_pulse = {
-
+		effect = {
+			eafp_taiping_internal_conflict_monthly = yes
+		}
 	}
 
-	on_weekly_pulse = {
+	scripted_progress_bar = taiping_internal_conflict_progress_bar
 
+	event_outcome_completed_effect_desc = {
+		header = heavenly.1007.a
+		effect = {
+			eafp_taiping_change_fervor = { VALUE = 15 }
+		}
 	}
 
 	weight = 1000
