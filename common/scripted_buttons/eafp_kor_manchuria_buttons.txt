@@ -1,68 +1,71 @@
-button_je_eafp_manchuria_settlement = {
+﻿button_je_eafp_manchuria_settlement = {
 	name = button_je_eafp_manchuria_settlement
 	desc = button_je_eafp_manchuria_settlement_desc
 
 	visible = {
 		c:KOR ?= this
-		is_involved_in_journal_entry = je_eafp_manchurian_management
-		NOT = { eafp_manchuria_settlement_ready = yes }
 	}
 
 	cooldown = { days = 730 }
 
 	possible = {
-		eafp_manchuria_owns_all_manchurian_states = yes
+		any_state_in_dongbei = {
+			count = all
+			owner = ROOT
+		}
 		any_scope_state = {
 			owner = ROOT
 			is_in_geographic_region = geographic_region_korea
 			any_scope_pop = {
 				has_pop_culture = korean
-				OR = {
-					is_pop_type = peasants
-					is_pop_type = laborers
-				}
+				is_pop_type = peasants
 			}
 		}
 	}
 
 	effect = {
-		random_scope_state = {
-			limit = {
-				owner = ROOT
-				is_in_geographic_region = geographic_region_korea
-				any_scope_pop = {
-					has_pop_culture = korean
-					OR = {
-						is_pop_type = peasants
-						is_pop_type = laborers
-					}
-				}
-			}
-			random_scope_pop = {
-				limit = {
-					has_pop_culture = korean
-					OR = {
-						is_pop_type = peasants
-						is_pop_type = laborers
-					}
-				}
-				save_scope_as = eafp_manchuria_migrant_pop
-			}
-		}
-		random_scope_state = {
-			limit = {
-				eafp_manchuria_is_core_manchurian_state = yes
-				owner = ROOT
-			}
+		random_scope_state_in_dongbei = {
 			save_scope_as = eafp_manchuria_migrant_target_state
 			add_cultural_community = cu:korean
 			add_modifier = {
 				name = eafp_manchurian_settlement_state
-				days = normal_modifier_time
+				months = 120
 			}
 		}
-		scope:eafp_manchuria_migrant_pop = {
-			move_pop = scope:eafp_manchuria_migrant_target_state
+		custom_tooltip = {
+			text = button_je_eafp_manchuria_settlement_desc
+
+			random_scope_state = {
+				limit = {
+					owner = ROOT
+					is_in_geographic_region = geographic_region_korea
+					any_scope_pop = {
+						has_pop_culture = korean
+						is_pop_type = peasants
+					}
+				}
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = korean
+						is_pop_type = peasants
+					}
+					change_pop_culture = { target = cu:japanese value = 0.001 }
+				}
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = japanese
+					}
+					move_pop = scope:eafp_manchuria_migrant_target_state
+				}
+			}
+			scope:eafp_manchuria_migrant_target_state = {
+				every_scope_pop = {
+					limit = {
+						has_pop_culture = japanese
+					}
+					change_pop_culture = { target = cu:korean value = 1.0 }
+				}
+			}
 		}
 	}
 
@@ -77,23 +80,32 @@ button_je_eafp_manchuria_expand_arable_land = {
 
 	visible = {
 		c:KOR ?= this
-		is_involved_in_journal_entry = je_eafp_manchurian_management
 	}
 
 	cooldown = { days = 1095 }
 
 	possible = {
-		eafp_manchuria_owns_all_manchurian_states = yes
+		any_state_in_dongbei = {
+			count = all
+			owner = ROOT
+		}
+		OR = {
+			NOT = { has_variable = eafp_manchuria_expand_arable_land_count }
+			var:eafp_manchuria_expand_arable_land_count < 5
+		}
 	}
 
 	effect = {
-		every_scope_state = {
-			limit = {
-				eafp_manchuria_is_core_manchurian_state = yes
-				owner = ROOT
-			}
+		if = {
+			limit = { has_variable = eafp_manchuria_expand_arable_land_count }
+			change_variable = { name = eafp_manchuria_expand_arable_land_count add = 1 }
+		}
+		else = {
+			set_variable = { name = eafp_manchuria_expand_arable_land_count value = 1 }
+		}
+		every_scope_state_in_dongbei = {
 			state_region = {
-				add_arable_land = 5
+				add_arable_land = 10
 			}
 			add_modifier = {
 				name = eafp_manchurian_settlement_state

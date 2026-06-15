@@ -1,4 +1,4 @@
-je_eafp_manchurian_policy = {
+﻿je_eafp_manchurian_policy = {
 	icon = "gfx/interface/icons/event_icons/event_map.dds"
 
 	group = je_group_foreign_affairs
@@ -33,19 +33,22 @@ je_eafp_manchurian_policy = {
 	}
 
 	immediate = {
-		trigger_event = { id = eafp_manchuria.10 popup = yes }
+		trigger_event = { id = eafp_manchuria.1 popup = yes }
 	}
 
 	complete = {
-		eafp_manchuria_owns_all_manchurian_states = yes
+		any_state_in_dongbei = {
+			count = all
+			owner = ROOT
+		}
 	}
 
 	on_complete = {
-		trigger_event = { id = eafp_manchuria.11 popup = yes }
+		trigger_event = { id = eafp_manchuria.2 popup = yes }
 	}
 
 	event_outcome_completed_effect_desc = {
-		header = eafp_manchuria.11.a
+		header = eafp_manchuria.2.a
 		effect = {
 			add_journal_entry = {
 				type = je_eafp_manchurian_management
@@ -54,6 +57,7 @@ je_eafp_manchurian_policy = {
 	}
 
 	weight = 6000
+	can_deactivate = no
 
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
@@ -63,51 +67,65 @@ je_eafp_manchurian_management = {
 
 	group = je_group_foreign_affairs
 
-	is_shown_in_lobby = {
-		c:KOR ?= this
+	is_shown_when_inactive = {
+		OR = {
+			has_journal_entry = je_eafp_manchurian_policy
+			any_state_in_dongbei = {
+				count = all
+				owner = ROOT
+			}
+		}
 	}
 
 	scripted_button = button_je_eafp_manchuria_settlement
 	scripted_button = button_je_eafp_manchuria_expand_arable_land
 
-	immediate = {
-		trigger_event = { id = eafp_manchuria.12 popup = yes }
+	possible = {
+		any_state_in_dongbei = {
+			count = all
+			owner = ROOT
+		}
 	}
 
-	status_desc = je_eafp_manchurian_management_status_ready
+	immediate = {
+		
+	}
 
 	complete = {
-		custom_tooltip = {
-			text = eafp_manchuria_management_ready_tt
-			c:KOR ?= {
-				eafp_manchuria_management_ready = yes
+		any_state_in_dongbei = {
+			count = all
+			owner = ROOT
+			total_urbanization >= 1000
+			culture_percent_state = {
+				target = cu:korean
+				value >= 0.10
 			}
+			tax_capacity >= tax_capacity_usage
 		}
 	}
 
 	on_complete = {
-		c:KOR ?= {
-			trigger_event = { id = eafp_manchuria.20 popup = yes }
-		}
+		trigger_event = { id = eafp_manchuria.3 popup = yes }
 	}
 
 	event_outcome_completed_effect_desc = {
-		header = eafp_manchuria.20.a
+		header = eafp_manchuria.3.a
 		effect = {
-			custom_tooltip = eafp_manchuria_outcome_manchurian_settlement_tt
+			every_scope_state_in_dongbei = {
+				set_state_type = incorporated
+				add_modifier = {
+					name = eafp_manchurian_integrated_state
+					days = long_modifier_time
+				}
+				add_cultural_community = cu:korean
+				add_loyalists_in_state = {
+					value = 0.1
+				}
+			}
 		}
-	}
-
-	invalid = {
-		NOT = { exists = c:KOR }
 	}
 
 	weight = 6000
-
-	on_weekly_pulse = {
-		effect = {
-		}
-	}
 
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
