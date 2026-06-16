@@ -37,6 +37,7 @@
 
 	on_complete = {
 		hidden_effect = {
+			set_variable = taiping_house_on_sand_succeeded
 			eafp_taiping_cleanup_administration = yes
 		}
 		trigger_event = { id = heavenly.1005 popup = yes }
@@ -44,6 +45,7 @@
 
 	on_invalid = {
 		hidden_effect = {
+			set_variable = taiping_house_on_sand_ended
 			eafp_taiping_cleanup_administration = yes
 		}
 	}
@@ -59,6 +61,7 @@
 
 	on_fail = {
 		set_variable = taiping_house_on_sand_failed
+		set_variable = taiping_house_on_sand_ended
 		hidden_effect = {
 			eafp_taiping_cleanup_administration = yes
 		}
@@ -115,32 +118,23 @@ je_taiping_internal_conflict = {
 	complete = {
 		custom_tooltip = {
 			text = taiping_internal_conflict_complete
-			scope:journal_entry = { "scripted_bar_progress(taiping_internal_conflict_progress_bar)" <= 0 }
-			bureaucracy > 0
-			authority > 0
-			government_legitimacy >= 70
-			NOT = {
-				any_scope_state = {
-					is_incorporated = no
-				}
+			hidden_trigger = {
+				has_variable = taiping_house_on_sand_succeeded
 			}
 		}
 	}
 
 	on_complete = {
-		set_variable = taiping_internal_conflict_resolved
 		remove_modifier = internal_conflict_in_tpg
+		remove_modifier = taiping_coup_aftermath_modifier
 		remove_variable = taiping_internal_conflict
-		remove_variable = taiping_internal_conflict_warning_fired
-		remove_variable = taiping_internal_conflict_crisis_fired
-		remove_variable = taiping_internal_conflict_collapse_fired
-		eafp_taiping_change_fervor = { VALUE = 15 }
-		trigger_event = { id = heavenly.1007 popup = yes }
+		remove_variable = taiping_house_on_sand_succeeded
+		remove_variable = taiping_house_on_sand_ended
 	}
 
 	invalid = {
 		OR = {
-			NOT = { has_journal_entry = je_taiping_house_on_sand }
+			has_variable = taiping_house_on_sand_ended
 			NOR = {
 				has_law_or_variant = law_type:law_monarchy
 				has_law_or_variant = law_type:law_theocracy
@@ -149,10 +143,25 @@ je_taiping_internal_conflict = {
 	}
 
 	on_invalid = {
+		remove_modifier = taiping_coup_aftermath_modifier
 		remove_variable = taiping_internal_conflict
-		remove_variable = taiping_internal_conflict_warning_fired
-		remove_variable = taiping_internal_conflict_crisis_fired
-		remove_variable = taiping_internal_conflict_collapse_fired
+		remove_variable = taiping_house_on_sand_succeeded
+		remove_variable = taiping_house_on_sand_ended
+	}
+
+	fail = {
+		custom_tooltip = {
+			text = taiping_internal_conflict_fail
+			scope:journal_entry = { "scripted_bar_progress(taiping_internal_conflict_progress_bar)" >= 100 }
+		}
+	}
+
+	on_fail = {
+		set_variable = {
+			name = taiping_internal_conflict
+			value = 100
+		}
+		trigger_event = { id = heavenly.1008 popup = yes }
 	}
 
 	on_monthly_pulse = {
@@ -162,13 +171,6 @@ je_taiping_internal_conflict = {
 	}
 
 	scripted_progress_bar = taiping_internal_conflict_progress_bar
-
-	event_outcome_completed_effect_desc = {
-		header = heavenly.1007.a
-		effect = {
-			eafp_taiping_change_fervor = { VALUE = 15 }
-		}
-	}
 
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes

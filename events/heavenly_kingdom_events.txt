@@ -1297,16 +1297,13 @@ heavenly.1002 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+	cooldown = { days = never_fire_again_modifier_time }
+
 	trigger = {
-		NOT = { has_variable = heaven102 }
 		OR = {
 			num_incorporated_states >= 9
 			var:taiping_internal_conflict >= 70
 		}
-	}
-
-	immediate = {
-		set_variable = heaven102
 	}
 
 	option = {
@@ -1443,86 +1440,6 @@ heavenly.1005 = {
 	}
 }
 
-heavenly.1006 = {
-	type = country_event
-	placement = ROOT
-
-	title = heavenly.1006.t
-	desc = heavenly.1006.d
-	flavor = heavenly.1006.f
-
-	duration = 3
-	is_popup = yes
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	trigger = {
-		THIS = c:TPG
-		var:taiping_internal_conflict >= 40
-	}
-
-	option = {
-		name = heavenly.1006.a
-		default_option = yes
-		eafp_taiping_change_fervor = { VALUE = -5 }
-		eafp_taiping_change_internal_conflict = { VALUE = -15 }
-
-		ai_chance = {
-			base = 70
-		}
-	}
-
-	option = {
-		name = heavenly.1006.b
-		eafp_taiping_change_fervor = { VALUE = 10 }
-		eafp_taiping_change_internal_conflict = { VALUE = 10 }
-
-		ai_chance = {
-			base = 30
-		}
-	}
-}
-
-heavenly.1007 = {
-	type = country_event
-	placement = ROOT
-
-	title = heavenly.1007.t
-	desc = heavenly.1007.d
-	flavor = heavenly.1007.f
-
-	duration = 3
-	is_popup = yes
-
-	event_image = {
-		video = "asia_union_leader"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	trigger = {
-		THIS = c:TPG
-		has_variable = taiping_internal_conflict_resolved
-	}
-
-	option = {
-		name = heavenly.1007.a
-		default_option = yes
-
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
 heavenly.1008 = {
 	type = country_event
 	placement = ROOT
@@ -1530,6 +1447,7 @@ heavenly.1008 = {
 	title = heavenly.1008.t
 	desc = heavenly.1008.d
 	flavor = heavenly.1008.f
+	left_icon = scope:taiping_coup_leader
 
 	duration = 3
 	is_popup = yes
@@ -1543,20 +1461,56 @@ heavenly.1008 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
+	cooldown = { days = never_fire_again_modifier_time }
+
 	trigger = {
 		THIS = c:TPG
 		var:taiping_internal_conflict >= 100
 	}
 
+	immediate = {
+		ordered_scope_character = {
+			limit = {
+				is_ruler_of_own_country = no
+				OR = {
+					has_role_of_type = general
+					interest_group ?= {
+						is_in_government = yes
+						ig_approval < 0
+					}
+				}
+			}
+			position = 0
+			order_by = prominence
+			save_scope_as = taiping_coup_leader
+		}
+	}
+
 	option = {
 		name = heavenly.1008.a
 		default_option = yes
+		if = {
+			limit = { exists = scope:taiping_coup_leader }
+			scope:taiping_coup_leader = {
+				set_character_as_ruler = yes
+			}
+		}
+		if = {
+			limit = { has_modifier = taiping_army_modifier }
+			remove_modifier = taiping_army_modifier
+		}
 		eafp_taiping_change_fervor = { VALUE = -30 }
 		add_modifier = {
 			name = internal_conflict_in_tpg
 			months = 180
 			is_decaying = yes
 		}
+		add_modifier = {
+			name = taiping_coup_aftermath_modifier
+			months = 120
+			is_decaying = yes
+		}
+		remove_variable = taiping_internal_conflict
 
 		ai_chance = {
 			base = 100

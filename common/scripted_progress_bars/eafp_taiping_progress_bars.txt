@@ -9,73 +9,48 @@
 			limit = { has_journal_entry = je_taiping_house_on_sand }
 			add = {
 				desc = "taiping_revolutionary_fervor_progress_bar_base"
-				value = -2
-			}
-			add = {
-				desc = "taiping_revolutionary_fervor_progress_bar_unincorporated"
-				value = 0
-				every_scope_state = {
-					limit = { is_incorporated = no }
-					add = -1
-				}
+				value = -0.2
 			}
 			if = {
 				limit = { bureaucracy < 0 }
 				add = {
 					desc = "taiping_revolutionary_fervor_progress_bar_bureaucracy"
-					value = -3
+					value = -0.2
 				}
 			}
 			if = {
 				limit = { authority < 0 }
 				add = {
 					desc = "taiping_revolutionary_fervor_progress_bar_authority"
-					value = -2
+					value = -0.2
 				}
 			}
 			if = {
 				limit = { government_legitimacy < 50 }
 				add = {
 					desc = "taiping_revolutionary_fervor_progress_bar_legitimacy"
-					value = -2
+					value = -0.2
 				}
 			}
 			if = {
-				limit = {
-					capital = {
-						NOT = { owner = controller }
-					}
-				}
+				limit = { bureaucracy > 0 }
 				add = {
-					desc = "taiping_revolutionary_fervor_progress_bar_capital_occupied"
-					value = -5
+					desc = "taiping_revolutionary_fervor_progress_bar_high_bureaucracy"
+					value = 0.2
 				}
 			}
 			if = {
-				limit = {
-					NOT = { has_variable = taiping_fervor_beijing_taken }
-					exists = s:STATE_BEIJING.region_state:CHI
-					s:STATE_BEIJING.region_state:CHI.controller = ROOT
-				}
+				limit = { authority > 0 }
 				add = {
-					desc = "taiping_revolutionary_fervor_progress_bar_beijing_taken"
-					value = 15
+					desc = "taiping_revolutionary_fervor_progress_bar_high_authority"
+					value = 0.2
 				}
 			}
 			if = {
-				limit = {
-					bureaucracy > 0
-					authority > 0
-					government_legitimacy >= 70
-					NOT = {
-						any_scope_state = {
-							is_incorporated = no
-						}
-					}
-				}
+				limit = { government_legitimacy >= 70 }
 				add = {
-					desc = "taiping_revolutionary_fervor_progress_bar_stable_order"
-					value = 2
+					desc = "taiping_revolutionary_fervor_progress_bar_high_legitimacy"
+					value = 0.2
 				}
 			}
 		}
@@ -97,27 +72,94 @@ taiping_internal_conflict_progress_bar = {
 			limit = { has_journal_entry = je_taiping_internal_conflict }
 			add = {
 				desc = "taiping_internal_conflict_progress_bar_base"
-				value = 2
-			}
-			if = {
-				limit = { authority < 0 }
-				add = {
-					desc = "taiping_internal_conflict_progress_bar_low_authority"
-					value = 3
-				}
+				value = 0.1
 			}
 			if = {
 				limit = { government_legitimacy < 50 }
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_low_legitimacy"
-					value = 2
+					value = 0.3
+				}
+			}
+			if = {
+				limit = { government_legitimacy < 25 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_very_low_legitimacy"
+					value = 0.3
+				}
+			}
+			if = {
+				limit = { ruler.prominence < 25 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_ruler_prominence"
+					value = 0.3
+				}
+			}
+			if = {
+				limit = { ruler.prominence < 10 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_very_low_ruler_prominence"
+					value = 0.3
+				}
+			}
+			add = {
+				desc = "taiping_internal_conflict_progress_bar_ambitious_generals"
+				value = {
+					value = 0
+					every_scope_character = {
+						limit = {
+							has_role_of_type = general
+							is_ruler_of_own_country = no
+							prominence > ROOT.ruler.prominence
+						}
+						add = 0.1
+					}
+				}
+			}
+			add = {
+				desc = "taiping_internal_conflict_progress_bar_disloyal_ig_leaders"
+				value = {
+					value = 0
+					every_interest_group = {
+						limit = {
+							is_in_government = yes
+							ig_approval < 0
+							leader = {
+								is_ruler_of_own_country = no
+								prominence > ROOT.ruler.prominence
+							}
+						}
+						add = 0.1
+					}
+				}
+			}
+			if = {
+				limit = {
+					ig:ig_armed_forces ?= {
+						ig_approval < 0
+						leader = {
+							is_ruler_of_own_country = no
+							prominence > ROOT.ruler.prominence
+						}
+					}
+				}
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_disloyal_armed_forces"
+					value = 0.2
+				}
+			}
+			if = {
+				limit = { authority < 0 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_low_authority"
+					value = 0.2
 				}
 			}
 			if = {
 				limit = { bureaucracy < 0 }
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_low_bureaucracy"
-					value = 2
+					value = 0.2
 				}
 			}
 			if = {
@@ -128,28 +170,35 @@ taiping_internal_conflict_progress_bar = {
 				}
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_low_fervor"
-					value = 2
+					value = 0.2
 				}
 			}
 			if = {
 				limit = { authority > 100 }
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_high_authority"
-					value = -1
+					value = -0.1
 				}
 			}
 			if = {
 				limit = { government_legitimacy > 70 }
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_high_legitimacy"
-					value = -1
+					value = -0.2
+				}
+			}
+			if = {
+				limit = { ruler.prominence > 50 }
+				add = {
+					desc = "taiping_internal_conflict_progress_bar_high_ruler_prominence"
+					value = -0.2
 				}
 			}
 			if = {
 				limit = { bureaucracy > 0 }
 				add = {
 					desc = "taiping_internal_conflict_progress_bar_positive_bureaucracy"
-					value = -1
+					value = -0.1
 				}
 			}
 		}
