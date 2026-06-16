@@ -11,7 +11,7 @@ Both journals should create a time-attack structure. The player must drive out t
 
 ## Core State
 
-- Use `taiping_revolutionary_fervor_progress_bar` on `je_taiping_revolution` as the single source of fervor.
+- Use `taiping_revolutionary_fervor_progress_bar` on `je_taiping_house_on_sand` as the single source of fervor.
 - Use `taiping_internal_conflict` for leadership instability.
 - Use scripted progress bars as the visible and monthly-updated source of progress.
 - Do not mirror fervor into obsolete country variables.
@@ -60,18 +60,17 @@ Monthly factors:
 
 ## Journal Wiring
 
-### `je_taiping_revolution`
+### `je_taiping_house_on_sand`
 
 - Uses `scripted_progress_bar = taiping_revolutionary_fervor_progress_bar`.
 - Fails when `scripted_bar_progress(taiping_revolutionary_fervor_progress_bar) <= 0`.
 - Completes when Qing no longer exists or China has shattered.
 - `on_monthly_pulse` refreshes the fervor combat modifier from the scripted bar and records one-time Beijing capture state.
 
-### `je_taiping_house_on_sand`
+### `je_taiping_revolution`
 
-- No longer owns the fervor progress bar.
-- Opens and anchors the internal conflict pressure journal.
-- Invalidates once `je_taiping_revolution` is gone.
+- Opens and anchors `je_taiping_house_on_sand`.
+- Handles Taiping territorial progress separately from fervor.
 
 ### `je_taiping_internal_conflict`
 
@@ -83,7 +82,7 @@ Monthly factors:
 
 ## Modifier Logic
 
-- `je:je_taiping_revolution.scripted_bar_progress:taiping_revolutionary_fervor_progress_bar` controls the multiplier on the existing fervor modifier.
+- `je:je_taiping_house_on_sand.scripted_bar_progress:taiping_revolutionary_fervor_progress_bar` controls the multiplier on the existing fervor modifier.
 - Above 50 applies `taiping_fervor_high_modifier`.
 - Below 50 applies `taiping_fervor_low_modifier`.
 - The high multiplier is `(bar - 50) / 50`.

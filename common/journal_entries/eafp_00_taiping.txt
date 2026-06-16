@@ -476,7 +476,6 @@ REPLACE:je_taiping_revolution = {
 	group = je_group_historical_content
 
 	scripted_button = taiping_relocate_the_capital_button # 추가
-	scripted_progress_bar = taiping_revolutionary_fervor_progress_bar
 
 	complete = {
 		OR = {
@@ -608,7 +607,6 @@ REPLACE:je_taiping_revolution = {
 	}
 
 	on_complete = {
-		trigger_event = { id = heavenly.1005 popup = yes }
 		trigger_event = { id = heavenly.6 days = 0 }
 		custom_tooltip = {
 			text = rebellion_effects_remove
@@ -667,31 +665,12 @@ REPLACE:je_taiping_revolution = {
 	}
 
 	fail = {
-		OR = {
-			AND = {
-				exists = c:CHI # 추가
-				has_truce_with = c:CHI # 추가
-			}
-			custom_tooltip = {
-				text = taiping_house_on_sand_fail
-				scope:journal_entry = {
-					"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" <= 0
-				}
-			}
-		}
+		exists = c:CHI # 추가
+		has_truce_with = c:CHI # 추가
 	}
 
 	on_fail = { # 추가
 		hidden_effect = {
-			if = {
-				limit = {
-					scope:journal_entry = {
-						"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" <= 0
-					}
-				}
-				set_variable = taiping_house_on_sand_failed
-				trigger_event = { id = heavenly.1004 popup = yes }
-			}
 			# add_journal_entry = { type = je_taiping_truce_tpg } 청나라 쪽에서 추가
 			remove_modifier = taiping_focus_on_attack_modifier
 			remove_modifier = taiping_focus_on_defence_modifier
@@ -701,12 +680,6 @@ REPLACE:je_taiping_revolution = {
 			remove_modifier = taiping_unincorporated_states_modifier2
 			remove_variable = num_claimed_states_in_china_proper
 			eafp_taiping_cleanup_administration = yes
-		}
-	}
-
-	on_monthly_pulse = {
-		effect = {
-			eafp_taiping_revolution_fervor_monthly = yes
 		}
 	}
 
