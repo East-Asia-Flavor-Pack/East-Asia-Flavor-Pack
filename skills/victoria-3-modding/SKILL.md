@@ -82,3 +82,6 @@ widget = {
 - Keep identifiers stable once referenced by localization, events, scripted effects, GUI, or history.
 - When adding a new feature, include script definitions, event flow, localization, and validation searches in the same pass.
 - When unsure about scope, inspect a vanilla file that uses the same trigger/effect before writing.
+- For scripted progress bars, make the `desc` localization show current progress in the vanilla style rather than a static explanation, for example:
+  `Progress: #v [JournalEntry.GetCurrentBarProgress(ScriptedProgressBar.Self)|%]#! ([JournalEntry.GetCurrentBarValue(ScriptedProgressBar.Self)|1]/100)`.
+  Use a domain-specific label when appropriate, such as `$my_progress_bar_name$: #v ...#!`.

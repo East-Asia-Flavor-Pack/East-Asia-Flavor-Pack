@@ -1,0 +1,67 @@
+je_qing_opium_obsession = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_qing
+
+	scripted_progress_bar = eafp_first_opium_war_debate_progress_bar
+
+	immediate = {
+		trigger_event = { id = first_opium_war.1 popup = yes }
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			50 = first_opium_war.2
+			50 = first_opium_war.3
+			50 = first_opium_war.4
+			10 = first_opium_war.6
+			5 = first_opium_war.7
+			5 = first_opium_war.8
+		}
+		effect = {
+			if = {
+				limit = {
+					je:je_qing_opium_obsession = {
+						"scripted_bar_progress(eafp_first_opium_war_debate_progress_bar)" >= 100
+					}
+					NOT = { is_banning_goods = opium }
+					NOT = { has_variable = opium_wars_gave_in }
+				}
+				trigger_event = { id = first_opium_war.9 popup = yes }
+			}
+		}
+	}
+
+	complete = {
+		OR = {
+			has_variable = opium_wars_won
+			has_variable = opium_wars_gave_in
+			has_variable = lost_opium_wars
+			has_modifier = opium_wars_lost
+			AND = {
+				is_banning_goods = opium
+				c:GBR ?= {
+					has_variable = opium_wars_aggressor
+				}
+			}
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { exists = c:CHI }
+			NOT = { THIS = c:CHI }
+			NOT = { exists = c:GBR }
+		}
+	}
+
+	on_timeout = {
+		trigger_event = { id = first_opium_war.9 popup = yes }
+	}
+
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+
+	timeout = 1460
+}
