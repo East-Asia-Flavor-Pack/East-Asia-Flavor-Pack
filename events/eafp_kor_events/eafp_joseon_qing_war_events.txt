@@ -1,0 +1,760 @@
+﻿namespace = eafp_joseon_qing_war_events
+
+eafp_joseon_qing_war_events.1 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.1.t
+	desc = eafp_joseon_qing_war_events.1.d
+	flavor = eafp_joseon_qing_war_events.1.f
+
+	duration = 3
+
+	event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	immediate = {
+		c:CHI ?= {
+			save_scope_as = qing_enemy
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.1.a
+		default_option = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.2 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.2.t
+	desc = eafp_joseon_qing_war_events.2.d
+	flavor = eafp_joseon_qing_war_events.2.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_military_parade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	option = {
+		name = eafp_joseon_qing_war_events.2.a
+		default_option = yes
+
+		set_variable = completed_je_eafp_joseon_qing_war
+		add_modifier = {
+			name = eafp_modifier_joseon_qing_war_victory_unity
+			days = very_long_modifier_time
+		}
+		add_loyalists = {
+			value = medium_radicals
+		}
+		if = {
+			limit = {
+				exists = c:CHI
+			}
+			change_relations = {
+				country = c:CHI
+				value = -30
+			}
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.3 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.3.t
+	desc = eafp_joseon_qing_war_events.3.d
+	flavor = eafp_joseon_qing_war_events.3.f
+
+	duration = 3
+
+	event_image = {
+		video = "europenorthamerica_political_extremism"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	option = {
+		name = eafp_joseon_qing_war_events.3.a
+		default_option = yes
+
+		set_variable = failed_je_eafp_joseon_qing_war
+		add_modifier = {
+			name = eafp_modifier_joseon_qing_war_defeat_humiliation
+			days = very_long_modifier_time
+		}
+		add_radicals = {
+			value = medium_radicals
+		}
+		if = {
+			limit = {
+				exists = c:CHI
+			}
+			change_relations = {
+				country = c:CHI
+				value = 20
+			}
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.10 = {
+	type = country_event
+	placement = scope:supply_state
+
+	title = eafp_joseon_qing_war_events.10.t
+	desc = eafp_joseon_qing_war_events.10.d
+	flavor = eafp_joseon_qing_war_events.10.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		in_default = no
+		any_scope_state = {
+			owner = ROOT
+			OR = {
+				state_region = s:STATE_SARIWON
+				state_region = s:STATE_PYONGYANG
+			}
+		}
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				OR = {
+					state_region = s:STATE_SARIWON
+					state_region = s:STATE_PYONGYANG
+				}
+			}
+			save_scope_as = supply_state
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.10.a
+		default_option = yes
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_supply_focus
+			days = normal_modifier_time
+		}
+		add_radicals = {
+			value = small_radicals
+			pop_type = peasants
+		}
+
+		ai_chance = {
+			base = 50
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.10.b
+
+		scope:supply_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_local_burden
+				days = normal_modifier_time
+			}
+			add_radicals_in_state = {
+				value = medium_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.10.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_spared_treasury
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.11 = {
+	type = country_event
+	placement = scope:refugee_state
+
+	title = eafp_joseon_qing_war_events.11.t
+	desc = eafp_joseon_qing_war_events.11.d
+	flavor = eafp_joseon_qing_war_events.11.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		any_scope_state = {
+			owner = ROOT
+			OR = {
+				state_region = s:STATE_SEOUL
+				state_region = s:STATE_YANGHO
+				state_region = s:STATE_BUSAN
+				state_region = s:STATE_SARIWON
+				state_region = s:STATE_PYONGYANG
+			}
+		}
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_SARIWON
+					state_region = s:STATE_PYONGYANG
+				}
+			}
+			save_scope_as = refugee_state
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.11.a
+		default_option = yes
+
+		scope:refugee_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_relief_grain
+				days = normal_modifier_time
+			}
+			add_loyalists_in_state = {
+				value = small_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 40
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.11.b
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_army_rations
+			days = short_modifier_time
+		}
+		scope:refugee_state = {
+			add_radicals_in_state = {
+				value = small_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 35
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.11.c
+
+		scope:refugee_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_local_self_relief
+				days = normal_modifier_time
+			}
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.12 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.12.t
+	desc = eafp_joseon_qing_war_events.12.d
+	flavor = eafp_joseon_qing_war_events.12.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "unspecific_military_parade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		OR = {
+			radical_fraction = {
+				value >= 0.10
+			}
+			any_political_movement = {
+				political_movement_popular_support >= 0.05
+			}
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.12.a
+		default_option = yes
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_righteous_armies
+			days = short_modifier_time
+		}
+
+		ai_chance = {
+			base = 35
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.12.b
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_memorials_accepted
+			days = normal_modifier_time
+		}
+		add_loyalists = {
+			value = small_radicals
+		}
+
+		ai_chance = {
+			base = 40
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.12.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_arms_control
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.13 = {
+	type = country_event
+	placement = scope:winter_state
+
+	title = eafp_joseon_qing_war_events.13.t
+	desc = eafp_joseon_qing_war_events.13.d
+	flavor = eafp_joseon_qing_war_events.13.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "unspecific_military_parade"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		any_scope_state = {
+			owner = ROOT
+			OR = {
+				state_region = s:STATE_SARIWON
+				state_region = s:STATE_PYONGYANG
+			}
+		}
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				OR = {
+					state_region = s:STATE_SARIWON
+					state_region = s:STATE_PYONGYANG
+				}
+			}
+			save_scope_as = winter_state
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.13.a
+		default_option = yes
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_winter_supplies
+			days = short_modifier_time
+		}
+
+		ai_chance = {
+			base = 45
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.13.b
+
+		scope:winter_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_winter_levies
+				days = normal_modifier_time
+			}
+			add_radicals_in_state = {
+				value = small_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.13.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_delayed_offensive
+			days = short_modifier_time
+		}
+
+		ai_chance = {
+			base = 30
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.14 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.14.t
+	desc = eafp_joseon_qing_war_events.14.d
+	flavor = eafp_joseon_qing_war_events.14.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "southamerica_factory_opening"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		any_scope_building = {
+			is_building_type = building_arms_industry
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.14.a
+		default_option = yes
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_corruption_punished
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 45
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.14.b
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_bad_shells
+			days = short_modifier_time
+		}
+		add_radicals = {
+			value = small_radicals
+			pop_type = soldiers
+		}
+
+		ai_chance = {
+			base = 20
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.14.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_procurement_reform
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 35
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.15 = {
+	type = country_event
+	placement = ROOT
+
+	title = eafp_joseon_qing_war_events.15.t
+	desc = eafp_joseon_qing_war_events.15.d
+	flavor = eafp_joseon_qing_war_events.15.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "unspecific_politicians_arguing"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		any_scope_character = {
+			is_general = yes
+		}
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				is_general = yes
+			}
+			save_scope_as = defeated_general
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.15.a
+		default_option = yes
+
+		scope:defeated_general = {
+			kill_character = yes
+		}
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_honored_general
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 35
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.15.b
+
+		scope:defeated_general = {
+			kill_character = yes
+		}
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_military_reform_pressure
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 45
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.15.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_covered_defeat
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 20
+		}
+	}
+}
+
+eafp_joseon_qing_war_events.16 = {
+	type = country_event
+	placement = scope:fire_state
+
+	title = eafp_joseon_qing_war_events.16.t
+	desc = eafp_joseon_qing_war_events.16.d
+	flavor = eafp_joseon_qing_war_events.16.f
+
+	duration = 3
+	cooldown = { days = normal_modifier_time }
+
+	event_image = {
+		video = "europenorthamerica_political_extremism"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	trigger = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+		any_scope_state = {
+			owner = ROOT
+			OR = {
+				state_region = s:STATE_SEOUL
+				state_region = s:STATE_YANGHO
+				state_region = s:STATE_BUSAN
+				state_region = s:STATE_SARIWON
+				state_region = s:STATE_PYONGYANG
+			}
+		}
+	}
+
+	immediate = {
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				OR = {
+					state_region = s:STATE_SEOUL
+					state_region = s:STATE_YANGHO
+					state_region = s:STATE_BUSAN
+					state_region = s:STATE_SARIWON
+					state_region = s:STATE_PYONGYANG
+				}
+			}
+			save_scope_as = fire_state
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.16.a
+		default_option = yes
+
+		scope:fire_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_fire_relief
+				days = normal_modifier_time
+			}
+			add_loyalists_in_state = {
+				value = small_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 45
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.16.b
+
+		scope:fire_state = {
+			add_modifier = {
+				name = eafp_modi_joseon_qing_war_saved_depot
+				days = normal_modifier_time
+			}
+			add_radicals_in_state = {
+				value = small_radicals
+				pop_type = peasants
+			}
+		}
+
+		ai_chance = {
+			base = 25
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.16.c
+
+		add_modifier = {
+			name = eafp_modi_joseon_qing_war_fire_accountability
+			days = normal_modifier_time
+		}
+
+		ai_chance = {
+			base = 30
+		}
+	}
+}

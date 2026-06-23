@@ -1,0 +1,67 @@
+﻿je_eafp_joseon_qing_war = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_crises
+
+	is_shown_when_inactive = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+	}
+
+	possible = {
+		c:KOR ?= THIS
+		exists = c:CHI
+		has_war_with = c:CHI
+	}
+
+	immediate = {
+		c:CHI = {
+			save_scope_as = qing_enemy
+		}
+		trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
+	}
+
+	complete = {
+		OR = {
+			NOT = { exists = c:CHI }
+			AND = {
+				exists = c:CHI
+				NOT = { has_war_with = c:CHI }
+				NOT = { is_subject_of = c:CHI }
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
+	}
+
+	fail = {
+		exists = c:CHI
+		NOT = { has_war_with = c:CHI }
+		is_subject_of = c:CHI
+	}
+
+	on_fail = {
+		trigger_event = { id = eafp_joseon_qing_war_events.3 popup = yes }
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = eafp_joseon_qing_war_events.10
+			10 = eafp_joseon_qing_war_events.11
+			10 = eafp_joseon_qing_war_events.12
+			10 = eafp_joseon_qing_war_events.13
+			10 = eafp_joseon_qing_war_events.14
+			10 = eafp_joseon_qing_war_events.15
+			10 = eafp_joseon_qing_war_events.16
+		}
+	}
+
+	weight = 7000
+	can_deactivate = no
+
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
