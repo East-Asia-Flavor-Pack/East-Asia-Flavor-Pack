@@ -1,0 +1,128 @@
+﻿je_qing_opium_obsession = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_qing
+
+	immediate = {
+	}
+
+	complete = {
+		OR = {
+			has_variable = opium_wars_won
+			has_variable = opium_wars_gave_in
+			has_variable = opium_wars_target
+			has_variable = lost_opium_wars
+			has_modifier = opium_wars_lost
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { exists = c:CHI }
+			NOT = { THIS = c:CHI }
+			NOT = { exists = c:GBR }
+		}
+	}
+
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
+
+je_first_opium_war_legalization = {
+	icon = "gfx/interface/icons/goods_icons/opium.dds"
+	group = je_group_qing
+
+	immediate = {
+		add_modifier = {
+			name = opium_wars_addiction_modifier
+			days = very_long_modifier_time
+		}
+		active_law:lawgroup_trade_policy ?= {
+			if = {
+				limit = {
+					NOT = {
+						has_amendment = amendment_type:amendment_first_opium_war_legalization
+					}
+				}
+				add_amendment = {
+					type = amendment_first_opium_war_legalization
+					sponsor = PREV.ig:ig_petty_bourgeoisie
+				}
+			}
+		}
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = first_opium_war.6
+			5 = first_opium_war.7
+			5 = first_opium_war.8
+		}
+	}
+
+	complete = {
+		mg:opium = { market_goods_pricier <= 0.2 }
+		c:CHI ?= { gold_reserve_ratio >= 0.2 }
+		NOT = {
+			any_interest_group = {
+				ig_approval < 0
+			}
+		}
+	}
+
+	on_complete = {
+		trigger_event = { id = first_opium_war.101 popup = yes }
+	}
+
+	invalid = {
+		OR = {
+			NOT = { exists = c:CHI }
+			NOT = { THIS = c:CHI }
+			has_variable = opium_wars_target
+			has_variable = opium_wars_gave_in
+			AND = {
+				OR = {
+					has_law = law_type:law_canton_system
+					has_law = law_type:law_isolationism
+				}
+				active_law:lawgroup_trade_policy ?= {
+					NOT = {
+						has_amendment = amendment_type:amendment_first_opium_war_legalization
+					}
+				}
+			}
+		}
+	}
+
+	on_invalid = {
+		if = {
+			limit = {
+				NOT = { has_variable = opium_wars_target }
+				NOT = { has_variable = opium_wars_gave_in }
+				OR = {
+					has_law = law_type:law_canton_system
+					has_law = law_type:law_isolationism
+				}
+				active_law:lawgroup_trade_policy ?= {
+					NOT = {
+						has_amendment = amendment_type:amendment_first_opium_war_legalization
+					}
+				}
+			}
+			add_modifier = {
+				name = eafp_first_opium_war_legalization_repealed_decay
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+			trigger_event = { id = first_opium_war.12 popup = yes }
+		}
+	}
+
+	on_timeout = {
+		trigger_event = { id = first_opium_war.102 popup = yes }
+	}
+
+	timeout = 900
+	weight = 1000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
