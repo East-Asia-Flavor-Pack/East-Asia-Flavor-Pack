@@ -1,10 +1,27 @@
 ﻿je_qing_opium_obsession = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	group = je_group_qing
-
 	immediate = {
 	}
-
+	complete = {
+		OR = {
+			has_journal_entry = je_first_opium_war_prohibition
+			has_journal_entry = je_first_opium_war_legalization
+		}
+	}
+	invalid = {
+		OR = {
+			NOT = { exists = c:CHI }
+			NOT = { THIS = c:CHI }
+			NOT = { exists = c:GBR }
+		}
+	}
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
+je_first_opium_war_prohibition = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_qing
 	complete = {
 		OR = {
 			has_variable = opium_wars_won
@@ -14,7 +31,6 @@
 			has_modifier = opium_wars_lost
 		}
 	}
-
 	invalid = {
 		OR = {
 			NOT = { exists = c:CHI }
@@ -22,58 +38,24 @@
 			NOT = { exists = c:GBR }
 		}
 	}
-
 	weight = 10000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
-
 je_first_opium_war_legalization = {
 	icon = "gfx/interface/icons/goods_icons/opium.dds"
 	group = je_group_qing
 
-	immediate = {
-		add_modifier = {
-			name = opium_wars_addiction_modifier
-			days = very_long_modifier_time
-		}
-		active_law:lawgroup_trade_policy ?= {
-			if = {
-				limit = {
-					NOT = {
-						has_amendment = amendment_type:amendment_first_opium_war_legalization
-					}
-				}
-				add_amendment = {
-					type = amendment_first_opium_war_legalization
-					sponsor = PREV.ig:ig_petty_bourgeoisie
-				}
-			}
-		}
-	}
-
-	on_monthly_pulse = {
-		random_events = {
-			100 = 0
-			10 = first_opium_war.6
-			5 = first_opium_war.7
-			5 = first_opium_war.8
-		}
-	}
-
 	complete = {
-		mg:opium = { market_goods_pricier <= 0.2 }
-		c:CHI ?= { gold_reserve_ratio >= 0.2 }
-		NOT = {
-			any_interest_group = {
-				ig_approval < 0
-			}
+		market = { mg:opium = { market_goods_pricier <= 0.2 } }
+		scaled_gold_reserves >= 0.2
+		any_interest_group = {
+			count = all
+			ig_approval >= 0
 		}
 	}
-
 	on_complete = {
 		trigger_event = { id = first_opium_war.101 popup = yes }
 	}
-
 	invalid = {
 		OR = {
 			NOT = { exists = c:CHI }
@@ -93,7 +75,6 @@ je_first_opium_war_legalization = {
 			}
 		}
 	}
-
 	on_invalid = {
 		if = {
 			limit = {
@@ -117,12 +98,10 @@ je_first_opium_war_legalization = {
 			trigger_event = { id = first_opium_war.12 popup = yes }
 		}
 	}
-
 	on_timeout = {
 		trigger_event = { id = first_opium_war.102 popup = yes }
 	}
-
-	timeout = 900
+	timeout = 3600
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }

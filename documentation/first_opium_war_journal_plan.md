@@ -14,10 +14,10 @@ first_opium_war_1
   -> first_opium_war_5
   -> first_opium_war_9
       -> 엄금론: first_opium_war_90 -> 광동 단속 사건 체인 -> 영국의 최후통첩 또는 굴욕적 배상조약
-      -> 이금론: first_opium_war_100 -> 이금론 저널 -> first_opium_war_101 또는 first_opium_war_102
+      -> 이금론: 이금론 저널 -> first_opium_war_101 또는 first_opium_war_102
 ```
 
-실제 Victoria 3 이벤트 ID는 기존 namespace 규칙에 맞춰 선형 본체는 `first_opium_war.1`, `first_opium_war.2`, `first_opium_war.3`, `first_opium_war.4`, `first_opium_war.5`, `first_opium_war.9`, `first_opium_war.90`부터 `.99`, `first_opium_war.100`, `first_opium_war.101`, `first_opium_war.102`, 엄금론 보조 분기 이벤트 `first_opium_war.110`부터 `.113`을 사용한다. 단, 아편 중독 저널의 월간 반복 이벤트로 쓰이는 `first_opium_war.6`, `.7`, `.8`은 보조 이벤트로 유지하고, 엄금론 사건 체인 또는 `이금론` 부칙 폐지 시 재사용하는 기존 `영국의 최후통첩` 이벤트 `first_opium_war.12`도 유지한다. 문서에서 `first_opium_war_1`처럼 쓰는 이름은 읽기용 별칭이다.
+실제 Victoria 3 이벤트 ID는 기존 namespace 규칙에 맞춰 선형 본체는 `first_opium_war.1`, `first_opium_war.2`, `first_opium_war.3`, `first_opium_war.4`, `first_opium_war.5`, `first_opium_war.9`, `first_opium_war.90`부터 `.99`, `first_opium_war.101`, `first_opium_war.102`, 엄금론 보조 분기 이벤트 `first_opium_war.111`부터 `.113`을 사용한다. 단, 아편 중독 저널의 월간 반복 이벤트로 쓰이는 `first_opium_war.6`, `.7`, `.8`은 보조 이벤트로 유지하고, 엄금론 사건 체인 또는 `이금론` 부칙 폐지 시 재사용하는 기존 `영국의 최후통첩` 이벤트 `first_opium_war.12`도 유지한다. 문서에서 `first_opium_war_1`처럼 쓰는 이름은 읽기용 별칭이다.
 
 ## 기본 원칙
 
@@ -25,9 +25,9 @@ first_opium_war_1
 - `first_opium_war.1`부터 `.5`까지는 다음 이벤트 하나만 호출한다.
 - `first_opium_war.9`에서만 엄금론과 이금론 두 선택지로 갈라진다.
 - 엄금론 선택은 즉시 전쟁을 만들지 않고, `first_opium_war.90`에서 흠차대신 임명과 현지 관료 유예 중 하나를 고른 뒤 광동 단속 사건 체인으로 들어간다.
-- `찰스 엘리엇의 아편 국유화`에서 함정임을 간파하면 곧바로 배상 협상으로 가지 않고, 영국 정부 배상 책임을 분리하려는 보조 체인 `first_opium_war.110-.111`을 거친다.
+- `찰스 엘리엇의 아편 국유화`에서 함정임을 간파하면 `first_opium_war.92.b`에서 영국 정부 배상 책임 분리 효과를 직접 적용하고 `first_opium_war.111`로 이어진다.
 - 현지 관료 유예를 선택하면 곧바로 토머스 쿠츠 호 사건으로 가지 않고, 현지 단속의 지연과 결서 제출 문제를 다루는 보조 체인 `first_opium_war.112-.113`을 거친다.
-- 이금론 루트는 `first_opium_war.100` 후속 이벤트와 `이금론` 저널을 통해 처리한다.
+- 이금론 루트는 `first_opium_war.9.b`에서 즉시 `이금론` 저널을 추가하여 처리한다.
 - `first_opium_war.6`, `.7`, `.8`은 선형 본체에서 호출하지 않고, `이금론` 저널의 `on_monthly_pulse`에서만 아편 중독 반복 이벤트로 사용한다.
 - `first_opium_war.12`는 새 선형 본체에 끼워 넣지 않고, 엄금론 사건 체인의 전쟁 합류점 또는 `이금론` 부칙 폐지 시 기존 `영국의 최후통첩` 이벤트로 재사용한다.
 - AI와 플레이어 모두 같은 역사적 순서를 따른다.
@@ -99,9 +99,7 @@ flowchart TD
     LOCAL --> E96["first_opium_war_96: 현지 단속 유예"]
     E91 --> E92["first_opium_war_92: 엘리엇의 아편 국유화"]
     E92 -- "아편 받기" --> E93["first_opium_war_93: 호문소연"]
-    E92 -- "함정임을 간파" --> E110["first_opium_war_110: 배상 책임 분리"]
-    E110 -- "서면 책임 분리 요구" --> E111["first_opium_war_111: 무배상 처분안"]
-    E110 -- "논쟁 중단 후 몰수" --> E93
+    E92 -- "함정 간파 및 책임 분리" --> E111["first_opium_war_111: 무배상 처분안"]
     E111 -- "최소 배상 봉합" --> E98["first_opium_war_98: 배상 협상"]
     E111 -- "전면 거부" --> ULT2["first_opium_war_12: 영국의 최후통첩"]
     E93 --> E94["first_opium_war_94: 임유희 사건"]
@@ -118,8 +116,7 @@ flowchart TD
     E98 -- "거부" --> ULT2
     TREATY --> GIVEIN["opium_wars_gave_in"]
     ULT2 --> DP["dp_first_opium_war"]
-    LEGAL --> E100["first_opium_war_100: 이금론 시행 조건"]
-    E100 --> LJE["이금론 저널"]
+    LEGAL --> LJE["이금론 저널"]
     LJE -- "성공 조건 달성" --> E101["first_opium_war_101: 이금론 성공"]
     LJE -- "제한 시간 실패" --> E102["first_opium_war_102: 이금론 실패"]
     LJE -- "부칙 폐지" --> ULT["first_opium_war_12: 영국의 최후통첩"]
@@ -255,8 +252,7 @@ option = {
 - AI 선택 확률 0%.
 - 아편 금지를 해제한다.
 - `opium_wars_gave_in`은 아직 설정하지 않는다.
-- 후속 이벤트 `first_opium_war.100`을 호출한다.
-- 후속 이벤트에서 `이금론` 저널을 열고, 그 저널을 성공시켜야 비전쟁 결말에 도달한다.
+- 선택 즉시 `이금론` 저널을 열고, 그 저널을 성공시켜야 비전쟁 결말에 도달한다.
 
 핵심 효과:
 
@@ -272,7 +268,7 @@ option = {
         name = eafp_legalized_opium_shame
         days = very_long_modifier_time
     }
-    trigger_event = { id = first_opium_war.100 days = { 7 14 } }
+    add_journal_entry = { type = je_first_opium_war_legalization }
     ai_chance = { base = 0 }
 }
 ```
@@ -422,43 +418,12 @@ option = {
 
 - 플레이어 전용 선택지.
 - 아편을 즉시 접수하지 않고, 민간 밀수품과 영국 정부 보상 책임을 분리하려 시도한다.
-- 곧바로 배상 협상으로 가지 않고, 영국 정부의 배상 책임을 부정하거나 축소하려는 보조 체인으로 이동한다.
-- 다음 이벤트 `first_opium_war.110`을 호출한다.
-
-```txt
-option = {
-    name = first_opium_war.92.b
-    trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_opium_surrender_trap_seen
-        days = normal_modifier_time
-    }
-    trigger_event = { id = first_opium_war.110 days = { 15 45 } }
-    ai_chance = { base = 0 }
-}
-```
-
-### `first_opium_war_110`
-
-실제 ID: `first_opium_war.110`
-
-제목 초안: `영국 정부 배상 책임의 분리`
-
-역할:
-
-- `first_opium_war.92.b`에서 엘리엇의 함정을 간파했을 때 발생하는 첫 보조 이벤트다.
-- 청 조정은 아편을 곧바로 접수하지 않고, 영국 상인의 사적 밀수품과 영국 정부 명의의 배상 책임을 분리하려 한다.
-- 이 루트는 전쟁을 쉽게 피하는 길이 아니라, 시간을 벌면서 영국의 명분을 줄이는 고난도 완화 루트다.
-
-선택지 A: 영국 정부가 밀수 책임을 서면으로 부인하게 한다
-
-- 플레이어 전용 완화 선택지.
-- 엘리엇에게 영국 정부가 아편 보상 책임을 공식적으로 떠안지 않는다는 서면을 요구한다.
+- 영국 정부의 배상 책임을 분리하는 modifier를 직접 적용한다.
 - 다음 이벤트 `first_opium_war.111`을 호출한다.
 
 ```txt
 option = {
-    name = first_opium_war.110.a
+    name = first_opium_war.92.b
     trigger = { is_ai = no }
     add_modifier = {
         name = eafp_separated_british_compensation_liability
@@ -466,24 +431,6 @@ option = {
     }
     trigger_event = { id = first_opium_war.111 days = { 15 45 } }
     ai_chance = { base = 0 }
-}
-```
-
-선택지 B: 논쟁을 중단하고 아편을 몰수한다
-
-- 완화 루트를 포기하고 역사적 강경 루트로 복귀하는 선택지다.
-- 청이 결국 아편을 접수해 폐기하므로 `first_opium_war.93` 호문소연으로 이어진다.
-
-```txt
-option = {
-    name = first_opium_war.110.b
-    default_option = yes
-    add_modifier = {
-        name = eafp_opium_surrender_accepted_late
-        days = normal_modifier_time
-    }
-    trigger_event = { id = first_opium_war.93 days = { 15 30 } }
-    ai_chance = { base = 1 }
 }
 ```
 
@@ -842,31 +789,6 @@ option = {
 }
 ```
 
-### `first_opium_war_100`
-
-실제 ID: `first_opium_war.100`
-
-역할:
-
-- 이금론을 택한 뒤 무엇을 해야 하는지 설명하는 후속 이벤트다.
-- 조정이 외국 아편 의존과 은 유출을 끊으려면 아편 시장 가격을 안정시키고, 금 보유를 회복하며, 이해집단의 공개 반발을 억제해야 한다고 안내한다.
-- 선택지는 하나만 둔다.
-
-효과:
-
-- `이금론` 저널을 추가한다.
-- 이 저널은 기존 국내 아편 생산 저널의 timeout 구조를 바탕으로 하되, 완료 조건은 이금론 안정화 조건으로 바꾼다.
-- 실제 법률 부칙 추가는 저널 시작 `immediate`에서 처리한다.
-
-```txt
-option = {
-    name = first_opium_war.100.a
-    default_option = yes
-    add_journal_entry = { type = je_first_opium_war_legalization }
-    ai_chance = { base = 1 }
-}
-```
-
 ## `이금론` 저널
 
 실제 ID 초안: `je_first_opium_war_legalization`
@@ -1129,11 +1051,11 @@ option = {
 다음 요소는 새 선형 계획에서 제거한다.
 
 - 기존 `first_opium_war.10`부터 `first_opium_war.52`까지의 분기형 체인
-- 단, 새 선형 계획에서는 이금론 실행/성공/실패 이벤트를 `first_opium_war.100`, `.101`, `.102`로 새로 둔다.
+- 단, 새 선형 계획에서는 이금론 성공/실패 이벤트를 `first_opium_war.101`, `.102`로 새로 둔다. 이금론 실행 효과는 `first_opium_war.9.b`에 직접 둔다.
 - 기존 `first_opium_war.12`는 엄금론 사건 체인의 전쟁 합류점과 `이금론` 부칙 폐지 시 `영국의 최후통첩` 이벤트로 재사용하므로 삭제하지 않는다.
 - `first_opium_war.12`가 의존하는 전쟁 연결 효과는 기존 이벤트 체인을 유지하거나, 구현 단계에서 `first_opium_war.12` 안에 직접 전쟁 생성 효과를 보강한다.
 - `first_opium_war.90`부터 `.99`는 새 엄금론 사건 체인으로 추가한다.
-- `first_opium_war.110`부터 `.113`은 엄금론 보조 분기 체인으로 추가한다.
+- `first_opium_war.111`부터 `.113`은 엄금론 보조 분기 체인으로 추가한다.
 - 기존 `je_first_opium_war_domestic_opium_substitution` ID
 - 국내 아편 재배 성공/실패 루트의 기존 이름과 분기 구조
 - 배상 타협 루트
@@ -1205,29 +1127,27 @@ cooldown = { days = stupidly_long_modifier_time }
 22. `first_opium_war.90.a` 흠차대신 임명은 AI 역사 선택지이며 `first_opium_war.91`로 이어진다.
 23. `first_opium_war.90.b` 현지 관료 유예는 플레이어 전용 선택지이며 `first_opium_war.96`으로 이어진다.
 24. `first_opium_war.91`은 `13행 전면 봉쇄 및 인질화 조치`와 완화 선택지를 처리한다.
-25. `first_opium_war.92`는 찰스 엘리엇의 아편 국유화 후 아편 넘기기를 처리한다. `아편 받기`는 `.93` 호문소연으로, `함정임을 간파`는 `.110` 영국 정부 배상 책임 분리로 간다.
-26. `first_opium_war.110`은 영국 정부 배상 책임 분리를 처리한다. 서면 책임 분리 요구는 `.111`로, 논쟁 중단 후 몰수는 `.93` 호문소연으로 간다.
-27. `first_opium_war.111`은 무배상 처분안을 처리한다. 제한 통상과 최소 배상 봉합은 `.98` 배상 협상으로, 전면 거부는 기존 `.12` 영국의 최후통첩으로 간다.
-28. `first_opium_war.93`은 호문소연을 처리하고 `.94` 임유희 사건으로 이어진다.
-29. `first_opium_war.94`는 임유희 살인 사건과 범인 인도 거부를 처리한다. 식량 공급 완전 차단은 기존 `.12` 영국의 최후통첩으로, 제한 대응은 `.97` 토머스 쿠츠 호 사건으로 간다.
-30. `first_opium_war.96`은 현지 관료 유예 단속 후 `.112` 현지 단속 지연으로 간다.
-31. `first_opium_war.112`는 현지 단속 지연을 처리한다. 기한 재확인과 결서 제출 요구는 `.113`으로, 현지 재량 확대는 `.97` 토머스 쿠츠 호 사건으로 간다.
-32. `first_opium_war.113`은 결서 제출 문제를 처리한다. 결서 제출 선박만 받아들이면 `.97`로, 선단 전체 압박은 기존 `.12` 영국의 최후통첩으로 간다.
-33. `first_opium_war.97`은 토머스 쿠츠 호 배신 사건을 처리한다. 이를 이용하면 `.98` 배상 협상으로, 거부하면 기존 `.12` 영국의 최후통첩으로 간다.
-34. `first_opium_war.98`은 배상 협상을 처리한다. 배상과 제한 통상 보장을 받아들이면 `.99` 굴욕적 배상조약으로, 거부하면 기존 `.12` 영국의 최후통첩으로 간다.
-35. `first_opium_war.99`는 굴욕적 배상조약 결말이며 `opium_wars_gave_in`을 설정한다.
-36. 이금론 선택지는 아편 금지를 해제하고 `first_opium_war.100`을 호출한다.
-37. `first_opium_war.100`은 `이금론` 저널을 연다.
-38. `이금론` 저널 성공 시 `.101`, 실패 시 `.102`를 호출한다.
-39. `.101`은 `opium_wars_gave_in`을 설정한다.
-40. `.102`는 기존 `.12` 영국의 최후통첩을 호출한다.
-41. 오류 검사를 수행한다.
+25. `first_opium_war.92`는 찰스 엘리엇의 아편 국유화 후 아편 넘기기를 처리한다. `아편 받기`는 `.93` 호문소연으로, `함정임을 간파`는 영국 정부 배상 책임 분리 효과를 적용한 뒤 `.111` 무배상 처분안으로 간다.
+26. `first_opium_war.111`은 무배상 처분안을 처리한다. 제한 통상과 최소 배상 봉합은 `.98` 배상 협상으로, 전면 거부는 기존 `.12` 영국의 최후통첩으로 간다.
+27. `first_opium_war.93`은 호문소연을 처리하고 `.94` 임유희 사건으로 이어진다.
+28. `first_opium_war.94`는 임유희 살인 사건과 범인 인도 거부를 처리한다. 식량 공급 완전 차단은 기존 `.12` 영국의 최후통첩으로, 제한 대응은 `.97` 토머스 쿠츠 호 사건으로 간다.
+29. `first_opium_war.96`은 현지 관료 유예 단속 후 `.112` 현지 단속 지연으로 간다.
+30. `first_opium_war.112`는 현지 단속 지연을 처리한다. 기한 재확인과 결서 제출 요구는 `.113`으로, 현지 재량 확대는 `.97` 토머스 쿠츠 호 사건으로 간다.
+31. `first_opium_war.113`은 결서 제출 문제를 처리한다. 결서 제출 선박만 받아들이면 `.97`로, 선단 전체 압박은 기존 `.12` 영국의 최후통첩으로 간다.
+32. `first_opium_war.97`은 토머스 쿠츠 호 배신 사건을 처리한다. 이를 이용하면 `.98` 배상 협상으로, 거부하면 기존 `.12` 영국의 최후통첩으로 간다.
+33. `first_opium_war.98`은 배상 협상을 처리한다. 배상과 제한 통상 보장을 받아들이면 `.99` 굴욕적 배상조약으로, 거부하면 기존 `.12` 영국의 최후통첩으로 간다.
+34. `first_opium_war.99`는 굴욕적 배상조약 결말이며 `opium_wars_gave_in`을 설정한다.
+35. 이금론 선택지는 아편 금지를 해제하고 `이금론` 저널을 즉시 연다.
+36. `이금론` 저널 성공 시 `.101`, 실패 시 `.102`를 호출한다.
+37. `.101`은 `opium_wars_gave_in`을 설정한다.
+38. `.102`는 기존 `.12` 영국의 최후통첩을 호출한다.
+39. 오류 검사를 수행한다.
 
 ## 오류 검사
 
 잔여 분기 이벤트 확인:
 
-`first_opium_war.6`, `.7`, `.8`은 삭제 대상이 아니라 `이금론` 저널의 아편 중독 월간 반복 이벤트로 남긴다. `first_opium_war.12`도 엄금론 사건 체인의 전쟁 합류점 또는 부칙 폐지 시 기존 `영국의 최후통첩` 이벤트로 재사용한다. `first_opium_war.90-.99`와 `.110-.113`은 새 엄금론 사건 체인으로 남긴다. 따라서 잔여 분기 이벤트 확인 정규식에서는 `.6`, `.7`, `.8`, `.12`, `.90-.99`, `.110-.113`을 제외하고, 기존 분기 체인의 나머지만 잡는다.
+`first_opium_war.6`, `.7`, `.8`은 삭제 대상이 아니라 `이금론` 저널의 아편 중독 월간 반복 이벤트로 남긴다. `first_opium_war.12`도 엄금론 사건 체인의 전쟁 합류점 또는 부칙 폐지 시 기존 `영국의 최후통첩` 이벤트로 재사용한다. `first_opium_war.90-.99`와 `.111-.113`은 새 엄금론 사건 체인으로 남긴다. 따라서 잔여 분기 이벤트 확인 정규식에서는 `.6`, `.7`, `.8`, `.12`, `.90-.99`, `.111-.113`을 제외하고, 기존 분기 체인의 나머지만 잡는다.
 
 ```powershell
 rg -n "first_opium_war\.(10|11|1[3-9]|2[0-9]|3[0-9]|4[0-9]|5[0-2])\b" common events localization documentation
@@ -1236,7 +1156,7 @@ rg -n "first_opium_war\.(10|11|1[3-9]|2[0-9]|3[0-9]|4[0-9]|5[0-2])\b" common eve
 남아야 하는 이벤트 확인:
 
 ```powershell
-rg -n "first_opium_war\.(1|2|3|4|5|6|7|8|9|12|9[0-9]|10[0-2]|11[0-3])\b" events localization documentation
+rg -n "first_opium_war\.(1|2|3|4|5|6|7|8|9|12|9[0-9]|101|102|11[1-3])\b" events localization documentation
 ```
 
 구버전 보조 저널 ID 제거 확인:
@@ -1272,7 +1192,7 @@ rg -n "eafp_first_opium_war_legalization_repealed_decay|on_invalid|has_amendment
 최종 선택지 효과 확인:
 
 ```powershell
-rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|110|111|112|113|12)|dp_first_opium_war|create_diplomatic_play|opium_wars_target|opium_wars_aggressor|opium_wars_gave_in|eafp_legalized_opium_shame|eafp_imperial_commissioner_opium_crackdown|eafp_local_official_opium_grace_period|eafp_thirteen_factories_blockade|eafp_opium_surrender_trap_seen|eafp_separated_british_compensation_liability|eafp_minimized_opium_compensation_claim|eafp_local_crackdown_deadline_reaffirmed|eafp_bond_submission_precedent|eafp_humen_opium_destruction|eafp_british_fleet_supply_cutoff|eafp_humiliating_opium_indemnity_treaty|je_first_opium_war_legalization" events/eafp_chi_events/eafp_first_opium_war_events.txt
+rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|111|112|113|12)|dp_first_opium_war|create_diplomatic_play|opium_wars_target|opium_wars_aggressor|opium_wars_gave_in|eafp_legalized_opium_shame|eafp_imperial_commissioner_opium_crackdown|eafp_local_official_opium_grace_period|eafp_thirteen_factories_blockade|eafp_separated_british_compensation_liability|eafp_minimized_opium_compensation_claim|eafp_local_crackdown_deadline_reaffirmed|eafp_bond_submission_precedent|eafp_humen_opium_destruction|eafp_british_fleet_supply_cutoff|eafp_humiliating_opium_indemnity_treaty|je_first_opium_war_legalization" events/eafp_chi_events/eafp_first_opium_war_events.txt
 ```
 
 기본 구조 검사:
@@ -1298,25 +1218,23 @@ rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|110|111|112|113|12)|dp_firs
 8. `first_opium_war.90`에서 현지 관료 유예를 고르면 `first_opium_war.96` 현지 단속 유예 사건으로 간다.
 9. `first_opium_war.91`에서 13행 전면 봉쇄 및 인질화 조치를 택하면 `first_opium_war.92` 엘리엇의 아편 국유화 사건으로 간다.
 10. `first_opium_war.92`에서 아편을 받으면 `first_opium_war.93` 호문소연으로 이어진다.
-11. `first_opium_war.92`에서 함정임을 간파하면 `first_opium_war.110` 영국 정부 배상 책임 분리 사건으로 간다.
-12. `first_opium_war.110`에서 영국 정부 책임 분리 서면을 요구하면 `first_opium_war.111` 무배상 처분안으로 가고, 논쟁을 중단하고 몰수하면 `first_opium_war.93` 호문소연으로 돌아간다.
-13. `first_opium_war.111`에서 제한 통상과 최소 배상으로 봉합하면 `first_opium_war.98` 배상 협상으로 가고, 배상과 제한 통상을 모두 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
-14. `first_opium_war.93` 호문소연 이후 `first_opium_war.94` 임유희 살인 사건이 발생한다.
-15. `first_opium_war.94`에서 영국 선단 식량 공급을 완전히 차단하면 기존 `first_opium_war.12` 영국의 최후통첩으로 가고, 이후 아편전쟁 루트로 진행된다.
-16. `first_opium_war.94`에서 제한 대응을 택하면 `first_opium_war.97` 토머스 쿠츠 호 배신 사건으로 간다.
-17. `first_opium_war.96` 현지 관료 유예 루트는 `first_opium_war.112` 현지 단속 지연으로 간다.
-18. `first_opium_war.112`에서 기한을 재확인하고 결서 제출을 요구하면 `first_opium_war.113` 결서 제출 문제로 가고, 현지 재량을 더 인정하면 `first_opium_war.97` 토머스 쿠츠 호 사건으로 간다.
-19. `first_opium_war.113`에서 결서 제출 선박만 받아들이면 `first_opium_war.97` 토머스 쿠츠 호 사건으로 가고, 선단 전체를 압박하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
-20. `first_opium_war.97`에서 토머스 쿠츠 호 사건을 이용하면 `first_opium_war.98` 배상 협상으로, 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
-21. `first_opium_war.98`에서 배상과 제한 통상을 받아들이면 `first_opium_war.99` 굴욕적 배상조약으로 끝난다.
-22. `first_opium_war.98`에서 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 가고, 이후 아편전쟁 루트로 진행된다.
-23. `9.b` 이금론 선택 시 청나라는 아편 금지를 해제하고 `first_opium_war.100`을 받는다.
-24. `first_opium_war.100`은 `이금론` 저널을 연다.
-25. `이금론` 저널 시작 시 `광동체제` 법률에 `이금론` 부칙이 붙는다.
-26. `이금론` 저널이 활성화된 동안 매월 아편 중독 반복 이벤트 `first_opium_war.6`, `.7`, `.8`이 아편 중독 저널과 같은 방식으로 수행된다.
-27. 아편 가격이 base price의 120% 이하, `gold_reserve_ratio >= 0.2`, 모든 이해집단 지지도 0 이상을 동시에 만족하면 `이금론` 저널이 성공한다.
-28. `이금론` 저널 성공 시 `first_opium_war.101`이 발생하고 `opium_wars_gave_in`을 받아 메인 저널 완료 조건을 만족.
-29. `이금론` 저널 실패 시 `first_opium_war.102`가 발생하고 기존 `first_opium_war.12` 영국의 최후통첩으로 돌아간다.
-30. `광동체제` 또는 `고립주의` 유지 중 `이금론` 부칙을 폐지하면 `이금론` 저널이 invalid 된다.
-31. `on_invalid`는 `eafp_first_opium_war_legalization_repealed_decay`를 `normal_modifier_time` 동안 decay modifier로 부여한다.
-32. 이후 기존 `영국의 최후통첩` 이벤트 `first_opium_war.12`가 발생하고, 여기서 아편전쟁 루트로 돌아간다.
+11. `first_opium_war.92`에서 함정임을 간파하면 영국 정부 배상 책임 분리 효과를 적용하고 `first_opium_war.111` 무배상 처분안으로 간다.
+12. `first_opium_war.111`에서 제한 통상과 최소 배상으로 봉합하면 `first_opium_war.98` 배상 협상으로 가고, 배상과 제한 통상을 모두 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
+13. `first_opium_war.93` 호문소연 이후 `first_opium_war.94` 임유희 살인 사건이 발생한다.
+14. `first_opium_war.94`에서 영국 선단 식량 공급을 완전히 차단하면 기존 `first_opium_war.12` 영국의 최후통첩으로 가고, 이후 아편전쟁 루트로 진행된다.
+15. `first_opium_war.94`에서 제한 대응을 택하면 `first_opium_war.97` 토머스 쿠츠 호 배신 사건으로 간다.
+16. `first_opium_war.96` 현지 관료 유예 루트는 `first_opium_war.112` 현지 단속 지연으로 간다.
+17. `first_opium_war.112`에서 기한을 재확인하고 결서 제출을 요구하면 `first_opium_war.113` 결서 제출 문제로 가고, 현지 재량을 더 인정하면 `first_opium_war.97` 토머스 쿠츠 호 사건으로 간다.
+18. `first_opium_war.113`에서 결서 제출 선박만 받아들이면 `first_opium_war.97` 토머스 쿠츠 호 사건으로 가고, 선단 전체를 압박하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
+19. `first_opium_war.97`에서 토머스 쿠츠 호 사건을 이용하면 `first_opium_war.98` 배상 협상으로, 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 간다.
+20. `first_opium_war.98`에서 배상과 제한 통상을 받아들이면 `first_opium_war.99` 굴욕적 배상조약으로 끝난다.
+21. `first_opium_war.98`에서 거부하면 기존 `first_opium_war.12` 영국의 최후통첩으로 가고, 이후 아편전쟁 루트로 진행된다.
+22. `9.b` 이금론 선택 시 청나라는 아편 금지를 해제하고 `이금론` 저널을 즉시 연다.
+23. `이금론` 저널 시작 시 `광동체제` 법률에 `이금론` 부칙이 붙는다.
+24. `이금론` 저널이 활성화된 동안 매월 아편 중독 반복 이벤트 `first_opium_war.6`, `.7`, `.8`이 아편 중독 저널과 같은 방식으로 수행된다.
+25. 아편 가격이 base price의 120% 이하, `gold_reserve_ratio >= 0.2`, 모든 이해집단 지지도 0 이상을 동시에 만족하면 `이금론` 저널이 성공한다.
+26. `이금론` 저널 성공 시 `first_opium_war.101`이 발생하고 `opium_wars_gave_in`을 받아 메인 저널 완료 조건을 만족.
+27. `이금론` 저널 실패 시 `first_opium_war.102`가 발생하고 기존 `first_opium_war.12` 영국의 최후통첩으로 돌아간다.
+28. `광동체제` 또는 `고립주의` 유지 중 `이금론` 부칙을 폐지하면 `이금론` 저널이 invalid 된다.
+29. `on_invalid`는 `eafp_first_opium_war_legalization_repealed_decay`를 `normal_modifier_time` 동안 decay modifier로 부여한다.
+30. 이후 기존 `영국의 최후통첩` 이벤트 `first_opium_war.12`가 발생하고, 여기서 아편전쟁 루트로 돌아간다.
