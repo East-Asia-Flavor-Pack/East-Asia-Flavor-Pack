@@ -19,6 +19,161 @@
 	weight = 10000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
+je_first_opium_war = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_foreign_affairs
+	complete = {
+		OR = {
+			scope:target ?= {
+				has_law_or_variant = law_type:law_free_trade
+			}
+			has_treaty_foreign_investment_rights_with = { TARGET = scope:target }
+			any_scope_state = {
+				is_treaty_port = yes
+				state_region = {
+					any_scope_state = {
+						owner = scope:target
+					}
+				}
+			}
+		}
+	}
+	on_complete = {
+		c:CHI = {
+			trigger_event = {
+				id = first_opium_war.153
+				days = 5
+			}
+		}
+		c:GBR = {
+			trigger_event = {
+				id = first_opium_war.154
+				days = 5
+			}
+		}
+	}
+	fail = {
+		NOT = {
+			OR = {
+				scope:target ?= {
+					has_law_or_variant = law_type:law_free_trade
+				}
+				has_treaty_foreign_investment_rights_with = { TARGET = scope:target }
+				any_scope_state = {
+					is_treaty_port = yes
+					state_region = {
+						any_scope_state = {
+							owner = scope:target
+						}
+					}
+				}
+			}
+		}
+		NOT = {
+			any_diplomatic_play = {
+				initiator = c:GBR
+				target = c:CHI
+				is_diplomatic_play_type = dp_first_opium_war
+			}
+		}
+	}
+	invalid = {
+		NOT = { exists = scope:target }
+	}
+	on_invalid = {
+		remove_variable = opium_wars_aggressor
+	}
+	on_fail = {
+		c:CHI = {
+			trigger_event = {
+				id = first_opium_war.155
+				days = 5
+			}
+		}
+		c:GBR = {
+			trigger_event = {
+				id = first_opium_war.156
+				days = 5
+			}
+		}
+	}
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
+je_qing_first_opium_war = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_qing
+	complete = {
+		NOT = {
+			OR = {
+				c:CHI = {
+					has_law_or_variant = law_type:law_free_trade
+				}
+				c:GBR = {
+					has_treaty_foreign_investment_rights_with = { TARGET = c:CHI }
+					any_scope_state = {
+						is_treaty_port = yes
+						state_region = {
+							any_scope_state = {
+								owner = c:CHI
+							}
+						}
+					}
+				}
+			}
+		}
+		NOT = {
+			any_diplomatic_play = {
+				initiator = c:GBR
+				target = c:CHI
+				is_diplomatic_play_type = dp_first_opium_war
+			}
+		}
+	}
+	on_complete = {
+		show_as_tooltip = {
+			trigger_event = {
+				id = first_opium_war.155
+				popup = yes
+			}
+		}
+	}
+	fail = {
+		OR = {
+			c:CHI = {
+				has_law_or_variant = law_type:law_free_trade
+			}
+			c:GBR = {
+				has_treaty_foreign_investment_rights_with = { TARGET = c:CHI }
+				any_scope_state = {
+					is_treaty_port = yes
+					state_region = {
+						any_scope_state = {
+							owner = c:CHI
+						}
+					}
+				}
+			}
+		}
+	}
+	on_fail = {
+		show_as_tooltip = {
+			trigger_event = {
+				id = first_opium_war.153
+				popup = yes
+			}
+		}
+	}
+	invalid = {
+		OR = {
+			NOT = { exists = c:CHI }
+			NOT = { THIS = c:CHI }
+			NOT = { exists = c:GBR }
+		}
+	}
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
 je_first_opium_war_prohibition = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	group = je_group_qing
@@ -54,7 +209,7 @@ je_first_opium_war_legalization = {
 		}
 	}
 	on_complete = {
-		trigger_event = { id = first_opium_war.101 popup = yes }
+		trigger_event = { id = first_opium_war.251 popup = yes }
 	}
 	invalid = {
 		OR = {
@@ -95,11 +250,11 @@ je_first_opium_war_legalization = {
 				days = normal_modifier_time
 				is_decaying = yes
 			}
-			trigger_event = { id = first_opium_war.12 popup = yes }
+			c:GBR = { trigger_event = { id = first_opium_war.112 popup = yes } }
 		}
 	}
 	on_timeout = {
-		trigger_event = { id = first_opium_war.102 popup = yes }
+		trigger_event = { id = first_opium_war.201 popup = yes }
 	}
 	timeout = 3600
 	weight = 1000
