@@ -1,0 +1,218 @@
+﻿eafp_joseon_qing_war_evaluation_progress_bar = {
+	name = "eafp_joseon_qing_war_evaluation_progress_bar"
+	desc = "eafp_joseon_qing_war_evaluation_progress_bar_desc"
+
+	default_green = yes
+
+	start_value = 60
+	min_value = 0
+	max_value = 100
+
+	monthly_progress = {
+		if = {
+			limit = {
+				var:eafp_var_joseon_qing_war_months <= 5
+			}
+			add = {
+				desc = "eafp_jqw_progress_early_war"
+				value = 1
+			}
+		}
+		else_if = {
+			limit = {
+				var:eafp_var_joseon_qing_war_months <= 11
+			}
+			add = {
+				desc = "eafp_jqw_progress_war_drags"
+				value = -1
+			}
+		}
+		else_if = {
+			limit = {
+				var:eafp_var_joseon_qing_war_months <= 23
+			}
+			add = {
+				desc = "eafp_jqw_progress_long_war"
+				value = -2
+			}
+		}
+		else = {
+			add = {
+				desc = "eafp_jqw_progress_protracted_war"
+				value = -4
+			}
+		}
+
+		if = {
+			limit = {
+				enemy_occupation <= 0
+				var:eafp_var_joseon_qing_war_months <= 11
+			}
+			add = {
+				desc = "eafp_jqw_progress_no_occupation"
+				value = 1
+			}
+		}
+		if = {
+			limit = {
+				enemy_occupation > 0.05
+			}
+			add = {
+				desc = "eafp_jqw_progress_enemy_occupation"
+				value = -5
+			}
+		}
+		if = {
+			limit = {
+				enemy_occupation > 0.20
+			}
+			add = {
+				desc = "eafp_jqw_progress_heavy_occupation"
+				value = -8
+			}
+		}
+		if = {
+			limit = {
+				any_scope_war = {
+					is_war_participant = c:CHI
+					has_war_support = {
+						target = ROOT
+						value >= 50
+					}
+				}
+			}
+			add = {
+				desc = "eafp_jqw_progress_high_war_support"
+				value = 1
+			}
+		}
+		if = {
+			limit = {
+				any_scope_war = {
+					is_war_participant = c:CHI
+					has_war_support = {
+						target = ROOT
+						value <= 0
+					}
+				}
+			}
+			add = {
+				desc = "eafp_jqw_progress_low_war_support"
+				value = -3
+			}
+		}
+		if = {
+			limit = {
+				any_scope_war = {
+					is_war_participant = c:CHI
+					has_war_exhaustion = {
+						target = ROOT
+						value > 50
+					}
+				}
+			}
+			add = {
+				desc = "eafp_jqw_progress_high_war_exhaustion"
+				value = -3
+			}
+		}
+
+		if = {
+			limit = {
+				in_default = yes
+			}
+			add = {
+				desc = "eafp_jqw_progress_default"
+				value = -8
+			}
+		}
+		if = {
+			limit = {
+				scaled_gold_reserves >= 1
+			}
+			add = {
+				desc = "eafp_jqw_progress_full_reserves"
+				value = 1
+			}
+		}
+		if = {
+			limit = {
+				bureaucracy < 0
+			}
+			add = {
+				desc = "eafp_jqw_progress_bureaucracy_deficit"
+				value = -2
+			}
+		}
+		if = {
+			limit = {
+				any_scope_state = {
+					owner = ROOT
+					devastation > 0.20
+				}
+			}
+			add = {
+				desc = "eafp_jqw_progress_devastation"
+				value = -2
+			}
+		}
+		if = {
+			limit = {
+				any_scope_state = {
+					owner = ROOT
+					devastation > 0.50
+				}
+			}
+			add = {
+				desc = "eafp_jqw_progress_heavy_devastation"
+				value = -4
+			}
+		}
+		if = {
+			limit = {
+				radical_fraction >= 0.20
+			}
+			add = {
+				desc = "eafp_jqw_progress_radicalism"
+				value = -2
+			}
+		}
+
+		if = {
+			limit = {
+				has_modifier = eafp_modi_joseon_qing_war_supply_focus
+			}
+			add = {
+				desc = "eafp_jqw_progress_supply_focus"
+				value = 2
+			}
+		}
+		if = {
+			limit = {
+				has_modifier = eafp_modi_joseon_qing_war_procurement_reform
+			}
+			add = {
+				desc = "eafp_jqw_progress_procurement_reform"
+				value = 1
+			}
+		}
+		if = {
+			limit = {
+				has_modifier = eafp_modi_joseon_qing_war_bad_shells
+			}
+			add = {
+				desc = "eafp_jqw_progress_bad_shells"
+				value = -3
+			}
+		}
+		if = {
+			limit = {
+				has_variable = eafp_var_jqw_bad_shells_coverup
+			}
+			add = {
+				desc = "eafp_jqw_progress_coverup"
+				value = -2
+			}
+		}
+	}
+}
