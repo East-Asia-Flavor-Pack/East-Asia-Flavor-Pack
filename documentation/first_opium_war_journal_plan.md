@@ -316,10 +316,6 @@ option = {
     name = first_opium_war.101.a
     default_option = yes
     add_banned_goods = g:opium
-    add_modifier = {
-        name = eafp_imperial_commissioner_opium_crackdown
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.102 days = { 15 30 } }
     ai_chance = { base = 1 }
 }
@@ -341,10 +337,6 @@ option = {
     name = first_opium_war.101.b
     trigger = { is_ai = no }
     add_banned_goods = g:opium
-    add_modifier = {
-        name = eafp_local_official_opium_grace_period
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.106 days = { 60 120 } }
     ai_chance = { base = 0 }
 }
@@ -373,10 +365,6 @@ option = {
 option = {
     name = first_opium_war.102.a
     default_option = yes
-    add_modifier = {
-        name = eafp_thirteen_factories_blockade
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.103 days = { 15 30 } }
     ai_chance = { base = 1 }
 }
@@ -392,10 +380,6 @@ option = {
 option = {
     name = first_opium_war.102.b
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_limited_factory_pressure
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.103 days = { 30 60 } }
     ai_chance = { base = 0 }
 }
@@ -422,10 +406,6 @@ option = {
 option = {
     name = first_opium_war.103.a
     default_option = yes
-    add_modifier = {
-        name = eafp_opium_surrender_accepted
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.104 days = { 15 30 } }
     ai_chance = { base = 1 }
 }
@@ -442,10 +422,6 @@ option = {
 option = {
     name = first_opium_war.103.b
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_separated_british_compensation_liability
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.110 days = { 15 45 } }
     ai_chance = { base = 0 }
 }
@@ -473,10 +449,6 @@ option = {
 option = {
     name = first_opium_war.110.a
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_minimized_opium_compensation_claim
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.111 days = { 15 45 } }
     ai_chance = { base = 0 }
 }
@@ -542,10 +514,6 @@ option = {
 option = {
     name = first_opium_war.105.a
     default_option = yes
-    add_modifier = {
-        name = eafp_british_fleet_supply_cutoff
-        days = normal_modifier_time
-    }
     c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 30 } } }
     ai_chance = { base = 1 }
 }
@@ -560,10 +528,6 @@ option = {
 option = {
     name = first_opium_war.105.b
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_limited_response_to_lin_weixi_case
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.109 days = { 15 45 } }
     ai_chance = { base = 0 }
 }
@@ -585,10 +549,6 @@ option = {
 option = {
     name = first_opium_war.106.a
     default_option = yes
-    add_modifier = {
-        name = eafp_local_opium_crackdown_deadline
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.107 days = { 30 90 } }
     ai_chance = { base = 1 }
 }
@@ -616,10 +576,6 @@ option = {
 option = {
     name = first_opium_war.107.a
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_local_crackdown_deadline_reaffirmed
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.108 days = { 30 60 } }
     ai_chance = { base = 0 }
 }
@@ -634,10 +590,6 @@ option = {
 option = {
     name = first_opium_war.107.b
     default_option = yes
-    add_modifier = {
-        name = eafp_local_official_discretion_extended
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.109 days = { 15 45 } }
     ai_chance = { base = 1 }
 }
@@ -665,10 +617,6 @@ option = {
 option = {
     name = first_opium_war.108.a
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_bond_submission_precedent
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.109 days = { 15 45 } }
     ai_chance = { base = 0 }
 }
@@ -683,10 +631,6 @@ option = {
 option = {
     name = first_opium_war.108.b
     default_option = yes
-    add_modifier = {
-        name = eafp_bond_submission_rejected_fleet_pressure
-        days = normal_modifier_time
-    }
     c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 45 } } }
     ai_chance = { base = 1 }
 }
@@ -713,10 +657,6 @@ option = {
 option = {
     name = first_opium_war.109.a
     trigger = { is_ai = no }
-    add_modifier = {
-        name = eafp_thomas_coutts_precedent
-        days = normal_modifier_time
-    }
     trigger_event = { id = first_opium_war.111 days = { 15 45 } }
     ai_chance = { base = 0 }
 }
@@ -732,10 +672,6 @@ option = {
 option = {
     name = first_opium_war.109.b
     default_option = yes
-    add_modifier = {
-        name = eafp_rejected_thomas_coutts_precedent
-        days = normal_modifier_time
-    }
     c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 45 } } }
     ai_chance = { base = 1 }
 }
@@ -826,7 +762,7 @@ je_first_opium_war_legalization: "이금론"
 - 월간 반복 이벤트는 기존 국내 아편 생산 저널의 `first_opium_war.26` 대신 아편 중독 저널의 반복 이벤트 묶음을 그대로 사용한다.
 - 저널 시작 시 `광동체제` 법률에 `이금론` 부칙을 추가한다.
 - `이금론` 부칙이 폐지되면 저널은 invalid 처리된다.
-- 이때 청나라가 여전히 `광동체제` 또는 `고립주의`를 유지 중이면 영국에 `first_opium_war.112`을 띄워 전쟁 루트로 되돌린다. 영국의 개입 선택 시 청에 `first_opium_war.151`가 발생한다.
+- 이때 청나라가 여전히 `광동체제` 또는 `고립주의`를 유지 중이면 청나라에 `first_opium_war.201` 이금론 붕괴 이벤트를 띄운다. 붕괴 이벤트의 선택지는 영국의 `first_opium_war.112`로 이어지며, 영국의 개입 선택 시 청에 `first_opium_war.151`가 발생한다.
 
 법률 부칙:
 
@@ -970,7 +906,7 @@ on_invalid = {
             days = normal_modifier_time
             is_decaying = yes
         }
-        c:GBR = { trigger_event = { id = first_opium_war.112 popup = yes } }
+        trigger_event = { id = first_opium_war.201 popup = yes }
     }
 }
 ```
@@ -1035,6 +971,7 @@ option = {
 
 효과:
 
+- 중국 통합을 10% 감소시킨다.
 - 영국의 대응 이벤트 `first_opium_war.112`을 호출한다.
 - 영국이 개입하면 청에 `first_opium_war.151`가 발생하고 아편전쟁 루트로 이어진다.
 
@@ -1042,6 +979,14 @@ option = {
 option = {
     name = first_opium_war.201.a
     default_option = yes
+    custom_tooltip = {
+        text = warlord_china_explosion_point_remove_10_tt
+        post_notification = warlord_china_explosion_point_remove
+        change_variable = {
+            name = china_warlord_explosion
+            subtract = 0.5
+        }
+    }
     c:GBR = { trigger_event = { id = first_opium_war.112 popup = yes } }
 }
 ```
@@ -1117,7 +1062,7 @@ cooldown = { days = stupidly_long_modifier_time }
 12. `eafp_first_opium_war_legalization_repealed_decay` modifier를 추가한다. 효과는 `이금론` 부칙과 같고, 부칙 폐지 시 `normal_modifier_time` 동안 `is_decaying = yes`로 적용한다.
 13. `이금론` 저널 `immediate`에서 `lawgroup_trade_policy`의 활성 법률에 부칙을 추가한다.
 14. `이금론` 저널 `invalid`는 `광동체제` 또는 `고립주의` 유지 중 `이금론` 부칙이 사라진 경우를 잡는다.
-15. `이금론` 저널 `on_invalid`는 decay modifier를 부여하고 영국에 `first_opium_war.112`을 호출한다.
+15. `이금론` 저널 `on_invalid`는 decay modifier를 부여하고 청나라에 `first_opium_war.201` 이금론 붕괴 이벤트를 호출한다. 붕괴 이벤트 선택 후 영국의 `first_opium_war.112`로 이어진다.
 16. `이금론` 저널에는 아편 중독 반복 이벤트를 호출하는 `on_monthly_pulse`를 두지 않는다.
 17. localization에서 삭제된 이벤트 키를 제거한다.
 18. 남긴 이벤트의 title, desc, flavor, option을 순서대로 재정렬한다.
@@ -1198,7 +1143,7 @@ rg -n "eafp_first_opium_war_legalization_repealed_decay|on_invalid|has_amendment
 최종 선택지 효과 확인:
 
 ```powershell
-rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|111|112|113|12)|dp_first_opium_war|create_diplomatic_play|opium_wars_target|opium_wars_aggressor|opium_wars_gave_in|eafp_legalized_opium_shame|eafp_imperial_commissioner_opium_crackdown|eafp_local_official_opium_grace_period|eafp_thirteen_factories_blockade|eafp_separated_british_compensation_liability|eafp_minimized_opium_compensation_claim|eafp_local_crackdown_deadline_reaffirmed|eafp_bond_submission_precedent|eafp_humen_opium_destruction|eafp_british_fleet_supply_cutoff|eafp_humiliating_opium_indemnity_treaty|je_first_opium_war_legalization" events/eafp_chi_events/eafp_first_opium_war_events.txt
+rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|111|112|113|12)|dp_first_opium_war|create_diplomatic_play|opium_wars_target|opium_wars_aggressor|opium_wars_gave_in|eafp_legalized_opium_shame|eafp_humiliating_opium_indemnity_treaty|je_first_opium_war_legalization" events/eafp_chi_events/eafp_first_opium_war_events.txt
 ```
 
 기본 구조 검사:

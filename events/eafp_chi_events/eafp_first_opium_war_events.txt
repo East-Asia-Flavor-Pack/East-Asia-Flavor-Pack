@@ -32,10 +32,6 @@ first_opium_war.1 = {
 		show_as_tooltip = {
 			trigger_event = { id = first_opium_war.2 days = { 30 60 } }
 		}
-		add_modifier = {
-			name = opium_wars_addiction_modifier
-			days = long_modifier_time
-		}
 		ai_chance = { base = 1 }
 	}
 }
@@ -61,9 +57,6 @@ first_opium_war.2 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-	}
 
 	immediate = {
 		trigger_event = { id = first_opium_war.3 days = { 30 60 } }
@@ -100,10 +93,6 @@ first_opium_war.3 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-	}
-
 	immediate = {
 		trigger_event = { id = first_opium_war.4 days = { 30 60 } }
 	}
@@ -138,10 +127,6 @@ first_opium_war.4 = {
 	on_opened_soundeffect = "event:/SFX/Events/asia/politician_parliament_motion"
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-	}
 
 	immediate = {
 		trigger_event = { id = first_opium_war.5 days = { 30 60 } }
@@ -178,10 +163,6 @@ first_opium_war.5 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-	}
-
 	immediate = {
 		trigger_event = { id = first_opium_war.6 days = { 30 60 } }
 	}
@@ -217,17 +198,15 @@ first_opium_war.6 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.6.a
 		default_option = yes
 		add_journal_entry = { type = je_first_opium_war_prohibition }
-		set_variable = eafp_first_opium_war_prohibition_chosen
+		add_modifier = {
+			name = opium_wars_addiction_modifier
+			days = very_long_modifier_time
+		}
+		c:GBR ?= { change_relations = { country = root value = -50 } }
 		trigger_event = { id = first_opium_war.101 days = { 7 14 } }
 		ai_chance = { base = 1 }
 	}
@@ -284,21 +263,6 @@ first_opium_war.112 = {
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	trigger = {
-		THIS = c:GBR
-		exists = c:CHI
-		c:CHI = {
-			OR = {
-				has_journal_entry = je_qing_opium_obsession
-				has_journal_entry = je_first_opium_war_prohibition
-				has_journal_entry = je_first_opium_war_legalization
-			}
-			NOT = { has_variable = opium_wars_target }
-			NOT = { has_variable = opium_wars_gave_in }
-		}
-		NOT = { is_diplomatic_play_enemy_of = c:CHI }
-	}
 
 	immediate = {
 		save_scope_as = opium_wars_aggressor_country
@@ -466,7 +430,6 @@ first_opium_war.151 = {
 	trigger = {
 		THIS = c:CHI
 		exists = c:GBR
-		NOT = { has_variable = opium_wars_gave_in }
 	}
 
 	immediate = {
@@ -501,12 +464,6 @@ first_opium_war.101 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	immediate = {
 		ig:ig_petty_bourgeoisie.leader = {
 			save_scope_as = first_opium_war_imperial_commissioner
@@ -517,10 +474,6 @@ first_opium_war.101 = {
 		name = first_opium_war.101.a
 		default_option = yes
 		add_banned_goods = g:opium
-		add_modifier = {
-			name = eafp_imperial_commissioner_opium_crackdown
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.102 days = { 15 30 } }
 		ai_chance = { base = 1 }
 	}
@@ -529,10 +482,6 @@ first_opium_war.101 = {
 		name = first_opium_war.101.b
 		trigger = { is_ai = no }
 		add_banned_goods = g:opium
-		add_modifier = {
-			name = eafp_local_official_opium_grace_period
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.106 days = { 60 120 } }
 		ai_chance = { base = 0 }
 	}
@@ -559,19 +508,9 @@ first_opium_war.102 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.102.a
 		default_option = yes
-		add_modifier = {
-			name = eafp_thirteen_factories_blockade
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.103 days = { 15 30 } }
 		ai_chance = { base = 1 }
 	}
@@ -579,10 +518,6 @@ first_opium_war.102 = {
 	option = {
 		name = first_opium_war.102.b
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_limited_factory_pressure
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.103 days = { 30 60 } }
 		ai_chance = { base = 0 }
 	}
@@ -609,19 +544,9 @@ first_opium_war.103 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.103.a
 		default_option = yes
-		add_modifier = {
-			name = eafp_opium_surrender_accepted
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.104 days = { 15 30 } }
 		ai_chance = { base = 1 }
 	}
@@ -629,10 +554,6 @@ first_opium_war.103 = {
 	option = {
 		name = first_opium_war.103.b
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_separated_british_compensation_liability
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.110 days = { 15 45 } }
 		ai_chance = { base = 0 }
 	}
@@ -659,19 +580,15 @@ first_opium_war.104 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.104.a
 		default_option = yes
+		change_infamy = 10
 		add_modifier = {
 			name = eafp_humen_opium_destruction
 			days = normal_modifier_time
 		}
+		c:GBR ?= { change_relations = { country = root value = -100 } }
 		trigger_event = { id = first_opium_war.105 days = { 60 120 } }
 		ai_chance = { base = 1 }
 	}
@@ -706,21 +623,13 @@ first_opium_war.105 = {
 	option = {
 		name = first_opium_war.105.a
 		default_option = yes
-		add_modifier = {
-			name = eafp_british_fleet_supply_cutoff
-			days = normal_modifier_time
-		}
-		c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 30 } } }
+		c:GBR ?= { trigger_event = { id = first_opium_war.112 days = { 15 30 } } }
 		ai_chance = { base = 1 }
 	}
 
 	option = {
 		name = first_opium_war.105.b
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_limited_response_to_lin_weixi_case
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.109 days = { 15 45 } }
 		ai_chance = { base = 0 }
 	}
@@ -746,19 +655,9 @@ first_opium_war.106 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.106.a
 		default_option = yes
-		add_modifier = {
-			name = eafp_local_opium_crackdown_deadline
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.107 days = { 30 90 } }
 		ai_chance = { base = 1 }
 	}
@@ -784,19 +683,9 @@ first_opium_war.109 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.109.a
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_thomas_coutts_precedent
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.111 days = { 15 45 } }
 		ai_chance = { base = 0 }
 	}
@@ -804,10 +693,6 @@ first_opium_war.109 = {
 	option = {
 		name = first_opium_war.109.b
 		default_option = yes
-		add_modifier = {
-			name = eafp_rejected_thomas_coutts_precedent
-			days = normal_modifier_time
-		}
 		c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 45 } } }
 		ai_chance = { base = 1 }
 	}
@@ -874,12 +759,6 @@ first_opium_war.152 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.152.a
 		default_option = yes
@@ -888,10 +767,7 @@ first_opium_war.152 = {
 			name = eafp_humiliating_opium_indemnity_treaty
 			days = very_long_modifier_time
 		}
-		if = {
-			limit = { exists = c:GBR }
-			c:GBR = { change_relations = { country = root value = 25 } }
-		}
+		c:GBR ?= { change_relations = { country = root value = 25 } }
 		add_radicals = { value = medium_radicals }
 		ai_chance = { base = 1 }
 	}
@@ -955,10 +831,6 @@ first_opium_war.153 = {
 	immediate = {
 		c:CHI = {
 			save_scope_as = opium_wars_defeated_country
-			if = {
-				limit = { has_modifier = opium_wars_addiction_modifier }
-				remove_modifier = opium_wars_addiction_modifier
-			}
 		}
 		if = {
 			limit = {
@@ -1270,12 +1142,6 @@ first_opium_war.251 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.251.a
 		default_option = yes
@@ -1308,16 +1174,18 @@ first_opium_war.201 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_qing_opium_obsession
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.201.a
 		default_option = yes
-		c:GBR = { trigger_event = { id = first_opium_war.112 popup = yes } }
+		custom_tooltip = {
+			text = warlord_china_explosion_point_remove_10_tt
+			post_notification = warlord_china_explosion_point_remove
+			change_variable = {
+				name = china_warlord_explosion
+				subtract = 0.5
+			}
+		}
+		c:GBR = { trigger_event = { id = first_opium_war.112 } }
 		ai_chance = { base = 1 }
 	}
 }
@@ -1342,19 +1210,9 @@ first_opium_war.110 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.110.a
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_minimized_opium_compensation_claim
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.111 days = { 15 45 } }
 		ai_chance = { base = 0 }
 	}
@@ -1387,19 +1245,9 @@ first_opium_war.107 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.107.a
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_local_crackdown_deadline_reaffirmed
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.108 days = { 30 60 } }
 		ai_chance = { base = 0 }
 	}
@@ -1407,10 +1255,6 @@ first_opium_war.107 = {
 	option = {
 		name = first_opium_war.107.b
 		default_option = yes
-		add_modifier = {
-			name = eafp_local_official_discretion_extended
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.109 days = { 15 45 } }
 		ai_chance = { base = 1 }
 	}
@@ -1436,19 +1280,9 @@ first_opium_war.108 = {
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	trigger = {
-		has_journal_entry = je_first_opium_war_prohibition
-		NOT = { has_variable = opium_wars_target }
-		NOT = { has_variable = opium_wars_gave_in }
-	}
-
 	option = {
 		name = first_opium_war.108.a
 		trigger = { is_ai = no }
-		add_modifier = {
-			name = eafp_bond_submission_precedent
-			days = normal_modifier_time
-		}
 		trigger_event = { id = first_opium_war.109 days = { 15 45 } }
 		ai_chance = { base = 0 }
 	}
@@ -1456,10 +1290,6 @@ first_opium_war.108 = {
 	option = {
 		name = first_opium_war.108.b
 		default_option = yes
-		add_modifier = {
-			name = eafp_bond_submission_rejected_fleet_pressure
-			days = normal_modifier_time
-		}
 		c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 45 } } }
 		ai_chance = { base = 1 }
 	}
