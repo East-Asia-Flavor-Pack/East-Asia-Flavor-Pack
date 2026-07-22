@@ -22,19 +22,16 @@
 			save_scope_as = qing_enemy
 		}
 		remove_variable = eafp_var_joseon_qing_war_months
+		remove_variable = eafp_var_jqw_result
 		remove_variable = eafp_var_jqw_result_grade
+		remove_variable = eafp_var_jqw_kor_enforced_goal
+		remove_variable = eafp_var_jqw_qing_enforced_goal
+		remove_variable = eafp_var_jqw_kor_capitulated
 		remove_variable = eafp_var_jqw_bad_shells_coverup
 		remove_variable = eafp_var_jqw_transport_reformed
 		set_variable = {
 			name = eafp_var_joseon_qing_war_months
 			value = 0
-		}
-		remove_modifier = eafp_modifier_joseon_qing_war_momentum
-		remove_modifier = eafp_modifier_joseon_qing_war_holding
-		remove_modifier = eafp_modifier_joseon_qing_war_strained_effort
-		remove_modifier = eafp_modifier_joseon_qing_war_exhaustion
-		add_modifier = {
-			name = eafp_modifier_joseon_qing_war_holding
 		}
 		trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
 	}
@@ -46,65 +43,51 @@
 				exists = c:CHI
 				NOT = { has_war_with = c:CHI }
 				NOT = { is_subject_of = c:CHI }
+				NOT = { has_variable = eafp_var_jqw_kor_capitulated }
+				NOT = {
+					AND = {
+						has_variable = eafp_var_jqw_qing_enforced_goal
+						NOT = { has_variable = eafp_var_jqw_kor_enforced_goal }
+					}
+				}
 			}
 		}
 	}
 
 	on_complete = {
 		set_variable = {
-			name = eafp_var_jqw_result_grade
-			value = 1
+			name = eafp_var_jqw_result
+			value = 2
 		}
 		if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 80
-				}
-				var:eafp_var_joseon_qing_war_months <= 12
+				NOT = { exists = c:CHI }
 			}
 			set_variable = {
-				name = eafp_var_jqw_result_grade
-				value = 4
-			}
-		}
-		else_if = {
-			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 65
-				}
-				var:eafp_var_joseon_qing_war_months <= 24
-			}
-			set_variable = {
-				name = eafp_var_jqw_result_grade
+				name = eafp_var_jqw_result
 				value = 3
 			}
 		}
 		else_if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 40
-				}
-				var:eafp_var_joseon_qing_war_months <= 36
+				has_variable = eafp_var_jqw_kor_enforced_goal
+				has_variable = eafp_var_jqw_qing_enforced_goal
 			}
 			set_variable = {
-				name = eafp_var_jqw_result_grade
-				value = 2
+				name = eafp_var_jqw_result
+				value = 1
 			}
 		}
-		remove_modifier = eafp_modifier_joseon_qing_war_momentum
-		remove_modifier = eafp_modifier_joseon_qing_war_holding
-		remove_modifier = eafp_modifier_joseon_qing_war_strained_effort
-		remove_modifier = eafp_modifier_joseon_qing_war_exhaustion
-		trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
-	}
+		else_if = {
+			limit = {
+				has_variable = eafp_var_jqw_kor_enforced_goal
+			}
+			set_variable = {
+				name = eafp_var_jqw_result
+				value = 3
+			}
+		}
 
-	fail = {
-		exists = c:CHI
-		NOT = { has_war_with = c:CHI }
-		is_subject_of = c:CHI
-	}
-
-	on_fail = {
 		set_variable = {
 			name = eafp_var_jqw_result_grade
 			value = 1
@@ -112,21 +95,8 @@
 		if = {
 			limit = {
 				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 70
+					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 67
 				}
-				var:eafp_var_joseon_qing_war_months <= 24
-			}
-			set_variable = {
-				name = eafp_var_jqw_result_grade
-				value = 4
-			}
-		}
-		else_if = {
-			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 45
-				}
-				var:eafp_var_joseon_qing_war_months <= 36
 			}
 			set_variable = {
 				name = eafp_var_jqw_result_grade
@@ -136,37 +106,77 @@
 		else_if = {
 			limit = {
 				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 20
+					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 34
 				}
-				var:eafp_var_joseon_qing_war_months <= 36
 			}
 			set_variable = {
 				name = eafp_var_jqw_result_grade
 				value = 2
 			}
 		}
-		remove_modifier = eafp_modifier_joseon_qing_war_momentum
-		remove_modifier = eafp_modifier_joseon_qing_war_holding
-		remove_modifier = eafp_modifier_joseon_qing_war_strained_effort
-		remove_modifier = eafp_modifier_joseon_qing_war_exhaustion
+		trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
+	}
+
+	fail = {
+		exists = c:CHI
+		NOT = { has_war_with = c:CHI }
+		OR = {
+			is_subject_of = c:CHI
+			has_variable = eafp_var_jqw_kor_capitulated
+			AND = {
+				has_variable = eafp_var_jqw_qing_enforced_goal
+				NOT = { has_variable = eafp_var_jqw_kor_enforced_goal }
+			}
+		}
+	}
+
+	on_fail = {
+		set_variable = {
+			name = eafp_var_jqw_result
+			value = 0
+		}
+		set_variable = {
+			name = eafp_var_jqw_result_grade
+			value = 1
+		}
+		if = {
+			limit = {
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 67
+				}
+			}
+			set_variable = {
+				name = eafp_var_jqw_result_grade
+				value = 3
+			}
+		}
+		else_if = {
+			limit = {
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 34
+				}
+			}
+			set_variable = {
+				name = eafp_var_jqw_result_grade
+				value = 2
+			}
+		}
 		trigger_event = { id = eafp_joseon_qing_war_events.3 popup = yes }
 	}
 
 	invalid = {
-		exists = c:CHI
-		NOT = { exists = scope:qing_enemy }
-		NOT = { has_war_with = c:CHI }
+		NOT = { c:KOR ?= THIS }
 	}
 
 	on_invalid = {
 		remove_variable = eafp_var_joseon_qing_war_months
+		remove_variable = eafp_var_jqw_result
 		remove_variable = eafp_var_jqw_result_grade
+		remove_variable = eafp_var_jqw_kor_enforced_goal
+		remove_variable = eafp_var_jqw_qing_enforced_goal
+		remove_variable = eafp_var_jqw_kor_capitulated
 		remove_variable = eafp_var_jqw_bad_shells_coverup
 		remove_variable = eafp_var_jqw_transport_reformed
-		remove_modifier = eafp_modifier_joseon_qing_war_momentum
-		remove_modifier = eafp_modifier_joseon_qing_war_holding
-		remove_modifier = eafp_modifier_joseon_qing_war_strained_effort
-		remove_modifier = eafp_modifier_joseon_qing_war_exhaustion
 	}
 
 	on_monthly_pulse = {
@@ -175,55 +185,14 @@
 				name = eafp_var_joseon_qing_war_months
 				add = 1
 			}
-			remove_modifier = eafp_modifier_joseon_qing_war_momentum
-			remove_modifier = eafp_modifier_joseon_qing_war_holding
-			remove_modifier = eafp_modifier_joseon_qing_war_strained_effort
-			remove_modifier = eafp_modifier_joseon_qing_war_exhaustion
-			if = {
-				limit = {
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 80
-					}
-				}
-				add_modifier = {
-					name = eafp_modifier_joseon_qing_war_momentum
-				}
-			}
-			else_if = {
-				limit = {
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 55
-					}
-				}
-				add_modifier = {
-					name = eafp_modifier_joseon_qing_war_holding
-				}
-			}
-			else_if = {
-				limit = {
-					scope:journal_entry = {
-						"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 30
-					}
-				}
-				add_modifier = {
-					name = eafp_modifier_joseon_qing_war_strained_effort
-				}
-			}
-			else = {
-				add_modifier = {
-					name = eafp_modifier_joseon_qing_war_exhaustion
-				}
-			}
 		}
 		random_events = {
-			chance_of_no_event = {
-				value = 78
-			}
-			10 = eafp_joseon_qing_war_events.10
-			10 = eafp_joseon_qing_war_events.11
-			10 = eafp_joseon_qing_war_events.12
-			10 = eafp_joseon_qing_war_events.13
-			10 = eafp_joseon_qing_war_events.14
+			85 = 0
+			5 = eafp_joseon_qing_war_events.10
+			4 = eafp_joseon_qing_war_events.11
+			3 = eafp_joseon_qing_war_events.12
+			2 = eafp_joseon_qing_war_events.13
+			4 = eafp_joseon_qing_war_events.14
 		}
 	}
 
