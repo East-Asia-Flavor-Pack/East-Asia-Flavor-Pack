@@ -30,7 +30,7 @@ first_opium_war_1
 - 이금론 루트는 `first_opium_war.6.b`에서 즉시 `이금론` 저널을 추가하여 처리한다.
 - 과거 월간 반복 이벤트로 쓰던 구 `.6`, `.7`, `.8` 정의와 localization은 제거한다. 새 `.6`은 황제의 최종 결단 이벤트로 재사용하며, `이금론` 저널에는 월간 반복 이벤트를 두지 않는다.
 - 엄금론 사건 체인의 전쟁 합류점 또는 `이금론` 부칙 폐지 시 청이 `first_opium_war.151`를 직접 호출하지 않는다. 영국에 `first_opium_war.112`을 띄우고, 영국이 아편전쟁 개입을 선택하면 청에 `first_opium_war.151`를 호출한다.
-- `first_opium_war.112`은 바닐라 `opium_wars.2`의 영국 반응 효과와 localization을 공유한다. 선택지 A는 청에 `first_opium_war.151`를 띄우는 동시에, 삭제된 `first_opium_war.50`의 전용 `je_first_opium_war` 추가와 외교전 생성 효과를 직접 수행한다. 아편전쟁 회피 선택지 B의 AI 가중치는 0이다.
+- `first_opium_war.112`은 바닐라 `opium_wars.2`의 영국 반응 효과와 localization을 공유한다. 선택지 A는 청에 `first_opium_war.151`를 띄우는 동시에, 삭제된 `first_opium_war.50`의 전용 `je_first_opium_war` 추가와 외교전 생성 효과를 직접 수행한다. 외교전에는 시장 개방과 서부 광동 조약항을 영국의 주 요구로 추가한다. 아편전쟁 회피 선택지 B의 AI 가중치는 0이다.
 - `je_first_opium_war`는 영국에 추가되고 청나라를 target으로 저장한다. 기존 시장 개방·투자권·조약항 조건을 달성하면 완료되어 `c:CHI`에 `.153`, `c:GBR`에 `.154`를 호출한다. 완료 조건을 달성하지 못한 상태에서 `dp_first_opium_war`가 종료되면 실패하여 `c:CHI`에 `.155`, `c:GBR`에 `.156`을 호출한다.
 - `je_qing_first_opium_war`도 청나라에 추가한다. 영국 저널의 반대 조건으로 완료·실패하지만 `on_complete`와 `on_fail`의 이벤트 효과는 모두 `show_as_tooltip`으로 감싸 결과 안내에만 사용한다.
 - AI와 플레이어 모두 같은 역사적 순서를 따른다.
@@ -119,7 +119,7 @@ flowchart TD
     E98 -- "거부" --> GBR2
     TREATY --> GIVEIN["opium_wars_gave_in"]
     GBR2 -- "아편전쟁 개입" --> ULT2["first_opium_war_151: 영국의 최후통첩"]
-    GBR2 -- "동시에 외교전 생성" --> DP["dp_first_opium_war"]
+    GBR2 -- "시장 개방 + 서부 광동 조약항" --> DP["dp_first_opium_war"]
     GBR2 -- "영국 전쟁 저널 추가" --> WJE["je_first_opium_war"]
     GBR2 -- "청 전쟁 저널 추가" --> QWJE["je_qing_first_opium_war: 표시 전용"]
     DP -- "영국의 전쟁 목표 달성" --> WJE
@@ -1086,7 +1086,7 @@ cooldown = { days = stupidly_long_modifier_time }
 36. `이금론` 저널 성공 시 `.251`, 실패 시 `.201`을 호출한다.
 37. `.251`은 `opium_wars_gave_in`을 설정한다.
 38. `.201`은 영국의 `.112` 대응 이벤트를 호출하고, 영국의 개입 선택으로 청의 `.151` 최후통첩에 이어진다.
-39. `.112.a`에서 바닐라 `je_opium_wars` 대신 청나라를 target으로 하는 `je_first_opium_war`를 영국에 추가한다.
+39. `.112.a`에서 바닐라 `je_opium_wars` 대신 청나라를 target으로 하는 `je_first_opium_war`를 영국에 추가하고, `dp_first_opium_war`에 시장 개방과 `STATE_GUANGDONG` 조약항을 영국의 주 요구로 추가한다.
 40. `je_first_opium_war`가 영국의 전쟁 목표 달성을 감지하면 `c:CHI`에 `.153`, `c:GBR`에 `.154`를 5일 뒤 호출한다.
 41. `.153`과 `.154`는 각각 바닐라 `opium_wars.4`, `opium_wars.5`를 복제하되 국가 탐색 scope를 `c:CHI`, `c:GBR` 태그로 고정한다.
 42. 영국 저널의 실패 조건을 승리 조건 미달성 및 `dp_first_opium_war` 종료로 교체하고, 실패 시 `.155`와 `.156`을 호출한다.
@@ -1189,7 +1189,7 @@ rg -n "first_opium_war\\.(90|91|92|93|94|96|97|98|99|111|112|113|12)|dp_first_op
 28. `광동체제` 또는 `고립주의` 유지 중 `이금론` 부칙을 폐지하면 `이금론` 저널이 invalid 된다.
 29. `on_invalid`는 `eafp_first_opium_war_legalization_repealed_decay`를 `normal_modifier_time` 동안 decay modifier로 부여한다.
 30. 이후 영국에 `first_opium_war.112`이 발생하며, 개입 선택 시 청에 `first_opium_war.151`가 발생해 아편전쟁 루트로 돌아간다.
-31. 영국이 개입을 선택하면 `dp_first_opium_war`와 함께 청나라를 target으로 하는 `je_first_opium_war`가 영국에 추가된다.
+31. 영국이 개입을 선택하면 시장 개방과 서부 광동 조약항을 주 요구로 하는 `dp_first_opium_war`가 생성되고, 청나라를 target으로 하는 `je_first_opium_war`가 영국에 추가된다.
 32. 영국이 시장 개방, 투자권 또는 조약항 목표를 달성하면 `je_first_opium_war`가 완료된다.
 33. 저널 완료 5일 뒤 청나라에는 `first_opium_war.153` 패배 이벤트가, 영국에는 `first_opium_war.154` 승리 이벤트가 발생한다.
 34. 두 결과 이벤트는 바닐라 효과와 localization을 유지하되 국가 scope는 각각 `c:CHI`, `c:GBR`로 고정한다. 청 패배 이벤트 `.153`은 추가로 소시민 이해집단 지도자를 퇴임시킨다.
