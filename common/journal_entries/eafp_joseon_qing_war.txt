@@ -3,18 +3,49 @@
 
 	group = je_group_crises
 
-	scripted_progress_bar = eafp_joseon_qing_war_evaluation_progress_bar
+	status_desc = {
+		first_valid = {
+			triggered_desc = {
+				desc = je_eafp_joseon_qing_war_status
+				trigger = {
+					exists = scope:joseon_qing_war
+				}
+			}
+			triggered_desc = {
+				desc = je_eafp_joseon_qing_war_status_pending
+				trigger = {
+					always = yes
+				}
+			}
+		}
+	}
+
+	progress_desc = je_eafp_joseon_qing_war_progress
 
 	is_shown_when_inactive = {
 		c:KOR ?= THIS
 		exists = c:CHI
-		has_war_with = c:CHI
+		OR = {
+			has_war_with = c:CHI
+			any_diplomatic_play = {
+				initiator = c:KOR
+				target = c:CHI
+				is_diplomatic_play_type = dp_independence
+			}
+		}
 	}
 
 	possible = {
 		c:KOR ?= THIS
 		exists = c:CHI
-		has_war_with = c:CHI
+		OR = {
+			has_war_with = c:CHI
+			any_diplomatic_play = {
+				initiator = c:KOR
+				target = c:CHI
+				is_diplomatic_play_type = dp_independence
+			}
+		}
 	}
 
 	immediate = {
@@ -29,11 +60,26 @@
 		remove_variable = eafp_var_jqw_kor_capitulated
 		remove_variable = eafp_var_jqw_bad_shells_coverup
 		remove_variable = eafp_var_jqw_transport_reformed
+		remove_variable = eafp_var_jqw_war_started
 		set_variable = {
 			name = eafp_var_joseon_qing_war_months
 			value = 0
 		}
-		trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
+		if = {
+			limit = { has_war_with = c:CHI }
+			random_scope_war = {
+				limit = {
+					is_war_participant = ROOT
+					is_war_participant = c:CHI
+				}
+				save_scope_as = joseon_qing_war
+			}
+			set_variable = {
+				name = eafp_var_jqw_war_started
+				value = 1
+			}
+			trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
+		}
 	}
 
 	complete = {
@@ -42,6 +88,13 @@
 			AND = {
 				exists = c:CHI
 				NOT = { has_war_with = c:CHI }
+				NOT = {
+					any_diplomatic_play = {
+						initiator = c:KOR
+						target = c:CHI
+						is_diplomatic_play_type = dp_independence
+					}
+				}
 				NOT = { is_subject_of = c:CHI }
 				NOT = { has_variable = eafp_var_jqw_kor_capitulated }
 				NOT = {
@@ -90,12 +143,15 @@
 
 		set_variable = {
 			name = eafp_var_jqw_result_grade
-			value = 1
+			value = 2
 		}
 		if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 67
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
+						value >= 50
+					}
 				}
 			}
 			set_variable = {
@@ -105,13 +161,16 @@
 		}
 		else_if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 34
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
+						value < 0
+					}
 				}
 			}
 			set_variable = {
 				name = eafp_var_jqw_result_grade
-				value = 2
+				value = 1
 			}
 		}
 		trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
@@ -120,6 +179,13 @@
 	fail = {
 		exists = c:CHI
 		NOT = { has_war_with = c:CHI }
+		NOT = {
+			any_diplomatic_play = {
+				initiator = c:KOR
+				target = c:CHI
+				is_diplomatic_play_type = dp_independence
+			}
+		}
 		OR = {
 			is_subject_of = c:CHI
 			has_variable = eafp_var_jqw_kor_capitulated
@@ -137,12 +203,15 @@
 		}
 		set_variable = {
 			name = eafp_var_jqw_result_grade
-			value = 1
+			value = 2
 		}
 		if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 67
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
+						value >= 50
+					}
 				}
 			}
 			set_variable = {
@@ -152,13 +221,16 @@
 		}
 		else_if = {
 			limit = {
-				scope:journal_entry = {
-					"scripted_bar_progress(eafp_joseon_qing_war_evaluation_progress_bar)" >= 34
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
+						value < 0
+					}
 				}
 			}
 			set_variable = {
 				name = eafp_var_jqw_result_grade
-				value = 2
+				value = 1
 			}
 		}
 		trigger_event = { id = eafp_joseon_qing_war_events.3 popup = yes }
@@ -177,13 +249,40 @@
 		remove_variable = eafp_var_jqw_kor_capitulated
 		remove_variable = eafp_var_jqw_bad_shells_coverup
 		remove_variable = eafp_var_jqw_transport_reformed
+		remove_variable = eafp_var_jqw_war_started
+	}
+
+	on_weekly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					has_war_with = c:CHI
+					NOT = { has_variable = eafp_var_jqw_war_started }
+				}
+				random_scope_war = {
+					limit = {
+						is_war_participant = ROOT
+						is_war_participant = c:CHI
+					}
+					save_scope_as = joseon_qing_war
+				}
+				set_variable = {
+					name = eafp_var_jqw_war_started
+					value = 1
+				}
+				trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
+			}
+		}
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			change_variable = {
-				name = eafp_var_joseon_qing_war_months
-				add = 1
+			if = {
+				limit = { has_war_with = c:CHI }
+				change_variable = {
+					name = eafp_var_joseon_qing_war_months
+					add = 1
+				}
 			}
 		}
 		random_events = {

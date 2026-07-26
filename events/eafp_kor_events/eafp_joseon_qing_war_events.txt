@@ -103,90 +103,63 @@ eafp_joseon_qing_war_events.2 = {
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	option = {
-		name = eafp_joseon_qing_war_events.2.a
+		name = eafp_joseon_qing_war_events.2.a.victory.3
+		trigger = {
+			var:eafp_var_jqw_result = 3
+			var:eafp_var_jqw_result_grade = 3
+		}
 		default_option = yes
 
-		set_variable = completed_je_eafp_joseon_qing_war
-		if = {
-			limit = { var:eafp_var_jqw_result = 3 }
-			if = {
-				limit = { var:eafp_var_jqw_result_grade = 3 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 6 }
-				add_loyalists = { value = large_radicals }
-			}
-			else_if = {
-				limit = { var:eafp_var_jqw_result_grade = 2 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 4 }
-				add_loyalists = { value = small_radicals }
-			}
-			else = {
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
-				add_radicals = { value = small_radicals }
+		eafp_resolve_joseon_qing_war_effect = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.2.a.victory.2
+		trigger = {
+			var:eafp_var_jqw_result = 3
+			var:eafp_var_jqw_result_grade = 2
+		}
+		default_option = yes
+
+		eafp_resolve_joseon_qing_war_effect = yes
+
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.2.a.victory.1
+		trigger = {
+			var:eafp_var_jqw_result = 3
+			NOT = {
+				OR = {
+					var:eafp_var_jqw_result_grade = 3
+					var:eafp_var_jqw_result_grade = 2
+				}
 			}
 		}
-		else_if = {
-			limit = { var:eafp_var_jqw_result = 2 }
-			if = {
-				limit = { var:eafp_var_jqw_result_grade = 3 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 4 }
-				add_loyalists = { value = medium_radicals }
-			}
-			else_if = {
-				limit = { var:eafp_var_jqw_result_grade = 2 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
-			}
-			else = {
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 1 }
-				add_radicals = { value = small_radicals }
-			}
+		default_option = yes
+
+		eafp_resolve_joseon_qing_war_effect = yes
+
+		ai_chance = {
+			base = 100
 		}
-		else = {
-			if = {
-				limit = { var:eafp_var_jqw_result_grade = 3 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
-				add_loyalists = { value = small_radicals }
-			}
-			else_if = {
-				limit = { var:eafp_var_jqw_result_grade = 1 }
-				add_modifier = { name = eafp_modifier_joseon_qing_war_defeat_humiliation years = 3 }
-				add_radicals = { value = medium_radicals }
-			}
+	}
+
+	option = {
+		name = eafp_joseon_qing_war_events.2.a.fail
+		trigger = {
+			NOT = { var:eafp_var_jqw_result = 3 }
 		}
-		if = {
-			limit = {
-				var:eafp_var_jqw_result_grade <= 2
-				has_modifier = eafp_modi_joseon_qing_war_covered_defeat
-			}
-			add_radicals = { value = small_radicals }
-		}
-		if = {
-			limit = {
-				exists = c:CHI
-				var:eafp_var_jqw_result = 3
-			}
-			change_relations = {
-				country = c:CHI
-				value = -30
-			}
-		}
-		else_if = {
-			limit = {
-				exists = c:CHI
-				var:eafp_var_jqw_result = 2
-			}
-			change_relations = {
-				country = c:CHI
-				value = -10
-			}
-		}
-		remove_variable = eafp_var_joseon_qing_war_months
-		remove_variable = eafp_var_jqw_result
-		remove_variable = eafp_var_jqw_result_grade
-		remove_variable = eafp_var_jqw_kor_enforced_goal
-		remove_variable = eafp_var_jqw_qing_enforced_goal
-		remove_variable = eafp_var_jqw_kor_capitulated
-		remove_variable = eafp_var_jqw_bad_shells_coverup
-		remove_variable = eafp_var_jqw_transport_reformed
+		default_option = yes
+
+		eafp_resolve_joseon_qing_war_effect = yes
 
 		ai_chance = {
 			base = 100
@@ -324,9 +297,9 @@ eafp_joseon_qing_war_events.10 = {
 			}
 		}
 		OR = {
-			je:je_eafp_joseon_qing_war ?= {
-				scripted_bar_progress = {
-					name = eafp_joseon_qing_war_evaluation_progress_bar
+			scope:joseon_qing_war ?= {
+				has_war_support = {
+					target = ROOT
 					value < 75
 				}
 			}
@@ -366,13 +339,12 @@ eafp_joseon_qing_war_events.10 = {
 			name = eafp_modi_joseon_qing_war_supply_focus
 			years = 1
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 4
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_4_tt
 
 		ai_chance = {
 			base = 45
@@ -400,13 +372,12 @@ eafp_joseon_qing_war_events.10 = {
 				pop_type = peasants
 			}
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = -3
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_minus_3_tt
 
 		ai_chance = {
 			base = 20
@@ -433,13 +404,12 @@ eafp_joseon_qing_war_events.10 = {
 			name = eafp_var_jqw_transport_reformed
 			months = 24
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 2
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_2_tt
 
 		ai_chance = {
 			base = 35
@@ -495,9 +465,9 @@ eafp_joseon_qing_war_events.11 = {
 			}
 		}
 		OR = {
-			je:je_eafp_joseon_qing_war ?= {
-				scripted_bar_progress = {
-					name = eafp_joseon_qing_war_evaluation_progress_bar
+			scope:joseon_qing_war ?= {
+				has_war_support = {
+					target = ROOT
 					value < 70
 				}
 			}
@@ -546,13 +516,12 @@ eafp_joseon_qing_war_events.11 = {
 			name = eafp_modi_joseon_qing_war_winter_supplies
 			months = 8
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 5
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_5_tt
 
 		ai_chance = {
 			base = 45
@@ -584,13 +553,12 @@ eafp_joseon_qing_war_events.11 = {
 				pop_type = peasants
 			}
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = -4
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_minus_4_tt
 
 		ai_chance = {
 			base = 20
@@ -612,13 +580,12 @@ eafp_joseon_qing_war_events.11 = {
 			name = eafp_modi_joseon_qing_war_delayed_offensive
 			months = 6
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 2
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_2_tt
 
 		ai_chance = {
 			base = 35
@@ -628,9 +595,9 @@ eafp_joseon_qing_war_events.11 = {
 			}
 			modifier = {
 				add = 20
-				je:je_eafp_joseon_qing_war ?= {
-					scripted_bar_progress = {
-						name = eafp_joseon_qing_war_evaluation_progress_bar
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
 						value < 35
 					}
 				}
@@ -667,9 +634,9 @@ eafp_joseon_qing_war_events.12 = {
 		}
 		OR = {
 			var:eafp_var_joseon_qing_war_months >= 6
-			je:je_eafp_joseon_qing_war ?= {
-				scripted_bar_progress = {
-					name = eafp_joseon_qing_war_evaluation_progress_bar
+			scope:joseon_qing_war ?= {
+				has_war_support = {
+					target = ROOT
 					value < 60
 				}
 			}
@@ -687,13 +654,12 @@ eafp_joseon_qing_war_events.12 = {
 			name = eafp_modi_joseon_qing_war_corruption_punished
 			months = 18
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 3
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_3_tt
 
 		ai_chance = {
 			base = 40
@@ -719,13 +685,12 @@ eafp_joseon_qing_war_events.12 = {
 			value = small_radicals
 			pop_type = soldiers
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = -6
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_minus_6_tt
 
 		ai_chance = {
 			base = 15
@@ -748,13 +713,12 @@ eafp_joseon_qing_war_events.12 = {
 			name = eafp_modi_joseon_qing_war_procurement_reform
 			years = 3
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 6
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_6_tt
 
 		ai_chance = {
 			base = 45
@@ -802,9 +766,9 @@ eafp_joseon_qing_war_events.13 = {
 			character_is_valid_for_events = yes
 		}
 		OR = {
-			je:je_eafp_joseon_qing_war ?= {
-				scripted_bar_progress = {
-					name = eafp_joseon_qing_war_evaluation_progress_bar
+			scope:joseon_qing_war ?= {
+				has_war_support = {
+					target = ROOT
 					value < 40
 				}
 			}
@@ -853,14 +817,6 @@ eafp_joseon_qing_war_events.13 = {
 			name = eafp_modi_joseon_qing_war_honored_general
 			years = 2
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
-				value = 0
-			}
-		}
-		custom_tooltip = eafp_jqw_evaluation_no_change_tt
-
 		ai_chance = {
 			base = 25
 		}
@@ -879,21 +835,20 @@ eafp_joseon_qing_war_events.13 = {
 			name = eafp_modi_joseon_qing_war_military_reform_pressure
 			years = 2
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 4
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_4_tt
 
 		ai_chance = {
 			base = 55
 			modifier = {
 				add = 25
-				je:je_eafp_joseon_qing_war ?= {
-					scripted_bar_progress = {
-						name = eafp_joseon_qing_war_evaluation_progress_bar
+				scope:joseon_qing_war ?= {
+					has_war_support = {
+						target = ROOT
 						value < 35
 					}
 				}
@@ -912,13 +867,12 @@ eafp_joseon_qing_war_events.13 = {
 			name = eafp_modi_joseon_qing_war_covered_defeat
 			years = 2
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = -5
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_minus_5_tt
 
 		ai_chance = {
 			base = 20
@@ -1004,13 +958,12 @@ eafp_joseon_qing_war_events.14 = {
 				pop_type = peasants
 			}
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 5
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_5_tt
 
 		ai_chance = {
 			base = 50
@@ -1038,13 +991,12 @@ eafp_joseon_qing_war_events.14 = {
 				pop_type = peasants
 			}
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = -4
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_minus_4_tt
 
 		ai_chance = {
 			base = 20
@@ -1066,13 +1018,12 @@ eafp_joseon_qing_war_events.14 = {
 			name = eafp_modi_joseon_qing_war_fire_accountability
 			years = 1
 		}
-		je:je_eafp_joseon_qing_war ?= {
-			add_progress = {
-				name = eafp_joseon_qing_war_evaluation_progress_bar
+		scope:joseon_qing_war ?= {
+			add_war_war_support = {
+				target = ROOT
 				value = 2
 			}
 		}
-		custom_tooltip = eafp_jqw_evaluation_change_plus_2_tt
 
 		ai_chance = {
 			base = 30

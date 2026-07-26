@@ -6,6 +6,90 @@ eafp_land_problem_add_modifier = {	#상태등급별 효과 업데이트
 	eafp_land_problem_add_modifier_building = yes
 }
 
+eafp_resolve_joseon_qing_war_effect = {
+	set_variable = completed_je_eafp_joseon_qing_war
+	if = {
+		limit = { var:eafp_var_jqw_result = 3 }
+		if = {
+			limit = { var:eafp_var_jqw_result_grade = 3 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 6 }
+			add_loyalists = { value = large_radicals }
+		}
+		else_if = {
+			limit = { var:eafp_var_jqw_result_grade = 2 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 4 }
+			add_loyalists = { value = small_radicals }
+		}
+		else = {
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
+			add_radicals = { value = small_radicals }
+		}
+	}
+	else_if = {
+		limit = { var:eafp_var_jqw_result = 2 }
+		if = {
+			limit = { var:eafp_var_jqw_result_grade = 3 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 4 }
+			add_loyalists = { value = medium_radicals }
+		}
+		else_if = {
+			limit = { var:eafp_var_jqw_result_grade = 2 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
+		}
+		else = {
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 1 }
+			add_radicals = { value = small_radicals }
+		}
+	}
+	else = {
+		if = {
+			limit = { var:eafp_var_jqw_result_grade = 3 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_victory_unity years = 2 }
+			add_loyalists = { value = small_radicals }
+		}
+		else_if = {
+			limit = { var:eafp_var_jqw_result_grade = 1 }
+			add_modifier = { name = eafp_modifier_joseon_qing_war_defeat_humiliation years = 3 }
+			add_radicals = { value = medium_radicals }
+		}
+	}
+	if = {
+		limit = {
+			var:eafp_var_jqw_result_grade <= 2
+			has_modifier = eafp_modi_joseon_qing_war_covered_defeat
+		}
+		add_radicals = { value = small_radicals }
+	}
+	if = {
+		limit = {
+			exists = c:CHI
+			var:eafp_var_jqw_result = 3
+		}
+		change_relations = {
+			country = c:CHI
+			value = -30
+		}
+	}
+	else_if = {
+		limit = {
+			exists = c:CHI
+			var:eafp_var_jqw_result = 2
+		}
+		change_relations = {
+			country = c:CHI
+			value = -10
+		}
+	}
+	remove_variable = eafp_var_joseon_qing_war_months
+	remove_variable = eafp_var_jqw_result
+	remove_variable = eafp_var_jqw_result_grade
+	remove_variable = eafp_var_jqw_kor_enforced_goal
+	remove_variable = eafp_var_jqw_qing_enforced_goal
+	remove_variable = eafp_var_jqw_kor_capitulated
+	remove_variable = eafp_var_jqw_bad_shells_coverup
+	remove_variable = eafp_var_jqw_transport_reformed
+}
+
 eafp_land_problem_add_modifier_comp = {
 	remove_modifier = eafp_modi_land_problem_$comp$_lvl_0
 	remove_modifier = eafp_modi_land_problem_$comp$_lvl_1
