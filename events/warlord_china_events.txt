@@ -511,7 +511,10 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				set_as_interest_group_leader = yes
 			}
 
-			play_as = c:ROC
+			if = {
+				limit = { is_player = yes }
+				play_as = c:ROC
+			}
 
 			c:ROC = {
 				annex = c:CHI
@@ -545,6 +548,19 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 
 		custom_tooltip = {
 			text = warlord_china_events.5.ttb
+
+			# 드레퓌스 이벤트처럼 변수로 표식한 뒤 후계자부터 void로 격리
+			if = {
+				limit = { exists = heir }
+				heir = {
+					place_character_in_void = 10000
+					set_variable = eafp_qing_heir_manchurian_exile_var
+				}
+			}
+			ruler = {
+				place_character_in_void = 10000
+				set_variable = eafp_qing_emperor_manchurian_exile_var
+			}
 			
 			# CHI 법 MCH에 복붙
 			every_law = {
@@ -554,11 +570,69 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				c:MCH = { activate_law = PREV.type }
 			}
 
-			# CHI 지도자 MCH로
-			ruler = {
-				set_home_country = c:MCH
-				transfer_character = c:MCH
-				set_character_as_ruler = yes
+			# 군사본부 종속국 정부를 해제한 뒤 변수로 void의 청 황실을 검색해 복원
+			c:MCH = { make_independent = yes }
+			if = {
+				limit = {
+					c:MCH = { has_law = law_type:law_monarchy }
+					any_character_in_void = {
+						has_variable = eafp_qing_emperor_manchurian_exile_var
+						is_character_alive = yes
+					}
+				}
+				random_character_in_void = {
+					limit = {
+						has_variable = eafp_qing_emperor_manchurian_exile_var
+						is_character_alive = yes
+					}
+					save_scope_as = qing_emperor_scope
+				}
+				scope:qing_emperor_scope = {
+					free_character_from_void = yes
+					set_home_country = c:MCH
+					transfer_character = c:MCH
+					set_character_as_ruler = yes
+					remove_variable = eafp_qing_emperor_manchurian_exile_var
+				}
+				if = {
+					limit = {
+						any_character_in_void = {
+							has_variable = eafp_qing_heir_manchurian_exile_var
+							is_character_alive = yes
+						}
+					}
+					random_character_in_void = {
+						limit = {
+							has_variable = eafp_qing_heir_manchurian_exile_var
+							is_character_alive = yes
+						}
+						save_scope_as = qing_heir_scope
+					}
+					scope:qing_heir_scope = {
+						free_character_from_void = yes
+						set_home_country = c:MCH
+						transfer_character = c:MCH
+						remove_variable = eafp_qing_heir_manchurian_exile_var
+					}
+					c:MCH = { set_heir = scope:qing_heir_scope }
+				}
+				else = {
+					every_character_in_void = {
+						limit = { has_variable = eafp_qing_heir_manchurian_exile_var }
+						free_character_from_void = no
+					}
+				}
+			}
+			else = {
+				every_character_in_void = {
+					limit = {
+						OR = {
+							has_variable = eafp_qing_emperor_manchurian_exile_var
+							has_variable = eafp_qing_heir_manchurian_exile_var
+						}
+					}
+					free_character_from_void = no
+				}
 			}
 
 			# 위안스카이 ROC로
@@ -573,6 +647,8 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				every_scope_character = {
 					limit = {
 						is_ruler_of_own_country = no
+						NOT = { this ?= scope:qing_emperor_scope }
+						NOT = { this ?= scope:qing_heir_scope }
 					}
 					random_list = {
 						80 = {
@@ -583,7 +659,10 @@ warlord_china_events.5 = { # 군부의 최후통첩 (북양군)
 				}
 			}
 
-			play_as = c:MCH
+			if = {
+				limit = { is_player = yes }
+				play_as = c:MCH
+			}
 
 			c:ROC = {
 				annex = c:CHI
@@ -648,7 +727,10 @@ warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
 		custom_tooltip = {
 			text = warlord_china_events.6.tta
 
-			play_as = c:ROC
+			if = {
+				limit = { is_player = yes }
+				play_as = c:ROC
+			}
 
 			c:ROC = {
 				annex = c:CHI
@@ -682,6 +764,19 @@ warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
 
 		custom_tooltip = {
 			text = warlord_china_events.6.ttb
+
+			# 드레퓌스 이벤트처럼 변수로 표식한 뒤 후계자부터 void로 격리
+			if = {
+				limit = { exists = heir }
+				heir = {
+					place_character_in_void = 10000
+					set_variable = eafp_qing_heir_manchurian_exile_var
+				}
+			}
+			ruler = {
+				place_character_in_void = 10000
+				set_variable = eafp_qing_emperor_manchurian_exile_var
+			}
 			
 			# CHI 법 MCH에 복붙
 			every_law = {
@@ -691,11 +786,69 @@ warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
 				c:MCH = { activate_law = PREV.type }
 			}
 
-			# CHI 지도자 MCH로
-			ruler = {
-				set_home_country = c:MCH
-				transfer_character = c:MCH
-				set_character_as_ruler = yes
+			# 군사본부 종속국 정부를 해제한 뒤 변수로 void의 청 황실을 검색해 복원
+			c:MCH = { make_independent = yes }
+			if = {
+				limit = {
+					c:MCH = { has_law = law_type:law_monarchy }
+					any_character_in_void = {
+						has_variable = eafp_qing_emperor_manchurian_exile_var
+						is_character_alive = yes
+					}
+				}
+				random_character_in_void = {
+					limit = {
+						has_variable = eafp_qing_emperor_manchurian_exile_var
+						is_character_alive = yes
+					}
+					save_scope_as = qing_emperor_scope
+				}
+				scope:qing_emperor_scope = {
+					free_character_from_void = yes
+					set_home_country = c:MCH
+					transfer_character = c:MCH
+					set_character_as_ruler = yes
+					remove_variable = eafp_qing_emperor_manchurian_exile_var
+				}
+				if = {
+					limit = {
+						any_character_in_void = {
+							has_variable = eafp_qing_heir_manchurian_exile_var
+							is_character_alive = yes
+						}
+					}
+					random_character_in_void = {
+						limit = {
+							has_variable = eafp_qing_heir_manchurian_exile_var
+							is_character_alive = yes
+						}
+						save_scope_as = qing_heir_scope
+					}
+					scope:qing_heir_scope = {
+						free_character_from_void = yes
+						set_home_country = c:MCH
+						transfer_character = c:MCH
+						remove_variable = eafp_qing_heir_manchurian_exile_var
+					}
+					c:MCH = { set_heir = scope:qing_heir_scope }
+				}
+				else = {
+					every_character_in_void = {
+						limit = { has_variable = eafp_qing_heir_manchurian_exile_var }
+						free_character_from_void = no
+					}
+				}
+			}
+			else = {
+				every_character_in_void = {
+					limit = {
+						OR = {
+							has_variable = eafp_qing_emperor_manchurian_exile_var
+							has_variable = eafp_qing_heir_manchurian_exile_var
+						}
+					}
+					free_character_from_void = no
+				}
 			}
 
 			c:MCH = {
@@ -703,6 +856,8 @@ warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
 				every_scope_character = {
 					limit = {
 						is_ruler_of_own_country = no
+						NOT = { this ?= scope:qing_emperor_scope }
+						NOT = { this ?= scope:qing_heir_scope }
 					}
 					random_list = {
 						80 = {
@@ -713,7 +868,10 @@ warlord_china_events.6 = { # 팔기군 런 (팔기군) TODO
 				}
 			}
 
-			play_as = c:MCH
+			if = {
+				limit = { is_player = yes }
+				play_as = c:MCH
+			}
 
 			c:ROC = {
 				annex = c:CHI
