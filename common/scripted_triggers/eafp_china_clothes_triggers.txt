@@ -1,0 +1,37 @@
+﻿REPLACE:chinese_imperial_clothes_trigger = {
+	exists = scope:character
+	scope:character = {
+		exists = home_country
+		home_country = {
+			OR = {
+				has_law = law_type:law_monarchy
+				has_law = law_type:law_social_monarchy
+			}
+		}
+		OR = {
+			AND = { # Preserve the vanilla condition for Chinese rulers.
+				is_ruler_of_own_country = yes
+				OR = {
+					culture = {
+						has_discrimination_trait = heritage_han
+					}
+					AND = {
+						exists = c:CHI
+						home_country = c:CHI
+					}
+					AND = {
+						exists = c:MCH
+						home_country = c:MCH
+						c:MCH = { has_variable = imperial_family_exiled }
+					}
+				}
+			}
+			AND = { # The exiled Qing heir retains Qing imperial dress in Manchuria.
+				is_heir_of_own_country = yes
+				exists = c:MCH
+				home_country = c:MCH
+				c:MCH = { has_variable = imperial_family_exiled }
+			}
+		}
+	}
+}
