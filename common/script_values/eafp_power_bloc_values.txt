@@ -1,0 +1,100 @@
+﻿INJECT:ai_power_bloc_identity_score = {
+	### Chinese Interregnum: warlords seek membership, while other countries avoid it and leave if already admitted.
+	if = {
+		limit = {
+			scope:actor.power_bloc ?= {
+				has_identity = identity:identity_eafp_chinese_interregnum
+			}
+		}
+		if = {
+			limit = { eafp_is_chinese_fragment = yes }
+			add = {
+				value = 1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+		else = {
+			add = {
+				value = -1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+	}
+}
+
+INJECT:ai_accept_join_request_score = {
+	### Chinese Interregnum: the leader admits warlords and rejects all other applicants.
+	if = {
+		limit = {
+			power_bloc ?= {
+				has_identity = identity:identity_eafp_chinese_interregnum
+			}
+			exists = scope:actor
+		}
+		if = {
+			limit = {
+				scope:actor = { eafp_is_chinese_fragment = yes }
+			}
+			add = {
+				value = 1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+		else = {
+			add = {
+				value = -1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+	}
+}
+
+INJECT:ai_power_bloc_identity_score_treaties = {
+	### Chinese Interregnum: apply the same warlord membership preference to treaty proposals.
+	if = {
+		limit = {
+			scope:target_country.power_bloc ?= {
+				has_identity = identity:identity_eafp_chinese_interregnum
+			}
+		}
+		if = {
+			limit = { eafp_is_chinese_fragment = yes }
+			add = {
+				value = 1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+		else = {
+			add = {
+				value = -1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+	}
+}
+
+INJECT:ai_accept_join_request_score_treaties = {
+	### Chinese Interregnum: the leader only accepts warlords through treaties as well.
+	if = {
+		limit = {
+			power_bloc ?= {
+				has_identity = identity:identity_eafp_chinese_interregnum
+			}
+		}
+		if = {
+			limit = {
+				scope:source_country = { eafp_is_chinese_fragment = yes }
+			}
+			add = {
+				value = 1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+		else = {
+			add = {
+				value = -1000
+				desc = "DIPLOMATIC_ACCEPTANCE_FROM_IDENTITY"
+			}
+		}
+	}
+}

@@ -3,18 +3,120 @@
 		### Chinese unification warlord coalitions
 		if = {
 			limit = {
-				has_journal_entry = je_reunify_china_warlord
 				scope:country = {
-					has_journal_entry = je_reunify_china_warlord
+					is_involved_in_journal_entry = je_reunify_china_warlord
 				}
 				scope:enemy_country = {
-					has_journal_entry = je_reunify_china_warlord
-					this.country_rank >= scope:country.country_rank
+					is_involved_in_journal_entry = je_reunify_china_warlord
 				}
 			}
 			add = {
 				value = 25
 				desc = "alignment_politics"
+			}
+		}
+	}
+
+	# Chinese warlords are more willing to initiate plays against one another.
+	aggression = {
+		if = {
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 10
+		}
+	}
+
+	# Warlords discount the military strength of rival journal participants.
+	recklessness = {
+		if = {
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 2
+		}
+	}
+
+	# Warlords are less likely to back down from plays against one another.
+	diplomatic_play_boldness = {
+		if = {
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				any_enemy_in_diplo_play = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 50
+		}
+	}
+
+	# Warlords spend more maneuvers on territorial demands against one another.
+	wargoal_maneuvers_fraction = {
+		if = {
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:enemy_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 0.25
+		}
+	}
+
+	# States held by rival warlords are treated as valuable unification targets.
+	state_value = {
+		if = {
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 50
+		}
+	}
+
+	wargoal_scores = {
+		# Prefer all territorial paths toward reunification, not only annexation.
+		conquer_state = {
+			if = {
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
+			}
+		}
+
+		return_state = {
+			if = {
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
+			}
+		}
+
+		annex_country = {
+			if = {
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
 			}
 		}
 	}

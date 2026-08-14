@@ -219,7 +219,8 @@ identity_eafp_chinese_interregnum = {
 	}
 	
 	can_leave = {
-		always = no
+		# Membership preference is controlled by ai_power_bloc_identity_score.
+		always = yes
 	}
 
 	icon = "gfx/interface/icons/central_identity_pillars_icons/eafp_mandate_of_heaven.dds"
@@ -261,6 +262,7 @@ identity_eafp_chinese_interregnum = {
 		}
 
 		add = {
+			### AI expulsion compares cohesion with scope:without_country; ROC must retain Chinese warlords.
 			scope:power_bloc = {
 				every_power_bloc_member = {
 					if = {
@@ -270,6 +272,36 @@ identity_eafp_chinese_interregnum = {
 					else = {
 						add = -0.5
 					}
+				}
+			}
+			if = {
+				limit = { exists = scope:with_country }
+				if = {
+					limit = { scope:with_country ?= { eafp_is_chinese_fragment = yes } }
+					add = 0.03
+				}
+				else = {
+					add = -0.5
+				}
+			}
+			else_if = {
+				limit = { exists = scope:without_country }
+				if = {
+					limit = { scope:without_country ?= { eafp_is_chinese_fragment = yes } }
+					# Remove the member's normal contribution from the simulated cohesion.
+					add = -0.03
+					if = {
+						limit = {
+							exists = c:ROC
+							scope:power_bloc = { power_bloc_leader ?= c:ROC }
+						}
+						# A prohibitive loss prevents AI ROC from expelling a Chinese warlord.
+						add = -10
+					}
+				}
+				else = {
+					# Remove an outsider's normal penalty from the simulated cohesion.
+					add = 0.5
 				}
 			}
 			multiply = define:NPowerBlocs|COHESION_TARGET_MAX
