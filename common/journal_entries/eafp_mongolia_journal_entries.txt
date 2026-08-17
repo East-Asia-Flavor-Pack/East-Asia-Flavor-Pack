@@ -1,0 +1,234 @@
+﻿je_eafp_mgl_banners_and_monasteries = {
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+	group = je_group_historical_content
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 250
+	transferable = no
+
+	complete = {
+		var:eafp_mgl_state_capacity >= 60
+		var:eafp_mgl_autonomy_support >= 50
+		var:eafp_mgl_pastoral_stability >= 50
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			700 = 0
+			10 = eafp_mgl.1
+			10 = eafp_mgl.2
+			10 = eafp_mgl.3
+			10 = eafp_mgl.4
+			10 = eafp_mgl.5
+			10 = eafp_mgl.6
+			10 = eafp_mgl.7
+		}
+	}
+
+	on_complete = {
+		set_variable = eafp_mgl_banners_and_monasteries_complete
+		add_modifier = { name = eafp_mgl_independence_prepared years = 5 }
+	}
+}
+
+je_eafp_mgl_restoration_of_the_state = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+	group = je_group_historical_content
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 260
+	transferable = no
+
+	immediate = { trigger_event = { id = eafp_mgl.100 days = 7 popup = yes } }
+
+	complete = { is_subject = no }
+	on_complete = {
+		set_variable = eafp_mgl_restoration_complete
+		trigger_event = { id = eafp_mgl.102 days = 1 popup = yes }
+		trigger_event = { id = eafp_mgl.104 days = 30 popup = yes }
+		if = { limit = { exists = c:TIB } trigger_event = { id = eafp_mgl.200 days = 60 popup = yes } }
+		trigger_event = { id = eafp_mgl.210 days = 90 popup = yes }
+		add_journal_entry = { type = je_eafp_mgl_bogd_khanate }
+	}
+}
+
+je_eafp_mgl_bogd_khanate = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	group = je_group_historical_content
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 255
+	transferable = no
+
+	immediate = { trigger_event = { id = eafp_mgl.103 days = 7 popup = yes } }
+	complete = {
+		var:eafp_mgl_state_capacity >= 70
+		eafp_mgl_heartland_administration_levels >= 3
+	}
+	on_complete = {
+		set_variable = eafp_mgl_bogd_khanate_complete
+		trigger_event = { id = eafp_mgl.105 days = 1 popup = yes }
+	}
+}
+
+je_eafp_mgl_unite_the_mongols = {
+	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
+	group = je_group_historical_content
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 245
+	transferable = no
+
+	immediate = {
+		eafp_mgl_grant_unification_claims_once = yes
+		trigger_event = { id = eafp_mgl.300 days = 7 popup = yes }
+	}
+	complete = {
+		any_scope_state = {
+			filter = { is_eafp_mgl_united_industrial_state = yes }
+			count >= 6
+		}
+	}
+	on_complete = {
+		set_variable = eafp_mgl_unite_the_mongols_complete
+		trigger_event = { id = eafp_mgl.305 days = 1 popup = yes }
+	}
+}
+
+je_eafp_mgl_echoes_of_chinggis = {
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	scripted_button = je_eafp_mgl_invite_steppe_league_candidates_button
+	scripted_button = je_eafp_mgl_leave_steppe_league_button
+	group = je_group_historical_content
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 240
+	transferable = no
+
+	on_weekly_pulse = { effect = { generate_eafp_mgl_steppe_league_member_list = yes } }
+
+	fail = {
+		OR = {
+			has_variable = eafp_mgl_steppe_league_immediate_rejector
+			AND = { NOT = { c:MGL ?= this } has_variable = eafp_mgl_invited_to_steppe_league NOT = { has_variable = eafp_mgl_steppe_league_member } NOT = { is_eafp_mgl_steppe_league_candidate = yes } }
+			AND = { NOT = { c:MGL ?= this } is_subject = yes NOT = { top_overlord = c:MGL } }
+			AND = { c:MGL ?= this is_subject = yes }
+		}
+	}
+	on_fail = {
+		remove_variable = eafp_mgl_invited_to_steppe_league
+		remove_variable = eafp_mgl_steppe_league_acceptor
+		remove_variable = eafp_mgl_steppe_league_member
+		generate_eafp_mgl_steppe_league_member_list = yes
+	}
+
+	complete = {
+		c:MGL ?= this
+		has_variable = eafp_mgl_steppe_charter_ratified
+		any_country = {
+			NOT = { c:MGL ?= this }
+			has_variable = eafp_mgl_steppe_league_member
+			has_variable = eafp_mgl_steppe_charter_ratifier
+			count >= 2
+		}
+	}
+	on_complete = {
+		set_variable = eafp_mgl_steppe_league_complete
+		trigger_event = { id = eafp_mgl.409 days = 1 popup = yes }
+	}
+}
+
+je_eafp_mgl_develop_the_heartland = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+	group = je_group_technology
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 235
+	transferable = no
+
+	immediate = { trigger_event = { id = eafp_mgl.500 days = 7 popup = yes } }
+	on_yearly_pulse = {
+		random_events = {
+			40 = 0
+			10 = eafp_mgl.501
+			10 = eafp_mgl.502
+			10 = eafp_mgl.503
+			10 = eafp_mgl.504
+			10 = eafp_mgl.505
+			10 = eafp_mgl.506
+			10 = eafp_mgl.507
+			10 = eafp_mgl.508
+			10 = eafp_mgl.509
+			10 = eafp_mgl.510
+			10 = eafp_mgl.511
+			10 = eafp_mgl.512
+			10 = eafp_mgl.513
+			10 = eafp_mgl.514
+		}
+	}
+	complete = {
+		custom_tooltip = { text = eafp_mgl_heartland_goal_foundation_tt eafp_mgl_heartland_industrial_foundation_complete = yes }
+		custom_tooltip = { text = eafp_mgl_heartland_goal_resources_tt eafp_mgl_heartland_raw_materials_complete = yes }
+		custom_tooltip = { text = eafp_mgl_heartland_goal_capital_tt eafp_mgl_heartland_technical_base_complete = yes }
+		custom_tooltip = { text = eafp_mgl_heartland_goal_network_tt eafp_mgl_heartland_industrial_network_complete = yes }
+	}
+	on_complete = {
+		set_variable = eafp_mgl_heartland_development_complete
+		set_variable = eafp_mgl_industrial_combine_unlocked
+		add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
+		trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
+	}
+}
+
+je_eafp_mgl_develop_the_united_mongol_lands = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+	group = je_group_technology
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 230
+	transferable = no
+
+	immediate = { trigger_event = { id = eafp_mgl.520 days = 7 popup = yes } }
+	on_yearly_pulse = {
+		random_events = {
+			70 = 0
+			10 = eafp_mgl.521
+			10 = eafp_mgl.522
+			10 = eafp_mgl.523
+			10 = eafp_mgl.524
+			10 = eafp_mgl.525
+		}
+	}
+	complete = {
+		custom_tooltip = { text = eafp_mgl_united_goal_market_tt eafp_mgl_united_market_complete = yes }
+		custom_tooltip = { text = eafp_mgl_united_goal_administration_tt eafp_mgl_united_administration_complete = yes }
+		custom_tooltip = { text = eafp_mgl_united_goal_resources_tt eafp_mgl_united_raw_materials_complete = yes }
+		custom_tooltip = { text = eafp_mgl_united_goal_industry_tt eafp_mgl_united_industry_complete = yes }
+		custom_tooltip = { text = eafp_mgl_united_goal_sustainable_tt eafp_mgl_united_sustainable_complete = yes }
+	}
+	on_complete = {
+		set_variable = eafp_mgl_united_industrial_area_complete
+		add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
+		trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
+	}
+}
+
+je_eafp_mgl_kiakhta_settlement = {
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	group = je_group_historical_content
+	weight = 220
+	transferable = no
+	complete = { has_variable = eafp_mgl_kiakhta_resolved }
+	immediate = { trigger_event = { id = eafp_mgl.600 days = 7 popup = yes } }
+}
+
+je_eafp_mgl_autonomy_in_peril = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_historical_content
+	weight = 220
+	transferable = no
+	complete = { has_variable = eafp_mgl_autonomy_crisis_resolved }
+	immediate = { trigger_event = { id = eafp_mgl.610 days = 7 popup = yes } }
+}
+
+je_eafp_mgl_people_revolution = {
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+	group = je_group_historical_content
+	weight = 220
+	transferable = no
+	complete = { has_variable = eafp_mgl_people_revolution_complete }
+	immediate = { trigger_event = { id = eafp_mgl.620 days = 7 popup = yes } }
+}

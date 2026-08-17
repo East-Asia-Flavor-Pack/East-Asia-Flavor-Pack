@@ -1,0 +1,102 @@
+﻿eafp_mgl_on_monthly_pulse_country = {
+	effect = {
+		if = {
+			limit = { c:MGL ?= this is_country_alive = yes }
+			if = {
+				limit = { NOT = { has_variable = eafp_mgl_content_initialized } }
+				set_variable = eafp_mgl_content_initialized
+				set_variable = { name = eafp_mgl_autonomy_support value = 25 }
+				set_variable = { name = eafp_mgl_state_capacity value = 25 }
+				set_variable = { name = eafp_mgl_pastoral_stability value = 60 }
+				add_journal_entry = { type = je_eafp_mgl_banners_and_monasteries }
+			}
+			if = {
+				limit = {
+					NOT = { has_variable = eafp_mgl_restoration_started }
+					OR = {
+						is_subject = no
+						AND = { game_date >= 1900.1.1 var:eafp_mgl_autonomy_support >= 50 }
+						NOT = { exists = c:CHI }
+					}
+				}
+				set_variable = eafp_mgl_restoration_started
+				add_journal_entry = { type = je_eafp_mgl_restoration_of_the_state }
+			}
+			if = {
+				limit = { is_subject = no has_variable = eafp_mgl_restoration_complete NOT = { has_variable = eafp_mgl_unification_started } }
+				set_variable = eafp_mgl_unification_started
+				add_journal_entry = { type = je_eafp_mgl_unite_the_mongols }
+			}
+			if = {
+				limit = { eafp_mgl_heartland_state_count >= 2 NOT = { has_variable = eafp_mgl_heartland_development_started } }
+				set_variable = eafp_mgl_heartland_development_started
+				add_journal_entry = { type = je_eafp_mgl_develop_the_heartland }
+			}
+			if = {
+				limit = { has_variable = eafp_mgl_unification_started eafp_mgl_united_state_count >= 2 NOT = { has_variable = eafp_mgl_united_industrial_area_started } }
+				set_variable = eafp_mgl_united_industrial_area_started
+				add_journal_entry = { type = je_eafp_mgl_develop_the_united_mongol_lands }
+			}
+			if = {
+				limit = {
+					is_subject = no
+					has_technology_researched = pan-nationalism
+					var:eafp_mgl_state_capacity >= 60
+					country_rank >= rank_value:unrecognized_regional_power
+					OR = { has_variable = eafp_mgl_unite_the_mongols_complete eafp_mgl_united_state_count >= 6 }
+					NOT = { is_at_war = yes }
+					capital = { turmoil < 0.15 devastation < 0.1 }
+					any_scope_state = { filter = { is_eafp_mgl_heartland_state = yes } percent >= 0.75 turmoil < 0.2 }
+					NOT = { has_variable = eafp_mgl_steppe_congress_started }
+				}
+				set_variable = eafp_mgl_steppe_congress_started
+				set_variable = eafp_mgl_steppe_league_member
+				add_journal_entry = { type = je_eafp_mgl_echoes_of_chinggis }
+				trigger_event = { id = eafp_mgl.400 days = 7 popup = yes }
+			}
+			if = {
+				limit = { game_date >= 1915.1.1 is_subject = no exists = c:RUS exists = c:CHI NOT = { has_variable = eafp_mgl_kiakhta_started } }
+				set_variable = eafp_mgl_kiakhta_started
+				add_journal_entry = { type = je_eafp_mgl_kiakhta_settlement }
+			}
+			if = {
+				limit = {
+					game_date >= 1919.1.1
+					exists = c:CHI
+					c:CHI = { army_power_projection > root.army_power_projection }
+					OR = { NOT = { exists = c:RUS } c:RUS = { is_at_war = yes } c:RUS = { is_revolutionary = yes } }
+					NOT = { has_variable = eafp_mgl_autonomy_crisis_started }
+				}
+				set_variable = eafp_mgl_autonomy_crisis_started
+				add_journal_entry = { type = je_eafp_mgl_autonomy_in_peril }
+			}
+			if = {
+				limit = { game_date >= 1920.1.1 has_variable = eafp_mgl_revolutionary_network_ready NOT = { has_variable = eafp_mgl_people_revolution_started } }
+				set_variable = eafp_mgl_people_revolution_started
+				add_journal_entry = { type = je_eafp_mgl_people_revolution }
+			}
+			if = {
+				limit = { game_date >= 1928.1.1 has_variable = eafp_mgl_industry_path_state OR = { has_variable = eafp_mgl_people_revolution_complete has_law_or_variant = law_type:law_council_republic } NOT = { has_variable = eafp_mgl_left_deviation_fired } }
+				set_variable = eafp_mgl_left_deviation_fired
+				trigger_event = { id = eafp_mgl.515 days = 7 popup = yes }
+			}
+		}
+	}
+}
+
+eafp_mgl_on_yearly_pulse_country = {
+	effect = {
+		if = {
+			limit = { c:MGL ?= this }
+			if = { limit = { game_date >= 1839.1.1 NOT = { has_variable = eafp_mgl_baochang_retired } } set_variable = eafp_mgl_baochang_retired any_scope_character = { limit = { has_variable = eafp_mgl_baochang } if = { limit = { exists = c:CHI } transfer_character = c:CHI } } }
+			if = { limit = { game_date >= 1841.1.1 NOT = { has_variable = eafp_mgl_fifth_succession_closed } } set_variable = eafp_mgl_fifth_succession_closed any_scope_character = { limit = { has_variable = eafp_mgl_fifth_jebtsundamba } kill_character = { hidden = yes } } }
+			if = { limit = { game_date >= 1843.1.1 NOT = { has_variable = eafp_mgl_sixth_jebtsundamba_spawned } } create_character = { template = eafp_mgl_sixth_jebtsundamba_character_template on_created = { set_variable = eafp_mgl_current_jebtsundamba set_variable = eafp_mgl_sixth_jebtsundamba set_as_interest_group_leader = yes } } set_variable = eafp_mgl_sixth_jebtsundamba_spawned }
+			if = { limit = { game_date >= 1848.1.1 NOT = { has_variable = eafp_mgl_sixth_succession_closed } } set_variable = eafp_mgl_sixth_succession_closed any_scope_character = { limit = { has_variable = eafp_mgl_sixth_jebtsundamba } kill_character = { hidden = yes } } }
+			if = { limit = { game_date >= 1850.1.1 NOT = { has_variable = eafp_mgl_seventh_jebtsundamba_spawned } } create_character = { template = eafp_mgl_seventh_jebtsundamba_character_template on_created = { set_variable = eafp_mgl_current_jebtsundamba set_variable = eafp_mgl_seventh_jebtsundamba set_as_interest_group_leader = yes } } set_variable = eafp_mgl_seventh_jebtsundamba_spawned }
+			if = { limit = { game_date >= 1868.1.1 NOT = { has_variable = eafp_mgl_seventh_succession_closed } } set_variable = eafp_mgl_seventh_succession_closed any_scope_character = { limit = { has_variable = eafp_mgl_seventh_jebtsundamba } kill_character = { hidden = yes } } }
+			if = { limit = { game_date >= 1874.1.1 NOT = { has_variable = eafp_mgl_bogd_spawned } } create_character = { template = eafp_mgl_bogd_khan_character_template on_created = { set_variable = eafp_mgl_current_jebtsundamba set_variable = eafp_mgl_eighth_jebtsundamba set_as_interest_group_leader = yes } } set_variable = eafp_mgl_bogd_spawned }
+			if = { limit = { game_date >= 1924.5.20 NOT = { has_variable = eafp_mgl_eighth_succession_closed } } set_variable = eafp_mgl_eighth_succession_closed any_scope_character = { limit = { has_variable = eafp_mgl_eighth_jebtsundamba } kill_character = { hidden = yes } } }
+			if = { limit = { has_journal_entry = je_eafp_mgl_echoes_of_chinggis } generate_eafp_mgl_steppe_league_member_list = yes }
+		}
+	}
+}

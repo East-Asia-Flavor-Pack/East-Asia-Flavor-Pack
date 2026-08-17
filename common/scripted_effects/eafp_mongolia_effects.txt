@@ -1,0 +1,46 @@
+﻿generate_eafp_mgl_steppe_league_member_list = {
+	clear_global_variable_list = eafp_mgl_steppe_league_member_list
+	every_country = {
+		limit = {
+			is_country_alive = yes
+			has_journal_entry = je_eafp_mgl_echoes_of_chinggis
+			has_variable = eafp_mgl_steppe_league_member
+		}
+		add_to_global_variable_list = { name = eafp_mgl_steppe_league_member_list target = this }
+	}
+}
+
+eafp_mgl_invite_steppe_league_candidates = {
+	every_country = {
+		limit = {
+			is_eafp_mgl_steppe_league_candidate = yes
+			NOT = { has_variable = eafp_mgl_invited_to_steppe_league }
+		}
+		set_variable = eafp_mgl_invited_to_steppe_league
+		add_journal_entry = { type = je_eafp_mgl_echoes_of_chinggis }
+		trigger_event = { id = eafp_mgl.408 days = 7 popup = yes }
+	}
+	every_country = {
+		limit = { NOT = { c:MGL ?= this } has_variable = eafp_mgl_steppe_league_member }
+		trigger_event = { id = eafp_mgl.411 days = 1 popup = yes }
+	}
+	generate_eafp_mgl_steppe_league_member_list = yes
+}
+
+eafp_mgl_grant_unification_claims_once = {
+	if = {
+		limit = { NOT = { has_variable = eafp_mgl_unification_claims_granted } }
+		set_variable = eafp_mgl_unification_claims_granted
+		s:STATE_HINGGAN = { add_claim = c:MGL }
+		s:STATE_ALXA = { add_claim = c:MGL }
+	}
+}
+
+eafp_mgl_spawn_independence_cabinet = {
+	if = { limit = { NOT = { has_variable = eafp_mgl_namnansuren_spawned } } create_character = { template = eafp_mgl_namnansuren_character_template } set_variable = eafp_mgl_namnansuren_spawned }
+	if = { limit = { NOT = { has_variable = eafp_mgl_khanddorj_spawned } } create_character = { template = eafp_mgl_khanddorj_character_template } set_variable = eafp_mgl_khanddorj_spawned }
+	if = { limit = { NOT = { has_variable = eafp_mgl_tserenchimed_spawned } } create_character = { template = eafp_mgl_tserenchimed_character_template } set_variable = eafp_mgl_tserenchimed_spawned }
+	if = { limit = { NOT = { has_variable = eafp_mgl_khaisan_spawned } } create_character = { template = eafp_mgl_khaisan_character_template } set_variable = eafp_mgl_khaisan_spawned }
+	if = { limit = { NOT = { has_variable = eafp_mgl_damdinsuren_spawned } } create_character = { template = eafp_mgl_damdinsuren_character_template } set_variable = eafp_mgl_damdinsuren_spawned }
+	if = { limit = { NOT = { has_variable = eafp_mgl_magsarjav_spawned } } create_character = { template = eafp_mgl_magsarjav_character_template } set_variable = eafp_mgl_magsarjav_spawned }
+}

@@ -16,20 +16,29 @@
 
 	on_complete = {
 		if = {
-			limit = { country_has_primary_culture = cu:han }
-			remove_primary_culture = cu:han
+			limit = { c:MGL ?= THIS }
+			if = {
+				limit = { NOT = { has_variable = eafp_mgl_restoration_started } }
+				set_variable = eafp_mgl_restoration_started
+				add_journal_entry = { type = je_eafp_mgl_restoration_of_the_state }
+			}
 		}
-		if = {
-			limit = { country_has_primary_culture = cu:manchu }
-			remove_primary_culture = cu:manchu
-		}
-		
-		hidden_effect = {
+		else = {
+			if = {
+				limit = { country_has_primary_culture = cu:han }
+				remove_primary_culture = cu:han
+			}
+			if = {
+				limit = { country_has_primary_culture = cu:manchu }
+				remove_primary_culture = cu:manchu
+			}
+			hidden_effect = {
 			if = {
 				limit = { any_scope_character = { is_heir_of_own_country = yes } }
 				heir = { kill_character = { hidden = yes } }
 			}
 			ruler = { kill_character = { hidden = yes } }
+			}
 		}
 
 		if = {

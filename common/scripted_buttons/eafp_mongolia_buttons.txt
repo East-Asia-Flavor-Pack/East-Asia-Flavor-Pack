@@ -1,0 +1,28 @@
+﻿je_eafp_mgl_invite_steppe_league_candidates_button = {
+	name = je_eafp_mgl_invite_steppe_league_candidates_button
+	desc = je_eafp_mgl_invite_steppe_league_candidates_button_desc
+	visible = { c:MGL ?= this has_journal_entry = je_eafp_mgl_echoes_of_chinggis }
+	possible = {
+		NOT = { has_variable = eafp_mgl_steppe_invitation_cooldown }
+		any_country = { is_eafp_mgl_steppe_league_candidate = yes NOT = { has_variable = eafp_mgl_invited_to_steppe_league } }
+	}
+	effect = {
+		set_variable = { name = eafp_mgl_steppe_invitation_cooldown days = 90 }
+		eafp_mgl_invite_steppe_league_candidates = yes
+	}
+	ai_chance = { value = 10 }
+}
+
+je_eafp_mgl_leave_steppe_league_button = {
+	name = je_eafp_mgl_leave_steppe_league_button
+	desc = je_eafp_mgl_leave_steppe_league_button_desc
+	visible = { NOT = { c:MGL ?= this } has_variable = eafp_mgl_steppe_league_member }
+	possible = { NOT = { is_at_war = yes } }
+	effect = {
+		remove_variable = eafp_mgl_steppe_league_acceptor
+		remove_variable = eafp_mgl_steppe_league_member
+		set_variable = eafp_mgl_steppe_league_immediate_rejector
+		c:MGL ?= { change_relations = { country = root value = -30 } generate_eafp_mgl_steppe_league_member_list = yes }
+	}
+	ai_chance = { value = 0 }
+}
