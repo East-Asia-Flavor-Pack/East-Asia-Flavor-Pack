@@ -166,15 +166,19 @@
 
 - `ROOT = c:MGL`
 - `is_country_alive = yes`
-- 청의 장군부 종속국이거나 아직 독립 전 사회구조 변수가 남아 있음
+- 청의 장군부 종속국이거나 독립 직후 국가 정비가 아직 끝나지 않음
 
 목표는 독립 자체가 아니라 **독립을 감당할 국가 능력**을 만드는 것이다.
 
-진행 지표:
+완료 조건은 별도 0-100 진행 변수를 두지 않고 실제 게임 수치로 판정한다.
 
-- `eafp_mgl_autonomy_support`: 왕공·라마·아라드가 청에서 이탈할 준비
-- `eafp_mgl_state_capacity`: 세수·행정·군대·외교를 직접 운영할 능력
-- `eafp_mgl_pastoral_stability`: 가축·목지·이동 경로의 안정
+- 종속국이면 `liberty_desire >= 50`. 이미 독립했다면 이 조건은 충족한 것으로 본다.
+- 국가의 `bureaucracy >= 0`으로 행정 비용을 감당한다.
+- 몽골 본토 주의 75% 이상에서 `tax_capacity >= tax_capacity_usage`를 달성한다.
+
+사건 선택은 이 조건을 직접 달성하는 하나의 누적 점수를 올리지 않는다. 대신 행정력·조세 역량은 일부 선택에서만 직접 보정하고, 나머지는 조세 낭비, 기반시설, 교육 접근, 정통성, 법 제정, 이해집단 승인, 이주, 사망률, 건설 비용과 같은 서로 다른 modifier로 구현한다. 목축 관련 선택도 건물 처리율만 반복해서 주지 않고 이동로·구휼·식량 배급·민심·행정 비용을 함께 사용한다. 독립 의지는 종속기 핵심 선택에서만 `add_liberty_desire` 또는 `country_liberty_desire_add`로 조정하고, 독립 이후에는 정통성·위신·군사·외교 modifier로 치환한다.
+
+효과 설계는 바닐라 몬테네그로의 `mon_state_formation.11`~`.13`처럼 같은 사건 안에서도 학교 제도 비용·교육 접근·군사력, 법 제정 속도·급진파, 공격·방어·군수품 비용·무기 생산을 서로 다른 결과로 나누는 방식을 따른다. 몽골 사건도 선택지의 서사에 맞는 한두 개의 핵심 효과와 명확한 반대급부를 우선하며, 추상 수치의 증감을 여러 modifier에 중복 환산하지 않는다.
 
 주요 사건:
 
@@ -184,11 +188,11 @@
 | `eafp_mgl.2` | 샤비의 부역 | 사원 면세를 보장하거나, 현물세를 국고와 나누거나, 세속 행정으로 편입 |
 | `eafp_mgl.3` | 은으로 갚아야 할 빚 | 중국 상인의 신용을 유지하거나, 부채 장부를 조사하거나, 가축 반출을 제한 |
 | `eafp_mgl.4` | 겨울의 가축 손실 | 구휼·목지 개방·왕공 책임 중 선택. 옛 `livestock_shortage` 구상을 실제 호출되는 수정치로 재작성 |
-| `eafp_mgl.5` | 러시아 상단이 캬흐타를 넘다 | 교역과 차관을 받되 러시아 의존도 증가, 또는 제한해 자치 지지 증가 |
+| `eafp_mgl.5` | 러시아 상단이 캬흐타를 넘다 | 교역과 차관을 받되 러시아 의존도 증가, 또는 제한해 종속기의 독립 열망 증가 |
 | `eafp_mgl.6` | 신정의 학교와 세속 학교 | 성직자 교육, 번역 학교, 군사 학교 중 하나에 투자 |
 | `eafp_mgl.7` | 청의 신정 정책 | 식민·징세·군제 개혁을 수용, 지연, 공동 반대 중 선택 |
 
-완료 시 `state_capacity`가 충분하면 독립 저널에 유리한 보너스를 준다. 자치 지지만 높고 국가 능력이 낮으면 독립 후 재정 위기·왕공 분열·외세 의존이 커진다.
+완료 시 비음수 행정력과 본토 조세 역량을 실제로 확보했다면 독립 저널에 유리한 보너스를 준다. 독립 열망만 높고 행정·징세 기반이 약하면 독립 후 재정 위기·왕공 분열·외세 의존이 커진다.
 
 ## 6. 독립과 복드 칸국
 
@@ -197,7 +201,7 @@
 활성 조건은 다음 중 하나다.
 
 - 청의 중국 중앙정부가 붕괴하거나 `china_shatters`가 발생
-- 청이 혁명·내전 중이며 `eafp_mgl_autonomy_support`가 기준 이상
+- 청이 혁명·내전 중이며 `MGL`의 `liberty_desire >= 50`
 - `MGL`이 독립 외교전을 시작했거나 기존 시스템으로 독립
 - 1900년 이후 청의 정통성과 관계가 낮고 민족주의 계열 기술을 보유
 
@@ -251,7 +255,7 @@
 - 군대와 국고 확보
 - 상·하원 또는 왕공 회의의 권한 결정
 
-진행도는 `eafp_mgl_state_capacity`를 이어받는다. 완성 결과는 세 갈래다.
+진행도 변수를 이어받지 않는다. `bureaucracy >= 0`, 몽골 본토의 정부 행정 청사 합계, 각 주의 `tax_capacity`와 `tax_capacity_usage`를 직접 확인한다. 완성 결과는 세 갈래다.
 
 | 결과 | 조건 | 보상과 비용 |
 |---|---|---|
@@ -322,7 +326,8 @@
 - 범민족주의 계열 기술 보유
 - 최소 소국 이상이며 전쟁 중이 아님
 - 수도와 주요 몽골 주의 혼란이 기준 미만
-- `eafp_mgl_state_capacity >= 60`
+- `bureaucracy >= 0`
+- 주요 몽골 주의 75% 이상에서 `tax_capacity >= tax_capacity_usage`
 
 저널이 열리면 별도 정통성 수치를 쌓아 가입을 해금하지 않는다. 오논강 회의의 개최국인 `MGL`에 저널을 먼저 추가하고, 아래 8.4의 참가 대상 판정으로 찾은 각 국가에는 초청 이벤트와 같은 저널의 회원국용 상태를 부여한다. 가입 여부는 바닐라 `je_the_balkan_league`처럼 각 후보국의 명시적인 수락·거절과 회원 플래그로만 판정한다.
 
@@ -443,6 +448,7 @@
 - **통합과 산업화를 구분:** 영토를 편입했다고 즉시 공장과 충성파가 생기지 않는다. 자원·노동 조사, 주민 협상, 교통·전력 연결, 실제 산업 투자 순서를 밟는다.
 - **외부 자본의 양면성:** 러시아·중국·일본·소련 자본은 부족한 자금·기술·기계를 공급하지만 배당 유출, 종속, 외국인 노동, 외교적 레버리지를 만든다.
 - **산업화의 사회적 비용:** 무리한 징발·강제 국유화·이주·토지 수용은 농목업 공급망과 주민 생활을 붕괴시킬 수 있다. 산업화는 유목의 제거가 아니라 원료 생산자와 도시 산업 사이의 지속 가능한 연결을 요구한다.
+- **지리 구역 직접 판정:** 본토와 통합 산업권의 고정 범위는 `common/geographic_regions/eafp_geographic_regions.txt`에 각각 `geographic_region_eafp_mgl_heartland`, `geographic_region_eafp_mgl_united_industrial_area`로 정의한다. 주·건물 조건과 효과 필터는 `is_in_geographic_region`을 직접 사용하며, 같은 목록을 감싸는 별도 scripted trigger는 만들지 않는다.
 
 ### 9.2 본토 산업화 저널: `je_eafp_mgl_develop_the_heartland`
 
@@ -456,7 +462,7 @@
 
 #### 실제 값 직접 판정
 
-이 저널에는 전용 진행 변수나 진행 막대를 두지 않는다. `STATE_URGA`, `STATE_ULIASTAI`, `STATE_TUVA`, `STATE_ALTAI` 가운데 현재 `MGL`이 소유한 주를 매번 다시 조회하고, 다음 엔진 값을 직접 판정한다.
+이 저널에는 전용 진행 변수나 진행 막대를 두지 않는다. `geographic_region_eafp_mgl_heartland`에 속하면서 현재 `MGL`이 소유한 주를 매번 다시 조회하고, 다음 엔진 값을 직접 판정한다. 이 지리 구역은 `STATE_URGA`, `STATE_ULIASTAI`, `STATE_TUVA`, `STATE_ALTAI`로 구성한다.
 
 | 실제 값 | 스코프·문법 기준 | 저널에서의 용도 |
 |---|---|---|
@@ -469,6 +475,8 @@
 | 생활·도시 상태 | 주 스코프의 `average_sol`, `building_urban_center` 단계 | 산업화가 생활수준 붕괴나 명목상 건설만으로 완료되지 않게 하는 보조 조건 |
 
 `common/script_values/eafp_mongolia_values.txt`가 필요하더라도 위 값을 그 순간 합산·비율 계산하는 데만 사용한다. 결과를 국가·저널 변수에 저장하거나 사건 선택으로 누적하지 않는다. 소유권, 건물 폐쇄, 전쟁 피해가 바뀌면 UI의 완료 조건도 즉시 다시 계산되어야 한다.
+
+건설 부문·석탄·철·벌목·원료·정부 행정 청사·도심지·도구/전력·경공업의 단계 합계 비교는 별도 custom trigger 파일로 추상화하지 않는다. 조건이 필요한 저널·사건·회사·script value·scripted trigger에 `custom_description`을 직접 쓰고, 그 안에 연산자별 `text`, 숫자 `value`, 실제 script value 비교식을 함께 둔다. 현지화의 목표값은 `$VALUE|0v$`로 표시하고, 현재값은 각 조건에 대응하는 `[GetPlayer.MakeScope.ScriptValue('eafp_mgl_heartland_*_levels')|0v]`를 직접 호출한다. 연산자 문구에도 `COMPARATOR`를 쓰지 않는다.
 
 #### 단계와 완료 조건
 
@@ -551,7 +559,7 @@
 
 #### 참여 산업권
 
-- 지리 필터는 `STATE_URGA`, `STATE_ULIASTAI`, `STATE_TUVA`, `STATE_ALTAI`, `STATE_BURYATIA`, `STATE_HINGGAN`, `STATE_ALXA`, `STATE_DZUNGARIA`, `STATE_QINGHAI`를 하나의 허용 집합으로만 사용한다. 어느 주에도 고정 역할이나 전용 완료 조건을 배정하지 않는다.
+- 지리 필터는 `geographic_region_eafp_mgl_united_industrial_area`를 `is_in_geographic_region`으로 직접 판정한다. 이 구역은 `STATE_URGA`, `STATE_ULIASTAI`, `STATE_TUVA`, `STATE_ALTAI`, `STATE_BURYATIA`, `STATE_HINGGAN`, `STATE_ALXA`, `STATE_DZUNGARIA`, `STATE_QINGHAI`를 하나의 허용 집합으로만 사용한다. 어느 주에도 고정 역할이나 전용 완료 조건을 배정하지 않는다.
 - 직접 소유 주는 `MGL = { any_scope_state = { ... } }`, 종속국 주는 `every_subject_or_below` 뒤 해당 국가의 `any_scope_state`, 조약 상대는 방향을 명시한 외국 투자권으로 그때그때 조회한다.
 - 단순 동맹·우호 관계만 있는 국가의 주는 산업권에 포함하지 않는다. 외국 투자권에는 `source_country`·`target_country`를 명시한다.
 - 참여 주 목록은 저장하지 않는다. 소유권·종속 관계·조약이 바뀌면 다음 주간 펄스와 저널 UI 갱신에서 대상 집합과 모든 합계·비율을 다시 계산한다.
@@ -749,13 +757,15 @@
 | `common/character_templates/eafp_character_templates_MGL.txt` | 복드 칸, 1911 지도자, 수흐바타르·처이발상, 전몽골 통합 외교·정치 사건의 투바·부랴트·알타이·내몽골 인물 |
 | `common/ideologies/eafp_mgl_ideologies.txt` | 복드·복원파·입헌파·연방파·혁명파 |
 | `common/government_types/eafp_mongolia_governments.txt` | 복드 칸국과 필요한 동적 정부 형태 |
+| `common/geographic_regions/eafp_geographic_regions.txt` | 몽골 본토 4개 주와 전몽골 통합 산업권 9개 주의 지리 구역 정의; 모든 조건·효과 필터는 `is_in_geographic_region`으로 직접 판정 |
 | `common/journal_entries/eafp_mongolia.txt` | 시작·독립·본토 산업화·통합 영토 산업화·국가 건설·초원 회의·위기 저널 |
-| `common/scripted_progress_bars/eafp_mongolia_progress_bars.txt` | 자치 지지·국가 건설 등 다른 저널에 필요한 막대만 정의; 본토·통합 영토 산업화에는 막대를 추가하지 않음 |
+| `common/scripted_progress_bars/eafp_mongolia_progress_bars.txt` | 별도 0-100 진행 변수를 쓰지 않으므로 구현하지 않음. 저널 조건은 독립 열망·행정력·조세 역량과 실제 주·건물 값을 직접 표시 |
 | `common/scripted_buttons/eafp_mongolia_buttons.txt` | 사절 파견·회원국 재초청·탈퇴·광역 산업 투자·수송/교육/광업/전력 사업·헌장 제안·통합 요구 |
-| `common/scripted_triggers/eafp_mongolia_triggers.txt` | 독립 가능·실제 주/건물 값 기반 산업화 체크리스트·통합 산업권 동적 필터·초원 회의 후보·회원·복드 생존 판정 |
+| `common/scripted_triggers/eafp_mongolia_triggers.txt` | 독립 가능·실제 주/건물 값 기반 산업화 체크리스트·초원 회의 후보·회원·복드 생존 판정; 본토·통합 산업권의 고정 지리 목록은 포함하지 않음 |
+| `common/trigger_localization/eafp_mongolia_trigger_loc.txt` | 본토 건물 단계 합계 9종 × 4개 비교 연산자용 `custom_description` 매핑 |
 | `common/scripted_effects/eafp_mongolia_effects.txt` | 인물 생성·국명 전환·기간제 산업 사업·일회성 명분·발칸 연맹식 회원 목록 생성·가입·정리 효과 |
 | `common/script_values/eafp_mongolia_values.txt` | 건물 단계 합계·조건 충족 주 비율·AI 비용을 실시간 계산하며 값을 저장하지 않음 |
-| `common/static_modifiers/eafp_mongolia_modifiers.txt` | 부채·사원·수송·직업 교육·광업·전력·산업 조달·지역 통합·회의·외세 의존 수정치 |
+| `common/static_modifiers/eafp_mongolia_modifiers.txt` | 부채·사원·수송·직업 교육·광업·전력·산업 조달·지역 통합·회의·외세 의존에 더해 행정·조세·정통성·이해집단·이주·식량 배급·의용대 효과를 분산한 수정치 |
 | `common/company_types/eafp_mongolia_companies.txt` | 1934년형 관료 소유 산업 복합체만 정의; 협동조합과 몽골로르 양허는 사건·수정치로 처리 |
 | `common/game_concepts/eafp_mongolia_concepts.txt` | 몽골 독립 운동·황금씨족·초원 헌장·통합 산업권 개념; 추상 산업 능력·개발 압력 개념은 만들지 않음 |
 | `common/treaty_articles/eafp_mongolia_treaty_articles.txt` | 바닐라 조항으로 표현 불가능할 때만 초원 자치 보장 조항 추가 |
@@ -907,17 +917,22 @@ AI는 역사 인물과 사료를 따라가되 결과를 강제하지 않는다.
 - 한국어·영어·중국어 간체의 키 집합 비교
 - 개발 이벤트 번호 `.500-.526`이 기존 `eafp_mgl` 네임스페이스와 충돌하지 않는지 검사
 - 통합 산업권 허용 집합과 `STATE_URGA`·`STATE_ULIASTAI`·`STATE_TUVA`·`STATE_ALTAI`·`STATE_BURYATIA`·`STATE_HINGGAN`·`STATE_ALXA`·`STATE_DZUNGARIA`·`STATE_QINGHAI`의 1.13.10 ID를 대조
+- `geographic_region_eafp_mgl_heartland`가 본토 4개 주만, `geographic_region_eafp_mgl_united_industrial_area`가 통합 산업권 9개 주만 포함하는지 검사하고, 기존 두 지리 판정 scripted trigger의 정의·참조가 코드·문서 어디에도 남지 않았는지 검색
 - 기준선 자원 잠재력과 구현 후 값을 비교해 의도하지 않은 `add_resource_potential`·`force_resource_discovery` 호출이 0개인지 검사
 - `building_government_administration`, `building_urban_center`, `building_construction_sector`, `building_tooling_workshop`, `building_livestock_ranch`, `building_food_industry`, `building_textile_mill`, `building_coal_mine`, `building_iron_mine`, `building_lead_mine`, `building_sulfur_mine`, `building_logging_camp`, `building_power_plant`, `building_railway`와 사용 기술 ID가 1.13.10에 존재하는지 검사
 - 본토 산업화 저널이 별도 기반시설·산업·기술·국가 능력·개발 압력 수치를 호출하지 않고 `devastation`, `turmoil`, `market_access`, `tax_capacity`, `tax_capacity_usage`, `level`, `cash_reserves_ratio`, `average_sol`만으로 완료·실패를 판정하는지 검사
+- 본토 건물 단계 합계 조건이 필요한 모든 사용처에 `custom_description`과 실제 비교식이 직접 작성되어 있고, `value`와 비교 기준 숫자가 일치하는지 검사한다. 별도 `eafp_mongolia_value_comparison_triggers.txt`나 해당 wrapper trigger 호출이 남지 않았는지도 확인한다. 연산자별 trigger-localization과 한·영·중 문구의 목표값은 `$VALUE|0v$`, 현재값은 조건별 `[GetPlayer.MakeScope.ScriptValue('eafp_mgl_heartland_*_levels')|0v]` 호출이어야 하며 `$NUM|0v$`, `$CURRENT_VALUE|0v$`, `COMPARATOR`는 사용하지 않는다.
 - 통합 영토 산업화 저널에 주별 단계 플래그와 지역별 목표표가 없으며, 참여 주 필터·조건 충족 비율·건물 단계 합계가 소유권과 조약 변화 때 즉시 다시 계산되는지 검사
 - 초원 대쿠릴타이 구현에 회의 가입용 0-100 수치 변수가 정의·호출되지 않고, 후보·초청·수락·거절·회원·탈퇴 플래그와 회원 목록 정리 효과가 모두 연결되어 있는지 검사
+- 삭제 대상인 국가 역량·목축 안정·자치 지지 추상 진행 변수의 정의와 참조가 코드·현지화·문서 어디에도 남지 않았는지 검사
+- 첫 저널과 복드 칸국·초원 회의의 관련 조건이 `bureaucracy`, `tax_capacity`, `tax_capacity_usage`, `liberty_desire`를 직접 사용하고, 사건 보상이 행정력·조세 역량·독립 열망 한 종류에 편중되지 않았는지 검사
 - 몽골 저널의 완료·실패·활성·무효 조건에서 일반 조건을 감싼 불필요한 `custom_tooltip`이 없고, 변수 존재와 수치 대소 비교 조건에는 세 언어 설명 툴팁이 있는지 검사
 
 ### 18.2 실행 시나리오
 
 1. 1836년 `MGL` 시작: 보창이 국가 지도자로 생성되는지와 종속 유형, 국명, 수도, 제5대 젭춘담바, 첫 저널 확인
    - 바닐라 `CHI` 소유였던 우르가·울리아수타이·투바·알타이가 현재 팩의 기존 효과로 정확히 `MGL`에 이전되는지도 함께 확인
+   - 첫 저널이 비음수 행정력, 본토 75%의 조세 역량 충족, 종속기 독립 열망 50을 실제 수치로 표시하고 판정하는지 확인
 2. 청의 외몽골 흡수: 기존 결정과 이벤트가 그대로 합병하며 신규 저널을 정리하는지 확인
 3. 청 붕괴: `MGL` 독립과 중국 분열 명분이 한 번만 적용되는지 확인
 4. 조기 독립: 제8대 복드가 아직 없을 때 섭정·세속 정부 분기가 작동하는지 확인

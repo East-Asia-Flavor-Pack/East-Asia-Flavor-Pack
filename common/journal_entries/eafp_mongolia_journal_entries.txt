@@ -5,18 +5,19 @@
 	weight = 250
 	transferable = no
 
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		NOT = { has_variable = eafp_mgl_content_initialized }
+	}
+	immediate = { set_variable = eafp_mgl_content_initialized }
+
 	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_banners_state_capacity_tt
-			var:eafp_mgl_state_capacity >= 60
-		}
-		custom_tooltip = {
-			text = eafp_mgl_banners_autonomy_support_tt
-			var:eafp_mgl_autonomy_support >= 50
-		}
-		custom_tooltip = {
-			text = eafp_mgl_banners_pastoral_stability_tt
-			var:eafp_mgl_pastoral_stability >= 50
+		bureaucracy >= 0
+		OR = {
+			is_subject = no
+			liberty_desire >= 50
 		}
 	}
 
@@ -34,7 +35,6 @@
 	}
 
 	on_complete = {
-		set_variable = eafp_mgl_banners_and_monasteries_complete
 		add_modifier = { name = eafp_mgl_independence_prepared years = 5 }
 	}
 }
@@ -46,7 +46,21 @@ je_eafp_mgl_restoration_of_the_state = {
 	weight = 260
 	transferable = no
 
-	immediate = { trigger_event = { id = eafp_mgl.100 days = 7 popup = yes } }
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		NOT = { has_variable = eafp_mgl_restoration_started }
+		OR = {
+			is_subject = no
+			AND = { game_date >= 1900.1.1 liberty_desire >= 50 }
+			NOT = { exists = c:CHI }
+		}
+	}
+	immediate = {
+		set_variable = eafp_mgl_restoration_started
+		trigger_event = { id = eafp_mgl.100 days = 7 popup = yes }
+	}
 
 	complete = { is_subject = no }
 	on_complete = {
@@ -68,17 +82,14 @@ je_eafp_mgl_bogd_khanate = {
 
 	immediate = { trigger_event = { id = eafp_mgl.103 days = 7 popup = yes } }
 	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_bogd_state_capacity_tt
-			var:eafp_mgl_state_capacity >= 70
-		}
-		custom_tooltip = {
-			text = eafp_mgl_bogd_administration_tt
+		bureaucracy >= 0
+		custom_description = {
+			text = eafp_mgl_heartland_administration_levels_greater_or_equal
+			value = 3
 			eafp_mgl_heartland_administration_levels >= 3
 		}
 	}
 	on_complete = {
-		set_variable = eafp_mgl_bogd_khanate_complete
 		trigger_event = { id = eafp_mgl.105 days = 1 popup = yes }
 	}
 }
@@ -90,7 +101,16 @@ je_eafp_mgl_unite_the_mongols = {
 	weight = 245
 	transferable = no
 
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		is_subject = no
+		has_variable = eafp_mgl_restoration_complete
+		NOT = { has_variable = eafp_mgl_unification_started }
+	}
 	immediate = {
+		set_variable = eafp_mgl_unification_started
 		eafp_mgl_grant_unification_claims_once = yes
 		trigger_event = { id = eafp_mgl.300 days = 7 popup = yes }
 	}
@@ -98,7 +118,7 @@ je_eafp_mgl_unite_the_mongols = {
 		custom_tooltip = {
 			text = eafp_mgl_unification_state_count_tt
 			any_scope_state = {
-				filter = { is_eafp_mgl_united_industrial_state = yes }
+				filter = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area }
 				count >= 6
 			}
 		}
@@ -117,6 +137,30 @@ je_eafp_mgl_echoes_of_chinggis = {
 	should_be_pinned_by_default_uninvolved_or_context = yes
 	weight = 240
 	transferable = no
+	is_shown_when_inactive = {
+		c:MGL ?= ROOT
+		is_player = yes
+	}
+
+	possible = {
+		is_subject = no
+		has_technology_researched = pan-nationalism
+		bureaucracy >= 0
+		country_rank >= rank_value:unrecognized_regional_power
+		OR = {
+			has_variable = eafp_mgl_unite_the_mongols_complete
+			eafp_mgl_united_state_count >= 6
+		}
+		NOT = { is_at_war = yes }
+		any_scope_state = { filter = { is_in_geographic_region = geographic_region_eafp_mgl_heartland } percent >= 0.75 turmoil < 0.2 }
+		NOT = { has_variable = eafp_mgl_steppe_congress_started }
+	}
+
+	immediate = {
+		set_variable = eafp_mgl_steppe_congress_started
+		set_variable = eafp_mgl_steppe_league_member
+		trigger_event = { id = eafp_mgl.500 days = 7 popup = yes }
+	}
 
 	on_weekly_pulse = { effect = { generate_eafp_mgl_steppe_league_member_list = yes } }
 
@@ -158,7 +202,6 @@ je_eafp_mgl_echoes_of_chinggis = {
 		}
 	}
 	on_complete = {
-		set_variable = eafp_mgl_steppe_league_complete
 		trigger_event = { id = eafp_mgl.409 days = 1 popup = yes }
 	}
 }
@@ -169,6 +212,18 @@ je_eafp_mgl_develop_the_heartland = {
 	should_be_pinned_by_default_uninvolved_or_context = yes
 	weight = 235
 	transferable = no
+
+	is_shown_when_inactive = {
+		c:MGL ?= ROOT
+		is_player = yes
+	}
+
+	possible = {
+		any_scope_state = {
+			is_in_geographic_region = geographic_region_eafp_mgl_heartland
+			count >= 2
+		}
+	}
 
 	immediate = { trigger_event = { id = eafp_mgl.500 days = 7 popup = yes } }
 	on_yearly_pulse = {
@@ -191,13 +246,71 @@ je_eafp_mgl_develop_the_heartland = {
 		}
 	}
 	complete = {
-		custom_tooltip = { text = eafp_mgl_heartland_goal_foundation_tt eafp_mgl_heartland_industrial_foundation_complete = yes }
-		custom_tooltip = { text = eafp_mgl_heartland_goal_resources_tt eafp_mgl_heartland_raw_materials_complete = yes }
-		custom_tooltip = { text = eafp_mgl_heartland_goal_capital_tt eafp_mgl_heartland_technical_base_complete = yes }
-		custom_tooltip = { text = eafp_mgl_heartland_goal_network_tt eafp_mgl_heartland_industrial_network_complete = yes }
+		any_scope_state = {
+			is_in_geographic_region = geographic_region_eafp_mgl_heartland
+			count >= 2
+		}
+		custom_description = {
+			text = eafp_mgl_heartland_construction_levels_greater_or_equal
+			value = 2
+			eafp_mgl_heartland_construction_levels >= 2
+		}
+
+		custom_description = {
+			text = eafp_mgl_heartland_raw_material_levels_greater_or_equal
+			value = 8
+			eafp_mgl_heartland_raw_material_levels >= 8
+		}
+		any_scope_building = {
+			filter = {
+				state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
+				OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_logging_camp }
+			}
+			percent >= 0.75
+			cash_reserves_ratio > 0.25
+		}
+
+		NOT = { is_subject_type = subject_type_military_headquarters_china }
+		custom_description = {
+			text = eafp_mgl_heartland_administration_levels_greater_or_equal
+			value = 3
+			eafp_mgl_heartland_administration_levels >= 3
+		}
+		custom_description = {
+			text = eafp_mgl_heartland_urban_levels_greater_or_equal
+			value = 4
+			eafp_mgl_heartland_urban_levels >= 4
+		}
+		custom_description = {
+			text = eafp_mgl_heartland_construction_levels_greater_or_equal
+			value = 3
+			eafp_mgl_heartland_construction_levels >= 3
+		}
+		custom_description = {
+			text = eafp_mgl_heartland_tools_power_levels_greater_or_equal
+			value = 3
+			eafp_mgl_heartland_tools_power_levels >= 3
+		}
+		custom_description = {
+			text = eafp_mgl_heartland_light_industry_levels_greater_or_equal
+			value = 5
+			eafp_mgl_heartland_light_industry_levels >= 5
+		}
+		any_scope_building = {
+			filter = {
+				state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
+				OR = {
+					is_building_type = building_tooling_workshop
+					is_building_type = building_power_plant
+					is_building_type = building_food_industry
+					is_building_type = building_textile_mill
+				}
+			}
+			percent >= 0.75
+			cash_reserves_ratio > 0.25
+		}
 	}
 	on_complete = {
-		set_variable = eafp_mgl_heartland_development_complete
 		set_variable = eafp_mgl_industrial_combine_unlocked
 		add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
 		trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
@@ -211,7 +324,20 @@ je_eafp_mgl_develop_the_united_mongol_lands = {
 	weight = 230
 	transferable = no
 
-	immediate = { trigger_event = { id = eafp_mgl.520 days = 7 popup = yes } }
+	is_shown_when_inactive = {
+		c:MGL ?= ROOT
+		is_player = yes
+	}
+
+	possible = {
+		has_variable = eafp_mgl_unification_started
+		eafp_mgl_united_state_count >= 2
+	}
+
+	immediate = {
+		trigger_event = { id = eafp_mgl.520 days = 7 popup = yes }
+	}
+
 	on_yearly_pulse = {
 		random_events = {
 			70 = 0
@@ -230,7 +356,6 @@ je_eafp_mgl_develop_the_united_mongol_lands = {
 		custom_tooltip = { text = eafp_mgl_united_goal_sustainable_tt eafp_mgl_united_sustainable_complete = yes }
 	}
 	on_complete = {
-		set_variable = eafp_mgl_united_industrial_area_complete
 		add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
 		trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
 	}
@@ -241,13 +366,26 @@ je_eafp_mgl_kiakhta_settlement = {
 	group = je_group_historical_content
 	weight = 220
 	transferable = no
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		game_date >= 1915.1.1
+		is_subject = no
+		exists = c:RUS
+		exists = c:CHI
+		NOT = { has_variable = eafp_mgl_kiakhta_started }
+	}
 	complete = {
 		custom_tooltip = {
 			text = eafp_mgl_kiakhta_resolved_tt
 			has_variable = eafp_mgl_kiakhta_resolved
 		}
 	}
-	immediate = { trigger_event = { id = eafp_mgl.600 days = 7 popup = yes } }
+	immediate = {
+		set_variable = eafp_mgl_kiakhta_started
+		trigger_event = { id = eafp_mgl.600 days = 7 popup = yes }
+	}
 }
 
 je_eafp_mgl_autonomy_in_peril = {
@@ -255,13 +393,30 @@ je_eafp_mgl_autonomy_in_peril = {
 	group = je_group_historical_content
 	weight = 220
 	transferable = no
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		game_date >= 1919.1.1
+		exists = c:CHI
+		c:CHI = { army_power_projection > root.army_power_projection }
+		OR = {
+			NOT = { exists = c:RUS }
+			c:RUS = { is_at_war = yes }
+			c:RUS = { is_revolutionary = yes }
+		}
+		NOT = { has_variable = eafp_mgl_autonomy_crisis_started }
+	}
 	complete = {
 		custom_tooltip = {
 			text = eafp_mgl_autonomy_crisis_resolved_tt
 			has_variable = eafp_mgl_autonomy_crisis_resolved
 		}
 	}
-	immediate = { trigger_event = { id = eafp_mgl.610 days = 7 popup = yes } }
+	immediate = {
+		set_variable = eafp_mgl_autonomy_crisis_started
+		trigger_event = { id = eafp_mgl.610 days = 7 popup = yes }
+	}
 }
 
 je_eafp_mgl_people_revolution = {
@@ -269,11 +424,22 @@ je_eafp_mgl_people_revolution = {
 	group = je_group_historical_content
 	weight = 220
 	transferable = no
+	is_shown_when_inactive = { c:MGL ?= ROOT }
+	possible = {
+		c:MGL ?= ROOT
+		is_country_alive = yes
+		game_date >= 1920.1.1
+		has_variable = eafp_mgl_revolutionary_network_ready
+		NOT = { has_variable = eafp_mgl_people_revolution_started }
+	}
 	complete = {
 		custom_tooltip = {
 			text = eafp_mgl_people_revolution_complete_tt
 			has_variable = eafp_mgl_people_revolution_complete
 		}
 	}
-	immediate = { trigger_event = { id = eafp_mgl.620 days = 7 popup = yes } }
+	immediate = {
+		set_variable = eafp_mgl_people_revolution_started
+		trigger_event = { id = eafp_mgl.620 days = 7 popup = yes }
+	}
 }

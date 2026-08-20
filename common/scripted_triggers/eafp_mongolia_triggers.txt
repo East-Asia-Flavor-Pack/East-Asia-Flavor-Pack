@@ -1,24 +1,4 @@
-﻿is_eafp_mgl_heartland_state = {
-	OR = {
-		state_region = s:STATE_URGA
-		state_region = s:STATE_ULIASTAI
-		state_region = s:STATE_TUVA
-		state_region = s:STATE_ALTAI
-	}
-}
-
-is_eafp_mgl_united_industrial_state = {
-	OR = {
-		is_eafp_mgl_heartland_state = yes
-		state_region = s:STATE_BURYATIA
-		state_region = s:STATE_HINGGAN
-		state_region = s:STATE_ALXA
-		state_region = s:STATE_DZUNGARIA
-		state_region = s:STATE_QINGHAI
-	}
-}
-
-is_eafp_mgl_united_industry_partner = {
+﻿is_eafp_mgl_united_industry_partner = {
 	is_country_alive = yes
 	OR = {
 		c:MGL ?= this
@@ -39,64 +19,27 @@ is_eafp_mgl_steppe_representative_homeland = {
 	}
 }
 
-eafp_mgl_heartland_industrial_foundation_complete = {
-	eafp_mgl_heartland_state_count >= 2
-	any_scope_state = {
-		filter = { is_eafp_mgl_heartland_state = yes }
-		percent >= 0.75
-		devastation < 0.1
-		market_access >= 0.85
-		tax_capacity >= tax_capacity_usage
-	}
-	eafp_mgl_heartland_construction_levels >= 2
-}
-
-eafp_mgl_heartland_raw_materials_complete = {
-	eafp_mgl_heartland_raw_material_types >= 2
-	eafp_mgl_heartland_raw_material_levels >= 8
-	any_scope_building = {
-		filter = {
-			state = { is_eafp_mgl_heartland_state = yes }
-			OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_logging_camp }
-		}
-		percent >= 0.75
-		cash_reserves_ratio > 0.25
-	}
-}
-
-eafp_mgl_has_substantial_autonomy = {
-	OR = {
-		is_subject = no
-		NOT = { is_subject_type = subject_type_military_headquarters_china }
-	}
-}
-
-eafp_mgl_heartland_technical_base_complete = {
-	eafp_mgl_has_substantial_autonomy = yes
-	eafp_mgl_heartland_administration_levels >= 3
-	eafp_mgl_heartland_urban_levels >= 4
-	eafp_mgl_heartland_construction_levels >= 3
-	any_scope_state = {
-		filter = { is_eafp_mgl_heartland_state = yes }
-		percent >= 0.75
-		tax_capacity >= tax_capacity_usage
-		average_sol >= 10
-	}
-}
-
 eafp_mgl_heartland_industrial_network_complete = {
-	eafp_mgl_heartland_tools_power_levels >= 3
-	eafp_mgl_heartland_light_industry_levels >= 5
+	custom_description = {
+		text = eafp_mgl_heartland_tools_power_levels_greater_or_equal
+		value = 3
+		eafp_mgl_heartland_tools_power_levels >= 3
+	}
+	custom_description = {
+		text = eafp_mgl_heartland_light_industry_levels_greater_or_equal
+		value = 5
+		eafp_mgl_heartland_light_industry_levels >= 5
+	}
 	any_scope_building = {
 		filter = {
-			state = { is_eafp_mgl_heartland_state = yes }
+			state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
 			OR = { is_building_type = building_tooling_workshop is_building_type = building_power_plant is_building_type = building_food_industry is_building_type = building_textile_mill }
 		}
 		percent >= 0.75
 		cash_reserves_ratio > 0.25
 	}
 	any_scope_state = {
-		filter = { is_eafp_mgl_heartland_state = yes }
+		filter = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
 		percent >= 0.75
 		market_access >= 0.9
 		devastation < 0.1
@@ -108,7 +51,7 @@ eafp_mgl_collectivization_crisis_conditions = {
 	has_variable = eafp_mgl_forced_collectivization_active
 	any_scope_state = {
 		filter = {
-			is_eafp_mgl_heartland_state = yes
+			is_in_geographic_region = geographic_region_eafp_mgl_heartland
 			calc_true_if = {
 				amount >= 2
 				turmoil >= 0.2
@@ -121,7 +64,7 @@ eafp_mgl_collectivization_crisis_conditions = {
 	}
 	any_scope_building = {
 		filter = {
-			state = { is_eafp_mgl_heartland_state = yes }
+			state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
 			OR = { is_building_type = building_livestock_ranch is_building_type = building_food_industry is_building_type = building_textile_mill }
 		}
 		percent >= 0.25
@@ -131,7 +74,7 @@ eafp_mgl_collectivization_crisis_conditions = {
 
 eafp_mgl_collectivization_recovery_complete = {
 	any_scope_state = {
-		filter = { is_eafp_mgl_heartland_state = yes }
+		filter = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
 		percent >= 0.75
 		turmoil < 0.15
 		market_access >= 0.85
@@ -147,7 +90,7 @@ eafp_mgl_united_market_complete = {
 eafp_mgl_united_administration_complete = {
 	eafp_mgl_united_admin_state_count >= 1
 	eafp_mgl_united_admin_ready_state_share >= 0.75
-	NOT = { any_scope_state = { is_eafp_mgl_united_industrial_state = yes is_incorporated = no } }
+	NOT = { any_scope_state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area is_incorporated = no } }
 }
 
 eafp_mgl_united_raw_materials_complete = {
@@ -199,7 +142,7 @@ is_eafp_mgl_steppe_league_candidate = {
 	}
 	any_scope_state = {
 		OR = {
-			is_eafp_mgl_united_industrial_state = yes
+			is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area
 			state_region = s:STATE_KHIVA
 			state_region = s:STATE_KIRGHIZIA
 			state_region = s:STATE_TURKMENIA
