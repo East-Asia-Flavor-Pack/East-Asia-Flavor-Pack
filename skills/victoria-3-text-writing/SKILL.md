@@ -29,6 +29,7 @@ Write localization that is structurally valid, historically grounded, and clearl
    - Journal title: name the sustained problem or project.
    - Journal reason: establish context, stakes, opposition, and the strategic objective.
    - Goal, status, progress, button description, and tooltip: explain mechanics and current conditions.
+   - Also assign a speaker and register to each key. Event narration, character dialogue, state decisions, court documents, and system UI text must not all use the same sentence endings or level of formality.
 
 4. Draft the authored language first, then localize meaning rather than sentence order.
    - Keep all script expressions and formatting tokens unchanged across languages.
@@ -51,7 +52,7 @@ Write localization that is structurally valid, historically grounded, and clearl
 
 Read the references required by the task:
 
-- [references/writing-style.md](references/writing-style.md): read whenever authoring or substantially revising events, journal entries, options, or historical flavor.
+- [references/writing-style.md](references/writing-style.md): read whenever authoring or substantially revising events, journal entries, options, or historical flavor. Its voice matrix defines the speaker, tense, formality, and sentence endings for each text type.
 - [references/localization-syntax.md](references/localization-syntax.md): read whenever editing localization files, dynamic text, conditional variants, or multiple languages.
 - [references/corpus-notes.md](references/corpus-notes.md): read when choosing comparison sources, calibrating length, resolving a style dispute, or refreshing the guidance against installed mods.
 

@@ -72,6 +72,12 @@ The best material distinguishes court memorial, government report, commoner's sc
 
 Strong option sets encode distinct policies or values and align with downstream effects. Weak sets repeat “Let us,” use generic acceptance, or hide the actual choice behind a joke. Review options together, not one key at a time.
 
+### Korean sentence endings separate narrative from UI
+
+An ending-pattern scan reinforced the field distinction. About 96% of vanilla Korean event descriptions and 81% of EAFP Korean event descriptions ended in plain `-다` style. Journal reasons used plain `-다` in roughly 77% of vanilla and 73% of EAFP entries. Options were more varied: plain decisions, short fragments, exclamations, questions, and directive or commitment forms all appeared in meaningful numbers. Goals, statuses, button labels, and tooltips were dominated by fragments rather than polite full sentences.
+
+These frequencies are descriptive, not mandatory quotas. They support a practical default: narrative uses written `-다`, choices use decisive state language, diegetic quotations follow their actual speaker, and system UI uses compact fragments. A feature may depart from the default when it establishes a clear addressee or document genre, but should not drift accidentally between registers.
+
 ## Source Priority
 
 Use sources according to the decision being made:
