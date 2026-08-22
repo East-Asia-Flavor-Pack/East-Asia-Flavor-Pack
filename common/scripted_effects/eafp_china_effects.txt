@@ -1163,3 +1163,57 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 		remove_modifier = manchurian_containment
 	}
 }
+
+# Qing frontier generals were appointed officials rather than hereditary rulers.
+# A three-to-six-year term keeps the military headquarters' rulers rotating without
+# tying the system to a particular country tag.
+eafp_china_reset_military_headquarters_governor_term = {
+	random_list = {
+		1 = { set_variable = { name = eafp_china_military_headquarters_governor_term value = 3 } }
+		2 = { set_variable = { name = eafp_china_military_headquarters_governor_term value = 4 } }
+		2 = { set_variable = { name = eafp_china_military_headquarters_governor_term value = 5 } }
+		1 = { set_variable = { name = eafp_china_military_headquarters_governor_term value = 6 } }
+	}
+}
+
+eafp_china_military_headquarters_governor_yearly_effect = {
+	if = {
+		limit = {
+			is_country_alive = yes
+			is_subject_type = subject_type_military_headquarters_china
+			is_subject_of = c:CHI
+		}
+		if = {
+			limit = { NOT = { has_variable = eafp_china_military_headquarters_governor_term } }
+			eafp_china_reset_military_headquarters_governor_term = yes
+		}
+		else = {
+			change_variable = {
+				name = eafp_china_military_headquarters_governor_term
+				subtract = 1
+			}
+			if = {
+				limit = { var:eafp_china_military_headquarters_governor_term <= 0 }
+				ruler ?= { save_scope_as = eafp_outgoing_headquarters_general }
+				if = {
+					limit = { any_scope_character = { is_heir_of_own_country = yes } }
+					heir = { kill_character = { hidden = yes } }
+				}
+				create_character = {
+					culture = cu:manchu
+					ruler = yes
+					age = { 45 60 }
+					interest_group = ig_armed_forces
+					ideology = ideology_traditionalist
+				}
+				if = {
+					limit = { exists = scope:eafp_outgoing_headquarters_general }
+					scope:eafp_outgoing_headquarters_general = {
+						transfer_character = c:CHI
+					}
+				}
+				eafp_china_reset_military_headquarters_governor_term = yes
+			}
+		}
+	}
+}
