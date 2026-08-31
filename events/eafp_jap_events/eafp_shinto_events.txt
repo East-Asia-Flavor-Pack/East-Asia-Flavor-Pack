@@ -1,0 +1,121 @@
+﻿namespace = shinto_events
+
+shinto_events.1 = {
+	type = country_event
+	placement = root
+
+	title = shinto_events.1.t
+	desc = shinto_events.1.d
+	flavor = shinto_events.1.f
+
+	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	duration = 3
+
+	immediate = {
+		
+	}
+
+	option = {
+		default_option = yes
+		name = shinto_events.1.a
+
+		add_journal_entry = { type = je_shinto }
+		
+		set_state_religion = rel:shinto
+
+		ig:ig_devout ?= {
+			hidden_effect = { set_interest_group_name = ig_shinto_monks }
+			remove_ideology = ideology_buddhist_moralist
+			add_ideology = ideology_shinto_moralist
+			leader ?= {
+				change_character_religion = rel:shinto
+			}
+		}
+
+		state_religion_switch_effect = yes
+		
+		random_scope_state = {
+			limit = {
+				owner = ROOT
+				is_capital = yes
+			}
+			convert_population = {
+				target = rel:shinto
+				value = 0.1
+			}
+		}
+	}
+}
+
+shinto_events.99 = {
+	type = country_event
+	placement = root
+
+	title = shinto_events.99.t
+	desc = shinto_events.99.d
+	flavor = shinto_events.99.f
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	event_image = { 
+		video = "asia_confucianism_shinto"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	duration = 3
+
+	immediate = {
+
+	}
+
+	option = {
+		name = shinto_events.99.a
+		default_option = yes
+
+		add_modifier = {
+			name = united_divine_nation_modifier
+			days = 7300
+		}
+
+		if = {
+			limit = { scope:shinto_faction_power_progress_bar_value < 50 }
+			custom_tooltip = shinto_faction_power_progress_bar_below_50_effect_tt
+			ig:ig_devout = {
+				set_ig_trait = ig_trait:ig_trait_kannagara_no_michi
+				set_ig_trait = ig_trait:ig_trait_secular_shrine_theory
+			}
+		}
+		else = {
+			custom_tooltip = shinto_faction_power_progress_bar_above_50_effect_tt
+			ig:ig_devout = {
+				set_ig_trait = ig_trait:ig_trait_shinshu_fumetsu
+				set_ig_trait = ig_trait:ig_trait_bansei_ikkei
+			}
+		}
+		if = {
+			limit = { scope:shinto_shinto_buddism_balance_progress_bar_value < 50 }
+			custom_tooltip = shinto_shinto_buddism_balance_progress_bar_below_50_effect_tt
+			ig:ig_devout = {
+				set_ig_trait = ig_trait:ig_trait_law_protection_movement
+			}
+		}
+		else = {
+			custom_tooltip = shinto_shinto_buddism_balance_progress_bar_above_50_effect_tt
+			ig:ig_devout = {
+				set_ig_trait = ig_trait:ig_trait_haibutsu_kishaku
+			}
+		}
+
+		ai_chance = {
+			base = 100
+		}
+	}
+}
