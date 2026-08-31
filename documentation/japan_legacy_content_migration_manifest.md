@@ -87,7 +87,7 @@
 
 | 항목 | 수량 | 처리 원칙 |
 |---|---:|---|
-| 비활성 JE 정의 | 44 | 27개 활성·최신화, 17개 삭제·바닐라 병합 (`je_terakoya` 포함) |
+| 비활성 JE 정의 | 44 | 23개 활성·최신화, 21개 삭제·바닐라 병합 (`je_terakoya`·옛 재벌 JE 4개 포함) |
 | 활성 재정의 JE | 1 (`je_ryukyu_rivalry`) | 바닐라 소유로 돌리고 EAFP 조선 개입 분리 |
 | 비활성 이벤트 | 156 | 활성·재배치·흡수·삭제 중 하나로 추적 |
 | 영어 주 현지화 | 1,447 | 원문 중심 복원 후 삭제 전용 키 정리 |
@@ -95,7 +95,7 @@
 | 중국어 간체 주 현지화 | 1,447 | 원문 중심 복원 후 삭제 전용 키 정리 |
 | 한국어 역사명 | 1,586 | 바닐라 중복 이름만 대조 |
 
-명시적 삭제·병합 17개는 지역 막번체제 JE 7개, 막부 정책·청원 JE 8개, 독립 `je_tenpo_famine` 1개, `je_terakoya` 1개로 고정한다. `je_terakoya`는 새 키로 이관하지 않으며 history 시작 호출과 전용 수정치·효과·트리거·현지화도 삭제 대상으로 추적한다.
+명시적 삭제·병합 21개는 지역 막번체제 JE 7개, 막부 정책·청원 JE 8개, 독립 `je_tenpo_famine` 1개, `je_terakoya` 1개, 옛 `je_zaibatsu`와 재벌 청원 JE 3개로 고정한다. `je_terakoya`는 새 키로 이관하지 않으며 history 시작 호출과 전용 수정치·효과·트리거·현지화도 삭제 대상으로 추적한다. 옛 재벌 체인은 활성 `eafp_zaibatsu_events.txt`, `zaibatsu_events.1-4`, 고아 `.101` localization, `is_zaibatsu_company`, `zaibatsu_cooperation_modifier`까지 삭제하고 바닐라 `je_zaibatsu`와 공식 회사만 사용한다. 원본 `eafp_zaibatsu_events.disable`은 1단계 복원 증거와 회귀 대조를 위해 그대로 보존한다.
 
 ## 5. 검증 절차
 

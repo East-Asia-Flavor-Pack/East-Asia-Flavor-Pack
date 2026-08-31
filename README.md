@@ -6,8 +6,9 @@
 ## 소개
 
 - 빅토3 동아시아 고증 모드
-- 버전: [v2.1.0](https://github.com/East-Asia-Flavor-Pack/East-Asia-Flavor-Pack/releases)
-- 게임 버전: [1.10.*]에 대응됨.
+- 버전: [v2.2.0](https://github.com/East-Asia-Flavor-Pack/East-Asia-Flavor-Pack/releases)
+- 게임 버전: [1.13.*]에 대응됨.
+- 일본 리뉴얼 콘텐츠는 모든 공식 DLC가 활성화된 환경을 전제로 합니다.
 
 ## 참여하기
 

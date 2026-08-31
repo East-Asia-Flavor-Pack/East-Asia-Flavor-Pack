@@ -23,7 +23,7 @@
 | 보신전쟁 | `ep2_meiji` | EAFP JE는 전황·후속 사건만 담당하고 내전 생성·종전은 바닐라 소유 |
 | 북방 | `je_taming_the_north` | 옛 홋카이도·가라후토 사건을 동반 체인으로 연결 |
 | 종교 | `je_shinbutsu_bunri`, `je_elevate_buddhism` | 옛 신토 체인은 사회 반응만 담당 |
-| 재벌 | `je_zaibatsu` | EAFP legacy 재벌·청원은 바닐라 완료 상태를 읽음 |
+| 재벌 | `je_zaibatsu`와 바닐라 공식 회사 | 옛 EAFP 재벌 JE·청원·사건은 제거하고 바닐라 체인만 사용 |
 | 류큐 | `je_ryukyu_rivalry`, `ryukyu_rivalry` | 조선 개입과 옛 처분 사건만 별도 연결 |
 | 이와쿠라 | `je_iwakura_mission`, `iwakura_mission` | 중복 JE를 만들지 않고 옛 외교 사건을 후속으로 연결 |
 | 조선 식민화 | `je_colonize_korea` | 정한론은 정치적 선행·반발만 담당 |
@@ -74,15 +74,20 @@
 | `events/japan_events/ep2_zaibatsu_events.txt` | 4489 | `1fcb83e0315490e4a01d8357d20ef3234bde8a24f6bda4e80b20f14e7168515e` |
 | `events/meiji_restoration.txt` | 30495 | `5e010ebc08631a2c18921792a768d9510cb3b117be961fb0f762597c537144b0` |
 
-## 5. EAFP 활성 충돌 기준선
+## 5. EAFP 활성 충돌 기준선과 P0 결과
 
-| 파일 | 충돌 | 0단계 판정 |
-|---|---|---|
-| `common/country_definitions/eafp_countries.txt` | `REPLACE:JAP` | 국가 정의 전체 교체 제거 또는 최소 초기화 effect로 전환 |
-| `common/cultures/00_cultures_jap.txt` | `REPLACE:japanese` | 현행 바닐라 필드를 보존하는 생성형 패치 또는 교체 제거 |
-| `localization/english/replace/jap_replace_l_english.yml` 및 중국어 대응 파일 | 바닐라 메이지 문자열 직접 교체 | 옛 문구 이관 후 직접 덮어쓰기 제거 |
-| `common/journal_entries/eafp_01_ryukyu_rivalry.txt` | 바닐라 `je_ryukyu_rivalry` 재정의 | 조선 개입 사이드카로 분리 |
-| `common/history/military_formations/06_military_formations_asia.txt` | 바닐라 동경로 전체 복사 | EAFP 추가분만 별도 파일로 분리 |
+| 파일 | 충돌 | 0단계 판정 | 2단계 결과 |
+|---|---|---|---|
+| `common/country_definitions/eafp_countries.txt` | `REPLACE:JAP` | 국가 정의 전체 교체 제거 또는 최소 초기화 effect로 전환 | 일본 블록 제거, 바닐라 정본 사용 |
+| `common/flag_definitions/eafp_jap_flag_definitions.txt` | `REPLACE:JAP` | 바닐라 국기 분기 복구 | 일본 블록 제거, 바닐라 정본 사용 |
+| `common/cultures/00_cultures_jap.txt` | `REPLACE:japanese` | 현행 바닐라 필드를 보존하는 생성형 패치 또는 교체 제거 | 바닐라 비인명 필드 + 안정적 이름 합집합으로 재생성 |
+| `localization/english/replace/jap_replace_l_english.yml` 및 두 언어 대응 파일 | 바닐라 메이지 문자열 직접 교체 | 옛 문구 이관 후 직접 덮어쓰기 제거 | canonical 메이지·국가명 키 제거 |
+| `common/journal_entries/eafp_01_ryukyu_rivalry.txt` | 바닐라 `je_ryukyu_rivalry` 재정의 | 조선 개입 사이드카로 분리 | `je_eafp_ryukyu_intervention`으로 분리 |
+| `common/journal_entries/eafp_japan.txt` | 바닐라 `je_zaibatsu` 재정의 | 옛 재벌 체인 완전 삭제 | 옛 JE 4개·이벤트·전용 자산 제거, 바닐라 정본만 유지 |
+| `common/company_types/eafp_companies_japan.txt` | 일본 공식 회사 재정의·중복 | 바닐라 정본 복구 | 공식 회사 4개 제거, EAFP 고유 회사 2개만 유지 |
+| `common/history/military_formations/06_military_formations_asia.txt` | 바닐라 동경로 전체 복사 | EAFP 추가분만 별도 파일로 분리 | 원본 경로 제거, 조선 추가분을 EAFP 파일로 분리 |
+| `common/history/countries/jap - japan.txt` | 바닐라 동경로 전체 복사 | 바닐라 국가 history 복구 | 원본 경로 제거, EAFP 추가 effect를 legacy 파일로 분리 |
+| `events/meiji_restoration.txt` | 바닐라 동경로 전체 복사·namespace 충돌 | 옛 이벤트 namespacing | EAFP legacy 경로와 `eafp_jap_meiji_legacy`로 분리 |
 
 ## 6. 갱신 규칙
 
