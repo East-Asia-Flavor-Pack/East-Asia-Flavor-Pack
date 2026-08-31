@@ -42,7 +42,7 @@
 | P0 | 옛 이념 ID | `ideology_nankiha`, `ideology_kaikakuha`, `ideology_hoshuha`, `ideology_hitotsubashiha`가 invalid | 현행 바닐라 덴포 파벌 adapter와 EAFP faction resolver로 교체 |
 | P0 | 지역·국가 ID | `region_japan`, `NIP`가 invalid | 현행 strategic region과 `JAP`로 이관 |
 | P0 | JE group 누락 | `je_group_bakuhantaisei` 참조 실패 8개 | 상위 JE UI 재설계 시 현행 group 또는 독립 group 정의로 교체 |
-| P0 | history 오류 | `jap_building.txt` invalid building, `je_terakoya` invalid journal entry | 현행 건물·바닐라 JE 기준으로 history 갱신 |
+| P0 | history 오류 | `jap_building.txt` invalid building, `je_terakoya` invalid journal entry | 현행 건물 기준으로 history를 갱신하고 `je_terakoya` 시작 호출은 완전 제거 |
 | P1 | 효과·트리거 문법 | EAFP 일본 effect PostValidate 48개, 일본 이벤트 trigger PostValidate 다수 | wrapper 효과·트리거로 순차 치환 |
 | P1 | localization 자체 중복 | 역사명 파일 내부 중복 177개 | 첫 정의/최종 정의 정책을 정하고 중복 키를 하나로 정리 |
 | P1 | 쿠로후네 localization 충돌 | `meiji.13.*`, `meiji.14.*` 8개 | EAFP namespaced 키로 이관 |
