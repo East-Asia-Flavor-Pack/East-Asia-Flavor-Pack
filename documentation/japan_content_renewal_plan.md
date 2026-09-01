@@ -1,5 +1,19 @@
 # 일본 콘텐츠 리뉴얼 구현 계획
 
+## 0. 최신 구현 결정: EAFP 직접 소유
+
+2026-09-01의 최신 구현 지시에 따라 bridge·바닐라 상태 동기화 전제를 폐기했다. 이 결정은 이 문서 아래쪽에 남아 있는 bridge, 바닐라 정본 소유, 호환 adapter 관련 과거 계획보다 우선한다.
+
+- 지원 대상은 EAFP를 활성화한 상태로 시작한 신게임뿐이다.
+- EAFP는 메이지 5개 JE와 `je_taming_the_north`를 `REPLACE:`로 로드하지만, 각 정의의 내용 기준선은 현행 바닐라 JE 전문이다. `REPLACE:`는 배포 수단이지 EAFP식 간이 JE를 새로 설계한다는 뜻이 아니다.
+- 4단계에서 각 `REPLACE:` 블록을 바닐라 1.13.11 정의의 모든 필드·버튼·widget·공식 이벤트·완료/실패/무효화 결과를 먼저 그대로 옮긴 뒤 EAFP가 추가·수정한 부분만 명시적으로 병합한다.
+- 실행 중에는 별도 bridge를 통해 바닐라 일본 JE의 활성 상태, 완료 변수, 진행 막대와 내부 modifier를 읽지 않는다. 다만 구현 시점의 바닐라 JE 소스는 `REPLACE:` 정의를 만드는 기준본으로 사용한다.
+- bridge scripted trigger·effect와 월간 bridge on_action을 사용하지 않는다.
+- 류큐 조선 개입은 바닐라 류큐 경쟁과 분리된 EAFP 자체 진행도를 사용한다.
+- 이전 EAFP 저장에 대한 migration은 구현하지 않는다.
+
+구현 결과와 현재 변수 계약은 [`japan_stage3_bridge_report.md`](japan_stage3_bridge_report.md)를 정본으로 삼는다. 이 문서의 기존 호환 계층 세부안은 결정 이력으로만 보존한다.
+
 ## 1. 문서 목적과 기준선
 
 이 문서는 현재 `East-Asia-Flavor-Pack`에 남아 있는 옛 일본 콘텐츠를 Victoria 3의 현행 일본 콘텐츠, 특히 `The Great Wave` DLC와 충돌하지 않도록 재설계하기 위한 구현 계획이다. 이번 단계에서는 게임 스크립트나 자산을 수정하지 않고, 콘텐츠 소유권·이관 범위·호환 계층·구현 순서·검증 기준을 확정한다.
@@ -24,7 +38,7 @@
 
 이 계획은 다음 원칙을 전제로 한다.
 
-> 바닐라는 일본의 역사적 상태와 주요 결말을 관리하고, EAFP는 옛 저널·이벤트·현지화를 최대한 원형대로 복원하되 바닐라 DLC 결과에 동기화한다.
+> EAFP는 모드를 활성화한 신게임의 일본 저널 상태와 후속 결과를 직접 관리하고, 옛 저널·이벤트·현지화를 최대한 원형대로 복원한다.
 
 옛 일본 `.disable` 파일은 이번 리뉴얼의 주 구현 원본으로 취급한다. 구현을 시작할 때 현재 비활성인 일본 관련 파일을 먼저 전부 활성 확장자로 복사한다. 게임 스크립트 파일은 같은 경로·같은 basename의 `.txt`로, localization 파일은 엔진 형식에 맞는 `.yml`로 되살린다. 이 “무수정 활성 복원본”을 기준선으로 고정한 다음에만 활성 복사본을 수정한다. 일부 정의가 최종 삭제 대상이더라도 해당 `.disable` 파일을 처음부터 제외하지 않고, 먼저 전체를 복원한 뒤 활성 `.txt` 또는 `.yml` 안에서 정의와 참조를 제거·병합한다.
 
@@ -89,7 +103,7 @@ Victoria 3 1.13.11과 `The Great Wave`는 다음 일본 시스템을 이미 제�
 1. **옛 EAFP 콘텐츠는 기본적으로 보존하되 명시적 삭제 목록을 우선한다.** 지역 막번체제 JE 7개, 막부 정책·청원 JE 8개, 독립 `je_tenpo_famine`, `je_terakoya`, 옛 `je_hokkaido`, 옛 재벌 JE·청원 JE 3개는 삭제·병합한다. 옛 홋카이도 사건과 후속 북방 JE는 바닐라 `je_taming_the_north`에서 이어지며, 재벌 시스템은 바닐라 `je_zaibatsu`와 바닐라 공식 회사만 사용한다.
 2. **바닐라는 정사 상태의 단일 진실 공급원이다.** 쇄국, 덴포 위기, 메이지 유신, 보신전쟁, 홋카이도, 종교, 재벌, 류큐, 이와쿠라 사절단, 조선 식민화의 최종 정권·영토·전쟁 결과는 바닐라가 소유한다.
 3. **살아남는 옛 JE만 DLC 동기화형 동반 저널로 복원한다.** 원래 진행 막대와 사건 풀을 유지하되 바닐라 JE의 활성·완료·실패 상태에 맞춰 열리고 닫히게 한다. 삭제 대상으로 지정된 JE의 서사는 상위 EAFP JE나 대응 바닐라 JE로만 이관한다.
-4. **고유 키는 가능한 한 유지하되 메이지 과제는 현행 바닐라 정의를 기준으로 갱신한다.** `je_meiji_main`, `je_meiji_economy`, `je_meiji_army`, `je_meiji_diplomacy`는 별도 legacy JE를 만들지 않고 바닐라 1.13.11 정의를 기준으로 한 명시적 호환 패치에 EAFP 사건 연결만 추가한다. 옛 `je_zaibatsu`는 이름을 바꿔 보존하지 않고 관련 청원·사건과 함께 제거한다.
+4. **바닐라 JE를 `REPLACE:`한 경우에는 바닐라 전문 위에 EAFP 차이만 병합한다.** `je_meiji_restoration`, `je_meiji_main`, `je_meiji_economy`, `je_meiji_army`, `je_meiji_diplomacy`, `je_taming_the_north`와 4단계에서 새로 교체하는 `je_tenpo_crisis`는 바닐라 1.13.11 정의를 필드 단위로 전부 복원한 뒤 EAFP 사건·변수·후속 JE 연결만 추가한다. 바닐라 버튼·widget·DLC 분기·공식 이벤트·완료/실패/timeout/invalid 결과를 EAFP 간이 로직으로 대체하지 않는다. 옛 `je_zaibatsu`는 이름을 바꿔 보존하지 않고 관련 청원·사건과 함께 제거한다.
 5. **옛 현지화 문구는 기본적으로 그대로 사용한다.** 키를 바꾼 항목만 기계적으로 새 키에 복사하고, 문법이 깨진 동적 스코프와 명백한 오탈자만 수정한다.
 6. **옛 이벤트의 서사와 선택지는 유지한다.** DLC와 같은 사건을 다루는 경우 삭제하지 않고 바닐라 사건의 선행·후속·대체 풍미 사건으로 연결하며, 중복되는 기계적 보상만 제거한다.
 7. **바닐라 내부 변수 접근은 연결 계층으로 치환한다.** 옛 본문의 호출 위치는 유지하되 deprecated 변수·효과를 wrapper trigger와 effect로 바꾼다.
@@ -249,7 +263,7 @@ documentation/
 
 ### 7.2 `eafp_00_meiji_restoration.disable`
 
-이 파일은 바닐라 JE를 `REPLACE:`로 덮는 구버전 호환 파일이다. `je_terakoya`는 전용 지원 자산과 함께 제거하고 대체 legacy JE를 만들지 않는다. 옛 `je_meiji_restoration`만 이름을 바꾼 EAFP 동반 JE로 보존한다. `je_meiji_main/economy/army/diplomacy`는 별도 legacy JE 없이 현행 바닐라 정의로 최신화하면서 옛 사건·현지화·고유 보상 중 비충돌 부분만 병합한다.
+이 파일은 4단계에서 현행 바닐라 JE를 기준으로 다시 생성하는 `REPLACE:` 파일이다. `je_terakoya`는 전용 지원 자산과 함께 제거하고 대체 legacy JE를 만들지 않는다. 나머지 메이지 5개 JE는 별도 legacy JE로 분리하지 않는다. 각 블록에는 바닐라 1.13.11 정의 전문을 먼저 유지하고, EAFP 옛 사건·현지화·고유 보상·추적 변수 중 비충돌 부분만 주석으로 구분한 추가 구간에 병합한다.
 
 #### 7.2.1 `je_terakoya`
 
@@ -261,33 +275,38 @@ documentation/
 
 #### 7.2.2 `je_meiji_restoration`
 
-- **처리:** 키 변경형 보존 + DLC 동기화형 보존 + 결과부 치환
-- **활성 키:** `je_eafp_jap_legacy_meiji_restoration`
-- 옛 `shogunate_var`, 월간 진행, 진행 막대와 선택지는 유지한다. 개시는 바닐라 `je_meiji_restoration`에 맞추고, 자체 정권 교체·사할린 영유권·바닐라 변수 설정은 제거해 연결 effect로 치환한다. `meiji.1` 호출은 이름을 바꾼 `eafp_jap_meiji_legacy.1`로 연결한다.
+- **처리:** 바닐라 최신화형 `REPLACE:` + EAFP 차이 병합
+- **활성 키:** `REPLACE:je_meiji_restoration`
+- 바닐라의 세 scripted button, 천황·다이묘 widget, 천황·다이묘 갱신, 다이묘 충성도 캐시, 유신운동 생성, `restoration_timer_var`, 월간 공식 사건 풀, 황실·막부 승리, 공무합체·공의여론, invalid와 공식 결과를 전문 그대로 기준선에 둔다.
+- 바닐라 `on_complete`의 공식 effect 뒤에는 `eafp_jap_restoration_finished`와 `eafp_jap_meiji_legacy.1`을, `on_fail/on_invalid` 뒤에는 `eafp_jap_restoration_failed`만 부가 추적으로 병합한다. EAFP의 단순 6개월 진행도, 하위 메이지 JE 직접 추가, 정권·영토·공식 완료 변수 재지급은 바닐라 로직과 중복되므로 독립 대체 로직으로 유지하지 않는다.
 
 #### 7.2.3 `je_meiji_main`
 
 - **처리:** 바닐라 최신화형 병합
-- **활성 키:** 현행 바닐라 `je_meiji_main`
-- 바닐라 1.13.11의 버튼, 12년 timeout, `meiji_var`, 경제·군사·이와쿠라 완료 조건, 완료·부분 진행·무진행 결말을 기준으로 옛 정의를 교체한다. 모든 DLC가 있다는 전제이므로 외교 과제의 비-DLC 대체 분기 대신 `iwakura_mission_finished`를 사용한다. 옛 월간 `meiji.4-6` 사건 연결과 EAFP 현지화 중 비충돌 문구만 현행 구조에 병합한다.
+- **활성 키:** `REPLACE:je_meiji_main`
+- 바닐라 1.13.11의 두 버튼, 12년 timeout, `meiji_var`, 경제·군사·이와쿠라 완료 조건, 완료·부분 진행·무진행 결말과 `meiji.2/4/5/6/14` 호출을 모두 유지한다. 모든 DLC가 있다는 전제이므로 공식 완료 조건은 `iwakura_mission_finished` 분기를 그대로 사용한다.
+- EAFP의 `eafp_jap_meiji_main_finished`, `eafp_jap_meiji_legacy.2/4/5/6`과 관련 현지화는 공식 사건을 제거하지 않는 추가 effect·추가 사건 풀로 병합한다. EAFP 경제·군사·외교 완료 flag 세 개만으로 본 JE를 끝내는 기존 간이 완료 조건은 사용하지 않는다.
 
 #### 7.2.4 `je_meiji_economy`
 
 - **처리:** 바닐라 최신화형 병합
-- **활성 키:** 현행 바닐라 `je_meiji_economy`
-- 현행 바닐라의 채무 불이행 금지, 편입 주의 도시 중심지 5단계, 철도 보급률 70%, `completed_je_meiji_economy`와 `meiji_var` 처리를 그대로 기준으로 삼는다. 옛 `meiji.7-8` 사건 풀과 EAFP 보상만 중복 여부를 검사해 병합한다.
+- **활성 키:** `REPLACE:je_meiji_economy`
+- 현행 바닐라의 로비 노출, 채무 불이행 금지, 편입 주의 도시 중심지 5단계, 철도 보급률 70%, `completed_je_meiji_economy`와 `meiji_var` 처리, `meiji.7-8` 사건 풀을 그대로 둔다.
+- EAFP의 `eafp_jap_meiji_economy_finished`, `eafp_jap_meiji_legacy.7/8`과 비중복 보상만 공식 `on_complete` 및 연간 사건 풀 뒤에 추가한다. 본 JE의 공식 완료 조건이나 공식 변수를 EAFP flag로 바꾸지 않는다.
 
 #### 7.2.5 `je_meiji_army`
 
 - **처리:** 바닐라 최신화형 병합
-- **활성 키:** 현행 바닐라 `je_meiji_army`
-- 현행 바닐라의 농노제·농민 징집병 폐지, 군부 비정부, 나폴레옹 전쟁술, 사무라이 훈련·무조직 PM 제거, 비정규 보병 비율 조건을 기준으로 옛 정의를 교체한다. `completed_je_meiji_army`, `meiji_var`, `meiji.3`과 옛 `meiji.9-10` 사건 연결을 현행 순서에 맞춘다.
+- **활성 키:** `REPLACE:je_meiji_army`
+- 현행 바닐라의 농노제·농민 징집병 폐지, 군부 비정부, 나폴레옹 전쟁술, 사무라이 훈련·무조직 PM 제거, 비정규 보병 비율 조건과 `completed_je_meiji_army`, `meiji_var`, `meiji.3/9/10` 호출을 그대로 둔다.
+- EAFP의 `eafp_jap_meiji_army_finished`, `eafp_jap_meiji_legacy.3/9/10`은 공식 완료·연간 pulse 뒤에 추가한다. 공식 `meiji.3`을 EAFP 사건으로 치환하거나 EAFP invalid 조건을 덧붙여 바닐라보다 일찍 저널을 닫지 않는다.
 
 #### 7.2.6 `je_meiji_diplomacy`
 
 - **처리:** 바닐라 최신화형 병합
-- **활성 키:** 현행 바닐라 `je_meiji_diplomacy`
-- 현행 바닐라의 전통주의 폐지, 독립, 승인국 조건과 `completed_je_meiji_diplomacy`·`meiji_var` 처리를 기준으로 갱신한다. 전체 DLC 환경의 `je_meiji_main` 완료는 이 JE 대신 이와쿠라 사절단을 요구하지만, 외교 JE 자체와 옛 `meiji.11-12` 사건은 별도 선택 과제로 유지한다.
+- **활성 키:** `REPLACE:je_meiji_diplomacy`
+- 현행 바닐라의 전통주의 폐지, 독립, 승인국 조건과 `completed_je_meiji_diplomacy`·`meiji_var`, `meiji.11/12` 사건 풀을 그대로 둔다. 전체 DLC 환경의 `je_meiji_main` 완료는 이 JE 대신 이와쿠라 사절단을 요구하지만 외교 JE 자체는 공식 선택 과제로 유지한다.
+- EAFP의 `eafp_jap_meiji_diplomacy_finished`, `eafp_jap_meiji_legacy.11/12`와 비중복 보상만 추가한다. 공식 완료 조건·공식 변수·사건을 EAFP 버전으로 교체하지 않는다.
 
 ### 7.3 `eafp_japan.disable`
 
@@ -347,6 +366,7 @@ documentation/
 - `hokkaido.5-6`은 `je_taming_the_north` 진행 중의 EAFP 월간 풍미 사건 풀로 옮기고, `hokkaido.2-4`의 성곽 건설 선택지는 전용 버튼 대신 바닐라 JE 진행 중 조건부로 한 번 시작되는 사건 연쇄로 보존한다.
 - `hokkaido.1`은 바닐라 JE 성공을 감지한 뒤 한 번 발생하는 북방 후일담·후속 체인 개방 사건으로 바꾼다. 바닐라 완료 보상, 에조 결과와 사할린 소유권을 중복 지급하지 않는다.
 - `je_karafuto`를 첫 번째 명시적 후속 JE로 삼고, `eafp_jap_taming_north_completed`가 설정된 뒤에만 표시·개시한다. 기존의 “이미 사할린 일부를 소유해야 시작” 조건은 제거하고, 일본의 홋카이도 지배와 사할린의 유효한 소유·식민·러시아 관여 상태를 조건으로 사용해 바닐라 북방 개발에서 자연스럽게 이어지게 한다.
+- `REPLACE:je_taming_the_north`는 바닐라의 일본·에조 표시/가능 조건, 다섯 scripted button, 공식 카운터 세 개, `ainu_friendship_var`, `hokkaido_events.1/7/8`, 사할린 추가 목표, 완료 보상과 실패 결과를 전문 그대로 포함한다. 그 위에만 EAFP `hokkaido.2-6` 진행 중 사건, `hokkaido.1` 완료 후일담, `je_karafuto` 개방과 `eafp_jap_taming_north_completed/failed` 추적을 추가한다. EAFP의 독자 36개월 진행도와 `eafp_jap_ainu_friendship`은 바닐라 공식 카운터를 대체하지 않는다.
 
 #### 7.3.10 `je_tenpo_famine`
 
@@ -1120,13 +1140,13 @@ P0는 “바닐라 정본을 로드 순서에서 되찾는 단계”다. 옛 콘
 
 2단계 종료 시점에는 예정했던 `eafp_japan_vanilla_bridge.txt`, 연결 effect 파일과 전용 on_action 파일이 아직 존재하지 않는다. `common/on_actions/japan_code_on_actions.txt`는 1단계에서 원형 복원됐지만 `00_code_on_actions_definition.txt`의 일본 연결은 모두 주석 상태다. 또한 `je_eafp_jap_legacy_meiji_restoration`은 `possible = { always = no }`인 휴면 JE이고, 옛 메이지 사건 13개는 namespaced 이벤트 파일로 옮겨졌지만 여전히 바닐라 변수·JE를 직접 쓰는 구간이 남아 있다. 따라서 기존 완료 표시는 잘못된 선행 표기이며 아래 항목을 실제 구현 대상으로 되돌린다.
 
-- [ ] `common/scripted_triggers/eafp_japan_vanilla_bridge.txt` 구현
-- [ ] `common/scripted_effects/eafp_japan_vanilla_bridge_effects.txt` 구현
-- [ ] `common/scripted_effects/eafp_japan_character_bridge_effects.txt` 구현
-- [ ] `common/on_actions/eafp_japan_on_actions.txt` 구현과 최소 전역 연결
-- [ ] 전체 DLC 전제의 바닐라-EAFP 상태 adapter 구현
-- [ ] 옛 `je_hokkaido` 삭제와 바닐라 북방 체인 연결 구현
-- [ ] 중복 인물 identity map과 신게임 정본 참조 구현
+- [x] `common/scripted_triggers/eafp_japan_vanilla_bridge.txt` 구현
+- [x] `common/scripted_effects/eafp_japan_vanilla_bridge_effects.txt` 구현
+- [x] `common/scripted_effects/eafp_japan_character_bridge_effects.txt` 구현
+- [x] `common/on_actions/eafp_japan_on_actions.txt` 구현과 최소 전역 연결
+- [x] 전체 DLC 전제의 바닐라-EAFP 상태 adapter 구현
+- [x] 옛 `je_hokkaido` 삭제와 바닐라 북방 체인 연결 구현
+- [x] 중복 인물 identity map과 신게임 정본 참조 구현
 - [ ] 신게임 반복 저장·로드 및 bridge idempotency 검증
 
 3단계는 연결 API, P0 이관과 옛 `je_hokkaido`의 바닐라 북방 체인 병합을 구현한다. 구버전 세이브 변환은 범위에 포함하지 않는다. 다음 작업은 4단계 소유이므로 이 단계에서 실행하지 않는다.
@@ -1339,6 +1359,22 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 
 ### 4단계: 전기 막부 재구성
 
+- [ ] **`REPLACE:` 저널의 바닐라 기준선 재구성**
+  - 대상은 현재 활성 `REPLACE:je_meiji_restoration`, `REPLACE:je_meiji_main`, `REPLACE:je_meiji_economy`, `REPLACE:je_meiji_army`, `REPLACE:je_meiji_diplomacy`, `REPLACE:je_taming_the_north`와 덴포 병합을 위해 4단계에서 추가할 `REPLACE:je_tenpo_crisis`다.
+  - 각 대상의 현행 바닐라 1.13.11 블록을 시작 중괄호부터 끝 중괄호까지 별도 기준본으로 추출하고 checksum과 원본 경로를 `japan_legacy_content_migration_manifest.md`에 기록한다.
+  - EAFP 활성 블록을 바닐라 전문으로 먼저 교체한 뒤 EAFP 추가·수정분을 `EAFP DELTA BEGIN/END` 주석 구간에만 다시 적용한다. 런타임 bridge나 바닐라 JE 상태 조회는 만들지 않는다.
+  - 보존 대상 바닐라 필드는 icon/group뿐 아니라 `is_shown*`, `possible`, `immediate`, 모든 pulse, scripted button, widget, modifier, `complete/fail/invalid/timeout`, 각 `on_*`, outcome 설명, 변수 처리, 공식 사건, 보상, `transferable`, `can_revolution_inherit`, pin·weight를 포함한다.
+  - EAFP 차이는 `추가 사건`, `추가 추적 변수`, `추가 후속 JE`, `의도적 조건 수정`, `의도적 보상 수정`으로 분류한다. 추가형은 바닐라 effect 뒤에 합성하고, 수정형은 원래 바닐라 필드·변경 이유·대체 코드·영향 경로를 manifest에 1건씩 기록한 경우에만 허용한다.
+  - 공식 이벤트를 EAFP 이벤트로 바꾸지 않고 둘 다 필요한 경우 공식 이벤트를 먼저 유지한 뒤 fire-once guard가 있는 EAFP 후속 사건을 호출한다. 공식 변수·modifier·영토·정권·전쟁 결과를 EAFP가 두 번 지급하지 않는다.
+  - JE 제목·설명·조건 툴팁은 바닐라 localization을 기본으로 유지한다. EAFP가 새로 추가한 사건·추적 상태·후속 JE는 기존 EAFP localization을 최대한 재사용하고, 바닐라 JE localization 자체를 수정해야 할 때만 원본 문구와 변경 문구를 delta manifest에 함께 기록한다.
+- [ ] **저널별 `REPLACE:` 병합**
+  - `je_meiji_restoration`: 바닐라 유신 버튼·widget·천황/다이묘 갱신·정치운동·황실 및 막부 승리·invalid 결과를 유지하고, EAFP 완료/실패 추적 flag와 `eafp_jap_meiji_legacy.1`만 해당 공식 종료 처리 뒤에 추가한다.
+  - `je_meiji_main`: 바닐라 `meiji_var`, 경제·군사·이와쿠라 조건, 두 버튼, 12년 timeout, `meiji.2/4/5/6/14`를 유지하고 EAFP main 완료 flag와 `eafp_jap_meiji_legacy.2/4/5/6`만 추가한다.
+  - `je_meiji_economy`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_economy`·`meiji.7/8`을 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
+  - `je_meiji_army`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_army`·`meiji.3/9/10`을 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
+  - `je_meiji_diplomacy`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_diplomacy`·`meiji.11/12`를 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
+  - `je_taming_the_north`: 바닐라 일본/에조 분기, 다섯 버튼, 공식 세 카운터, 아이누 우호도, 사할린 추가 목표, `hokkaido_events.1/7/8`과 보상을 유지한다. EAFP `hokkaido.2-6`은 진행 중 보조 사건으로, `hokkaido.1`과 `je_karafuto`는 공식 성공 뒤 후속으로 추가한다.
+  - `je_tenpo_crisis`: 바닐라 modifier·세 버튼·목표 집계·12년 timeout·`tenpo_events` 사건과 결과를 모두 유지한 `REPLACE:` 정의를 만들고 `tenpo_famine.1-6/.99` 및 개혁파/보수파 대응만 추가한다.
 - [ ] 7개 `je_bakuhantaisei_*` 지역 JE 제거
 - [ ] 지역 loyalty·independency·goryo 계산을 저택 보유 다이묘 `loyalty`로 교체
 - [ ] 주 세금 누수 공식을 저택 보유자 충성도 기반으로 교체
@@ -1351,7 +1387,7 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 - [ ] 중복 인물 템플릿 제거와 effect·trigger 정본화
 - [ ] 살아남는 JE의 종료·무효화 조건 구현
 
-통과 조건: 삭제 대상으로 지정된 JE·goryo·independency·`reduce_nidome` 참조가 0개이며, 살아남는 막부 사건은 바닐라 덴포·메이지·다이묘 구조에서 도달 가능하고 공식 유신 결과를 중복 생성하지 않는다.
+통과 조건: 삭제 대상으로 지정된 JE·goryo·independency·`reduce_nidome` 참조가 0개이며, 살아남는 막부 사건은 바닐라 덴포·메이지·다이묘 구조에서 도달 가능하고 공식 유신 결과를 중복 생성하지 않는다. 모든 일본 `REPLACE:je_*`는 기준 바닐라 전문과 구조적으로 동일한 본체를 가지며, 차이는 manifest에 기록된 EAFP delta뿐이어야 한다.
 
 ### 5단계: 자유민권운동
 
@@ -1426,7 +1462,8 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 - [ ] `je_tenpo_famine` 정의·참조는 없고 원본 7개 사건은 바닐라 `je_tenpo_crisis`에서 도달 가능하다.
 - [ ] `je_terakoya`, 대체 legacy JE, history 시작 호출, 전용 수정치·효과·트리거·현지화가 활성 파일에 없다.
 - [ ] `goryo`, 지역 `independency`, `reduce_nidome*` 정의·호출·현지화가 없다.
-- [ ] `je_meiji_main/economy/army/diplomacy`의 버튼·조건·변수·timeout이 기준 바닐라 정의와 일치하고 EAFP 추가 구간만 diff로 남는다.
+- [ ] `je_meiji_restoration/main/economy/army/diplomacy`, `je_taming_the_north`와 교체 시 `je_tenpo_crisis`의 버튼·widget·조건·변수·pulse·공식 사건·완료/실패/timeout/invalid·결과 설명이 기준 바닐라 정의와 일치하고, manifest에 승인된 EAFP 추가·수정 구간만 diff로 남는다.
+- [ ] 각 일본 `REPLACE:je_*`마다 바닐라 원본 경로·게임 버전·checksum·EAFP delta 목록이 있으며, 바닐라 필드 삭제나 치환은 승인된 `의도적 수정` 항목 외에는 0건이다.
 - [ ] `je_bakufu_kaikaku/kaikoku/guntai/naibu/zaisei`가 문서의 메이지 대응 구조를 따른다.
 - [x] 옛 `je_zaibatsu`, 재벌 청원 JE 3개, `zaibatsu_events`, 전용 trigger·modifier·localization이 활성 파일에서 제거되어 있다.
 - [ ] 옛 `je_hokkaido`, history 시작 호출, `hokkaido_progress_bar`, 전용 버튼 4개가 활성 파일에서 제거되어 있다.

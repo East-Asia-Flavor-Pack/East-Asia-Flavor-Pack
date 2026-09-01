@@ -22,15 +22,15 @@ hokkaido.1 = { # 홋카이도 개척 완료
 		
 	}
 
-	trigger = {}
+	trigger = {
+		has_variable = eafp_jap_taming_north_completed
+	}
 	
 	option = {
 		default_option = yes
 		name = hokkaido.1.a
 
-		s:STATE_SAKHALIN = {
-			add_claim = ROOT
-		}
+		# Vanilla owns the northern territorial result. This is a flavor epilogue only.
 	}
 }
 
@@ -54,12 +54,16 @@ hokkaido.2 = { # 축성 부지 확보
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = {
+		has_journal_entry = je_taming_the_north
+		has_variable = eafp_jap_hokkaido_castle_chain_started
+		NOT = { has_variable = eafp_jap_hokkaido_castle_chain_completed }
+	}
 	
 	option = { # 후쿠야마칸 개축
 		default_option = yes
 		name = hokkaido.2.a
-		save_scope_value_as = {
+		set_variable = {
 			name = hokkaido2
 			value = 1
 		}
@@ -69,7 +73,7 @@ hokkaido.2 = { # 축성 부지 확보
 	option = { # 새로 축성
 		default_option = yes
 		name = hokkaido.2.b
-		save_scope_value_as = {
+		set_variable = {
 			name = hokkaido2
 			value = 2
 		}
@@ -97,13 +101,18 @@ hokkaido.3 = { # 축성 부지 확보
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = {
+		has_variable = eafp_jap_hokkaido_castle_chain_started
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		has_state_in_state_region = STATE_HOKKAIDO
+		exists = var:hokkaido2
+	}
 	
 	option = { # 비용 대기
 		default_option = yes
 		name = hokkaido.3.a
 		if = {
-			limit = { scope:hokkaido2 = 1 }
+			limit = { var:hokkaido2 = 1 }
 			s:STATE_HOKKAIDO.region_state:JAP = {
 				add_modifier = {
 					name = fukuyama_castle_construction_han_modifier
@@ -135,7 +144,7 @@ hokkaido.3 = { # 축성 부지 확보
 		default_option = yes
 		name = hokkaido.3.b
 		if = {
-			limit = { scope:hokkaido2 = 1 }
+			limit = { var:hokkaido2 = 1 }
 			s:STATE_HOKKAIDO.region_state:JAP = {
 				add_modifier = {
 					name = fukuyama_castle_construction_han_modifier
@@ -152,18 +161,7 @@ hokkaido.3 = { # 축성 부지 확보
 					multiplier = 4
 				}
 			}
-			if = {
-				limit = { has_journal_entry = je_bakuhantaisei_TOHOKU }
-				custom_tooltip = {
-					text = hokkaido.3.ttb2
-					je:je_bakuhantaisei_TOHOKU = {
-						add_progress = {
-							name = bakuhantaisei_TOHOKU_loyalty_progress_bar
-							value = -10
-						}
-					}
-				}
-			}
+			custom_tooltip = hokkaido.3.ttb2
 		}
 	}
 
@@ -195,13 +193,18 @@ hokkaido.4 = { # 성의 완공
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = {
+		has_variable = eafp_jap_hokkaido_castle_chain_started
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		has_state_in_state_region = STATE_HOKKAIDO
+		exists = var:hokkaido2
+	}
 	
 	option = {
 		default_option = yes
 		name = hokkaido.4.a
 		if = {
-			limit = { scope:hokkaido2 = 1 }
+			limit = { var:hokkaido2 = 1 }
 			s:STATE_HOKKAIDO.region_state:JAP = {
 				add_modifier = {
 					name = fukuyama_castle_modifier
@@ -218,6 +221,11 @@ hokkaido.4 = { # 성의 완공
 				}
 			}
 		}
+	}
+
+	after = {
+		set_variable = eafp_jap_hokkaido_castle_chain_completed
+		remove_variable = hokkaido2
 	}
 }
 
@@ -243,19 +251,33 @@ hokkaido.5 = { # 아이누의 영내 습격
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = {
+		has_journal_entry = je_taming_the_north
+		OR = {
+			NOT = { exists = var:eafp_jap_ainu_friendship }
+			var:eafp_jap_ainu_friendship < 1
+		}
+	}
 	
 	option = {
 		default_option = yes
 		name = hokkaido.5.a
+		change_variable = {
+			name = eafp_jap_ainu_friendship
+			add = -1
+		}
 
-		s:STATE_HOKKAIDO = {
+		s:STATE_HOKKAIDO.region_state:JAP ?= {
 			add_devastation = 10
 		}
 	}
 
 	option = {
 		name = hokkaido.5.b
+		change_variable = {
+			name = eafp_jap_ainu_friendship
+			add = 1
+		}
 
 		s:STATE_HOKKAIDO.region_state:JAP = {
 			add_modifier = {
@@ -263,7 +285,7 @@ hokkaido.5 = { # 아이누의 영내 습격
 				days = short_modifier_time
 			}
 		}
-		s:STATE_HOKKAIDO = {
+		s:STATE_HOKKAIDO.region_state:JAP ?= {
 			add_devastation = 5
 		}
 	}
@@ -291,11 +313,19 @@ hokkaido.6 = { # 아이누 부족의 자발적인 합류
 	
 	immediate = {}
 
-	trigger = {}
+	trigger = {
+		has_journal_entry = je_taming_the_north
+		exists = var:eafp_jap_ainu_friendship
+		var:eafp_jap_ainu_friendship >= 1
+	}
 	
 	option = {
 		default_option = yes
 		name = hokkaido.6.a
+		change_variable = {
+			name = eafp_jap_ainu_friendship
+			add = 1
+		}
 
 		s:STATE_HOKKAIDO.region_state:JAP = {
 			every_scope_pop = {

@@ -722,71 +722,6 @@ je_bakuhantaisei_SHIKOKU = {
 	should_be_pinned_by_default_uninvolved_or_context = no
 }
 
-# 홋카이도
-
-je_hokkaido = {
-	icon = "gfx/interface/icons/law_icons/frontier_colonization.dds"
-
-	group = je_group_historical_content
-
-	scripted_progress_bar = hokkaido_progress_bar
-
-	scripted_button = make_into_shogunate_domain_button
-	scripted_button = strengthen_merchant_surveillance_button
-	scripted_button = encourage_ezo_japanization_button
-	scripted_button = construct_hokkaido_castle_button
-
-	immediate = {
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			add_modifier = disorganized_bashoukeoisei_modifier
-			add_modifier = matsumae_han_modifier
-		}
-	}
-
-	complete = {
-		owns_entire_state_region = STATE_HOKKAIDO
-		s:STATE_HOKKAIDO.region_state:JAP = {
-			NOT = { has_modifier = matsumae_han_modifier }
-			NOT = { has_modifier = disorganized_bashoukeoisei_modifier }
-		}
-		custom_tooltip = {
-			text = je_hokkaido_complete_tt
-			s:STATE_HOKKAIDO.region_state:JAP.state_population >= 400000
-		}
-	}
-
-	on_complete = {
-		s:STATE_HOKKAIDO = {
-			every_scope_state = {
-				if = {
-					limit = { has_modifier = matsumae_han_modifier }
-					remove_modifier = matsumae_han_modifier
-				}
-				if = {
-					limit = { has_modifier = bashoukeoisei_modifier }
-					remove_modifier = bashoukeoisei_modifier
-				}
-				if = {
-					limit = { has_modifier = disorganized_bashoukeoisei_modifier }
-					remove_modifier = disorganized_bashoukeoisei_modifier
-				}
-			}
-		}
-		trigger_event = { id = hokkaido.1 }
-	}
-
-	on_monthly_pulse = {
-		random_events = {
-			1 = hokkaido.5
-			1 = hokkaido.6
-			22 = 0
-		}
-	}
-
-	weight = 8000
-
-}
-
 # 텐포 대기근
 
 je_tenpo_famine = {
@@ -1440,15 +1375,6 @@ je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
 		}
 	}
 
-	on_monthly_pulse = {
-		random_events = {
-			100 = 0
-			10 = meiji.5
-			10 = meiji.11
-			10 = meiji.12
-		}
-	}
-
 	invalid = {
 		NOT = { has_journal_entry = je_bakufu_kaikaku }
 	}
@@ -1507,17 +1433,11 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 			name = modifier_bakufu_guntai_complete
 			months = 60
 		}
-		trigger_event = {
-			id = meiji.3
-		}
 	}
 
 	on_monthly_pulse = {
 		random_events = {
 			50 = 0
-			10 = meiji.4
-			10 = meiji.9
-			10 = meiji.10
 			50 = eafp_japan.2401
 		}
 	}
@@ -1674,15 +1594,6 @@ je_bakufu_zaisei = { # je_meiji_economy에 대응
 		add_modifier = {
 			name = modifier_bakufu_zaisei_complete
 			months = 60
-		}
-	}
-
-	on_monthly_pulse = {
-		random_events = {
-			100 = 0
-			10 = meiji.6
-			10 = meiji.7
-			10 = meiji.8
 		}
 	}
 
@@ -1852,16 +1763,7 @@ je_boshin_war_tobaku = {
 	}
 
 	on_complete = {
-		trigger_event = {
-			id = meiji.1
-			popup = yes
-		}
-		change_tag = JAP
 		hidden_effect = {
-			set_variable = {
-				name = meiji_var
-				value = 0
-			}
 			remove_modifier = modifier_japan_hiring_bonus
 		}
 	}
@@ -1900,7 +1802,7 @@ je_liberty_civil_right_movement = {
 
 	is_shown_when_inactive = {
 		c:JAP ?= THIS
-		has_variable = meiji_var
+		has_variable = eafp_jap_restoration_finished
 	}
 
 	possible = {
@@ -2010,7 +1912,7 @@ je_seikanron = {
 	is_shown_when_inactive = {
 		c:JAP ?= THIS
 		# 임시, 나중에 조건 바꾸기 TODO
-		has_variable = meiji_var
+		has_variable = eafp_jap_restoration_finished
 	}
 
 	possible = {
@@ -2312,34 +2214,39 @@ je_karafuto = {
 
 	is_shown_when_inactive = {
 		c:JAP ?= THIS
-		has_state_in_state_region = STATE_HOKKAIDO
+		has_variable = eafp_jap_taming_north_completed
+		NOT = { has_variable = eafp_jap_karafuto_closed }
 	}
 
 	possible = {
-		has_state_in_state_region = STATE_SAKHALIN
+		c:JAP ?= THIS
+		has_variable = eafp_jap_taming_north_completed
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		has_state_in_state_region = STATE_HOKKAIDO
+		exists = c:RUS
+		c:RUS ?= {
+			OR = {
+				AND = {
+					is_ai = yes
+					NOT = { has_law = law_type:law_no_colonial_affairs }
+					has_state_in_state_region = STATE_OUTER_MANCHURIA
+				}
+				has_state_in_state_region = STATE_SAKHALIN
+			}
+		}
 	}
 
 	immediate = {
-		if = {
-			limit = {
-				c:RUS ?= { has_state_in_state_region = STATE_SAKHALIN }
-			}
-			trigger_event = karafuto_events.1
-		}
+		set_variable = eafp_jap_karafuto_started
+		trigger_event = karafuto_events.1
 	}
 
 	complete = {
-		s:STATE_SAKHALIN = {
-			NOT = {
-				any_scope_state = {
-					is_under_colonization = yes
-				}
-			}
-		}
+		has_variable = eafp_jap_karafuto_event_resolved
 	}
 
 	on_complete = {
-		
+		set_variable = eafp_jap_karafuto_closed
 	}
 
 	on_monthly_pulse = {
@@ -2347,6 +2254,25 @@ je_karafuto = {
 			90 = 0
 			10 = karafuto_events.1
 		}
+	}
+
+	fail = {
+		OR = {
+			has_variable = eafp_jap_taming_north_failed
+			NOT = { has_state_in_state_region = STATE_HOKKAIDO }
+		}
+	}
+
+	on_fail = {
+		set_variable = eafp_jap_karafuto_closed
+	}
+
+	invalid = {
+		NOT = { c:JAP ?= THIS }
+	}
+
+	on_invalid = {
+		set_variable = eafp_jap_karafuto_closed
 	}
 
 	weight = 1000

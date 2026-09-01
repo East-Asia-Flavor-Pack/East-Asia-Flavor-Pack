@@ -1,0 +1,144 @@
+﻿# EAFP-owned replacement for the northern development lifecycle.
+# The removed legacy je_hokkaido is not restored.
+
+REPLACE:je_taming_the_north = {
+	icon = "gfx/interface/icons/event_icons/event_map.dds"
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+		c:JAP ?= THIS
+		NOT = { has_variable = eafp_jap_taming_north_completed }
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		s:STATE_HOKKAIDO = {
+			any_scope_state = { owner = root }
+		}
+	}
+
+	possible = {
+		c:JAP ?= THIS
+		owns_entire_state_region = STATE_HOKKAIDO
+		s:STATE_HOKKAIDO.region_state:JAP ?= {
+			is_incorporated = yes
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 1
+			}
+		}
+	}
+
+	immediate = {
+		set_variable = {
+			name = eafp_jap_north_development_progress
+			value = 0
+		}
+		set_variable = {
+			name = eafp_jap_ainu_friendship
+			value = 0
+		}
+	}
+
+	is_progressing = {
+		owns_entire_state_region = STATE_HOKKAIDO
+		s:STATE_HOKKAIDO.region_state:JAP ?= { is_incorporated = yes }
+	}
+
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					owns_entire_state_region = STATE_HOKKAIDO
+					s:STATE_HOKKAIDO.region_state:JAP ?= { is_incorporated = yes }
+				}
+				change_variable = {
+					name = eafp_jap_north_development_progress
+					add = 1
+				}
+			}
+			if = {
+				limit = {
+					NOT = { has_variable = eafp_jap_hokkaido_castle_chain_started }
+					s:STATE_HOKKAIDO.region_state:JAP ?= {
+						state_population > 250000
+						gdp > 500000
+					}
+				}
+				random_list = {
+					23 = { }
+					1 = {
+						set_variable = eafp_jap_hokkaido_castle_chain_started
+						trigger_event = { id = hokkaido.2 popup = yes }
+					}
+				}
+			}
+		}
+		random_events = {
+			46 = 0
+			1 = hokkaido.5
+			1 = hokkaido.6
+		}
+	}
+
+	complete = {
+		has_variable = eafp_jap_north_development_progress
+		var:eafp_jap_north_development_progress >= 36
+		s:STATE_HOKKAIDO.region_state:JAP ?= {
+			state_population > 500000
+			gdp > 1000000
+		}
+	}
+
+	on_complete = {
+		set_variable = eafp_jap_taming_north_completed
+		add_modifier = {
+			name = modifier_northern_learnings
+			days = very_long_modifier_time
+		}
+		s:STATE_HOKKAIDO.region_state:JAP ?= {
+			add_modifier = {
+				name = modifier_tamed_north
+				days = very_long_modifier_time
+			}
+		}
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_hokkaido_1_fired } }
+			set_variable = eafp_jap_hokkaido_1_fired
+			trigger_event = { id = hokkaido.1 popup = yes }
+		}
+		if = {
+			limit = {
+				NOT = { has_variable = eafp_jap_karafuto_started }
+				NOT = { has_journal_entry = je_karafuto }
+				exists = c:RUS
+			}
+			set_variable = eafp_jap_karafuto_started
+			add_journal_entry = { type = je_karafuto }
+		}
+		if = {
+			limit = {
+				has_variable = eafp_jap_restoration_finished
+				NOT = { has_law_or_variant = law_type:law_isolationism }
+				NOT = { has_variable = eafp_jap_meiji_legacy_13_fired }
+			}
+			trigger_event = { id = eafp_jap_meiji_legacy.13 popup = yes }
+		}
+	}
+
+	fail = {
+		NOT = { has_state_in_state_region = STATE_HOKKAIDO }
+	}
+
+	on_fail = {
+		set_variable = eafp_jap_taming_north_failed
+	}
+
+	invalid = {
+		NOT = { c:JAP ?= THIS }
+	}
+
+	current_value = { value = root.var:eafp_jap_north_development_progress }
+	goal_add_value = { value = 36 }
+	progressbar = yes
+	weight = 5000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	can_revolution_inherit = no
+}

@@ -1,4 +1,6 @@
-﻿# P0 sidecar: vanilla owns je_ryukyu_rivalry and all JAP/CHI victory logic.
+﻿# Standalone EAFP Korean intervention journal. It does not inspect or modify the
+# vanilla Ryukyu Rivalry journal.
+
 je_eafp_ryukyu_intervention = {
 	icon = "gfx/interface/icons/event_icons/event_map.dds"
 	group = je_group_global_international_situations
@@ -8,16 +10,16 @@ je_eafp_ryukyu_intervention = {
 
 	is_shown_in_lobby = {
 		c:KOR = THIS
-		has_dlc_feature = ep2_content
 	}
 
 	is_shown_when_inactive = {
 		c:KOR = THIS
-		has_dlc_feature = ep2_content
 		has_variable = eafp_var_sam_all_clear
 		NOT = { has_variable = eafp_ryukyu_intervention_declined_var }
 		NOT = { has_variable = eafp_ryukyu_sidecar_finished_var }
-		je:je_ryukyu_rivalry ?= { always = yes }
+		exists = c:JAP
+		exists = c:CHI
+		exists = c:RYU
 	}
 
 	should_be_involved = {
@@ -33,10 +35,16 @@ je_eafp_ryukyu_intervention = {
 		exists = c:JAP
 		exists = c:CHI
 		exists = c:RYU
-		je:je_ryukyu_rivalry ?= { always = yes }
 	}
 
 	immediate = {
+		if = {
+			limit = { NOT = { has_variable = eafp_ryukyu_intervention_progress_var } }
+			set_variable = {
+				name = eafp_ryukyu_intervention_progress_var
+				value = 0
+			}
+		}
 		if = {
 			limit = {
 				NOT = { has_variable = eafp_ryukyu_intervention_offered_var }
@@ -50,9 +58,8 @@ je_eafp_ryukyu_intervention = {
 	complete = {
 		has_variable = eafp_ryukyu_intervention_var
 		c:RYU ?= { is_subject = no }
-		je:je_ryukyu_rivalry ?= {
-			"scripted_bar_progress(je_ryukyu_rivalry_progress_bar)" = 100
-		}
+		has_variable = eafp_ryukyu_intervention_progress_var
+		var:eafp_ryukyu_intervention_progress_var >= 100
 	}
 
 	on_complete = {
@@ -85,7 +92,6 @@ je_eafp_ryukyu_intervention = {
 			NOT = { exists = c:CHI }
 			NOT = { exists = c:RYU }
 			has_variable = eafp_ryukyu_intervention_declined_var
-			NOT = { je:je_ryukyu_rivalry ?= { always = yes } }
 		}
 	}
 
@@ -93,6 +99,9 @@ je_eafp_ryukyu_intervention = {
 		set_variable = eafp_ryukyu_sidecar_finished_var
 	}
 
+	current_value = { value = root.var:eafp_ryukyu_intervention_progress_var }
+	goal_add_value = { value = 100 }
+	progressbar = yes
 	weight = 10000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 	can_revolution_inherit = no

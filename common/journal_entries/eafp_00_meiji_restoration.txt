@@ -1,54 +1,58 @@
-﻿# P0: Vanilla owns the canonical Meiji journal entries. This dormant companion
-# preserves the old EAFP progress model without replacing any vanilla key.
-je_eafp_jap_legacy_meiji_restoration = {
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+﻿# EAFP owns the complete Japanese restoration and Meiji journal lifecycle.
+# These replacements are designed for campaigns started with EAFP enabled.
 
+REPLACE:je_meiji_restoration = {
+	icon = "gfx/interface/icons/faction_icons/faction_japan_imperial_house.dds"
 	group = je_group_meiji_restoration
 
-	#is_shown_in_lobby = {
-	#	c:JAP = THIS
-	#}
+	is_shown_in_lobby = {
+		c:JAP = THIS
+	}
 
 	is_shown_when_inactive = {
-		#exists = c:JAP
-		#c:JAP = ROOT
-		#NOT = { has_variable = meiji_restoration_complete }
-		#has_law_or_variant = law_type:law_monarchy
+		c:JAP ?= THIS
+		has_law_or_variant = law_type:law_monarchy
+		has_law_or_variant = law_type:law_bakufu
+		NOT = { has_variable = eafp_jap_restoration_finished }
+		NOT = { has_variable = eafp_jap_restoration_failed }
 	}
 
 	possible = {
-		always = no # 추가
-		#has_law_or_variant = law_type:law_monarchy
-		#NOT = { has_modifier = declared_bankruptcy }
-		#ig:ig_landowners ?= {
-		#	is_in_government = no
-		#}
-		#OR = {
-		#	government_legitimacy >= 50
-		#	ig:ig_landowners ?= { is_marginal = yes }
-		#	has_revolution = yes
-		#}
+		c:JAP ?= THIS
+		has_law_or_variant = law_type:law_monarchy
+		has_law_or_variant = law_type:law_bakufu
+		NOT = { has_law_or_variant = law_type:law_isolationism }
 	}
 
 	immediate = {
 		set_variable = {
-			name = shogunate_var
+			name = eafp_jap_restoration_progress
 			value = 0
 		}
 	}
 
 	is_progressing = {
-		meiji_completion_trigger = yes
+		has_law_or_variant = law_type:law_monarchy
+		NOT = { has_law_or_variant = law_type:law_bakufu }
+		NOT = { has_modifier = declared_bankruptcy }
+		ig:ig_landowners ?= { is_in_government = no }
+		government_legitimacy >= 50
+		NOT = { has_revolution = yes }
 	}
 
 	on_monthly_pulse = {
 		effect = {
 			if = {
 				limit = {
-					meiji_completion_trigger = yes
+					has_law_or_variant = law_type:law_monarchy
+					NOT = { has_law_or_variant = law_type:law_bakufu }
+					NOT = { has_modifier = declared_bankruptcy }
+					ig:ig_landowners ?= { is_in_government = no }
+					government_legitimacy >= 50
+					NOT = { has_revolution = yes }
 				}
 				change_variable = {
-					name = shogunate_var
+					name = eafp_jap_restoration_progress
 					add = 1
 				}
 			}
@@ -56,72 +60,225 @@ je_eafp_jap_legacy_meiji_restoration = {
 	}
 
 	complete = {
-		# If-else clause to avoid errors because of missing variable before JE activates
-		trigger_if = {
-			limit = { exists = var:shogunate_var }
-			OR = {
-				custom_tooltip = {
-					text = defeat_shogunate_civil_war_tt
-					scope:journal_entry = { is_goal_complete = yes }
-				}
-				AND = {
-					scope:journal_entry = { is_goal_complete = yes }
-					meiji_completion_trigger = yes
-				}
-			}
-		}
-		trigger_else = {
-			custom_tooltip = {
-				text = je_eafp_jap_legacy_meiji_restoration_goal
-				OR = {
-					custom_tooltip = defeat_shogunate_civil_war_tt
-					meiji_completion_trigger = yes
-				}
-			}
-		}
+		has_variable = eafp_jap_restoration_progress
+		var:eafp_jap_restoration_progress >= 6
 	}
 
 	on_complete = {
-		trigger_event = {
-			id = eafp_jap_meiji_legacy.1
-		}
-	}
-
-	on_fail = {
+		set_variable = eafp_jap_restoration_finished
+		ruler ?= { save_scope_as = meiji_ruler }
 		if = {
-			limit = { has_modifier = shogun_ig_forced_to_open_market }
-			remove_modifier = shogun_ig_forced_to_open_market
+			limit = { NOT = { has_variable = eafp_jap_meiji_legacy_1_fired } }
+			set_variable = eafp_jap_meiji_legacy_1_fired
+			trigger_event = { id = eafp_jap_meiji_legacy.1 popup = yes }
 		}
 		if = {
-			limit = { has_law_or_variant = law_type:law_monarchy }
-			add_modifier = {
-				name = honorable_restoration_failed
-				days = very_long_modifier_time
-				is_decaying = yes
-			}
+			limit = { NOT = { has_journal_entry = je_meiji_main } }
+			add_journal_entry = { type = je_meiji_main }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_meiji_economy } }
+			add_journal_entry = { type = je_meiji_economy }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_meiji_army } }
+			add_journal_entry = { type = je_meiji_army }
+		}
+		if = {
+			limit = { NOT = { has_journal_entry = je_meiji_diplomacy } }
+			add_journal_entry = { type = je_meiji_diplomacy }
 		}
 	}
 
 	fail = {
 		OR = {
-			has_modifier = declared_bankruptcy
-			ig:ig_landowners ?= {
-				is_in_government = yes
-			}
+			NOT = { c:JAP ?= THIS }
 			NOT = { has_law_or_variant = law_type:law_monarchy }
 		}
 	}
 
+	on_fail = {
+		set_variable = eafp_jap_restoration_failed
+	}
+
 	current_value = {
-		value = root.var:shogunate_var
+		value = root.var:eafp_jap_restoration_progress
 	}
 
-	goal_add_value = {
-		value = 120
-	}
-
+	goal_add_value = { value = 6 }
 	progressbar = yes
+	weight = 10000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	can_revolution_inherit = no
+}
+
+REPLACE:je_meiji_main = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+	group = je_group_meiji_restoration
+
+	complete = {
+		has_variable = eafp_jap_meiji_economy_finished
+		has_variable = eafp_jap_meiji_army_finished
+		has_variable = eafp_jap_meiji_diplomacy_finished
+	}
+
+	on_complete = {
+		set_variable = eafp_jap_meiji_main_finished
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_meiji_legacy_2_fired } }
+			set_variable = eafp_jap_meiji_legacy_2_fired
+			trigger_event = { id = eafp_jap_meiji_legacy.2 popup = yes }
+		}
+	}
+
+	fail = {
+		OR = {
+			has_variable = eafp_jap_restoration_failed
+			NOT = { c:JAP ?= THIS }
+		}
+	}
+
+	timeout = 4380
+
+	on_monthly_pulse = {
+		random_events = {
+			100 = 0
+			10 = eafp_jap_meiji_legacy.4
+			10 = eafp_jap_meiji_legacy.5
+			10 = eafp_jap_meiji_legacy.6
+		}
+	}
 
 	weight = 10000
 	should_be_pinned_by_default_uninvolved_or_context = yes
+	can_revolution_inherit = no
+}
+
+REPLACE:je_meiji_economy = {
+	icon = "gfx/interface/icons/event_icons/event_industry.dds"
+	group = je_group_meiji_restoration
+
+	complete = {
+		in_default = no
+		any_scope_state = {
+			filter = { is_incorporated = yes }
+			any_scope_building = {
+				is_building_type = building_urban_center
+				level >= 5
+			}
+			has_building = building_railway
+			percent > 0.7
+		}
+	}
+
+	on_complete = {
+		set_variable = eafp_jap_meiji_economy_finished
+	}
+
+	on_yearly_pulse = {
+		random_events = {
+			20 = 0
+			10 = eafp_jap_meiji_legacy.7
+			10 = eafp_jap_meiji_legacy.8
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { c:JAP ?= THIS }
+			NOT = { has_journal_entry = je_meiji_main }
+		}
+	}
+
+	transferable = no
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 5000
+}
+
+REPLACE:je_meiji_army = {
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+	group = je_group_meiji_restoration
+
+	complete = {
+		NOT = { has_law_or_variant = law_type:law_serfdom }
+		NOT = { has_law_or_variant = law_type:law_peasant_levies }
+		ig:ig_armed_forces ?= { is_in_government = no }
+		has_technology_researched = napoleonic_warfare
+		NOT = {
+			any_scope_barracks = {
+				OR = {
+					has_active_production_method = pm_no_organization
+					has_active_production_method = pm_samurai_training
+				}
+			}
+		}
+		NOT = {
+			any_military_formation = {
+				filter = { is_army = yes }
+				any_combat_unit = { has_unit_type = unit_type:combat_unit_type_irregular_infantry }
+				percent >= 0.25
+			}
+		}
+	}
+
+	on_complete = {
+		set_variable = eafp_jap_meiji_army_finished
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_meiji_legacy_3_fired } }
+			set_variable = eafp_jap_meiji_legacy_3_fired
+			trigger_event = { id = eafp_jap_meiji_legacy.3 days = 30 }
+		}
+	}
+
+	on_yearly_pulse = {
+		random_events = {
+			20 = 0
+			10 = eafp_jap_meiji_legacy.9
+			10 = eafp_jap_meiji_legacy.10
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { c:JAP ?= THIS }
+			NOT = { has_journal_entry = je_meiji_main }
+		}
+	}
+
+	transferable = no
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 5000
+}
+
+REPLACE:je_meiji_diplomacy = {
+	icon = "gfx/interface/icons/event_icons/event_trade.dds"
+	group = je_group_meiji_restoration
+
+	complete = {
+		NOT = { has_law_or_variant = law_type:law_traditionalism }
+		is_subject = no
+		is_country_type = recognized
+	}
+
+	on_complete = {
+		set_variable = eafp_jap_meiji_diplomacy_finished
+	}
+
+	on_yearly_pulse = {
+		random_events = {
+			20 = 0
+			10 = eafp_jap_meiji_legacy.11
+			10 = eafp_jap_meiji_legacy.12
+		}
+	}
+
+	invalid = {
+		OR = {
+			NOT = { c:JAP ?= THIS }
+			NOT = { has_journal_entry = je_meiji_main }
+		}
+	}
+
+	should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 5000
 }

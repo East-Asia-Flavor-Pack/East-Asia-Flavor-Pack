@@ -2,7 +2,7 @@
 
 karafuto_events.1 = { # 러시아의 개척 시작
 	type = country_event
-	placement = s:STATE_SAKHALIN.region_state:JAP
+	placement = root
 
 	title = karafuto_events.1.t
 	desc = karafuto_events.1.d
@@ -21,6 +21,10 @@ karafuto_events.1 = { # 러시아의 개척 시작
 	cooldown = { days = never_fire_again_modifier_time }
 
 	trigger = {
+		c:JAP ?= THIS
+		has_variable = eafp_jap_taming_north_completed
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		has_state_in_state_region = STATE_HOKKAIDO
 		c:RUS ?= {
 			OR = {
 				AND = {
@@ -33,25 +37,11 @@ karafuto_events.1 = { # 러시아의 개척 시작
 		}
 	}
 	
-	immediate = {
-		if = {
-			limit = {
-				c:RUS = {
-					NOT = { has_state_in_state_region = STATE_SAKHALIN }
-				}
-			}
-			s:STATE_SAKHALIN = {
-				create_state = {
-					country = c:RUS
-					owned_provinces = { xF1B27F }
-					state_type = unincorporated
-				}
-			}
-		}
-	}
+	immediate = { }
 	
 	option = {
 		default_option = yes
 		name = karafuto_events.1.a
+		set_variable = eafp_jap_karafuto_event_resolved
 	}
 }

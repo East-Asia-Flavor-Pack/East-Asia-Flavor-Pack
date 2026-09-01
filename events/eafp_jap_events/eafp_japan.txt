@@ -4136,11 +4136,13 @@ eafp_japan.1010 = { # (고메이) 천황의 즉위
 	
 	immediate = {
 		if = {
-			limit = { ruler = { has_template = eafp_jap_ninko_template } }
+			limit = { ruler = { has_template = JAP_ninko_yamato } }
 			ruler = { save_scope_as = ninko_scope }
-			heir = { save_scope_as = komei_scope }
-			scope:komei_scope = {
-				set_character_as_ruler = yes
+			heir ?= {
+				if = {
+					limit = { has_template = JAP_komei_yamato }
+					save_scope_as = komei_scope
+				}
 			}
 		}
 	}
@@ -4154,11 +4156,7 @@ eafp_japan.1010 = { # (고메이) 천황의 즉위
 		trigger = {
 			exists = scope:ninko_scope
 		}
-		show_as_tooltip = {
-			scope:komei_scope = {
-				set_character_as_ruler = yes
-			}
-		}
+		# Vanilla succession owns the ruler transition.
 	}
 
 	option = {
@@ -4448,11 +4446,13 @@ eafp_japan.1016 = { # (메이지) 천황의 즉위
 	
 	immediate = {
 		if = {
-			limit = { ruler = { has_template = eafp_jap_komei_template } }
+			limit = { ruler = { has_template = JAP_komei_yamato } }
 			ruler = { save_scope_as = komei_scope }
-			heir = { save_scope_as = meiji_scope }
-			scope:komei_scope = {
-				set_character_as_ruler = yes
+			heir ?= {
+				if = {
+					limit = { has_template = JAP_meiji_yamato }
+					save_scope_as = meiji_scope
+				}
 			}
 		}
 	}
@@ -4466,11 +4466,7 @@ eafp_japan.1016 = { # (메이지) 천황의 즉위
 		trigger = {
 			exists = scope:meiji_scope
 		}
-		show_as_tooltip = {
-			scope:meiji_scope = {
-				set_character_as_ruler = yes
-			}
-		}
+		# Vanilla succession owns the ruler transition.
 	}
 
 	option = {
@@ -8078,91 +8074,7 @@ eafp_japan.5003 = {
 		activate_law = law_type:law_interventionism
 		activate_law = law_type:law_professional_army
 
-		# 저널 건너뛰는 문제 때문에 일일히 조건 박아야 함
-		if = {
-			limit = {
-				NOT = { has_variable = completed_je_meiji_economy }
-				in_default = no
-				any_scope_state = {
-					filter = {
-						is_incorporated = yes
-					}
-					any_scope_building = {
-						is_building_type = building_urban_center
-						level >= 5
-					}
-					has_building = building_railway
-					percent > 0.7
-				}
-			}
-			change_variable = {
-				name = meiji_var
-				add = 1
-			}
-			set_variable = completed_je_meiji_economy # If the player manages to skip je_meiji_economy we still need to set the variable
-		}
-		else = {
-			add_journal_entry = {
-				type = je_meiji_economy
-			}
-		}
-		if = {
-			limit = {
-				NOT = { has_variable = completed_je_meiji_army }
-				NOT = { has_law = law_type:law_serfdom }
-				ig:ig_armed_forces = {
-					is_in_government = no
-				}
-				has_technology_researched = napoleonic_warfare
-				NOR = {
-					any_scope_building = {
-						is_building_type = building_barrack
-						has_active_production_method = pm_no_organization
-					}
-					any_military_formation = {
-						filter = {
-							is_army = yes
-						}
-						any_combat_unit = {
-							has_unit_type = unit_type:combat_unit_type_irregular_infantry
-						}
-						percent >= 0.25
-					}
-				}
-			}
-			change_variable = {
-				name = meiji_var
-				add = 1
-			}
-			set_variable = completed_je_meiji_army
-			trigger_event = {
-				id = meiji.3
-			}
-		}
-		else = {
-			add_journal_entry = {
-				type = je_meiji_army
-			}
-		}
-		if = {
-			limit = {
-				NOT = { has_variable = completed_je_meiji_diplomacy }
-				NOT = { has_law = law_type:law_isolationism }
-				NOT = { has_law = law_type:law_traditionalism }
-				NOT = { has_law = law_type:law_closed_borders }
-				is_subject = no
-			}
-			change_variable = {
-				name = meiji_var
-				add = 1
-			}
-			set_variable = completed_je_meiji_diplomacy # If the player manages to skip je_meiji_diplomacy we still need to set the variable
-		}
-		else = {
-			add_journal_entry = {
-				type = je_meiji_diplomacy
-			}
-		}
+		# Vanilla owns all Meiji task journals and completion variables.
 	}
 }
 
