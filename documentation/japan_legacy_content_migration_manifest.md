@@ -1,5 +1,7 @@
 # 일본 옛 콘텐츠 이관 Manifest
 
+이 문서의 “이관”은 `.disable` 원본을 활성 파일로 복원하고 정의·키·현지화를 재배치하는 파일 단위 작업만 뜻한다. 리뉴얼 이전 세이브를 변환하는 save migration은 계획·구현 범위에 포함하지 않는다.
+
 ## 1. 기준과 상태 값
 
 | 항목 | 값 |
@@ -87,7 +89,7 @@
 
 | 항목 | 수량 | 처리 원칙 |
 |---|---:|---|
-| 비활성 JE 정의 | 44 | 23개 활성·최신화, 21개 삭제·바닐라 병합 (`je_terakoya`·옛 재벌 JE 4개 포함) |
+| 비활성 JE 정의 | 44 | 22개 활성·최신화, 22개 삭제·바닐라 병합 (`je_terakoya`·옛 `je_hokkaido`·옛 재벌 JE 4개 포함) |
 | 활성 재정의 JE | 1 (`je_ryukyu_rivalry`) | 바닐라 소유로 돌리고 EAFP 조선 개입 분리 |
 | 비활성 이벤트 | 156 | 활성·재배치·흡수·삭제 중 하나로 추적 |
 | 영어 주 현지화 | 1,447 | 원문 중심 복원 후 삭제 전용 키 정리 |
@@ -95,7 +97,7 @@
 | 중국어 간체 주 현지화 | 1,447 | 원문 중심 복원 후 삭제 전용 키 정리 |
 | 한국어 역사명 | 1,586 | 바닐라 중복 이름만 대조 |
 
-명시적 삭제·병합 21개는 지역 막번체제 JE 7개, 막부 정책·청원 JE 8개, 독립 `je_tenpo_famine` 1개, `je_terakoya` 1개, 옛 `je_zaibatsu`와 재벌 청원 JE 3개로 고정한다. `je_terakoya`는 새 키로 이관하지 않으며 history 시작 호출과 전용 수정치·효과·트리거·현지화도 삭제 대상으로 추적한다. 옛 재벌 체인은 활성 `eafp_zaibatsu_events.txt`, `zaibatsu_events.1-4`, 고아 `.101` localization, `is_zaibatsu_company`, `zaibatsu_cooperation_modifier`까지 삭제하고 바닐라 `je_zaibatsu`와 공식 회사만 사용한다. 원본 `eafp_zaibatsu_events.disable`은 1단계 복원 증거와 회귀 대조를 위해 그대로 보존한다.
+명시적 삭제·병합 22개는 지역 막번체제 JE 7개, 막부 정책·청원 JE 8개, 독립 `je_tenpo_famine` 1개, `je_terakoya` 1개, 옛 `je_hokkaido` 1개, 옛 `je_zaibatsu`와 재벌 청원 JE 3개로 고정한다. `je_terakoya`는 새 키로 이관하지 않으며 history 시작 호출과 전용 수정치·효과·트리거·현지화도 삭제 대상으로 추적한다. 옛 `je_hokkaido` 역시 새 JE로 이관하지 않고 history 시작 호출, `hokkaido_progress_bar`, 전용 버튼 4개를 삭제하되, 원본 `hokkaido.1-6`과 `je_karafuto`는 바닐라 `je_taming_the_north`의 진행·성공 상태에서 이어지도록 재배치한다. 옛 재벌 체인은 활성 `eafp_zaibatsu_events.txt`, `zaibatsu_events.1-4`, 고아 `.101` localization, `is_zaibatsu_company`, `zaibatsu_cooperation_modifier`까지 삭제하고 바닐라 `je_zaibatsu`와 공식 회사만 사용한다. 원본 `.disable` 파일들은 1단계 복원 증거와 회귀 대조를 위해 그대로 보존한다.
 
 ## 5. 검증 절차
 

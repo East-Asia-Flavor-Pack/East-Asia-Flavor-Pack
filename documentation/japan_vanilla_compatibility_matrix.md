@@ -10,6 +10,7 @@
 | 게임 데이터 | `D:/SteamLibrary/steamapps/common/Victoria 3/game` |
 | 모드 | East Asia Flavor Pack `2.2.0` |
 | DLC 전제 | 모든 공식 DLC 활성, `The Great Wave` 필수 |
+| 세이브 지원 | 리뉴얼 적용 후 시작한 신게임만 지원, 이전 EAFP 세이브 migration 미지원 |
 
 이 문서는 일본 리뉴얼 0단계의 바닐라 기준선이다. 아래 SHA-256이 달라지면 일본 호환 패치를 그대로 배포하지 않고 소유권·필드·이벤트 연결을 다시 대조한다.
 
@@ -21,7 +22,7 @@
 | 덴포 위기 | `je_tenpo_crisis`, `tenpo_events` | `je_tenpo_famine`을 제거하고 사건만 바닐라 JE에 병합 |
 | 메이지 유신 | `je_meiji_restoration`, `je_meiji_main/economy/army/diplomacy`, `meiji`, `ep2_meiji` | 네 메이지 JE는 바닐라 정의로 최신화하고 EAFP 사건 연결만 추가 |
 | 보신전쟁 | `ep2_meiji` | EAFP JE는 전황·후속 사건만 담당하고 내전 생성·종전은 바닐라 소유 |
-| 북방 | `je_taming_the_north` | 옛 홋카이도·가라후토 사건을 동반 체인으로 연결 |
+| 북방 | `je_taming_the_north` | 옛 `je_hokkaido`는 삭제하고 `hokkaido.2-6`은 바닐라 JE 진행 중에, `hokkaido.1`과 `je_karafuto`는 바닐라 JE 성공 뒤에만 이어지도록 연결 |
 | 종교 | `je_shinbutsu_bunri`, `je_elevate_buddhism` | 옛 신토 체인은 사회 반응만 담당 |
 | 재벌 | `je_zaibatsu`와 바닐라 공식 회사 | 옛 EAFP 재벌 JE·청원·사건은 제거하고 바닐라 체인만 사용 |
 | 류큐 | `je_ryukyu_rivalry`, `ryukyu_rivalry` | 조선 개입과 옛 처분 사건만 별도 연결 |
