@@ -146,10 +146,10 @@
 		}
 	}
 
-	wanted_navy_size = { # 추가
-		if = { # 용이변하 완료하면 리미트 해제함
+	wanted_navy_size = { # 수정
+		if = { # 수정
 			limit = {
-				has_variable = chinese_westernization_complete
+				has_journal_entry = je_chinese_westernization_navy
 			}
 			multiply = 2
 		}
@@ -159,6 +159,7 @@
 		reduce_autonomy = {
 			if = { # 추가
 				limit = {
+					NOT = { has_journal_entry = je_chinese_westernization_international_prestige } # 추가
 					power_bloc ?= { has_identity = identity:identity_eafp_mandate_of_heaven }
 					is_power_bloc_leader = yes
 					is_in_same_power_bloc = scope:target_country
@@ -173,6 +174,19 @@
 		annex_country = {
 			if = { # 추가
 				limit = {
+					has_journal_entry = je_chinese_westernization_international_prestige
+					scope:target_country = c:TIB
+				}
+				add = 100
+			}
+			if = { # 추가
+				limit = {
+					NOT = { # 추가
+						AND = {
+							has_journal_entry = je_chinese_westernization_international_prestige
+							scope:target_country = c:TIB
+						}
+					}
 					power_bloc ?= { has_identity = identity:identity_eafp_mandate_of_heaven }
 					is_power_bloc_leader = yes
 					is_in_same_power_bloc = scope:target_country
@@ -189,7 +203,10 @@
 		exists = c:CHI
 		c:CHI ?= THIS
 		# is_country_type = unrecognized
-		country_has_monarchy_law = yes
+		OR = { # 수정
+			country_has_monarchy_law = yes
+			has_journal_entry = je_chinese_westernization
+		}
 		NOT = { has_variable = chinese_westernization_complete } # 추가
 	}
 	
