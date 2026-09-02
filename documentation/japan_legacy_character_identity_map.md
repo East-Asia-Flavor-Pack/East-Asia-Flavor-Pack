@@ -1,0 +1,75 @@
+# 일본 중복 인물 정본 매핑
+
+4단계에서 바닐라와 중복되던 EAFP 인물 템플릿 69개를 제거하고, 활성 effect·trigger·event·history 참조를 아래 바닐라 정본 ID로 치환했다. 구버전 세이브 migration은 제공하지 않는다.
+
+| EAFP 제거 ID | 바닐라 정본 ID |
+|---|---|
+| `eafp_abe_masahiro` | `JAP_abe_masahiro` |
+| `eafp_aizawa_seishisai` | `JAP_aizawa_seishisai` |
+| `eafp_date_muneatsu` | `JAP_date_muneatsu` |
+| `eafp_date_munemoto` | `JAP_date_munemoto` |
+| `eafp_date_narikuni` | `JAP_date_narikuni` |
+| `eafp_date_yoshikuni` | `JAP_date_yoshikuni` |
+| `eafp_fukuzawa_yukichi` | `JAP_fukuzawa_yukichi` |
+| `eafp_goto_shinpei` | `JAP_goto_shinpei` |
+| `eafp_hachisuka_mochiaki` | `JAP_hachisuka_mochiaki` |
+| `eafp_hachisuka_narihiro` | `JAP_hachisuka_narihiro` |
+| `eafp_hachisuka_narimasa` | `JAP_hachisuka_narimasa` |
+| `eafp_hamaguchi_osachi` | `JAP_hamaguchi_osachi` |
+| `eafp_hara_takashi` | `JAP_hara_takashi` |
+| `eafp_hotta_masayoshi` | `JAP_masayoshi_hotta` |
+| `eafp_ii_naonori` | `JAP_ii_naonori` |
+| `eafp_ii_naosuke` | `JAP_ii_naosuke` |
+| `eafp_inoue_kaoru` | `JAP_inoue_kaoru` |
+| `eafp_ito_hirobumi` | `JAP_ito_hirobumi` |
+| `eafp_iwakura_tomomi` | `JAP_iwakura_tomomi` |
+| `eafp_iwasaki_yataro` | `JAP_iwasaki_yataro` |
+| `eafp_jap_hotta_masayoshi_template` | `JAP_masayoshi_hotta` |
+| `eafp_jap_ii_naoaki_template` | `JAP_ii_naoaki` |
+| `eafp_jap_komei_template` | `JAP_komei_yamato` |
+| `eafp_jap_meiji_template` | `JAP_meiji_yamato` |
+| `eafp_jap_mizuno_tadakuni_template` | `JAP_tadakuni_mizuno` |
+| `eafp_jap_ninko_template` | `JAP_ninko_yamato` |
+| `eafp_jap_showa_template` | `JAP_showa_yamato` |
+| `eafp_jap_taisho_template` | `JAP_taisho_yamato` |
+| `eafp_jap_tokugawa_iemochi_template` | `JAP_iemochi_tokugawa` |
+| `eafp_jap_tokugawa_iesada_template` | `JAP_iesada_tokugawa` |
+| `eafp_jap_tokugawa_iesato_template` | `JAP_iesato_tokugawa` |
+| `eafp_jap_tokugawa_yoshinobu_template` | `JAP_yoshinobu_tokugawa` |
+| `eafp_katsura_taro` | `JAP_katsura_taro` |
+| `eafp_kodama_gentaro` | `JAP_kodama_gentaro` |
+| `eafp_maeda_nariyasu` | `JAP_maeda_nariyasu` |
+| `eafp_maeda_yoshiyasu` | `JAP_maeda_yoshiyasu` |
+| `eafp_maejima_hisoka` | `JAP_maejima_hisoka` |
+| `eafp_matsumae_masahiro` | `JAP_matsumae_masahiro` |
+| `eafp_matsumae_nagahiro` | `JAP_matsumae_nagahiro` |
+| `eafp_matsumae_norihiro` | `JAP_matsumae_norihiro` |
+| `eafp_matsumae_takahiro` | `JAP_matsumae_takahiro` |
+| `eafp_matsumae_yoshihiro` | `JAP_matsumae_yoshihiro` |
+| `eafp_nogi_maresuke` | `JAP_nogi_maresuke` |
+| `eafp_ogata_koan` | `JAP_koan_ogata` |
+| `eafp_oguri_tadamasa` | `JAP_oguri_tadamasa` |
+| `eafp_okuma_shigenobu` | `JAP_okuma_shigenobu` |
+| `eafp_ozaki_yukio` | `JAP_yukio_ozaki` |
+| `eafp_saionji_kinmochi` | `JAP_saionji_kinmochi` |
+| `eafp_sakamoto_ryoma` | `JAP_sakamoto_ryoma` |
+| `eafp_sanjo_sanetomi` | `JAP_sanjo_sanetomi` |
+| `eafp_shibusawa_eiichi` | `JAP_shibusawa_eiichi` |
+| `eafp_shimazu_hisamitsu` | `JAP_hisamitsu_shimazu` |
+| `eafp_shimazu_nariakira` | `JAP_nariakira_shimazu` |
+| `eafp_shimazu_narioki` | `JAP_narioki_shimazu` |
+| `eafp_shimazu_tadayoshi` | `JAP_tadayoshi_shimazu` |
+| `eafp_takashima_shuhan` | `JAP_takashima_shuhan` |
+| `eafp_terauchi_masatake` | `JAP_terauchi_masatake` |
+| `eafp_togo_heihachiro` | `JAP_togo_heihachiro` |
+| `eafp_tokugawa_akitake` | `JAP_akitake_tokugawa` |
+| `eafp_tokugawa_iemochi` | `JAP_iemochi_tokugawa` |
+| `eafp_tokugawa_mochitsugu` | `JAP_tokugawa_mochitsugu` |
+| `eafp_tokugawa_nariaki` | `JAP_nariaki_tokugawa` |
+| `eafp_tokugawa_narikatsu` | `JAP_tokugawa_narikatsu` |
+| `eafp_tokugawa_naritaka` | `JAP_tokugawa_naritaka` |
+| `eafp_tokugawa_nariyuki` | `JAP_tokugawa_nariyuki` |
+| `eafp_tokugawa_yoshiatsu` | `JAP_yoshiatsu_tokugawa` |
+| `eafp_tokugawa_yoshikatsu` | `JAP_tokugawa_yoshikatsu` |
+| `eafp_tokugawa_yoshinori` | `JAP_tokugawa_yoshinori` |
+| `eafp_yamagata_aritomo` | `JAP_yamagata_aritomo` |

@@ -106,3 +106,34 @@
 3. 원본 `.disable` 53개의 SHA-256이 이 표와 일치하는지 확인한다.
 4. 최초 전면 복원 상태의 오류 보고서를 `documentation/japan_stage1_initial_load_report.md`에 기록한다.
 5. 후속 수정은 활성 파일에서만 수행하고 원본은 회귀 대조본으로 유지한다.
+
+## 6. 4단계 바닐라 기준선과 최종 분류
+
+기준 게임 버전은 Victoria 3 1.13.11이며 모든 일본 관련 DLC가 활성인 환경만 지원한다.
+
+| 바닐라 원본 | 원본 파일 SHA-256 | EAFP 활성 파일 | 활성 파일 SHA-256 | 상태 |
+|---|---|---|---|---|
+| `common/journal_entries/00_meiji_restoration.txt` | `aaaf94eb3c4acd16e2985381ef68f6cd1cf1ca8fa012002ad2305c24faa135d0` | `common/journal_entries/eafp_00_meiji_restoration.txt` | `4f56af7902b3d8d0b172a0203500e1a751c47a6f22275b8eb6bcb7c811249ee5` | 바닐라 5개 JE 전문 + 명시적 EAFP delta |
+| `common/journal_entries/07_hokkaido.txt` | `867af26f75e9e3b4f90c603ddbf0e7b357eb57fb6b92ac0f7989b7756436724d` | `common/journal_entries/eafp_07_taming_the_north.txt` | `1f11e83ef110d84b7a92cdb2dacc710833a5c5cecd05106350b6a0f4a9ce7a6b` | 바닐라 전문 + 홋카이도·가라후토 후속 delta |
+| `common/journal_entries/07_tenpo_crisis.txt` | `37e7bf5859dd585d512cfe0b39e7383765598b7e8b69d4d4bd48afbb76c90ac2` | `common/journal_entries/eafp_07_tenpo_crisis.txt` | `b59544ea914765a1412753c1e3d1efb8ca0fc803989e40e3929385452763f066` | 바닐라 전문 + 기근·파벌 delta |
+
+각 활성 `REPLACE:` 블록에서 `EAFP DELTA BEGIN/END` 구간을 제거한 뒤 주석과 공백을 정규화하면 대응 바닐라 블록과 동일하다. 파일 SHA-256 차이는 `REPLACE:` 접두어, 설명 주석, EAFP delta 때문이다.
+
+### 6.1 명시적 삭제
+
+- 7개 지역 막번체제 JE와 지역 loyalty·independency·goryo 지원 자산
+- 8개 막부 정책·청원 JE와 전용 시작 버튼·GUI·trigger localization
+- 독립 `je_tenpo_famine`, `je_terakoya`, 옛 `je_hokkaido`
+- 옛 재벌 JE·청원·사건
+- `reduce_nidome*` 14개 버튼
+- 바닐라 중복 EAFP 인물 템플릿 69개
+
+### 6.2 재배치
+
+- `tenpo_famine.1-6/.99` → `REPLACE:je_tenpo_crisis`
+- `hokkaido.1-6`, `je_karafuto` → `REPLACE:je_taming_the_north`
+- 정책 성공·실패 사건 `eafp_japan.2201-2233` → `eafp_japan.2302-2305` 직접 후속
+- 지역 막번 사건 효과 → 저택 보유 magnate의 실제 loyalty
+- 중복 인물 참조 → [바닐라 정본 매핑](japan_legacy_character_identity_map.md)
+
+리뉴얼 이전 세이브에 대한 변수 변환, tombstone JE, migration on_action은 만들지 않았다.

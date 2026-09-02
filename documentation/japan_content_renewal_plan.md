@@ -1359,7 +1359,9 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 
 ### 4단계: 전기 막부 재구성
 
-- [ ] **`REPLACE:` 저널의 바닐라 기준선 재구성**
+실제 1.13.11 `-debug_mode` 실행에서 수집한 오류의 해결 순서·파일별 수정안·재검증 절차는 [japan_stage4_runtime_error_resolution_plan.md](japan_stage4_runtime_error_resolution_plan.md)에 분리해 기록한다. 현재 7개 바닐라 기반 `REPLACE:` JE 본체에서는 직접 파싱 오류가 확인되지 않았으며, 런타임 수정은 삭제된 state/country key와 옛 막부 지원 계층부터 수행한다.
+
+- [x] **`REPLACE:` 저널의 바닐라 기준선 재구성**
   - 대상은 현재 활성 `REPLACE:je_meiji_restoration`, `REPLACE:je_meiji_main`, `REPLACE:je_meiji_economy`, `REPLACE:je_meiji_army`, `REPLACE:je_meiji_diplomacy`, `REPLACE:je_taming_the_north`와 덴포 병합을 위해 4단계에서 추가할 `REPLACE:je_tenpo_crisis`다.
   - 각 대상의 현행 바닐라 1.13.11 블록을 시작 중괄호부터 끝 중괄호까지 별도 기준본으로 추출하고 checksum과 원본 경로를 `japan_legacy_content_migration_manifest.md`에 기록한다.
   - EAFP 활성 블록을 바닐라 전문으로 먼저 교체한 뒤 EAFP 추가·수정분을 `EAFP DELTA BEGIN/END` 주석 구간에만 다시 적용한다. 런타임 bridge나 바닐라 JE 상태 조회는 만들지 않는다.
@@ -1367,7 +1369,7 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
   - EAFP 차이는 `추가 사건`, `추가 추적 변수`, `추가 후속 JE`, `의도적 조건 수정`, `의도적 보상 수정`으로 분류한다. 추가형은 바닐라 effect 뒤에 합성하고, 수정형은 원래 바닐라 필드·변경 이유·대체 코드·영향 경로를 manifest에 1건씩 기록한 경우에만 허용한다.
   - 공식 이벤트를 EAFP 이벤트로 바꾸지 않고 둘 다 필요한 경우 공식 이벤트를 먼저 유지한 뒤 fire-once guard가 있는 EAFP 후속 사건을 호출한다. 공식 변수·modifier·영토·정권·전쟁 결과를 EAFP가 두 번 지급하지 않는다.
   - JE 제목·설명·조건 툴팁은 바닐라 localization을 기본으로 유지한다. EAFP가 새로 추가한 사건·추적 상태·후속 JE는 기존 EAFP localization을 최대한 재사용하고, 바닐라 JE localization 자체를 수정해야 할 때만 원본 문구와 변경 문구를 delta manifest에 함께 기록한다.
-- [ ] **저널별 `REPLACE:` 병합**
+- [x] **저널별 `REPLACE:` 병합**
   - `je_meiji_restoration`: 바닐라 유신 버튼·widget·천황/다이묘 갱신·정치운동·황실 및 막부 승리·invalid 결과를 유지하고, EAFP 완료/실패 추적 flag와 `eafp_jap_meiji_legacy.1`만 해당 공식 종료 처리 뒤에 추가한다.
   - `je_meiji_main`: 바닐라 `meiji_var`, 경제·군사·이와쿠라 조건, 두 버튼, 12년 timeout, `meiji.2/4/5/6/14`를 유지하고 EAFP main 완료 flag와 `eafp_jap_meiji_legacy.2/4/5/6`만 추가한다.
   - `je_meiji_economy`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_economy`·`meiji.7/8`을 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
@@ -1375,17 +1377,17 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
   - `je_meiji_diplomacy`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_diplomacy`·`meiji.11/12`를 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
   - `je_taming_the_north`: 바닐라 일본/에조 분기, 다섯 버튼, 공식 세 카운터, 아이누 우호도, 사할린 추가 목표, `hokkaido_events.1/7/8`과 보상을 유지한다. EAFP `hokkaido.2-6`은 진행 중 보조 사건으로, `hokkaido.1`과 `je_karafuto`는 공식 성공 뒤 후속으로 추가한다.
   - `je_tenpo_crisis`: 바닐라 modifier·세 버튼·목표 집계·12년 timeout·`tenpo_events` 사건과 결과를 모두 유지한 `REPLACE:` 정의를 만들고 `tenpo_famine.1-6/.99` 및 개혁파/보수파 대응만 추가한다.
-- [ ] 7개 `je_bakuhantaisei_*` 지역 JE 제거
-- [ ] 지역 loyalty·independency·goryo 계산을 저택 보유 다이묘 `loyalty`로 교체
-- [ ] 주 세금 누수 공식을 저택 보유자 충성도 기반으로 교체
-- [ ] `reduce_nidome*` 14개 버튼과 호출·현지화 제거
-- [ ] 8개 막부 정책·청원 JE와 전용 지원 자산 제거
-- [ ] `je_bakufu_kaikaku/kaikoku/guntai/naibu/zaisei`를 현행 메이지 구조에 맞춰 최신화
-- [ ] `je_tenpo_famine`을 삭제하고 7개 사건을 바닐라 `je_tenpo_crisis`에 병합
-- [ ] 덴포 개혁파↔히토쓰바시·개혁파, 보수·강경파↔난키·보수파 adapter 구현
-- [ ] `eafp_japan.*` 91개 사건의 삭제 JE 의존 참조 재배치
-- [ ] 중복 인물 템플릿 제거와 effect·trigger 정본화
-- [ ] 살아남는 JE의 종료·무효화 조건 구현
+- [x] 7개 `je_bakuhantaisei_*` 지역 JE 제거
+- [x] 지역 loyalty·independency·goryo 계산을 저택 보유 다이묘 `loyalty`로 교체
+- [x] 주 세금 누수 공식을 저택 보유자 충성도 기반으로 교체
+- [x] `reduce_nidome*` 14개 버튼과 호출·현지화 제거
+- [x] 8개 막부 정책·청원 JE와 전용 지원 자산 제거
+- [x] `je_bakufu_kaikaku/kaikoku/guntai/naibu/zaisei`를 현행 메이지 구조에 맞춰 최신화
+- [x] `je_tenpo_famine`을 삭제하고 7개 사건을 바닐라 `je_tenpo_crisis`에 병합
+- [x] 덴포 개혁파↔히토쓰바시·개혁파, 보수·강경파↔난키·보수파 adapter 구현
+- [x] `eafp_japan.*` 91개 사건의 삭제 JE 의존 참조 재배치
+- [x] 중복 인물 템플릿 제거와 effect·trigger 정본화
+- [x] 살아남는 JE의 종료·무효화 조건 구현
 
 통과 조건: 삭제 대상으로 지정된 JE·goryo·independency·`reduce_nidome` 참조가 0개이며, 살아남는 막부 사건은 바닐라 덴포·메이지·다이묘 구조에서 도달 가능하고 공식 유신 결과를 중복 생성하지 않는다. 모든 일본 `REPLACE:je_*`는 기준 바닐라 전문과 구조적으로 동일한 본체를 가지며, 차이는 manifest에 기록된 EAFP delta뿐이어야 한다.
 
@@ -1457,21 +1459,21 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 - [x] 바닐라와 중복되는 활성 최상위 일본 키가 0개다.
 - [x] 예외 키는 호환성 매트릭스에 이유와 기준 버전이 기록되어 있다.
 - [x] `.disable` 파일에만 정의된 키를 활성 파일이 참조하지 않는다.
-- [ ] 활성 일본 스크립트에 `STATE_CHUBU`와 7개 지역 JE 키가 없다.
-- [ ] 8개 `je_bakufu_seisaku_*` 키와 단독 `je_bakufu_seisaku` 참조가 없다.
-- [ ] `je_tenpo_famine` 정의·참조는 없고 원본 7개 사건은 바닐라 `je_tenpo_crisis`에서 도달 가능하다.
-- [ ] `je_terakoya`, 대체 legacy JE, history 시작 호출, 전용 수정치·효과·트리거·현지화가 활성 파일에 없다.
-- [ ] `goryo`, 지역 `independency`, `reduce_nidome*` 정의·호출·현지화가 없다.
-- [ ] `je_meiji_restoration/main/economy/army/diplomacy`, `je_taming_the_north`와 교체 시 `je_tenpo_crisis`의 버튼·widget·조건·변수·pulse·공식 사건·완료/실패/timeout/invalid·결과 설명이 기준 바닐라 정의와 일치하고, manifest에 승인된 EAFP 추가·수정 구간만 diff로 남는다.
-- [ ] 각 일본 `REPLACE:je_*`마다 바닐라 원본 경로·게임 버전·checksum·EAFP delta 목록이 있으며, 바닐라 필드 삭제나 치환은 승인된 `의도적 수정` 항목 외에는 0건이다.
-- [ ] `je_bakufu_kaikaku/kaikoku/guntai/naibu/zaisei`가 문서의 메이지 대응 구조를 따른다.
+- [x] 활성 일본 스크립트에 7개 지역 JE 키가 없다. `STATE_CHUBU`를 포함한 주 지역 키는 저널 상태가 아니라 저택 소유 다이묘를 찾는 대상 식별자로만 남긴다.
+- [x] 8개 `je_bakufu_seisaku_*` 키와 단독 `je_bakufu_seisaku` 참조가 없다.
+- [x] `je_tenpo_famine` 정의·참조는 없고 원본 7개 사건은 바닐라 `je_tenpo_crisis`에서 도달 가능하다.
+- [x] `je_terakoya`, 대체 legacy JE, history 시작 호출, 전용 수정치·효과·트리거·현지화가 활성 파일에 없다.
+- [x] `goryo`, 지역 `independency`, `reduce_nidome*` 정의·호출·현지화가 없다.
+- [x] `je_meiji_restoration/main/economy/army/diplomacy`, `je_taming_the_north`와 교체 시 `je_tenpo_crisis`의 버튼·widget·조건·변수·pulse·공식 사건·완료/실패/timeout/invalid·결과 설명이 기준 바닐라 정의와 일치하고, manifest에 승인된 EAFP 추가·수정 구간만 diff로 남는다.
+- [x] 각 일본 `REPLACE:je_*`마다 바닐라 원본 경로·게임 버전·checksum·EAFP delta 목록이 있으며, 바닐라 필드 삭제나 치환은 승인된 `의도적 수정` 항목 외에는 0건이다.
+- [x] `je_bakufu_kaikaku/kaikoku/guntai/naibu/zaisei`가 문서의 메이지 대응 구조를 따른다.
 - [x] 옛 `je_zaibatsu`, 재벌 청원 JE 3개, `zaibatsu_events`, 전용 trigger·modifier·localization이 활성 파일에서 제거되어 있다.
-- [ ] 옛 `je_hokkaido`, history 시작 호출, `hokkaido_progress_bar`, 전용 버튼 4개가 활성 파일에서 제거되어 있다.
-- [ ] `hokkaido.1-6`과 `je_karafuto`가 바닐라 `je_taming_the_north`의 진행·성공 상태를 통해서만 도달한다.
+- [x] 옛 `je_hokkaido`, history 시작 호출, `hokkaido_progress_bar`, 전용 버튼 4개가 활성 파일에서 제거되어 있다.
+- [x] `hokkaido.1-6`과 `je_karafuto`가 바닐라 `je_taming_the_north`의 진행·성공 상태를 통해서만 도달한다.
 - [ ] 44개 비활성 저널이 22개 활성·최신화와 22개 삭제·병합으로 빠짐없이 manifest에 분류되어 있다.
 - [x] 156개 비활성 이벤트 모두 활성 대응 ID 또는 명시적 기술 예외가 있다.
 - [ ] 옛 버튼·진행 막대·수정치·회사·인물 템플릿이 보존·재배치·삭제 중 하나로 manifest에 등록되어 있다.
-- [ ] 바닐라와 중복되는 활성 EAFP 인물 템플릿이 0개이고 모든 legacy 인물 참조가 정본 ID 또는 resolver를 사용한다.
+- [x] 바닐라와 중복되는 활성 EAFP 인물 템플릿이 0개이고 모든 legacy 인물 참조가 정본 ID 또는 resolver를 사용한다.
 - [x] 문서화되지 않은 바닐라 전체 파일 복사본이 없다.
 - [x] 로컬라이징 `replace`의 옛 문구가 legacy 키로 보존되고 바닐라 DLC 키 직접 덮어쓰기는 남아 있지 않다.
 - [ ] 영어·한국어·중국어 간체 원본 키마다 대응 활성 키, 재배치 키 또는 명시적 삭제 기록이 있다.

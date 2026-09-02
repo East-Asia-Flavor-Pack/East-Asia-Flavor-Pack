@@ -1,144 +1,349 @@
-﻿# EAFP-owned replacement for the northern development lifecycle.
-# The removed legacy je_hokkaido is not restored.
+# Vanilla 1.13.11 je_taming_the_north with explicit EAFP follow-up deltas.
+# The deleted legacy northern journal is not restored.
 
 REPLACE:je_taming_the_north = {
-	icon = "gfx/interface/icons/event_icons/event_map.dds"
-	group = je_group_historical_content
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
 
-	is_shown_when_inactive = {
-		c:JAP ?= THIS
-		NOT = { has_variable = eafp_jap_taming_north_completed }
-		NOT = { has_variable = eafp_jap_taming_north_failed }
-		s:STATE_HOKKAIDO = {
-			any_scope_state = { owner = root }
-		}
-	}
+    group = je_group_historical_content
 
-	possible = {
-		c:JAP ?= THIS
-		owns_entire_state_region = STATE_HOKKAIDO
-		s:STATE_HOKKAIDO.region_state:JAP ?= {
-			is_incorporated = yes
-			any_scope_building = {
-				is_building_type = building_urban_center
-				level >= 1
-			}
-		}
-	}
+    scripted_button = button_je_taming_the_north_establish_colonies
+    scripted_button = button_je_taming_the_north_integrate_ainu
+    scripted_button = button_je_taming_the_north_sapporo_agricultural_college
+    scripted_button = button_je_taming_the_north_agriculture_potentials
+    scripted_button = button_je_taming_the_north_agriculture_arable_land
 
-	immediate = {
-		set_variable = {
-			name = eafp_jap_north_development_progress
-			value = 0
-		}
-		set_variable = {
-			name = eafp_jap_ainu_friendship
-			value = 0
-		}
-	}
+    is_shown_when_inactive = {
+        has_dlc_feature = ep2_content
+        OR = {
+            c:JAP ?= this
+            AND = {
+                c:EZO ?= this
+                OR = {
+                    has_government_type = gov_ezo_republic
+                    has_government_type = gov_ezo_republic_colonial
+                }
+            }
+        }
+        s:STATE_HOKKAIDO = {
+            any_scope_state = {
+                owner = root
+            }
+        }
+    }
 
-	is_progressing = {
-		owns_entire_state_region = STATE_HOKKAIDO
-		s:STATE_HOKKAIDO.region_state:JAP ?= { is_incorporated = yes }
-	}
+    possible = {
+        owns_entire_state_region = STATE_HOKKAIDO
+        trigger_if = {
+            limit = {
+                c:JAP ?= ROOT
+            }
+            s:STATE_HOKKAIDO.region_state:JAP ?= {
+                is_incorporated = yes
+                any_scope_building = {
+                    is_building_type = building_urban_center
+                    level >= 1
+                }
+            }
+        }
+        trigger_else_if = {
+            limit = {
+                c:EZO ?= ROOT
+            }
+            s:STATE_HOKKAIDO.region_state:EZO ?= {
+                is_incorporated = yes
+                any_scope_building = {
+                    is_building_type = building_urban_center
+                    level >= 1
+                }
+            }
+        }
+    }
 
-	on_monthly_pulse = {
-		effect = {
-			if = {
-				limit = {
-					owns_entire_state_region = STATE_HOKKAIDO
-					s:STATE_HOKKAIDO.region_state:JAP ?= { is_incorporated = yes }
-				}
-				change_variable = {
-					name = eafp_jap_north_development_progress
-					add = 1
-				}
-			}
-			if = {
-				limit = {
-					NOT = { has_variable = eafp_jap_hokkaido_castle_chain_started }
-					s:STATE_HOKKAIDO.region_state:JAP ?= {
-						state_population > 250000
-						gdp > 500000
-					}
-				}
-				random_list = {
-					23 = { }
-					1 = {
-						set_variable = eafp_jap_hokkaido_castle_chain_started
-						trigger_event = { id = hokkaido.2 popup = yes }
-					}
-				}
-			}
-		}
-		random_events = {
-			46 = 0
-			1 = hokkaido.5
-			1 = hokkaido.6
-		}
-	}
+    immediate = {
+        if = {
+            limit = {
+                OR = {
+                    c:JAP ?= ROOT
+                    is_subject_of = c:JAP
+                }
+            }
+            c:JAP ?= {
+                save_scope_as = japan_scope # Intentionally invalidating this scope if the Ezo Republic is independent
+            }
+        }
+        trigger_event = {
+            id = hokkaido_events.1
+            popup = yes
+        }
+        s:STATE_HOKKAIDO = {
+            random_scope_state = {
+                limit = {
+                    owner = root
+                }
+                save_scope_as = hokkaido_state_scope
+            }
+        }
+        s:STATE_SAKHALIN = {
+            save_scope_as = sakhalin_state_region_scope
+        }
+        set_variable = {
+            name = hokkaido_agriculture_potentials_counter_var
+            value = 0
+        }
+        set_variable = {
+            name = hokkaido_agriculture_arable_counter_var
+            value = 0
+        }
+        set_variable = {
+            name = ainu_friendship_var
+            value = 0
+        }
+    }
 
-	complete = {
-		has_variable = eafp_jap_north_development_progress
-		var:eafp_jap_north_development_progress >= 36
-		s:STATE_HOKKAIDO.region_state:JAP ?= {
-			state_population > 500000
-			gdp > 1000000
-		}
-	}
+    on_monthly_pulse = {
 
-	on_complete = {
-		set_variable = eafp_jap_taming_north_completed
-		add_modifier = {
-			name = modifier_northern_learnings
-			days = very_long_modifier_time
-		}
-		s:STATE_HOKKAIDO.region_state:JAP ?= {
-			add_modifier = {
-				name = modifier_tamed_north
-				days = very_long_modifier_time
-			}
-		}
-		if = {
-			limit = { NOT = { has_variable = eafp_jap_hokkaido_1_fired } }
-			set_variable = eafp_jap_hokkaido_1_fired
-			trigger_event = { id = hokkaido.1 popup = yes }
-		}
-		if = {
-			limit = {
-				NOT = { has_variable = eafp_jap_karafuto_started }
-				NOT = { has_journal_entry = je_karafuto }
-				exists = c:RUS
-			}
-			set_variable = eafp_jap_karafuto_started
-			add_journal_entry = { type = je_karafuto }
-		}
-		if = {
-			limit = {
-				has_variable = eafp_jap_restoration_finished
-				NOT = { has_law_or_variant = law_type:law_isolationism }
-				NOT = { has_variable = eafp_jap_meiji_legacy_13_fired }
-			}
-			trigger_event = { id = eafp_jap_meiji_legacy.13 popup = yes }
-		}
-	}
+        # EAFP DELTA BEGIN: preserved Hokkaido event chain
+        effect = {
+            if = {
+                limit = {
+                    c:JAP ?= ROOT
+                    NOT = { has_variable = eafp_jap_hokkaido_castle_chain_started }
+                    s:STATE_HOKKAIDO.region_state:JAP ?= {
+                        state_population > 250000
+                        gdp > 500000
+                    }
+                }
+                random_list = {
+                    23 = { }
+                    1 = {
+                        set_variable = eafp_jap_hokkaido_castle_chain_started
+                        trigger_event = { id = hokkaido.2 popup = yes }
+                    }
+                }
+            }
+        }
+        random_events = {
+            46 = 0
+            1 = hokkaido.5
+            1 = hokkaido.6
+        }
+        # EAFP DELTA END
+}
 
-	fail = {
-		NOT = { has_state_in_state_region = STATE_HOKKAIDO }
-	}
+    on_yearly_pulse = {
+        random_events = {
+        }
+    }
 
-	on_fail = {
-		set_variable = eafp_jap_taming_north_failed
-	}
+    complete = {
+        trigger_if = {
+            limit = {
+                c:JAP ?= ROOT
+            }
+            s:STATE_HOKKAIDO.region_state:JAP ?= {
+                state_population > 500000
+                gdp > 1000000
+            }
+        }
+        trigger_else_if = {
+            limit = {
+                c:EZO ?= ROOT
+            }
+            s:STATE_HOKKAIDO.region_state:EZO ?= {
+                state_population > 500000
+                gdp > 1000000
+            }
+        }
+        custom_tooltip = {
+            text = taming_the_north_agriculture_potentials_goal_tt
+            exists = var:hokkaido_agriculture_potentials_counter_var
+            var:hokkaido_agriculture_potentials_counter_var >= 3
+        }
+        custom_tooltip = {
+            text = taming_the_north_agriculture_arable_goal_tt
+            exists = var:hokkaido_agriculture_arable_counter_var
+            var:hokkaido_agriculture_arable_counter_var >= 3
+        }
+        custom_tooltip = {
+            text = taming_the_north_colonies_goal_tt
+            has_variable = button_je_taming_the_north_establish_colonies_var
+        }
 
-	invalid = {
-		NOT = { c:JAP ?= THIS }
-	}
+    }
 
-	current_value = { value = root.var:eafp_jap_north_development_progress }
-	goal_add_value = { value = 36 }
-	progressbar = yes
-	weight = 5000
-	should_be_pinned_by_default_uninvolved_or_context = yes
-	can_revolution_inherit = no
+    on_complete = {
+        trigger_event = {
+            id = hokkaido_events.7
+            popup = yes
+        }
+        show_as_tooltip = {
+            add_modifier = {
+                name = modifier_northern_learnings
+                days = very_long_modifier_time
+            }
+            scope:hokkaido_state_scope ?= {
+                add_modifier = {
+                    name = modifier_tamed_north
+                    days = very_long_modifier_time
+                }
+            }
+            if = {
+                limit = {
+                    NOT = {
+                        has_journal_entry = je_taming_the_north
+                    }
+                }
+                custom_tooltip = {
+                    text = je_taming_the_north_additional_goal_pre
+                }
+            }
+            else_if = {
+                limit = {
+                    NOR = {
+                        owns_entire_state_region = STATE_SAKHALIN
+                        overlord ?= {
+                            owns_entire_state_region = STATE_SAKHALIN
+                        }
+                    }
+                }
+                custom_tooltip = {
+                    text = je_taming_the_north_additional_goal
+                }
+            }
+            else_if = {
+                limit = {
+                    OR = {
+                        owns_entire_state_region = STATE_SAKHALIN
+                        overlord ?= {
+                            owns_entire_state_region = STATE_SAKHALIN
+                        }
+                    }
+                }
+                custom_tooltip = je_taming_the_north_additional_goal_completed
+                s:STATE_SAKHALIN = {
+                    every_scope_state = {
+                        limit = {
+                            owner = {
+                                ROOT ?= this
+                                overlord ?= this
+                            }
+                        }
+                        add_modifier = {
+                            name = modifier_tamed_north
+                            days = very_long_modifier_time
+                        }
+                    }
+                }
+            }
+        }
+        remove_variable = hokkaido_agriculture_potentials_counter_var
+        remove_variable = hokkaido_agriculture_arable_counter_var
+        remove_variable = button_je_taming_the_north_establish_colonies_var
+
+        # EAFP DELTA BEGIN: legacy northern follow-up
+        if = {
+            limit = { c:JAP ?= ROOT }
+            set_variable = eafp_jap_taming_north_completed
+            if = {
+                limit = { NOT = { has_variable = eafp_jap_hokkaido_1_fired } }
+                set_variable = eafp_jap_hokkaido_1_fired
+                trigger_event = { id = hokkaido.1 popup = yes }
+            }
+            if = {
+                limit = {
+                    NOT = { has_variable = eafp_jap_karafuto_started }
+                    NOT = { has_journal_entry = je_karafuto }
+                    exists = c:RUS
+                }
+                set_variable = eafp_jap_karafuto_started
+                add_journal_entry = { type = je_karafuto }
+            }
+            if = {
+                limit = {
+                    has_variable = eafp_jap_restoration_finished
+                    NOT = { has_law_or_variant = law_type:law_isolationism }
+                    NOT = { has_variable = eafp_jap_meiji_legacy_13_fired }
+                }
+                trigger_event = { id = eafp_jap_meiji_legacy.13 popup = yes }
+            }
+        }
+        # EAFP DELTA END
+}
+
+    event_outcome_completed_effect_desc = {
+        header = hokkaido_events.7.a
+        effect = {
+            add_modifier = {
+                name = modifier_external_applications
+                days = long_modifier_time
+            }
+        }
+    }
+
+    event_outcome_completed_effect_desc = {
+        header = hokkaido_events.7.b
+        effect = {
+            add_modifier = {
+                name = modifier_domestic_applications
+                days = long_modifier_time
+            }
+        }
+    }
+
+    fail = {
+        NOT = {
+            has_state_in_state_region = STATE_HOKKAIDO
+        }
+    }
+
+    on_fail = {
+        if = {
+            limit = {
+                c:JAP ?= ROOT
+            }
+            trigger_event = {
+                id = hokkaido_events.8
+                popup = yes
+            }
+        }
+
+        # EAFP DELTA BEGIN
+        set_variable = eafp_jap_taming_north_failed
+        # EAFP DELTA END
+}
+
+    event_outcome_failed_effect_desc = {
+        header = hokkaido_events.8.a
+        effect = {
+            if = {
+                limit = {
+                    c:JAP ?= ROOT
+                }
+                add_radicals = {
+                    value = medium_radicals
+                    culture = cu:japanese
+                }
+                ig:ig_industrialists = {
+                    add_modifier = {
+                        name = modifier_lost_northern_investments
+                        days = normal_modifier_time
+                    }
+                }
+                ig:ig_petty_bourgeoisie = {
+                    add_modifier = {
+                        name = modifier_lost_northern_investments
+                        days = normal_modifier_time
+                    }
+                }
+            }
+        }
+    }
+
+    invalid = {
+    }
+
+    weight = 5000
+
+
+    should_be_pinned_by_default_uninvolved_or_context = yes
 }

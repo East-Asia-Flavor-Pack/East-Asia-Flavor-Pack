@@ -1,0 +1,204 @@
+# Vanilla 1.13.11 je_tenpo_crisis with the preserved EAFP famine delta.
+
+REPLACE:je_tenpo_crisis = {
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	group = je_group_historical_content
+
+	is_shown_when_inactive = {
+	}
+
+	modifiers_while_active = {
+		modifier_tenpo_crisis_ongoing
+		modifier_rice_hoarding
+	}
+
+	scripted_button = button_je_tenpo_combat_rice_hoarding
+	scripted_button = button_je_tenpo_frugal_ordinance
+	scripted_button = button_je_tenpo_confiscate_land
+
+	# EAFP DELTA BEGIN: legacy relief controls
+	scripted_button = install_sukuigoya_button
+	scripted_button = expand_sukuigoya_button
+	scripted_button = close_sukuigoya_button
+	scripted_button = reduce_sukuigoya_button
+	# EAFP DELTA END
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_tokugawa_loyalist
+			}
+			save_scope_as = movement_tokugawa_loyalist_scope
+		}
+
+		# EAFP DELTA BEGIN: initialize the preserved famine track
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_started } }
+			set_variable = eafp_jap_tenpo_famine_started
+			set_variable = { name = sukuigoya_for_tenpo value = 2 }
+			set_variable = { name = sukuigoya_for_tenpo_accumulation value = 0 }
+			add_modifier = {
+				name = modifier_sukuigoya_for_tenpo
+				multiplier = var:sukuigoya_for_tenpo
+			}
+			trigger_event = { id = tenpo_famine.1 popup = yes }
+		}
+		# EAFP DELTA END
+}
+
+	custom_completion_header = je_tenpo_crisis_complete_header
+
+	complete = {
+		custom_tooltip = {
+			text = je_tenpo_crisis_success_tt
+			tenpo_total_agenda_goals_completed >= 8
+		}
+	}
+
+	on_complete = {
+		custom_tooltip = je_tenpo_crisis_success_2_tt
+		trigger_event = {
+			id = tenpo_events.3
+			popup = yes
+		}
+		hidden_effect = {
+			remove_variable = tenpo_gdp_goal
+		}
+
+		# EAFP DELTA BEGIN: delayed cleanup after the official outcome event
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_conclusion_scheduled } }
+			set_variable = eafp_jap_tenpo_famine_conclusion_scheduled
+			trigger_event = { id = tenpo_famine.99 days = 3 }
+		}
+		# EAFP DELTA END
+}
+
+	event_outcome_completed_effect_desc = {
+		header = je_tenpo_crisis_success_outcome_1_tt
+		effect = {
+			add_modifier = {
+				name = modifier_tenpo_crisis_reward_hardliner
+				days = long_modifier_time
+			}
+			add_loyalists = {
+				value = medium_radicals
+				strata = upper
+			}
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = je_tenpo_crisis_success_outcome_2_tt
+		effect = {
+			add_modifier = {
+				name = modifier_tenpo_crisis_reward_reformer
+				days = long_modifier_time
+			}
+			add_loyalists = {
+				value = medium_radicals
+				strata = lower
+			}
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		header = je_tenpo_crisis_success_outcome_3_tt
+		effect = {
+			add_modifier = {
+				name = modifier_tenpo_crisis_reward_balanced
+				days = long_modifier_time
+			}
+			add_loyalists = {
+				value = medium_radicals
+				strata = middle
+			}
+		}
+	}
+
+	custom_failure_header = je_tenpo_crisis_failure_header
+
+	timeout = 4380 # ~12 years. Roughly spanning Tenpo and Koka eras.
+
+	on_timeout = {
+		trigger_event = {
+			id = tenpo_events.4
+			popup = yes
+		}
+		hidden_effect = {
+			remove_variable = tenpo_gdp_goal
+		}
+
+		# EAFP DELTA BEGIN: close the famine track on the official timeout path
+		if = {
+			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_conclusion_scheduled } }
+			set_variable = eafp_jap_tenpo_famine_conclusion_scheduled
+			trigger_event = { id = tenpo_famine.99 days = 3 }
+		}
+		# EAFP DELTA END
+}
+
+	event_outcome_timeout_effect_desc = {
+        header = tenpo_events.4.a
+        effect = {
+			add_modifier = {
+				name = modifier_tenpo_fail
+				days = normal_modifier_time
+			}
+			custom_tooltip = tenpo_events_4_demotion_tt
+        }
+    }
+    event_outcome_timeout_effect_desc = {
+        header = tenpo_events.4.b
+        effect = {
+        	custom_tooltip = tenpo_events_4_demotion_tt
+        }
+    }
+	possible = {
+	}
+
+	on_monthly_pulse = {
+		random_events = {
+			chance_to_happen = 8 # Approximately once a year
+			60 = tenpo_events.2
+			3 = tenpo_events.7
+			3 = tenpo_events.8
+			3 = japan_events.31
+
+			# EAFP DELTA BEGIN
+			3 = tenpo_famine.4
+			# EAFP DELTA END
+}
+
+		# EAFP DELTA BEGIN: legacy famine accumulation and follow-up events
+		effect = {
+			if = {
+				limit = { has_variable = sukuigoya_for_tenpo }
+				change_variable = {
+					name = sukuigoya_for_tenpo_accumulation
+					add = var:sukuigoya_for_tenpo
+				}
+			}
+			if = {
+				limit = {
+					has_variable = oshio_revolt_happened_var
+					NOT = { has_variable = eafp_jap_tenpo_oshio_followup_scheduled }
+				}
+				set_variable = eafp_jap_tenpo_oshio_followup_scheduled
+				trigger_event = { id = tenpo_famine.5 days = 30 }
+			}
+		}
+		# EAFP DELTA END
+}
+
+	modifiers_while_active = {
+	}
+
+	invalid = {
+	}
+
+	weight = 5000
+
+	should_be_pinned_by_default_uninvolved_or_context = yes
+}
