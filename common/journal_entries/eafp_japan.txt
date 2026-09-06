@@ -8,6 +8,18 @@ je_bakuhantaisei = {
 
 	group = je_group_bakuhantaisei
 
+	widget = {
+		gui = "gui/journal_entry_widgets/eafp_je_bakuhantaisei.gui"
+		name = "widget_je_bakuhantaisei"
+		container = "custom_widget_container_je_icon"
+	}
+
+	widget = {
+		gui = "gui/journal_entry_widgets/eafp_je_bakuhantaisei.gui"
+		name = "widget_eafp_japan_regions"
+		container = "custom_widget_container_3"
+	}
+
 	is_shown_in_lobby = {
 		c:JAP ?= THIS
 	}
@@ -17,9 +29,9 @@ je_bakuhantaisei = {
 	scripted_button = appoint_tairo_button
 
 	immediate = {
+		eafp_japan_initialize_regions = yes
 		je_meiji_restoration_update_daimyos = yes
 		country_calculate_and_cache_daimyo_loyalties_per_state = yes
-		eafp_japan_update_bakuhan_tax_from_daimyo_loyalty = yes
 	}
 
 	modifiers_while_active = {
@@ -79,34 +91,33 @@ je_bakuhantaisei = {
 		}
 	}
 
-	on_complete = { 
+	on_complete = {
+		eafp_japan_end_regions = yes 
 		hidden_effect = {
 			every_scope_character = {
 				limit = { is_bakufu_politician = yes }
 				remove_bakufu_politician_role_without_appointment = yes
 			}
 		}
-		every_scope_state = { remove_modifier = eafp_japan_bakuhan_tax_leak_modifier }
 	}
 
 	invalid = {
 		NOT = { has_law = law_type:law_bakufu }
 	}
 
-	on_invalid = { 
+	on_invalid = {
+		eafp_japan_end_regions = yes 
 		hidden_effect = {
 			every_scope_character = {
 				limit = { is_bakufu_politician = yes }
 				remove_bakufu_politician_role_without_appointment = yes
 			}
 		}
-		every_scope_state = { remove_modifier = eafp_japan_bakuhan_tax_leak_modifier }
 	}
 
 	on_weekly_pulse = {
 		effect = {
 			country_calculate_and_cache_daimyo_loyalties_per_state = yes
-			eafp_japan_update_bakuhan_tax_from_daimyo_loyalty = yes
 			# 왠진 모르지만 막부 정치인 자리 비었을때 강제 활성화
 			if = {
 				limit = {
@@ -156,6 +167,7 @@ je_bakuhantaisei = {
 	}
 
 	on_monthly_pulse = {
+		effect = { eafp_japan_monthly_regions = yes }
 		random_events = {
 			250 = 0
 			10 = eafp_japan.1003
@@ -174,36 +186,15 @@ je_bakuhantaisei = {
 					is_busy = yes # immortal 판정 trigger는 없음. (원래)
 
 					NOT = { has_modifier = modifier_bakufu_recently_appointed } # 최근 임명된 놈 제외
-
-					trigger_if = {
-						limit = { modifier:character_health_add >= 1 }
-						age >= {
-							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
-							add = -10 # 그냥 임의로 넣음
-							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
-							add = {
-								value = modifier:character_health_add
-								add = -1
-								multiply = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_DELTA_YEARS_ABOVE_BASELINE
-							}
-						}
-					}
-					trigger_else = {
-						age >= {
-							value = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_BASE_YEARS
-							add = -10 # 그냥 임의로 넣음
-							add = var:CHARACTER_LIFE_EXPECTANCY_STDDEV_value
-							add = {
-								value = modifier:character_health_add
-								add = -1
-								multiply = define:NCharacters|CHARACTER_LIFE_EXPECTANCY_DELTA_YEARS_BELOW_BASELINE
-							}
-						}
-					}
 				}
-				trigger_event = {
-					id = eafp_japan.9
-					days = { 0 364 }
+				random_list = {
+					5 = {  }
+					1 = {
+						trigger_event = {
+							id = eafp_japan.9
+							days = { 0 364 }
+						}
+					}
 				}
 			}
 		}
@@ -519,8 +510,10 @@ je_bakufu_kaikaku = {
 								}
 								100 = { # 히토츠바시파의 이국선타불령 부활 요구
 									trigger = {
-										has_law_or_variant = law_type:law_isolationism
-										NOT = { has_modifier = ikokusen_uchiharairei_modifier }
+										has_law = law_type:law_sakoku
+										active_law:lawgroup_trade_policy = {
+											NOT = { has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei }
+										}
 										NOT = { has_variable = eafpjap2301_cooldown }
 									}
 									trigger_event = {
@@ -635,8 +628,10 @@ je_bakufu_kaikaku = {
 								}
 								100 = { # 난키파의 이국선타불령 폐지 요구
 									trigger = {
-										has_law_or_variant = law_type:law_isolationism
-										has_modifier = ikokusen_uchiharairei_modifier
+										has_law = law_type:law_sakoku
+										active_law:lawgroup_trade_policy = {
+											has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+										}
 										NOT = { has_variable = eafpjap2306_cooldown }
 									}
 									trigger_event = {

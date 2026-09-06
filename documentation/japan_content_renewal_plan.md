@@ -1,4 +1,6 @@
-# 일본 콘텐츠 리뉴얼 구현 계획
+﻿# 일본 콘텐츠 리뉴얼 구현 계획
+
+> 2026-09-06 후속 변경: 지역 충성도·독립성 관리는 `je_bakuhantaisei` 하나에 통합했다. 주 충성도는 독자 저장값이며, 관리 주의 `cached_daimyo_loyalty`를 이 값으로 덮어쓴다. 별도 지역 JE와 고료 기능은 사용하지 않는다. 아래의 지역 삭제·인물 평균/대표자 캐시·고료 관련 과거 서술은 결정 이력으로 보존한다. 현재 구현과 검증 범위는 [주별 통치 구현 보고](japan_regional_implementation_report.md), 효과별 변경은 [이관표](japan_regional_effect_migration.md)를 참조한다.
 
 ## 0. 최신 구현 결정: EAFP 직접 소유
 
@@ -372,7 +374,7 @@ documentation/
 
 - **처리:** 바닐라 JE로 병합 후 삭제
 - **새 대응:** 현행 바닐라 `je_tenpo_crisis`
-- 독립 JE 키, 전용 기근 진행 막대와 완료·실패 처리를 제거한다. 구휼·쌀값·이주·지역 불안의 `tenpo_famine.1-6`과 결말 `.99`는 바닐라 JE의 개시·월간 사건 풀·완료·12년 timeout 분기로 이관한다. 오시오의 난은 바닐라 `tenpo_events.2`를 두 번 일으키지 않고 옛 사건을 선행 선택지 또는 후속 풍미 사건으로만 연결한다. 기존 `reduce_nidome*` 버튼은 전부 제거한다.
+- 독립 JE 키, 전용 기근 진행 막대와 완료·실패 처리를 제거한다. 구휼·이주·지역 불안의 `tenpo_famine.3-6`과 결말 `.99`는 바닐라 JE의 개시·월간 사건 풀·완료·12년 timeout 분기로 이관한다. 기근 시작 안내 `tenpo_famine.1`은 정의·호출·전용 현지화를 삭제하며, 기존 후속 `tenpo_famine.3`은 JE 개시 2개월 뒤 직접 예약한다. 니도메 `tenpo_famine.2`는 예약 호출·전용 쌀 이출 수정치·현지화까지 삭제한다. 오시오의 난은 바닐라 `tenpo_events.2`를 두 번 일으키지 않고 옛 사건을 선행 선택지 또는 후속 풍미 사건으로만 연결한다. 기존 `reduce_nidome*` 버튼과 구호소 설치·축소·확장·폐쇄 버튼은 전부 제거한다. 구호소 수정치 `modifier_sukuigoya_for_tenpo`와 적용·정리 코드는 삭제하며 구호 실적의 월간 누적과 별도 결말 농민 구호 보상만 유지한다.
 - 바닐라의 개혁파 목표는 EAFP `is_hitotsubashiha`가 판정하는 개혁파(`ideology_kaikakuha`, `ideology_hitotsubashiha`)에, 보수·강경파 목표는 `is_nankiha`가 판정하는 보수파(`ideology_hoshuha`, `ideology_nankiha`)에 대응시킨다. `tenpo_outcome_reformer_var`와 `tenpo_outcome_hardliner_var` 결과가 각각 해당 파벌의 영향력·찬반 반응을 한 번만 갱신하게 한다.
 
 #### 7.3.11 `je_bakufu_kaikaku`
@@ -1170,7 +1172,7 @@ P0는 “바닐라 정본을 로드 순서에서 되찾는 단계”다. 옛 콘
 | `common/on_actions/00_code_on_actions_definition.txt` | `on_monthly_pulse_country`에 전용 일본 on_action 한 줄만 등록 | 기존 옛 일본 on_action의 일괄 주석 해제 금지 |
 | `common/journal_entries/eafp_00_meiji_restoration.txt` | 휴면 companion의 개시·진행·종료 조건을 bridge trigger로 교체 | 공식 정권 교체·과제 완료 effect 금지 |
 | `common/journal_entries/eafp_japan.txt` | 옛 `je_hokkaido` 제거, `je_karafuto`를 바닐라 북방 JE 성공 후속으로 전환 | 바닐라 북방 JE 재정의 금지 |
-| `common/history/countries/eafp_japan_legacy.txt` | 옛 `je_hokkaido` 시작 호출 제거 | 바닐라 `je_taming_the_north`를 신게임 history에서 강제 추가 금지 |
+| `common/history/countries/jap - japan.txt` | 옛 `je_hokkaido` 시작 호출 제거. 후속 요청으로 바닐라 전문에 활성 EAFP 변경분 병합 | 바닐라 `je_taming_the_north`를 신게임 history에서 강제 추가 금지 |
 | `common/scripted_progress_bars/eafp_hokkaido_progress_bars.txt` | 활성 파일 삭제, 원본 `.disable`만 대조본으로 보존 | 해당 없음 |
 | `common/scripted_buttons/eafp_japan_buttons.txt` | 옛 홋카이도 JE 전용 버튼 4개 제거, 고유 성곽 선택지는 사건으로 이동 | 바닐라 북방 버튼 복제 금지 |
 | `events/eafp_jap_events/eafp_meiji_restoration_legacy.txt` | 옛 13개 사건을 공식 메이지 단계의 풍미 사건으로 전환 | 공식 변수 write를 제거하고 bridge effect만 호출 |
@@ -1359,6 +1361,10 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
 
 ### 4단계: 전기 막부 재구성
 
+후속 구현 반영: 이국선타불령은 `law_sakoku`에 부착하는 `amendment_eafp_ikokusen_uchiharairei`로 이관하며 기존 국가 modifier는 삭제한다. `je_bakuhantaisei`와 증보는 `common/history/countries/jap - japan.txt`의 일본 국가 초기화 마지막에서 등록한다. 하루 뒤 `eafp_japan.1`은 안내만 수행한다. 구호소 modifier도 삭제하며, 별도 결말 농민 구호 보상은 유지한다.
+
+국가 history 후속 방침: `common/history/countries/jap - japan.txt`에 현행 바닐라 일본 원문을 복사하고 현재 활성 EAFP 변경분을 병합한다. 한글 주석 `# 수정: …` / `# 수정 끝`은 IG·국교 등 국가 상태 변경, `# 추가: …` / `# 추가 끝`은 부패·기근 수정치·예약 사건·파벌 초기값·시작 증보 및 막번 저널 추가를 표시한다. 원문을 직접 바꾸는 경우에는 `# 원문에서 수정` 형태로 변경 전 값도 명시한다. 바닐라 법률·기술·제도·DLC 시작 분기는 유지한다. 중복 실행을 막기 위해 분리 파일 `eafp_japan_legacy.txt`는 제거하며, 국가 history를 분리 파일로 유지하던 앞 단계의 방침은 이 결정으로 대체한다. 후속 요청에 따라 `common/history/global/eafp_japan_start.txt`의 증보·막번 저널 초기화도 같은 국가 파일 마지막으로 이관하고 전역 파일은 제거한다.
+
 실제 1.13.11 `-debug_mode` 실행에서 수집한 오류의 해결 순서·파일별 수정안·재검증 절차는 [japan_stage4_runtime_error_resolution_plan.md](japan_stage4_runtime_error_resolution_plan.md)에 분리해 기록한다. 현재 7개 바닐라 기반 `REPLACE:` JE 본체에서는 직접 파싱 오류가 확인되지 않았으며, 런타임 수정은 삭제된 state/country key와 옛 막부 지원 계층부터 수행한다.
 
 - [x] **`REPLACE:` 저널의 바닐라 기준선 재구성**
@@ -1376,7 +1382,7 @@ trigger는 국가 scope에서 호출하는 것을 원칙으로 하고 이름은 
   - `je_meiji_army`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_army`·`meiji.3/9/10`을 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
   - `je_meiji_diplomacy`: 바닐라 완료 조건·`meiji_var`·`completed_je_meiji_diplomacy`·`meiji.11/12`를 유지하고 EAFP 완료 flag와 legacy 사건만 추가한다.
   - `je_taming_the_north`: 바닐라 일본/에조 분기, 다섯 버튼, 공식 세 카운터, 아이누 우호도, 사할린 추가 목표, `hokkaido_events.1/7/8`과 보상을 유지한다. EAFP `hokkaido.2-6`은 진행 중 보조 사건으로, `hokkaido.1`과 `je_karafuto`는 공식 성공 뒤 후속으로 추가한다.
-  - `je_tenpo_crisis`: 바닐라 modifier·세 버튼·목표 집계·12년 timeout·`tenpo_events` 사건과 결과를 모두 유지한 `REPLACE:` 정의를 만들고 `tenpo_famine.1-6/.99` 및 개혁파/보수파 대응만 추가한다.
+  - `je_tenpo_crisis`: 바닐라 modifier·세 버튼·목표 집계·12년 timeout·`tenpo_events` 사건과 결과를 모두 유지한 `REPLACE:` 정의를 만들고 `tenpo_famine.3-6`, `.99` 및 개혁파/보수파 대응을 추가한다. 기근 시작 안내 `tenpo_famine.1`은 정의·호출·전용 현지화를 삭제하며, 기존 후속 `tenpo_famine.3`은 JE 개시 2개월 뒤 직접 예약한다. 니도메 `.2`, 구호소 관리 버튼 4개와 구호소 modifier는 삭제하며 구호 실적 누적과 별도 결말 보상은 보존한다.
 - [x] 7개 `je_bakuhantaisei_*` 지역 JE 제거
 - [x] 지역 loyalty·independency·goryo 계산을 저택 보유 다이묘 `loyalty`로 교체
 - [x] 주 세금 누수 공식을 저택 보유자 충성도 기반으로 교체

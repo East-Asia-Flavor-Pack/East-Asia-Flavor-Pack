@@ -1,0 +1,39 @@
+﻿on_state_owner_change = {
+    on_actions = { eafp_japan_on_regional_state_change }
+}
+on_state_created = {
+    on_actions = { eafp_japan_on_regional_state_change }
+}
+eafp_japan_on_regional_state_change = {
+    trigger = {
+        OR = { has_variable = eafp_japan_loyalty_cache_managed c:JAP ?= owner }
+    }
+    effect = {
+        eafp_japan_release_region_state = yes
+        c:JAP ?= { eafp_japan_refresh_regions = yes }
+    }
+}
+
+on_game_started = {
+    on_actions = { eafp_japan_on_regional_game_start }
+}
+eafp_japan_on_regional_game_start = {
+    effect = { c:JAP ?= { eafp_japan_refresh_regions = yes } }
+}
+
+# Registered in 00_code_on_actions_definition.txt. Actual office membership,
+# not the influence variable, determines whether a dead character held office.
+eafp_japan_on_bakufu_politician_death = {
+    trigger = {
+        exists = c:JAP
+        OR = { is_tairo = yes is_rojushuza = yes is_roju = yes }
+    }
+    effect = {
+        if = {
+            limit = { c:JAP = { eafp_japan_regional_active = yes } }
+            remove_bakufu_politician_role = yes
+        }
+        else = { remove_bakufu_politician_role_without_appointment = yes }
+        c:JAP ?= { eafp_japan_refresh_regions = yes }
+    }
+}

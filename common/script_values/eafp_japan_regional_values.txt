@@ -1,0 +1,336 @@
+﻿# Country scope throughout. L/I are stored independently; no character average.
+# Legacy monthly drift retained, with guarded GDP and tax-capacity denominators.
+eafp_japan_regional_tax_cap = 0.25
+
+eafp_japan_loyalty_TOHOKU_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_TOHOKU } value = var:eafp_japan_loyalty_TOHOKU }
+}
+eafp_japan_loyalty_TOHOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_TOHOKU_value
+    divide = 100
+    s:STATE_TOHOKU.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_TOHOKU } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_TOHOKU } add = 0.5 }
+}
+eafp_japan_independency_TOHOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_TOHOKU_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_TOHOKU divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_TOHOKU.region_state:JAP }
+        add = { value = s:STATE_TOHOKU.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_TOHOKU.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_TOHOKU } subtract = 0.5 }
+}
+eafp_japan_tax_loss_TOHOKU = { value = var:eafp_japan_independency_TOHOKU divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_KANTO_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_KANTO } value = var:eafp_japan_loyalty_KANTO }
+}
+eafp_japan_loyalty_KANTO_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KANTO_value
+    divide = 100
+    s:STATE_KANTO.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KANTO } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_KANTO } add = 0.5 }
+}
+eafp_japan_independency_KANTO_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KANTO_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_KANTO divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_KANTO.region_state:JAP }
+        add = { value = s:STATE_KANTO.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_KANTO.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KANTO } subtract = 0.5 }
+}
+eafp_japan_tax_loss_KANTO = { value = var:eafp_japan_independency_KANTO divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_HOKUSHINETSU_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_HOKUSHINETSU } value = var:eafp_japan_loyalty_HOKUSHINETSU }
+}
+eafp_japan_loyalty_HOKUSHINETSU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_HOKUSHINETSU_value
+    divide = 100
+    s:STATE_HOKUSHINETSU.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_HOKUSHINETSU } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_HOKUSHINETSU } add = 0.5 }
+}
+eafp_japan_independency_HOKUSHINETSU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_HOKUSHINETSU_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_HOKUSHINETSU divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_HOKUSHINETSU.region_state:JAP }
+        add = { value = s:STATE_HOKUSHINETSU.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_HOKUSHINETSU.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_HOKUSHINETSU } subtract = 0.5 }
+}
+eafp_japan_tax_loss_HOKUSHINETSU = { value = var:eafp_japan_independency_HOKUSHINETSU divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_TOKAI_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_TOKAI } value = var:eafp_japan_loyalty_TOKAI }
+}
+eafp_japan_loyalty_TOKAI_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_TOKAI_value
+    divide = 100
+    s:STATE_TOKAI.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_TOKAI } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_TOKAI } add = 0.5 }
+}
+eafp_japan_independency_TOKAI_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_TOKAI_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_TOKAI divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_TOKAI.region_state:JAP }
+        add = { value = s:STATE_TOKAI.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_TOKAI.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_TOKAI } subtract = 0.5 }
+}
+eafp_japan_tax_loss_TOKAI = { value = var:eafp_japan_independency_TOKAI divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_KYOTO_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_KYOTO } value = var:eafp_japan_loyalty_KYOTO }
+}
+eafp_japan_loyalty_KYOTO_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KYOTO_value
+    divide = 100
+    s:STATE_KYOTO.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KYOTO } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_KYOTO } add = 0.5 }
+}
+eafp_japan_independency_KYOTO_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KYOTO_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_KYOTO divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_KYOTO.region_state:JAP }
+        add = { value = s:STATE_KYOTO.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_KYOTO.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KYOTO } subtract = 0.5 }
+}
+eafp_japan_tax_loss_KYOTO = { value = var:eafp_japan_independency_KYOTO divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_KANSAI_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_KANSAI } value = var:eafp_japan_loyalty_KANSAI }
+}
+eafp_japan_loyalty_KANSAI_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KANSAI_value
+    divide = 100
+    s:STATE_KANSAI.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KANSAI } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_KANSAI } add = 0.5 }
+}
+eafp_japan_independency_KANSAI_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KANSAI_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_KANSAI divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_KANSAI.region_state:JAP }
+        add = { value = s:STATE_KANSAI.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_KANSAI.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KANSAI } subtract = 0.5 }
+}
+eafp_japan_tax_loss_KANSAI = { value = var:eafp_japan_independency_KANSAI divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_CHUGOKU_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_CHUGOKU } value = var:eafp_japan_loyalty_CHUGOKU }
+}
+eafp_japan_loyalty_CHUGOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_CHUGOKU_value
+    divide = 100
+    s:STATE_CHUGOKU.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_CHUGOKU } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_CHUGOKU } add = 0.5 }
+}
+eafp_japan_independency_CHUGOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_CHUGOKU_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_CHUGOKU divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_CHUGOKU.region_state:JAP }
+        add = { value = s:STATE_CHUGOKU.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_CHUGOKU.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_CHUGOKU } subtract = 0.5 }
+}
+eafp_japan_tax_loss_CHUGOKU = { value = var:eafp_japan_independency_CHUGOKU divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_SHIKOKU_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_SHIKOKU } value = var:eafp_japan_loyalty_SHIKOKU }
+}
+eafp_japan_loyalty_SHIKOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_SHIKOKU_value
+    divide = 100
+    s:STATE_SHIKOKU.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_SHIKOKU } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_SHIKOKU } add = 0.5 }
+}
+eafp_japan_independency_SHIKOKU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_SHIKOKU_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_SHIKOKU divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_SHIKOKU.region_state:JAP }
+        add = { value = s:STATE_SHIKOKU.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_SHIKOKU.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_SHIKOKU } subtract = 0.5 }
+}
+eafp_japan_tax_loss_SHIKOKU = { value = var:eafp_japan_independency_SHIKOKU divide = 100 multiply = eafp_japan_regional_tax_cap }
+
+eafp_japan_loyalty_KYUSHU_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_KYUSHU } value = var:eafp_japan_loyalty_KYUSHU }
+}
+eafp_japan_loyalty_KYUSHU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KYUSHU_value
+    divide = 100
+    s:STATE_KYUSHU.region_state:JAP ?= {
+        subtract = radical_fraction
+        add = loyalist_fraction
+        add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add
+    }
+    # 다이묘 영지 감독 / 충성심 재확인: 원래 주간 임무 modifier의 월간 효과.
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KYUSHU } subtract = 0.1 }
+    if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_KYUSHU } add = 0.5 }
+}
+eafp_japan_independency_KYUSHU_monthly = {
+    value = 50
+    subtract = eafp_japan_loyalty_KYUSHU_value
+    divide = 200
+    add = { value = 50 subtract = var:eafp_japan_independency_KYUSHU divide = 200 }
+    if = {
+        limit = { gdp > 0 exists = s:STATE_KYUSHU.region_state:JAP }
+        add = { value = s:STATE_KYUSHU.region_state:JAP.gdp divide = gdp min = 0 max = 1 }
+    }
+    s:STATE_KYUSHU.region_state:JAP ?= {
+        if = {
+            limit = { tax_capacity_usage > 0 }
+            add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 }
+        }
+        add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add
+    }
+    if = { limit = { has_modifier = modifier_oversee_daimyo_domains_KYUSHU } subtract = 0.5 }
+}
+eafp_japan_tax_loss_KYUSHU = { value = var:eafp_japan_independency_KYUSHU divide = 100 multiply = eafp_japan_regional_tax_cap }

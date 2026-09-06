@@ -1,4 +1,6 @@
-# 일본 바닐라 호환성 기준선
+﻿# 일본 바닐라 호환성 기준선
+
+> 2026-09-06 후속 변경: 지역 충성도·독립성 관리는 `je_bakuhantaisei` 하나에 통합했다. 주 충성도는 독자 저장값이며, 관리 주의 `cached_daimyo_loyalty`를 이 값으로 덮어쓴다. 별도 지역 JE와 고료 기능은 사용하지 않는다. 아래의 지역 삭제·인물 평균/대표자 캐시·고료 관련 과거 서술은 결정 이력으로 보존한다. 현재 구현과 검증 범위는 [주별 통치 구현 보고](japan_regional_implementation_report.md), 효과별 변경은 [이관표](japan_regional_effect_migration.md)를 참조한다.
 
 > **상태 변경(2026-09-01):** 이 문서는 0단계 조사 기준선으로만 보존한다. 현재 구현은 바닐라 호환 bridge를 사용하지 않고 EAFP 신게임 직접 소유 방식으로 전환되었다. 현행 구현 계약은 [`japan_stage3_bridge_report.md`](japan_stage3_bridge_report.md)를 따른다.
 
@@ -89,7 +91,7 @@
 | `common/journal_entries/eafp_japan.txt` | 바닐라 `je_zaibatsu` 재정의 | 옛 재벌 체인 완전 삭제 | 옛 JE 4개·이벤트·전용 자산 제거, 바닐라 정본만 유지 |
 | `common/company_types/eafp_companies_japan.txt` | 일본 공식 회사 재정의·중복 | 바닐라 정본 복구 | 공식 회사 4개 제거, EAFP 고유 회사 2개만 유지 |
 | `common/history/military_formations/06_military_formations_asia.txt` | 바닐라 동경로 전체 복사 | EAFP 추가분만 별도 파일로 분리 | 원본 경로 제거, 조선 추가분을 EAFP 파일로 분리 |
-| `common/history/countries/jap - japan.txt` | 바닐라 동경로 전체 복사 | 바닐라 국가 history 복구 | 원본 경로 제거, EAFP 추가 effect를 legacy 파일로 분리 |
+| `common/history/countries/jap - japan.txt` | 바닐라 동경로 전체 복사 | 후속 사용자 요청: 현행 바닐라 전문에 EAFP 변경분 병합 | 바닐라 전문 유지 + 한글 주석 `# 추가` / `# 수정`으로 7개 구간 표시. 분리 legacy 파일 제거; 증보·막번 저널 초기화도 병합하고 global 파일 제거 |
 | `events/meiji_restoration.txt` | 바닐라 동경로 전체 복사·namespace 충돌 | 옛 이벤트 namespacing | EAFP legacy 경로와 `eafp_jap_meiji_legacy`로 분리 |
 
 ## 6. 갱신 규칙

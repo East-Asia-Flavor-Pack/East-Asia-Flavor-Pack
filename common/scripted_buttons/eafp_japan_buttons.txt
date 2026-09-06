@@ -1,4 +1,4 @@
-# Active Japanese controls after stage 4 policy-journal removal.
+﻿# Active Japanese controls after stage 4 policy-journal removal.
 
 japan_kaikakuha_button = {
 	name = "japan_kaikakuha_button"
@@ -108,7 +108,10 @@ repeal_ikokusen_uchiharairei_button = { # 이국선 타불령 폐지
 	desc = "repeal_ikokusen_uchiharairei_button_desc"
 
 	visible = {
-		has_modifier = ikokusen_uchiharairei_modifier
+		has_law = law_type:law_sakoku
+		active_law:lawgroup_trade_policy = {
+			has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+		}
 	}
 
 	possible = {
@@ -117,7 +120,12 @@ repeal_ikokusen_uchiharairei_button = { # 이국선 타불령 폐지
 	}
 
 	effect = {
-		remove_modifier = ikokusen_uchiharairei_modifier
+		active_law:lawgroup_trade_policy ?= {
+			every_scope_amendment = {
+				limit = { type = amendment_type:amendment_eafp_ikokusen_uchiharairei }
+				remove_amendment = yes
+			}
+		}
 	}
 
 	ai_chance = {
@@ -130,8 +138,10 @@ reenact_ikokusen_uchiharairei_button = { # 이국선 타불령 부활
 	desc = "reenact_ikokusen_uchiharairei_button_desc"
 
 	visible = {
-		NOT = { has_modifier = ikokusen_uchiharairei_modifier }
-		has_law = law_type:law_isolationism
+		has_law = law_type:law_sakoku
+		active_law:lawgroup_trade_policy = {
+			NOT = { has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei }
+		}
 	}
 
 	possible = {
@@ -139,7 +149,18 @@ reenact_ikokusen_uchiharairei_button = { # 이국선 타불령 부활
 	}
 
 	effect = {
-		add_modifier = ikokusen_uchiharairei_modifier
+		active_law:lawgroup_trade_policy ?= {
+			if = {
+				limit = {
+					type = law_type:law_sakoku
+					NOT = { has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei }
+				}
+				add_amendment = {
+					type = amendment_eafp_ikokusen_uchiharairei
+					sponsor = PREV.ig:ig_landowners
+				}
+			}
+		}
 	}
 
 	ai_chance = {

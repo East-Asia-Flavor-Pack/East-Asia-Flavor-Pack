@@ -1,4 +1,6 @@
-# 일본 옛 콘텐츠 이관 Manifest
+﻿# 일본 옛 콘텐츠 이관 Manifest
+
+> 2026-09-06 후속 변경: 지역 충성도·독립성 관리는 `je_bakuhantaisei` 하나에 통합했다. 주 충성도는 독자 저장값이며, 관리 주의 `cached_daimyo_loyalty`를 이 값으로 덮어쓴다. 별도 지역 JE와 고료 기능은 사용하지 않는다. 아래의 지역 삭제·인물 평균/대표자 캐시·고료 관련 과거 서술은 결정 이력으로 보존한다. 현재 구현과 검증 범위는 [주별 통치 구현 보고](japan_regional_implementation_report.md), 효과별 변경은 [이관표](japan_regional_effect_migration.md)를 참조한다.
 
 이 문서의 “이관”은 `.disable` 원본을 활성 파일로 복원하고 정의·키·현지화를 재배치하는 파일 단위 작업만 뜻한다. 리뉴얼 이전 세이브를 변환하는 save migration은 계획·구현 범위에 포함하지 않는다.
 
@@ -130,10 +132,23 @@
 
 ### 6.2 재배치
 
-- `tenpo_famine.1-6/.99` → `REPLACE:je_tenpo_crisis`
+- `tenpo_famine.3-6`, `.99` → `REPLACE:je_tenpo_crisis`. 기근 시작 안내 `tenpo_famine.1`은 정의·호출·전용 현지화를 삭제하며, 기존 후속 `tenpo_famine.3`은 JE 개시 2개월 뒤 직접 예약한다. 니도메 `.2`의 정의·예약 호출·전용 쌀 이출 수정치·현지화와 구호소 설치·축소·확장·폐쇄 버튼, 구호소 modifier는 삭제한다. 구호 실적 누적과 별도 결말 농민 구호 보상은 유지한다.
+- `ikokusen_uchiharairei_modifier` → `amendment_eafp_ikokusen_uchiharairei`: `law_sakoku`에만 부착 가능한 증보로 이관. 초기 부착·막번 JE 생성은 `common/history/countries/jap - japan.txt` 마지막에서 수행하고 버튼·청원은 증보를 직접 조작한다.
 - `hokkaido.1-6`, `je_karafuto` → `REPLACE:je_taming_the_north`
 - 정책 성공·실패 사건 `eafp_japan.2201-2233` → `eafp_japan.2302-2305` 직접 후속
 - 지역 막번 사건 효과 → 저택 보유 magnate의 실제 loyalty
 - 중복 인물 참조 → [바닐라 정본 매핑](japan_legacy_character_identity_map.md)
 
 리뉴얼 이전 세이브에 대한 변수 변환, tombstone JE, migration on_action은 만들지 않았다.
+
+## 7. 일본 국가 history 전문 병합
+
+후속 사용자 요청에 따라 `common/history/countries/jap - japan.txt`를 현행 바닐라 전문과 활성 EAFP 변경분의 병합본으로 사용한다. 분리 파일 `common/history/countries/eafp_japan_legacy.txt`는 제거했다. 기존 표의 무수정 복원 이력과 `.disable` 원본은 변경하지 않는다.
+
+| 대조 대상 | SHA-256 | 처리 |
+|---|---|---|
+| 바닐라 `common/history/countries/jap - japan.txt` | `b9e7df278cb01ab2e5059a142d28a8102f88efcc0bae517c646787cc554113c5` | 표시 구간 제외 시 정규화 기준 전체 원문 일치 |
+| EAFP 병합 `common/history/countries/jap - japan.txt` | `af99fed0e108a26973d0ff4d1c994fda65ec4ed2f0138bc1ed4e676cebcb271f` | UTF-8 BOM + CRLF, 한글 주석 `# 수정` 1개와 `# 추가` 6개 구간 |
+| 옛 `common/history/countries/jap - japan.disable` | `f808b480104bfb8d67fcc45dc3933b738abbce5a61f6d54e72da7e5e00487931` | 변경 없이 대조본 보존 |
+
+기존 6개 표시 구간은 병합 직전 활성 legacy 파일의 효과를 보존한다. 마지막 7번째 구간은 `common/history/global/eafp_japan_start.txt`의 증보·막번 JE 초기화 본문을 같은 일본 국가 scope로 이관한 것으로, 실행 단계만 전역 history에서 국가 history로 앞당겼다. 원래 전역 파일은 중복 실행 방지를 위해 제거했으며 내용은 국가 파일에 보존했다. 삭제된 지역 저널·구호소 modifier·옛 이국선타불령 modifier는 복원하지 않았다.
