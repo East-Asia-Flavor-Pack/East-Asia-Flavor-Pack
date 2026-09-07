@@ -70,6 +70,8 @@ eafp_japan_refresh_region = {
             set_variable = eafp_japan_region_initialized_$STATE$
         }
         set_variable = eafp_japan_region_active_$STATE$
+        # Keep the UI linked to JAP's actual state, including split regions.
+        set_variable = { name = eafp_japan_region_state_$STATE$ value = s:STATE_$STATE$.region_state:JAP }
         # Synchronize mission modifiers before evaluating the state's monthly totals.
         s:STATE_$STATE$.region_state:JAP = {
             if = {
@@ -101,6 +103,7 @@ eafp_japan_refresh_region = {
         }
     }
     else = {
+        remove_variable = eafp_japan_region_state_$STATE$
         s:STATE_$STATE$ = { every_scope_state = { eafp_japan_release_region_state = yes } }
         # A mission may still point at the lost state object. Clear its country cost
         # explicitly instead of relying on region_state:JAP resolving after loss.
