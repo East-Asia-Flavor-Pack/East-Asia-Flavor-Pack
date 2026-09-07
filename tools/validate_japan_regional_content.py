@@ -60,11 +60,19 @@ def main():
     assert effects.index('set_variable = eafp_japan_regional_ended') < effects.index('remove_variable = eafp_japan_loyalty_TOHOKU')
     assert je.count('eafp_japan_monthly_regions = yes') == 1
     assert je.count('eafp_japan_end_regions = yes') == 2
-    assert 'name = "widget_eafp_japan_regions"' in je and 'name = "widget_eafp_japan_regions"' in gui
+    assert 'name = "widget_je_bakuhantaisei_japan_regions"' in je and 'name = "widget_je_bakuhantaisei_japan_regions"' in gui
     assert gui.count('green_progressbar_horizontal = {') == 9
     assert gui.count('bad_progressbar_horizontal = {') == 9
-    assert gui.count('block \"progressbar_size\" { size = { 504 30 } }') == 18
+    assert gui.count('block \"progressbar_size\" { size = { 344 30 } }') == 18
+    panel = gui.split('type eafp_japan_regions = container {', 1)[1].split('\n}\n\nflowcontainer =', 1)[0]
+    assert panel.count('section_header_button = {') == 1
+    assert panel.count('using = clean_button') == 9
+    assert panel.count("GetVariableSystem.Toggle('eafp_japan_regions_list_expanded')") == 1
     for region in REGIONS:
+        assert f'name = "eafp_japan_region_{region}_row"' in panel
+        assert f"'eafp_japan_region_{region}_effects_text'" in panel
+        assert f'text = "eafp_japan_region_{region}_effects_text"' not in panel
+        assert f'eafp_japan_region_{region}_expanded' not in panel
         for kind in ('loyalty', 'independency'):
             assert f'tooltip = \"eafp_japan_region_{kind}_{region}_tooltip\"' in gui
     for folder in ('common', 'events'):
