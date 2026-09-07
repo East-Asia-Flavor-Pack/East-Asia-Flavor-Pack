@@ -531,6 +531,13 @@ remove_bakufu_politician_mission = { # scope = character
 			switch = {
 				trigger = var:eafp_bakuhantaisei_politician_current_mission
 				flag:eafp_oversee_daimyo_domains = {
+					# Remove the state effect before clearing the saved mission location.
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= {
+						if = {
+							limit = { has_modifier = modifier_oversee_daimyo_domains }
+							remove_modifier = modifier_oversee_daimyo_domains
+						}
+					}
 					switch = {
 						trigger = var:eafp_bakuhantaisei_politician_current_mission_location.state_region
 						s:STATE_TOHOKU = {
@@ -565,6 +572,13 @@ remove_bakufu_politician_mission = { # scope = character
 					remove_variable = eafp_bakuhantaisei_politician_current_mission_location
 				}
 				flag:eafp_reaffirm_daimyos_loyalty = {
+					# Remove the state effect before clearing the saved mission location.
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= {
+						if = {
+							limit = { has_modifier = modifier_reaffirm_daimyos_loyalty }
+							remove_modifier = modifier_reaffirm_daimyos_loyalty
+						}
+					}
 					switch = {
 						trigger = var:eafp_bakuhantaisei_politician_current_mission_location.state_region
 						s:STATE_TOHOKU = {
@@ -1401,55 +1415,6 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 }
 
 # 막번체제
-add_eafp_japan_daimyo_loyalty = {
-	hidden_effect = {
-		if = {
-			limit = {
-				NOT = {
-					any_scope_character = {
-						has_role_of_type = magnate
-						has_variable = daimyo_var
-						var:daimyo_var ?= $TARGET$
-					}
-				}
-			}
-			je_meiji_restoration_update_daimyos = yes
-		}
-		ordered_scope_character = {
-			limit = {
-				has_role_of_type = magnate
-				has_variable = daimyo_var
-				var:daimyo_var ?= $TARGET$
-			}
-			order_by = prominence
-			position = 0
-			change_variable = {
-				name = eafp_japan_daimyo_loyalty_adjustment
-				add = $VALUE$
-			}
-			if = {
-				limit = { var:eafp_japan_daimyo_loyalty_adjustment > 100 }
-				set_variable = { name = eafp_japan_daimyo_loyalty_adjustment value = 100 }
-			}
-			else_if = {
-				limit = { var:eafp_japan_daimyo_loyalty_adjustment < -100 }
-				set_variable = { name = eafp_japan_daimyo_loyalty_adjustment value = -100 }
-			}
-			remove_modifier = eafp_japan_daimyo_loyalty_adjustment_modifier
-			add_modifier = {
-				name = eafp_japan_daimyo_loyalty_adjustment_modifier
-				multiplier = var:eafp_japan_daimyo_loyalty_adjustment
-			}
-		}
-		country_calculate_and_cache_daimyo_loyalties_per_state = yes
-	}
-	custom_description = {
-		text = add_eafp_japan_daimyo_loyalty
-		object = $TARGET$
-		value = $VALUE$
-	}
-}
-
 add_bakuhantaisei_bakufu_authority = {
 	je:je_bakuhantaisei = {
 		add_progress = { value = $VALUE$ name = bakuhantaisei_bakufu_authority_progress_bar }

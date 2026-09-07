@@ -24,6 +24,13 @@ eafp_japan_release_region_state = {
             }
         }
         clear_saved_scope = eafp_japan_lost_mission_state
+        if = { limit = { has_modifier = modifier_oversee_daimyo_domains } remove_modifier = modifier_oversee_daimyo_domains }
+        if = { limit = { has_modifier = modifier_reaffirm_daimyos_loyalty } remove_modifier = modifier_reaffirm_daimyos_loyalty }
+        # 저널 완료/무효화 및 주 상실 시 유산도 함께 정리한다.
+        if = {
+            limit = { has_modifier = legacy_of_sekigahara_modifier }
+            remove_modifier = legacy_of_sekigahara_modifier
+        }
         remove_variable = eafp_japan_loyalty_cache_managed
         remove_variable = cached_daimyo_loyalty
         remove_modifier = eafp_japan_regional_tax_waste
@@ -63,6 +70,25 @@ eafp_japan_refresh_region = {
             set_variable = eafp_japan_region_initialized_$STATE$
         }
         set_variable = eafp_japan_region_active_$STATE$
+        # Synchronize mission modifiers before evaluating the state's monthly totals.
+        s:STATE_$STATE$.region_state:JAP = {
+            if = {
+                limit = { has_modifier = modifier_oversee_daimyo_domains }
+                remove_modifier = modifier_oversee_daimyo_domains
+            }
+            if = {
+                limit = { owner = { has_modifier = modifier_oversee_daimyo_domains_$STATE$ } }
+                add_modifier = { name = modifier_oversee_daimyo_domains days = 14 }
+            }
+            if = {
+                limit = { has_modifier = modifier_reaffirm_daimyos_loyalty }
+                remove_modifier = modifier_reaffirm_daimyos_loyalty
+            }
+            if = {
+                limit = { owner = { has_modifier = modifier_reaffirm_daimyos_loyalty_$STATE$ } }
+                add_modifier = { name = modifier_reaffirm_daimyos_loyalty days = 14 }
+            }
+        }
         set_variable = { name = eafp_japan_loyalty_delta_$STATE$ value = eafp_japan_loyalty_$STATE$_monthly }
         set_variable = { name = eafp_japan_independency_delta_$STATE$ value = eafp_japan_independency_$STATE$_monthly }
         s:STATE_$STATE$.region_state:JAP = {
@@ -158,6 +184,29 @@ eafp_japan_update_regional_approval = {
 eafp_japan_refresh_regions = {
     if = {
         limit = { c:JAP ?= THIS }
+        # 옛 JAP history의 세키가하라 유산: 주 월간 변화량을 계산하기 전에 적용.
+        if = {
+            limit = { eafp_japan_regional_active = yes }
+            s:STATE_KYUSHU.region_state:JAP ?= {
+                if = {
+                    limit = { NOT = { has_modifier = legacy_of_sekigahara_modifier } }
+                    add_modifier = {
+                        name = legacy_of_sekigahara_modifier
+                        multiplier = 0.4
+                    }
+                }
+            }
+            s:STATE_CHUGOKU.region_state:JAP ?= {
+                if = {
+                    limit = { NOT = { has_modifier = legacy_of_sekigahara_modifier } }
+                    add_modifier = {
+                        name = legacy_of_sekigahara_modifier
+                        multiplier = 0.2
+                    }
+                }
+            }
+        }
+        # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
         eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
         eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
         eafp_japan_refresh_region = { STATE = HOKUSHINETSU LOYALTY = 75 INDEPENDENCY = 25 }
@@ -167,6 +216,7 @@ eafp_japan_refresh_regions = {
         eafp_japan_refresh_region = { STATE = CHUGOKU LOYALTY = 45.8 INDEPENDENCY = 54.2 }
         eafp_japan_refresh_region = { STATE = SHIKOKU LOYALTY = 67.5 INDEPENDENCY = 32.5 }
         eafp_japan_refresh_region = { STATE = KYUSHU LOYALTY = 28.8 INDEPENDENCY = 71.2 }
+        # 이걸로 값 계산
         eafp_japan_update_regional_approval = yes
     }
 }
@@ -251,7 +301,7 @@ eafp_japan_end_regions = {
     }
 }
 
-add_eafp_japan_state_loyalty = {
+add_bakuhantaisei_state_loyalty = {
     hidden_effect = {
         if = {
             limit = { eafp_japan_regional_active = yes exists = $TARGET$ }
@@ -316,10 +366,10 @@ add_eafp_japan_state_loyalty = {
             eafp_japan_refresh_regions = yes
         }
     }
-    custom_description = { text = add_eafp_japan_state_loyalty object = $TARGET$ value = $VALUE$ }
+    custom_description = { text = add_bakuhantaisei_state_loyalty object = $TARGET$ value = $VALUE$ }
 }
 
-add_eafp_japan_state_independency = {
+add_bakuhantaisei_state_independency = {
     hidden_effect = {
         if = {
             limit = { eafp_japan_regional_active = yes exists = $TARGET$ }
@@ -384,5 +434,5 @@ add_eafp_japan_state_independency = {
             eafp_japan_refresh_regions = yes
         }
     }
-    custom_description = { text = add_eafp_japan_state_independency object = $TARGET$ value = $VALUE$ }
+    custom_description = { text = add_bakuhantaisei_state_independency object = $TARGET$ value = $VALUE$ }
 }

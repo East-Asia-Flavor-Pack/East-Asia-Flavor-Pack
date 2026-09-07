@@ -39,7 +39,7 @@ def main():
     gates = read('common/scripted_triggers/eafp_japan_regional_triggers.txt')
     boshin = read('events/eafp_jap_events/eafp_boshin_war.txt')
     # Jomini scripted-effect arguments must be scalar tokens, not formula blocks.
-    assert not re.search(r'add_eafp_japan_state_\w+\s*=\s*\{[^{}]*VALUE\s*=\s*\{', boshin)
+    assert not re.search(r'add_bakuhantaisei_state_\w+\s*=\s*\{[^{}]*VALUE\s*=\s*\{', boshin)
     assert boshin.count('save_scope_value_as = { name = eafp_japan_boshin_regional_change') == 63
     assert boshin.count('VALUE = scope:eafp_japan_boshin_regional_change') == 63
     assert boshin.count('clear_saved_scope = eafp_japan_boshin_regional_change') == 63
@@ -61,7 +61,12 @@ def main():
     assert je.count('eafp_japan_monthly_regions = yes') == 1
     assert je.count('eafp_japan_end_regions = yes') == 2
     assert 'name = "widget_eafp_japan_regions"' in je and 'name = "widget_eafp_japan_regions"' in gui
-    assert gui.count('progressbar = {') >= 18
+    assert gui.count('green_progressbar_horizontal = {') == 9
+    assert gui.count('bad_progressbar_horizontal = {') == 9
+    assert gui.count('block \"progressbar_size\" { size = { 504 30 } }') == 18
+    for region in REGIONS:
+        for kind in ('loyalty', 'independency'):
+            assert f'tooltip = \"eafp_japan_region_{kind}_{region}_tooltip\"' in gui
     for folder in ('common', 'events'):
         for path in (ROOT / folder).rglob('*.txt'):
             text = path.read_text(encoding='utf-8-sig')
