@@ -1,4 +1,4 @@
-# Vanilla 1.13.11 je_taming_the_north with explicit EAFP follow-up deltas.
+﻿# Vanilla 1.13.11 je_taming_the_north with explicit EAFP follow-up deltas.
 # The deleted legacy northern journal is not restored.
 
 REPLACE:je_taming_the_north = {
@@ -94,41 +94,10 @@ REPLACE:je_taming_the_north = {
             name = hokkaido_agriculture_arable_counter_var
             value = 0
         }
-        set_variable = {
-            name = ainu_friendship_var
-            value = 0
-        }
     }
 
     on_monthly_pulse = {
-
-        # EAFP DELTA BEGIN: preserved Hokkaido event chain
-        effect = {
-            if = {
-                limit = {
-                    c:JAP ?= ROOT
-                    NOT = { has_variable = eafp_jap_hokkaido_castle_chain_started }
-                    s:STATE_HOKKAIDO.region_state:JAP ?= {
-                        state_population > 250000
-                        gdp > 500000
-                    }
-                }
-                random_list = {
-                    23 = { }
-                    1 = {
-                        set_variable = eafp_jap_hokkaido_castle_chain_started
-                        trigger_event = { id = hokkaido.2 popup = yes }
-                    }
-                }
-            }
-        }
-        random_events = {
-            46 = 0
-            1 = hokkaido.5
-            1 = hokkaido.6
-        }
-        # EAFP DELTA END
-}
+    }
 
     on_yearly_pulse = {
         random_events = {
@@ -240,15 +209,10 @@ REPLACE:je_taming_the_north = {
         remove_variable = hokkaido_agriculture_arable_counter_var
         remove_variable = button_je_taming_the_north_establish_colonies_var
 
-        # EAFP DELTA BEGIN: legacy northern follow-up
+        # 이하 추가
         if = {
             limit = { c:JAP ?= ROOT }
             set_variable = eafp_jap_taming_north_completed
-            if = {
-                limit = { NOT = { has_variable = eafp_jap_hokkaido_1_fired } }
-                set_variable = eafp_jap_hokkaido_1_fired
-                trigger_event = { id = hokkaido.1 popup = yes }
-            }
             if = {
                 limit = {
                     NOT = { has_variable = eafp_jap_karafuto_started }
@@ -258,16 +222,7 @@ REPLACE:je_taming_the_north = {
                 set_variable = eafp_jap_karafuto_started
                 add_journal_entry = { type = je_karafuto }
             }
-            if = {
-                limit = {
-                    has_variable = eafp_jap_restoration_finished
-                    NOT = { has_law_or_variant = law_type:law_isolationism }
-                    NOT = { has_variable = eafp_jap_meiji_legacy_13_fired }
-                }
-                trigger_event = { id = eafp_jap_meiji_legacy.13 popup = yes }
-            }
         }
-        # EAFP DELTA END
 }
 
     event_outcome_completed_effect_desc = {
@@ -306,10 +261,7 @@ REPLACE:je_taming_the_north = {
                 popup = yes
             }
         }
-
-        # EAFP DELTA BEGIN
-        set_variable = eafp_jap_taming_north_failed
-        # EAFP DELTA END
+        set_variable = eafp_jap_taming_north_failed # 추가
 }
 
     event_outcome_failed_effect_desc = {

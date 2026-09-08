@@ -969,3 +969,138 @@ eafp_push_bill = { # 법안 밀어붙이기
 		}
 	}
 }
+
+#수정: 바닐라 retire_daimyo를 REPLACE하여 막부 직위 재직자의 보직해임을 제한
+REPLACE:retire_daimyo = {
+	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
+
+	potential = {
+		scope:actor ?= {
+			c:JAP ?= this
+		}
+		has_variable = daimyo_var
+		is_in_exile_pool = no
+		is_in_void = no
+		is_ruler_of_own_country = no
+		is_heir_of_own_country = no
+		is_immortal = no
+	}
+
+	show_requirements = yes
+
+	possible = {
+		#추가: 대로·노중수좌·노중 직위에 있지 않은 다이묘만 보직해임 가능
+		custom_tooltip = {
+			text = eafp_retire_daimyo_no_bakufu_office_tt
+			NOR = {
+				is_tairo = yes
+				is_rojushuza = yes
+				is_roju = yes
+			}
+		}
+		#추가 끝
+		owner ?= {
+			authority >= ROOT.retire_daimyo_authority_cost
+		}
+		loyalty < define:NCharacters|LOYALTY_NEUTRAL_THRESHOLD
+		custom_tooltip = {
+			text = daimyo_tt
+			has_variable = daimyo_var
+		}
+		owner ?= {
+			has_law = law_type:law_bakufu
+		}
+	}
+
+	effect = {
+		owner ?= {
+			add_modifier = { name = modifier_retired_daimyo days = normal_modifier_time }
+		}
+		var:daimyo_var ?= {
+			random_scope_state = {
+				limit = {
+					scope:actor ?= owner
+				}
+				add_radicals_in_state = {
+					value = large_radicals
+				}
+			}
+		}
+		retire_character = yes
+	}
+
+	cooldown = { days = normal_modifier_time }
+	show_confirmation_box = yes
+
+	ai_will_do = {
+		is_heir_of_own_country = no # The AI won't kill its own heirs
+	}
+
+	ai_chance = {
+		value = -50
+		if = {
+			limit = {
+				loyalty >= define:NCharacters|LOYALTY_UNCERTAIN_THRESHOLD
+			}
+			add = 25
+		}
+		else_if = {
+			limit = {
+				loyalty < define:NCharacters|LOYALTY_UNCERTAIN_THRESHOLD
+			}
+			add = 35
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law_or_variant = law_type:law_outlawed_dissent
+				}
+			}
+			add = 30
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law_or_variant = law_type:law_censorship
+				}
+			}
+			add = 10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law_or_variant = law_type:law_right_of_assembly
+				}
+			}
+			add = -10
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					has_law_or_variant = law_type:law_protected_speech
+				}
+			}
+			add = -20
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					any_interest_group = {
+						is_insurrectionary = yes
+					}
+				}
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				scope:actor ?= {
+					ruler = {
+						has_trait = imperious
+					}
+				}
+			}
+			add = 10
+		}
+	}
+}

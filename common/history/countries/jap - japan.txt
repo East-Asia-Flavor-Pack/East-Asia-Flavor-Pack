@@ -1,11 +1,4 @@
-﻿# 바닐라 1.13.11 일본 국가 역사 원문에 EAFP 변경 사항 반영.
-# 바닐라 원본 SHA-256: b9e7df278cb01ab2e5059a142d28a8102f88efcc0bae517c646787cc554113c5
-# 추가: 바닐라에 없는 초기 효과. 구간 마지막은 '추가 끝'으로 표시.
-# 수정: 바닐라 국가 상태에 대한 변경 효과. 구간 마지막은 '수정 끝'으로 표시.
-# 표시 구간을 제외하면 바닐라 원문이 유지됩니다. 바닐라 법률/DLC 분기는 삭제하지 않습니다.
-# 옛 .disable 원본은 대조용으로 보존합니다. 폐기된 콘텐츠는 복구하지 않습니다.
-# 초기 증보 및 막번체제 저널은 이 파일 마지막에서 등록합니다.
-COUNTRIES = {
+﻿COUNTRIES = {
 	c:JAP ?= {
 		effect_starting_technology_tier_4_tech = yes
 
@@ -73,50 +66,29 @@ COUNTRIES = {
 			}
 		}
 
-		# 수정: 군부 이념, 이해집단 명칭, 유교 국교
+		# 이하 추가
 		ig:ig_armed_forces ?= {
 			add_ideology = ideology_hierarchic
 			remove_ideology = ideology_loyalist
 			remove_ideology = ideology_patriotic
 		}
-		ig:ig_landowners ?= { set_interest_group_name = ig_daimyo }
 		ig:ig_devout ?= { set_interest_group_name = ig_kokugakusha }
-		ig:ig_intelligentsia ?= { set_interest_group_name = ig_rangakusha }
 		ig:ig_petty_bourgeoisie ?= { set_interest_group_name = ig_kashin }
 		ig:ig_trade_unions ?= { set_interest_group_name = ig_shokunin }
 		ig:ig_industrialists ?= { set_interest_group_name = ig_shonin }
 
 		set_state_religion = rel:confucian
-		# 수정 끝
 
-		# 추가: 막부 부패 수정치
 		add_modifier = bakufu_corruption_mil
 		add_modifier = bakufu_corruption_adm
 		add_modifier = bakufu_corruption_fin
 		add_modifier = bakufu_corruption_dip
-		# 추가 끝
 
-		# 추가: 하루 뒤 막번체제 안내 이벤트 (저널 생성은 이 파일 마지막에서 처리)
-		trigger_event = { id = eafp_japan.1 days = 1 }
-		# 추가 끝
+		trigger_event = { id = eafp_japan.1 days = 1 popup = yes }
 
-		# 추가: EAFP 기근 및 다이묘 파벌 초기 수정치
-		every_scope_state = {
-			limit = {
-				NOT = { state_region = s:STATE_TOHOKU }
-				NOT = { state_region = s:STATE_KYUSHU }
-				NOT = { state_region = s:STATE_HOKKAIDO }
-			}
-			add_modifier = modifier_crop_failure_tenpo_2
-		}
-		s:STATE_TOHOKU.region_state:JAP = { add_modifier = modifier_crop_failure_tenpo_3 }
-		s:STATE_KYUSHU.region_state:JAP = { add_modifier = modifier_crop_failure_tenpo_1 }
 		add_modifier = { name = bakufu_kaikaku_daimyo_approval_positive_modifier multiplier = 0.36 }
 		add_modifier = { name = bakufu_kaikaku_daimyo_influence_modifier multiplier = 0.36 }
-		# 추가 끝
 
-		# 추가: 옛 EAFP 역사 사건 예약: 기존 ID와 지연시간 보존
-		trigger_event = { id = eafp_japan.2001 days = 576 }
 		trigger_event = { id = eafp_japan.2002 months = 15 }
 		trigger_event = { id = eafp_japan.2004 days = 1905 }
 		trigger_event = { id = eafp_japan.2005 days = 6413 }
@@ -124,41 +96,22 @@ COUNTRIES = {
 		trigger_event = { id = eafp_japan.1001 days = 357 }
 		trigger_event = { id = eafp_japan.1002 months = 58 }
 		trigger_event = { id = eafp_japan.1007 years = 2 }
-		trigger_event = { id = eafp_japan.1008 days = 1805 }
 		trigger_event = { id = eafp_japan.1009 months = { 60 72 } }
 		trigger_event = { id = eafp_japan.1010 months = { 120 132 } }
 		trigger_event = { id = eafp_japan.1012 months = { 132 144 } }
-		trigger_event = { id = eafp_japan.1013 months = { 228 240 } }
 		trigger_event = { id = eafp_japan.1014 months = { 180 192 } }
 		trigger_event = { id = eafp_japan.1016 months = { 372 384 } }
-		# 추가 끝
 
-		# 추가: 개혁파/보수파 영향력 및 후계자 상태 초기값
 		set_variable = { name = hitotsubashiha_influence_var value = 20 }
 		set_variable = { name = nankiha_influence_var value = 80 }
 		set_variable = no_heirs
-		# 추가 끝
 
-		# 추가: 시작 증보 및 막번체제 저널 (전역 역사 파일에서 이관)
 		active_law:lawgroup_trade_policy ?= {
-			if = {
-				limit = {
-					type = law_type:law_sakoku
-					NOT = { has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei }
-				}
-				add_amendment = {
-					type = amendment_eafp_ikokusen_uchiharairei
-					sponsor = PREV.ig:ig_landowners
-				}
+			add_amendment = {
+				type = amendment_eafp_ikokusen_uchiharairei
+				sponsor = PREV.ig:ig_petty_bourgeoisie
 			}
 		}
-		if = {
-			limit = {
-				has_law = law_type:law_bakufu
-				NOT = { has_journal_entry = je_bakuhantaisei }
-			}
-			add_journal_entry = { type = je_bakuhantaisei }
-		}
-		# 추가 끝
+		add_journal_entry = { type = je_bakuhantaisei }
 	}
 }

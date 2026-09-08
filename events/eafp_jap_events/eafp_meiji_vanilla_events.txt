@@ -1,0 +1,140 @@
+﻿namespace = ep2_meiji
+
+#수정: 바닐라 황실 혼인 경로에 EAFP 파벌 효과만 추가
+REPLACE:ep2_meiji.3 = { # Imperial Marriage
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.3.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					any_scope_treaty = {
+						binds = ROOT
+						any_scope_article = {
+							OR = {
+								has_type = trade_privilege
+								has_type = foreign_investment_rights
+								has_type = law_commitment
+							}
+						}
+					}
+				}
+				desc = ep2_meiji.3.d
+			}
+			triggered_desc = {
+				trigger = {
+					always = yes
+				}
+				desc = ep2_meiji.3.d2
+			}
+		}
+	}
+	flavor = ep2_meiji.3.f
+
+    event_image = {
+		video = "unspecific_signed_contract"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		japan_generate_imperial_princess_effect = yes
+		random_scope_treaty = {
+			limit = {
+				binds = ROOT
+				any_scope_article = {
+					OR = {
+						has_type = trade_privilege
+						has_type = foreign_investment_rights
+						has_type = law_commitment
+					}
+				}
+			}
+			save_scope_as = relevant_treaty_scope
+		}
+		random_scope_character = {
+			limit = {
+				has_variable = japan_imperial_princess
+			}
+			save_scope_as = imperial_princess_scope
+		}
+		ruler = {
+			save_scope_as = shogun_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 0
+			save_scope_as = daimyo_1_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 1
+			save_scope_as = daimyo_2_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 2
+			save_scope_as = daimyo_3_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 3
+			save_scope_as = daimyo_4_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 4
+			save_scope_as = daimyo_5_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 5
+			save_scope_as = daimyo_6_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji.3.a
+		default_option = yes
+		scope:shogun_scope ?= {
+			set_variable = japan_imperial_marriage
+		}
+		add_journal_entry = { type = je_meiji_imperial_marriage }
+		#추가: 황실 혼인 성립 시 EAFP 히토츠바시파 지지도 반영
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_approval = { VALUE = 5 }
+		}
+		#추가 끝
+	}
+}

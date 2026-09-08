@@ -1,0 +1,181 @@
+﻿namespace = tenpo_events
+
+#수정: 바닐라 tenpo_events.2를 대체하여 EAFP 후속 사건 연결
+REPLACE:tenpo_events.2 = {
+	type = country_event
+	placement = scope:osaka_scope
+
+	duration = 3
+
+	title = tenpo_events.2.t
+	desc = tenpo_events.2.d
+	flavor = tenpo_events.2.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:oshio_scope
+
+	dlc = dlc018
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	immediate = {
+		create_character = {
+			template = JAP_oshio_heihachiro
+			on_created = {
+				place_character_in_void = 24
+			}
+			save_scope_as = oshio_scope
+		}
+		random_scope_state = {
+			limit = {
+				state_region = s:STATE_KANSAI
+			}
+			save_scope_as = osaka_scope
+		}
+		set_variable = oshio_revolt_happened_var
+	}
+
+	trigger = {
+		any_scope_state = {
+			state_region = s:STATE_KANSAI
+			any_scope_pop = {
+				is_in_severe_starvation = yes
+			}
+		}
+		NOT = {
+			je:je_tenpo_crisis = {
+				has_modifier = modifier_rice_hoarding
+			}
+		}
+	}
+
+	cancellation_trigger = {
+
+	}
+
+	option = {
+		name = tenpo_events.2.a
+		default_option = yes
+		custom_tooltip = {
+			text = tenpo_events.2.tt_3
+		}
+		add_loyalists = {
+			value = small_radicals
+			strata = upper
+		}
+		add_radicals = {
+			value = medium_radicals
+			strata = middle
+		}
+		add_radicals = {
+			value = small_radicals
+			strata = lower
+		}
+		add_modifier = {
+			name = modifier_osaka_burning
+			days = long_modifier_time
+		}
+		scope:osaka_scope = {
+			random_list = {
+				2 = {
+					add_devastation = 10
+					kill_population_percent_in_state = {
+						culture = cu:japanese
+						percent = 0.02
+					}
+					custom_tooltip = {
+						text = tenpo_events.2.tt_1
+						scope:oshio_scope = {
+							kill_character = yes
+						}
+					}
+				}
+				1 = {
+					add_devastation = 20
+					kill_population_percent_in_state = {
+						culture = cu:japanese
+						percent = 0.04
+					}
+					custom_tooltip = {
+						text = tenpo_events.2.tt_2
+						scope:oshio_scope = {
+							kill_character = yes
+						}
+					}
+				}
+			}
+		}
+	}
+
+	option = {
+		name = tenpo_events.2.b
+		custom_tooltip = {
+			text = tenpo_events.2.tt_4
+			scope:oshio_scope = {
+				free_character_from_void = yes
+				replace_character_roles = { add = { agitator } remove_all = yes }
+			}
+		}
+		add_radicals = {
+			value = very_large_radicals
+			strata = upper
+		}
+		add_radicals = {
+			value = small_radicals
+			strata = middle
+		}
+		add_loyalists = {
+			value = small_radicals
+			strata = lower
+		}
+		scope:osaka_scope = {
+			add_devastation = 5
+			kill_population_percent_in_state = {
+				culture = cu:japanese
+				percent = 0.01
+			}
+		}
+		ig:ig_armed_forces = {
+			add_modifier = {
+				name = modifier_controversial_pardon
+				multiplier = 1.5
+			}
+		}
+		ig:ig_landowners = {
+			add_modifier = {
+				name = modifier_controversial_pardon
+			}
+		}
+	}
+
+	option = {
+		name = tenpo_events.2.c
+		highlighted_option = yes
+		show_as_unavailable = { 
+			always = yes 
+		}
+		trigger = {
+			s:STATE_KANSAI = {
+				region_state:JAP ?= {
+					turmoil >= 0.2
+				}
+			}
+		}
+		scope:oshio_scope = {
+			free_character_from_void = yes
+			replace_character_roles = { add = { agitator } remove_all = yes }
+		}
+	}
+
+	#추가: 선택 결과 처리 후 한 달 뒤 EAFP 오시오 반란의 여파로 연결
+	after = {
+		trigger_event = { id = tenpo_famine.6 months = 1 }
+	}
+	#추가 끝
+}
