@@ -138,3 +138,404 @@ REPLACE:ep2_meiji.3 = { # Imperial Marriage
 		#추가 끝
 	}
 }
+
+namespace = ep2_meiji_pulse
+
+REPLACE:ep2_meiji_pulse.1 = { # Namamugi Incident
+	type = country_event
+	placement = scope:relevant_treaty_port_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.1.t
+	desc = ep2_meiji_pulse.1.d
+	flavor = ep2_meiji_pulse.1.f
+
+    event_image = {
+		video = "ep2_important_japanese_men_negotiating"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	cancellation_trigger = {
+		has_revolution = yes
+	}
+
+	trigger = {
+		any_state_in_home_islands = {
+			is_treaty_port = yes
+			any_neighbouring_state = {
+				owner = ROOT
+			}
+		}
+		any_in_global_list = {
+			variable = great_power_country_list
+			has_strategic_region_interest_tier = {
+				strategic_region = ROOT.capital.region
+				value >= 1
+			}
+		}
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_AGITATING_THRESHOLD
+		}
+		any_scope_character = {
+			has_variable = daimyo_var
+			NOT = {
+				var:daimyo_var ?= s:STATE_KYOTO # Hikone Domain is landlocked
+			}
+		}
+	}
+
+	immediate = {
+		#추가: 외국 측 사건과 일본 측 배상 결정에 동일한 국가 스코프 전달
+		save_scope_as = japan_scope
+		#추가 끝
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		generate_1_common_name = {
+			CULTURE_1 = primary_culture
+		}
+		random_state_in_home_islands = {
+			limit = {
+				owner = ROOT
+				any_neighbouring_state = {
+					is_treaty_port = yes
+				}
+			}
+			save_scope_as = relevant_treaty_port_state
+		}
+		random_in_global_list = {
+			variable = great_power_country_list
+			limit = {
+				has_strategic_region_interest_tier = {
+					strategic_region = ROOT.capital.region
+					value >= 1
+				}
+			}
+			save_scope_as = relevant_gp
+			random_primary_culture = {
+				save_scope_as = relevant_gp_culture
+			}
+		}
+		scope:relevant_gp ?= {
+			create_character = {
+				historical = yes
+				culture = primary_culture
+				role = character_role_magnate
+				interest_group = ig_industrialists
+				ideology = ideology_moderate
+				holding_type = building_financial_district
+				traits = {
+					arrogant
+					explorer
+				}
+				on_created = {
+					transfer_character = c:JAP
+				}
+				save_scope_as = richardson_scope
+			}
+		}
+		random_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+				NOT = {
+					var:daimyo_var ?= s:STATE_KYOTO # Hikone Domain is landlocked
+				}
+			}
+			save_scope_as = daimyo_scope
+			set_variable = namamugi_daimyo_var
+			#추가: 사건 발생 당시 가해 다이묘의 일본 영지를 후속 사건에 고정
+			var:daimyo_var ?= {
+				random_scope_state = {
+					limit = { owner = ROOT }
+					save_scope_as = namamugi_daimyo_state
+				}
+			}
+			#추가 끝
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.1.a
+		default_option = yes
+		scope:richardson_scope ?= {
+			show_as_tooltip = {
+				kill_character = yes
+			}
+			hidden_effect = {
+				place_character_in_void = 100
+			}
+		}
+		scope:relevant_gp ?= {
+			trigger_event = { id = ep2_meiji_pulse.11 days = 30 }
+		}
+	}
+
+	after = {
+		clear_generated_names = yes
+	}
+}
+
+REPLACE:ep2_meiji_pulse.11 = { # Namamugi Incident - GP
+	type = country_event
+	placement = scope:relevant_treaty_port_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.11.t
+	desc = ep2_meiji_pulse.11.d
+	flavor = ep2_meiji_pulse.11.f
+
+    event_image = {
+		video = "ip2_telegraph_dictate"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		c:JAP ?= {
+			save_scope_as = japan_scope
+		}
+		random_primary_culture = {
+			save_scope_as = primary_culture_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.11.a
+		default_option = yes
+		scope:japan_scope ?= {
+			#수정: 즉시 포격 예약 대신 일본 측 배상 결정을 먼저 진행
+			# trigger_event = { id = ep2_meiji_pulse.2 days = 60 }
+			if = {
+				limit = {
+					NOT = { has_variable = eafp_namamugi_compensation_pending }
+					NOT = { has_variable = eafp_namamugi_compensation_paid }
+					NOT = { has_variable = eafp_namamugi_compensation_refused }
+				}
+				set_variable = eafp_namamugi_compensation_pending
+				trigger_event = { id = eafp_japan.4006 days = 10 popup = yes }
+			}
+			#수정 끝
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.11.b
+		add_modifier = {
+			name = modifier_namamugi_incident_prestige_loss
+			days = normal_modifier_time
+		}
+	}
+}
+
+REPLACE:ep2_meiji_pulse.2 = { # Bombardment of Kagoshima
+	type = country_event
+	placement = scope:namamugi_daimyo_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.2.t
+	desc = ep2_meiji_pulse.2.d
+	flavor = ep2_meiji_pulse.2.f
+
+    event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	cancellation_trigger = {
+		has_revolution = yes
+	}
+
+	#추가: 일본이 배상을 거부한 경우에만 포격 발생
+	trigger = {
+		has_variable = eafp_namamugi_compensation_refused
+		NOT = { has_variable = eafp_namamugi_compensation_paid }
+	}
+	#추가 끝
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		scope:daimyo_scope ?= {
+			var:daimyo_var ?= {
+				random_scope_state = {
+					limit = {
+						owner ?= c:JAP
+					}
+					save_scope_as = namamugi_daimyo_state
+				}
+			}
+		}
+		generate_1_common_name = {
+			CULTURE_1 = primary_culture
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.2.a
+		default_option = yes
+		#추가: EAFP 포격 사건의 파벌 반응만 이관, 피해는 바닐라 유지
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_influence_var = { VALUE = 7.5 }
+		}
+		#추가 끝
+		scope:namamugi_daimyo_state ?= {
+			add_devastation = 15
+		}
+		random_scope_character = {
+			limit = {
+				has_variable = namamugi_daimyo_var
+			}
+			add_modifier = {
+				name = modifier_bombardment_of_domain
+				days = normal_modifier_time
+			}
+			if = {
+				limit = {
+					NOT = {
+						has_ideology = ideology:ideology_modernizer_leader
+					}
+				}
+				set_ideology = ideology:ideology_modernizer_leader
+			}
+		}
+	}
+
+	after = {
+		clear_generated_names = yes
+	}
+}
+
+#수정: 바닐라 양이 명령에 EAFP 천황 밀칙의 선택지별 효과 병합
+REPLACE:ep2_meiji_pulse.9 = { # Order to Expel Barbarians
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji_pulse.9.t
+	desc = ep2_meiji_pulse.9.d
+	flavor = ep2_meiji_pulse.9.f
+
+    event_image = {
+		video = "asia_westerners_arriving"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	cancellation_trigger = {
+
+	}
+
+	trigger = {
+		has_law = law_type:law_bakufu
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+		}
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				has_trait = special_character_japanese_emperor
+			}
+			save_scope_as = emperor_scope
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.9.a
+		default_option = yes
+		custom_tooltip = {
+			text = sonno_joi_more_events_tt
+			set_variable = order_to_expel_barbarians_var
+		}
+		scope:emperor_scope ?= {
+			add_modifier = {
+				name = modifier_shogun_trip_to_kyoto
+				days = long_modifier_time
+			}
+		}
+		#추가: 교토 방문·협의에 천황 밀칙 사건의 온건 대응 효과 이관
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_influence_var = { VALUE = 10 }
+			add_nankiha_approval = { VALUE = -30 }
+		}
+		#추가 끝
+	}
+
+	option = {
+		name = ep2_meiji_pulse.9.b
+		custom_tooltip = {
+			text = sonno_joi_more_events_tt
+			set_variable = order_to_expel_barbarians_var
+		}
+		scope:emperor_scope ?= {
+			add_modifier = {
+				name = modifier_shogun_snubbed_emperor
+				days = long_modifier_time
+			}
+		}
+		#추가: 칙령 금지에 천황 밀칙 사건의 강경 대응 효과 이관
+		if = {
+			limit = { eafp_japan_regional_active = yes }
+			every_scope_state = {
+				limit = { is_in_geographic_region = geographic_region_japan }
+				ROOT = {
+					add_bakuhantaisei_state_loyalty = {
+						TARGET = PREV
+						VALUE = -10
+					}
+				}
+			}
+		}
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_approval = { VALUE = -10 }
+			add_hitotsubashiha_influence_var = { VALUE = 10 }
+			add_nankiha_approval = { VALUE = -10 }
+		}
+		#추가 끝
+	}
+}

@@ -116,149 +116,200 @@ tenpo_famine.4 = { # (주 이름)에서의 소동
 	}
 }
 
-tenpo_famine.6 = { # 오시오는 살아있는가?
+tenpo_famine.6 = { # 오시오 반란의 여파
 	type = country_event
 	placement = s:STATE_KANSAI.region_state:JAP
 
-	title = tenpo_famine.6.t
-	desc = tenpo_famine.6.d
-	flavor = tenpo_famine.6.f
-
-	icon = "gfx/interface/icons/event_icons/event_fire.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_farmers_market"
-	}
-
-	duration = 3
-
-	immediate = {
-		every_scope_state = {
-			limit = {
-				is_in_geographic_region = geographic_region_japan
+	title = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 1
+				}
+				desc = tenpo_famine.6.t
 			}
-			add_modifier = {
-				name = oshio_aftermath_modifier
-				months = 60
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 2
+				}
+				desc = tenpo_famine.6.execution.t
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 3
+				}
+				desc = tenpo_famine.6.pardon.t
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 4
+				}
+				desc = tenpo_famine.6.victory.t
+			}
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = tenpo_famine.6.unknown.t
 			}
 		}
 	}
+
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 1
+				}
+				desc = tenpo_famine.6.d
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 2
+				}
+				desc = tenpo_famine.6.execution.d
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 3
+				}
+				desc = tenpo_famine.6.pardon.d
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 4
+				}
+				desc = tenpo_famine.6.victory.d
+			}
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = tenpo_famine.6.unknown.d
+			}
+		}
+	}
+
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 1
+				}
+				desc = tenpo_famine.6.f
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 2
+				}
+				desc = tenpo_famine.6.execution.f
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 3
+				}
+				desc = tenpo_famine.6.pardon.f
+			}
+			triggered_desc = {
+				trigger = {
+					has_variable = eafp_tenpo_oshio_outcome
+					var:eafp_tenpo_oshio_outcome = 4
+				}
+				desc = tenpo_famine.6.victory.f
+			}
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = tenpo_famine.6.f
+			}
+		}
+	}
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	event_image = { video = "asia_farmers_market" }
+	duration = 3
 
 	trigger = {}
 
 	option = {
 		name = tenpo_famine.6.a
 		default_option = yes
-
-		show_as_tooltip = {
+		if = {
+			limit = {
+				has_variable = eafp_tenpo_oshio_outcome
+				var:eafp_tenpo_oshio_outcome = 2
+			}
 			every_scope_state = {
-				limit = {
-					is_in_geographic_region = geographic_region_japan
+				limit = { is_in_geographic_region = geographic_region_japan }
+				add_radicals_in_state = {
+					value = 0.075
+					culture = cu:japanese
 				}
+				add_modifier = {
+					name = oshio_aftermath_modifier
+					multiplier = 1.5
+					months = 60
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_variable = eafp_tenpo_oshio_outcome
+				var:eafp_tenpo_oshio_outcome = 3
+			}
+			every_scope_state = {
+				limit = { is_in_geographic_region = geographic_region_japan }
+				add_loyalists_in_state = {
+					value = 0.025
+					culture = cu:japanese
+					strata = lower
+				}
+				add_radicals_in_state = {
+					value = 0.025
+					culture = cu:japanese
+					strata = upper
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				has_variable = eafp_tenpo_oshio_outcome
+				var:eafp_tenpo_oshio_outcome = 4
+			}
+			every_scope_state = {
+				limit = { is_in_geographic_region = geographic_region_japan }
+				add_radicals_in_state = {
+					value = 0.05
+					culture = cu:japanese
+					strata = upper
+				}
+				add_modifier = {
+					name = oshio_aftermath_modifier
+					multiplier = 2
+					months = 60
+				}
+			}
+		}
+		else = {
+			every_scope_state = {
+				limit = { is_in_geographic_region = geographic_region_japan }
 				add_radicals_in_state = {
 					value = 0.05
 					culture = cu:japanese
 				}
 				add_modifier = {
 					name = oshio_aftermath_modifier
+					multiplier = 1
 					months = 60
 				}
 			}
-		}
-
-		ai_chance = {
-			base = 50
-		}
-	}
-}
-
-tenpo_famine.99 = { # 대기근의 끝
-	type = country_event
-	placement = root
-
-	title = tenpo_famine.99.t
-	desc = tenpo_famine.99.d
-	flavor = tenpo_famine.99.f
-
-	icon = "gfx/interface/icons/event_icons/event_skull.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_farmers_market"
-	}
-
-	duration = 3
-	
-	immediate = {
-		# Vanilla Tenpo factions map directly onto the legacy EAFP factions:
-		# reformers -> Hitotsubashi, hardliners -> Nanki.
-		if = {
-			limit = {
-				has_variable = tenpo_outcome_reformer_var
-				NOT = { has_variable = eafp_jap_tenpo_faction_result_applied }
-			}
-			set_variable = eafp_jap_tenpo_faction_result_applied
-			add_hitotsubashiha_influence_var = { VALUE = 15 }
-			add_hitotsubashiha_approval = { VALUE = 2 }
-			add_nankiha_approval = { VALUE = -2 }
-		}
-		else_if = {
-			limit = {
-				has_variable = tenpo_outcome_hardliner_var
-				NOT = { has_variable = eafp_jap_tenpo_faction_result_applied }
-			}
-			set_variable = eafp_jap_tenpo_faction_result_applied
-			add_nankiha_influence_var = { VALUE = 15 }
-			add_nankiha_approval = { VALUE = 2 }
-			add_hitotsubashiha_approval = { VALUE = -2 }
-		}
-		else_if = {
-			limit = { NOT = { has_variable = eafp_jap_tenpo_faction_result_applied } }
-			set_variable = eafp_jap_tenpo_faction_result_applied
-			add_hitotsubashiha_approval = { VALUE = 1 }
-			add_nankiha_approval = { VALUE = 1 }
-		}
-		if = {
-			limit = { has_variable = sukuigoya_for_tenpo }
-			remove_variable = sukuigoya_for_tenpo
-		}
-		save_scope_value_as = {
-			name = sukuigoya_accumulation
-			value = {
-				value = var:sukuigoya_for_tenpo_accumulation
-				divide = 44
-			}
-		}
-		remove_variable = sukuigoya_for_tenpo_accumulation
-		remove_variable = eafp_jap_tenpo_famine_conclusion_scheduled
-		add_modifier = {
-			name = nomin_kyusai_modifier
-			multiplier = scope:sukuigoya_accumulation
-			days = long_modifier_time
-			is_decaying = yes
-		}
-	}
-
-	trigger = {}
-	
-	option = {
-		name = tenpo_famine.99.a
-		default_option = yes
-
-		show_as_tooltip = {
-			add_modifier = {
-				name = nomin_kyusai_modifier
-				multiplier = scope:sukuigoya_accumulation
-				days = long_modifier_time
-				is_decaying = yes
-			}
-		}
-
-		ai_chance = {
-			base = 50
 		}
 	}
 }

@@ -30,7 +30,6 @@ REPLACE:je_tenpo_crisis = {
 			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_started } }
 			set_variable = eafp_jap_tenpo_famine_started
 			set_variable = { name = sukuigoya_for_tenpo value = 2 }
-			set_variable = { name = sukuigoya_for_tenpo_accumulation value = 0 }
 			# 수정: 기근 시작 안내를 제거하고 대이주 사건을 2개월 뒤 직접 예약
 			trigger_event = { id = tenpo_famine.3 months = 2 }
 		}
@@ -54,15 +53,12 @@ REPLACE:je_tenpo_crisis = {
 		}
 		hidden_effect = {
 			remove_variable = tenpo_gdp_goal
+			#추가: 기근 종료 시 EAFP 구호 변수 정리
+			remove_variable = sukuigoya_for_tenpo
+			remove_variable = sukuigoya_for_tenpo_accumulation
+			#추가 끝
 		}
 
-		# EAFP DELTA BEGIN: delayed cleanup after the official outcome event
-		if = {
-			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_conclusion_scheduled } }
-			set_variable = eafp_jap_tenpo_famine_conclusion_scheduled
-			trigger_event = { id = tenpo_famine.99 days = 3 }
-		}
-		# EAFP DELTA END
 }
 
 	event_outcome_completed_effect_desc = {
@@ -118,15 +114,12 @@ REPLACE:je_tenpo_crisis = {
 		}
 		hidden_effect = {
 			remove_variable = tenpo_gdp_goal
+			#추가: 기근 종료 시 EAFP 구호 변수 정리
+			remove_variable = sukuigoya_for_tenpo
+			remove_variable = sukuigoya_for_tenpo_accumulation
+			#추가 끝
 		}
 
-		# EAFP DELTA BEGIN: close the famine track on the official timeout path
-		if = {
-			limit = { NOT = { has_variable = eafp_jap_tenpo_famine_conclusion_scheduled } }
-			set_variable = eafp_jap_tenpo_famine_conclusion_scheduled
-			trigger_event = { id = tenpo_famine.99 days = 3 }
-		}
-		# EAFP DELTA END
 }
 
 	event_outcome_timeout_effect_desc = {
@@ -161,17 +154,6 @@ REPLACE:je_tenpo_crisis = {
 			# EAFP DELTA END
 }
 
-		# EAFP DELTA BEGIN: legacy famine accumulation
-		effect = {
-			if = {
-				limit = { has_variable = sukuigoya_for_tenpo }
-				change_variable = {
-					name = sukuigoya_for_tenpo_accumulation
-					add = var:sukuigoya_for_tenpo
-				}
-			}
-		}
-		# EAFP DELTA END
 }
 
 	modifiers_while_active = {

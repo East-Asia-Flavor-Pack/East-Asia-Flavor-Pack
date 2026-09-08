@@ -11,31 +11,31 @@
 | eafp_japan.4006 | 1 | independency -15 | 주 independency -15 |
 | eafp_japan.4005 | 2 | independency 5 | 주 independency 5 |
 | eafp_japan.4005 | 1 | independency -10 | 주 independency -10 |
-| eafp_japan.4003 | 1 | loyalty -10 | 주 loyalty -10 |
-| eafp_japan.2222 | 4 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2222 | 3 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2222 | 2 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2222 | 1 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2221 | 4 | independency -15 | 주 independency -15 |
-| eafp_japan.2221 | 3 | independency -15 | 주 independency -15 |
-| eafp_japan.2221 | 2 | independency -15 | 주 independency -15 |
-| eafp_japan.2221 | 1 | independency -15 | 주 independency -15 |
-| eafp_japan.2212 | 4 | independency 10 | 주 independency 10 |
-| eafp_japan.2212 | 3 | independency 10 | 주 independency 10 |
-| eafp_japan.2212 | 2 | independency 10 | 주 independency 10 |
-| eafp_japan.2212 | 1 | independency 10 | 주 independency 10 |
-| eafp_japan.2211 | 4 | independency -10 | 주 independency -10 |
-| eafp_japan.2211 | 3 | independency -10 | 주 independency -10 |
-| eafp_japan.2211 | 2 | independency -10 | 주 independency -10 |
-| eafp_japan.2211 | 1 | independency -10 | 주 independency -10 |
-| eafp_japan.2202 | 4 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2202 | 3 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2202 | 2 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2202 | 1 | loyalty -15 | 주 loyalty -15 |
-| eafp_japan.2201 | 4 | loyalty 5 | 주 loyalty 5 |
-| eafp_japan.2201 | 3 | loyalty 5 | 주 loyalty 5 |
-| eafp_japan.2201 | 2 | loyalty 5 | 주 loyalty 5 |
-| eafp_japan.2201 | 1 | loyalty 5 | 주 loyalty 5 |
+| ep2_meiji_pulse.9.b (옛 eafp_japan.4003.a) | 1 | loyalty -10 | 칙령 금지 시 관리 주 loyalty -10. EAFP 독립 이벤트 삭제·바닐라 선택지에 병합 |
+| eafp_japan.2222 | 4 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2222 | 3 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2222 | 2 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2222 | 1 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2221 | 4 | independency -15 | 주 independency -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2221 | 3 | independency -15 | 주 independency -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2221 | 2 | independency -15 | 주 independency -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2221 | 1 | independency -15 | 주 independency -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2212 | 4 | independency 10 | 주 independency 10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2212 | 3 | independency 10 | 주 independency 10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2212 | 2 | independency 10 | 주 independency 10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2212 | 1 | independency 10 | 주 independency 10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2211 | 4 | independency -10 | 주 independency -10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2211 | 3 | independency -10 | 주 independency -10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2211 | 2 | independency -10 | 주 independency -10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2211 | 1 | independency -10 | 주 independency -10  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2202 | 4 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2202 | 3 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2202 | 2 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2202 | 1 | loyalty -15 | 주 loyalty -15  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2201 | 4 | loyalty 5 | 주 loyalty 5  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2201 | 3 | loyalty 5 | 주 loyalty 5  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2201 | 2 | loyalty 5 | 주 loyalty 5  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
+| eafp_japan.2201 | 1 | loyalty 5 | 주 loyalty 5  **삭제 완료:** 원본 이벤트 제거로 이 효과도 제거. |
 | eafp_japan.1015 | 3 | loyalty 2.5 | 주 loyalty 2.5 |
 | eafp_japan.1015 | 2 | loyalty -2.5 | 주 loyalty -2.5 |
 | eafp_japan.1015 | 1 | independency -5 | 주 independency -5 |

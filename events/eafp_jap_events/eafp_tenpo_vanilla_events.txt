@@ -84,6 +84,9 @@ REPLACE:tenpo_events.2 = {
 		scope:osaka_scope = {
 			random_list = {
 				2 = {
+					#추가: 진압 후 자결 결과를 후속 이벤트에 전달
+					ROOT = { set_variable = { name = eafp_tenpo_oshio_outcome value = 1 } }
+					#추가 끝
 					add_devastation = 10
 					kill_population_percent_in_state = {
 						culture = cu:japanese
@@ -97,6 +100,9 @@ REPLACE:tenpo_events.2 = {
 					}
 				}
 				1 = {
+					#추가: 체포 후 공개 처형 결과를 후속 이벤트에 전달
+					ROOT = { set_variable = { name = eafp_tenpo_oshio_outcome value = 2 } }
+					#추가 끝
 					add_devastation = 20
 					kill_population_percent_in_state = {
 						culture = cu:japanese
@@ -115,6 +121,9 @@ REPLACE:tenpo_events.2 = {
 
 	option = {
 		name = tenpo_events.2.b
+		#추가: 사면 결과를 후속 이벤트에 전달
+		hidden_effect = { set_variable = { name = eafp_tenpo_oshio_outcome value = 3 } }
+		#추가 끝
 		custom_tooltip = {
 			text = tenpo_events.2.tt_4
 			scope:oshio_scope = {
@@ -156,6 +165,9 @@ REPLACE:tenpo_events.2 = {
 
 	option = {
 		name = tenpo_events.2.c
+		#추가: 반란 성공 결과를 후속 이벤트에 전달
+		hidden_effect = { set_variable = { name = eafp_tenpo_oshio_outcome value = 4 } }
+		#추가 끝
 		highlighted_option = yes
 		show_as_unavailable = { 
 			always = yes 
@@ -178,4 +190,158 @@ REPLACE:tenpo_events.2 = {
 		trigger_event = { id = tenpo_famine.6 months = 1 }
 	}
 	#추가 끝
+}
+
+#수정: 덴포 개혁 실패의 대상 인물을 EAFP 막부 정치인에서 선정
+REPLACE:tenpo_events.4 = {
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = tenpo_events.4.t
+	desc = tenpo_events.4.d
+	flavor = tenpo_events.4.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:roju_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	dlc = dlc018
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		# Triggered in history
+		#추가: 대상 정치인이 없을 때 빈 인물 스코프로 발생하는 것을 방지
+		any_scope_character = {
+			is_bakufu_politician = yes
+			is_character_alive = yes
+		}
+		#추가 끝
+	}
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		#수정: 바닐라의 정부 이해집단 지도자 선택을 EAFP 막부 정치인 선택으로 교체
+		#ordered_interest_group = {
+		#	limit = {
+		#		is_in_government = yes
+		#	}
+		#	order_by = ig_clout
+		#	position = 0
+		#	save_scope_as = government_ig
+		#	leader = {
+		#		save_scope_as = roju_scope
+		#	}
+		#}
+		random_scope_character = {
+			limit = {
+				is_bakufu_politician = yes
+				is_character_alive = yes
+			}
+			save_scope_as = roju_scope
+		}
+		#수정 끝
+	}
+
+	option = {
+		name = tenpo_events.4.a
+		default_option = yes
+		custom_tooltip = {
+			text = tenpo_events.4.tt_1
+			scope:roju_scope = {
+				kill_character = {
+					hidden = yes
+				}
+			}
+		}
+		add_modifier = {
+			name = modifier_tenpo_fail
+			days = normal_modifier_time
+		}
+	}
+
+	option = {
+		name = tenpo_events.4.b
+		if = {
+			limit = {
+				any_active_law = {
+					has_amendment = amendment_type:amendment_frugal_ordinance
+				}
+			}
+			random_active_law = {
+				limit = {
+					has_amendment = amendment_type:amendment_frugal_ordinance
+				}
+				random_scope_amendment = {
+					limit = {
+						amendment_type:amendment_frugal_ordinance ?= this.type
+					}
+					remove_amendment = yes
+				}
+			}
+		}
+		if = {
+			limit = {
+				has_law_or_variant = law_type:law_strict_edo_system
+			}
+			activate_law = law_type:law_intermediate_edo_system
+			add_radicals = {
+				pop_type = aristocrats
+				value = medium_radicals
+			}
+			add_loyalists = {
+				pop_type = shopkeepers
+				value = medium_radicals
+			}
+		}
+		else_if = {
+			limit = {
+				has_law_or_variant = law_type:law_lax_edo_system
+			}
+			activate_law = law_type:law_intermediate_edo_system
+			add_radicals = {
+				pop_type = shopkeepers
+				value = medium_radicals
+			}
+			add_loyalists = {
+				pop_type = aristocrats
+				value = medium_radicals
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					has_law_or_variant = law_type:law_hereditary_bureaucrats
+				}
+			}
+			activate_law = law_type:law_hereditary_bureaucrats
+			add_radicals = {
+				pop_type = bureaucrats
+				value = medium_radicals
+			}
+		}
+		add_modifier = {
+			name = modifier_tenpo_fail
+			days = normal_modifier_time
+			multiplier = 0.5
+		}
+		custom_tooltip = {
+			text = tenpo_events.4.tt_1
+			scope:roju_scope = {
+				kill_character = {
+					hidden = yes
+				}
+			}
+		}
+	}
 }
