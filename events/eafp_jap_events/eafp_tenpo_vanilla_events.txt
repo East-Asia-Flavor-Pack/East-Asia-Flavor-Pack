@@ -345,3 +345,243 @@ REPLACE:tenpo_events.4 = {
 		}
 	}
 }
+
+#수정: 1차 아편전쟁 결말 연계 및 EAFP 패전 소식 효과 통합
+REPLACE:tenpo_events.6 = {
+	type = country_event
+	placement = scope:port_state_scope
+
+	duration = 3
+
+	title = tenpo_events.6.t
+	desc = tenpo_events.6.d
+	flavor = tenpo_events.6.f
+
+    event_image = {
+		video = "ep2_active_shipyard"
+	}
+
+	dlc = dlc018
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_protest.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_dlc_feature = ep2_content
+		#추가: 1차 아편전쟁의 청 패배 소식이 전달된 뒤에만 발생
+		c:CHI ?= { has_variable = eafp_first_opium_war_news_sent }
+		#추가 끝
+		NOT = {
+			has_variable = opium_war_has_happened_jap_var
+		}
+	}
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		c:GBR ?= {
+			save_scope_as = britain_scope
+		}
+		c:CHI ?= {
+			save_scope_as = china_scope
+		}
+		if = {
+			limit = {
+				s:STATE_KYUSHU = {
+					any_scope_state = {
+						owner = root
+					}
+				}
+			}
+			s:STATE_KYUSHU = {
+				random_scope_state = {
+					limit = {
+						owner = root
+					}
+					save_scope_as = port_state_scope
+				}
+			}
+		}
+		else = {
+			capital = {
+				save_scope_as = port_state_scope
+			}
+		}
+		set_variable = opium_war_has_happened_jap_var
+	}
+
+	option = {
+		name = tenpo_events.6.a
+		default_option = yes
+		ai_chance = {
+			base = 10
+		}
+		add_radicals = {
+			value = medium_radicals
+			culture = cu:japanese
+		}
+		add_modifier = {
+			name = modifier_opium_war_aftermath
+			days = normal_modifier_time
+		}
+		if = {
+			limit = {
+				has_journal_entry = je_sakoku
+			}
+			if = {
+				limit = {
+					any_interest_group = {
+						is_marginal = no
+						leader = {
+							is_ruler_of_own_country = no
+							law_stance = {
+								law = law_type:law_isolationism
+								value > neutral
+							}
+						}
+					}
+				}
+				random_interest_group = {
+					limit = {
+						is_marginal = no
+						leader = {
+							is_ruler_of_own_country = no
+							law_stance = {
+								law = law_type:law_isolationism
+								value > neutral
+							}
+						}
+					}
+					leader = {
+						set_ideology = ideology:ideology_modernizer_leader
+					}
+				}
+			}
+		}
+		#추가: 패전 소식의 히토츠바시파 영향력 +5 이관 및 대응별 파벌 반응
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_influence_var = { VALUE = 5 }
+			add_hitotsubashiha_approval = { VALUE = 5 }
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -25 }
+		}
+		#추가 끝
+	}
+
+	option = {
+		name = tenpo_events.6.b
+		highlighted_option = yes
+		trigger = {
+			OR = {
+				has_law_or_variant = law_type:law_censorship
+				has_law_or_variant = law_type:law_outlawed_dissent
+			}
+		}
+		ai_chance = {
+			base = 30
+		}
+		add_radicals = {
+			value = medium_radicals
+			culture = cu:japanese
+			strata = upper
+		}
+		add_radicals = {
+			value = small_radicals
+			culture = cu:japanese
+			strata = middle
+		}
+		random_list = {
+			3 = {
+				add_modifier = {
+					name = modifier_opium_war_aftermath
+					days = normal_modifier_time
+					multiplier = 0.5
+				}
+			}
+			1 = {
+				add_modifier = {
+					name = modifier_opium_war_aftermath
+					days = normal_modifier_time
+				}
+			}
+		}
+		#추가: 패전 소식의 히토츠바시파 영향력 +5 이관 및 대응별 파벌 반응
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_influence_var = { VALUE = 5 }
+			add_hitotsubashiha_approval = { VALUE = -5 }
+			add_nankiha_approval = { VALUE = 5 }
+		}
+		#추가 끝
+	}
+
+	option = {
+		name = tenpo_events.6.c
+		highlighted_option = yes
+		trigger = {
+			OR = {
+				army_power_projection > 500
+	            country_has_building_type_levels = {
+	                target = bt:building_naval_fortification
+	                value > 10
+	            }
+				has_law_or_variant = law_type:law_censorship
+			}
+		}
+		ai_chance = {
+			base = 60
+		}
+		add_radicals = {
+			value = small_radicals
+			culture = cu:japanese
+			strata = middle
+		}
+		add_loyalists = {
+			value = small_radicals
+			culture = cu:japanese
+			strata = upper
+		}
+		add_modifier = {
+			name = modifier_opium_war_aftermath
+			days = normal_modifier_time
+			multiplier = 0.5
+		}
+		add_modifier = {
+			name = modifier_defenses_strengthened
+			days = normal_modifier_time
+		}
+		#추가: 패전 소식의 히토츠바시파 영향력 +5 이관 및 대응별 파벌 반응
+		if = {
+			limit = { has_journal_entry = je_bakufu_kaikaku }
+			add_hitotsubashiha_influence_var = { VALUE = 5 }
+			add_nankiha_approval = { VALUE = 5 }
+		}
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = 25 }
+		}
+		#추가 끝
+	}
+	after = {
+		if = {
+			limit = {
+				has_journal_entry = je_sakoku
+				NOT = {
+					has_variable = je_sakoku_maybe_we_should_open_up
+				}
+			}
+			custom_tooltip = {
+				text = end_sakoku_button_now_available
+				set_variable = je_sakoku_maybe_we_should_open_up
+			}
+		}
+	}
+}

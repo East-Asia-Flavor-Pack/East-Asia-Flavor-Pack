@@ -860,22 +860,7 @@ first_opium_war.153 = {
 				}
 			}
 		}
-		if = {
-			limit = {
-				OR = {
-					exists = scope:opium_wars_treaty_port_winner
-					c:CHI = {
-						has_law_or_variant = law_type:law_free_trade
-					}
-				}
-			}
-			c:JAP ?= {
-				trigger_event = {
-					id = tenpo_events.6
-					popup = yes
-				}
-			}
-		}
+
 		c:CHI = {
 			if = {
 				limit = { has_journal_entry = je_warlord_china }
@@ -914,6 +899,33 @@ first_opium_war.153 = {
 					remove_as_interest_group_leader = yes
 				}
 			}
+		}
+	}
+	after = {
+		if = {
+			limit = { NOT = { has_variable = eafp_first_opium_war_news_sent } }
+			set_variable = eafp_first_opium_war_news_sent
+			save_scope_as = chi_scope
+			c:GBR = { save_scope_as = gbr_scope }
+			every_country = {
+				limit = {
+					OR = {
+						country_rank = rank_value:great_power
+						country_rank = rank_value:major_power
+						country_rank = rank_value:unrecognized_major_power
+						country_rank = rank_value:unrecognized_regional_power
+					}
+					NOR = {
+						THIS = c:GBR
+						THIS = c:CHI
+						THIS = c:KOR
+						THIS = c:JAP
+					}
+				}
+				trigger_event = { id = eafp_event_rtc.1 days = { 3 7 } }
+			}
+			c:KOR ?= { trigger_event = { id = eafp_event_rtc.2 days = { 3 7 } } }
+			c:JAP ?= { trigger_event = { id = tenpo_events.6 days = { 3 7 } popup = yes } }
 		}
 	}
 }
@@ -1292,5 +1304,97 @@ first_opium_war.108 = {
 		default_option = yes
 		c:GBR = { trigger_event = { id = first_opium_war.112 days = { 15 45 } } }
 		ai_chance = { base = 1 }
+	}
+}
+
+namespace = eafp_event_rtc
+
+eafp_event_rtc.1 = {	#열강용 아편전쟁 뉴스
+	type = country_event
+	placement = ROOT
+
+	title = eafp_event_rtc.1.t
+	desc = eafp_event_rtc.1.d
+	flavor = eafp_event_rtc.1.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_naval_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = eafp_event_rtc.1.a
+		default_option = yes
+		trigger = {
+			country_rank = rank_value:great_power
+		}
+		change_relations = {
+			value = -90	#-100에서 수정.
+			country = c:CHI
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = {
+		name = eafp_event_rtc.1.b
+		trigger = {
+			OR = {
+				country_rank = rank_value:major_power
+				country_rank = rank_value:unrecognized_major_power
+				country_rank = rank_value:unrecognized_regional_power
+			}
+			NOT = { this = c:KOR }
+			NOT = { this = c:CHI }
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+}
+
+eafp_event_rtc.2 = {	#조선용 아편전쟁 뉴스
+	type = country_event
+	placement = ROOT
+
+	title = eafp_event_rtc.2.t
+	desc = eafp_event_rtc.2.d
+	flavor = eafp_event_rtc.2.f
+
+	duration = 3
+
+	event_image = {
+		video = "unspecific_naval_battle"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/europenorthamerica/before_the_battle"
+
+	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
+
+	trigger = {
+	}
+
+	immediate = {
+	}
+
+	option = {
+		name = eafp_event_rtc.2.a
+
+		ai_chance = {
+			base = 100
+		}
 	}
 }
