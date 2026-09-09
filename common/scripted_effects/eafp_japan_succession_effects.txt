@@ -1,0 +1,274 @@
+﻿# Country scope. Starting the reform journal must not restart completed content.
+eafp_japan_ensure_reform_journal = {
+	if = {
+		limit = {
+			has_law = law_type:law_bakufu
+			NOT = { has_variable = eafp_japan_reform_journal_started }
+		}
+		set_variable = eafp_japan_reform_journal_started
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_bakufu_kaikaku }
+				NOT = { has_variable = bakufu_kaikaku_complete_var }
+			}
+			add_journal_entry = { type = je_bakufu_kaikaku }
+		}
+	}
+}
+
+eafp_japan_ensure_faction_values = {
+	if = {
+		limit = { NOT = { has_variable = hitotsubashiha_influence_var } }
+		set_variable = { name = hitotsubashiha_influence_var value = 20 }
+	}
+	if = {
+		limit = { NOT = { has_variable = nankiha_influence_var } }
+		set_variable = { name = nankiha_influence_var value = 80 }
+	}
+}
+
+eafp_japan_start_succession_debate = {
+	eafp_japan_ensure_reform_journal = yes
+	eafp_japan_ensure_faction_values = yes
+	if = {
+		limit = { NOT = { has_variable = hitotsubashiha_vs_nankiha_start } }
+		hitotsubashiha_vs_nankiha_start_effect = yes
+	}
+	ruler = { save_scope_as = shogun_scope }
+}
+
+eafp_japan_prepare_shogun_candidate = {
+	if = {
+		limit = {
+			game_date >= $BIRTH_DATE$
+			NOT = { is_template_used = $TEMPLATE$ }
+		}
+		create_character = { template = $TEMPLATE$ }
+	}
+	random_scope_character = {
+		limit = {
+			game_date >= $BIRTH_DATE$
+			has_template = $TEMPLATE$
+			is_character_alive = yes
+			NOT = { is_ruler_of_own_country = yes }
+		}
+		save_scope_as = $CANDIDATE$
+	}
+}
+
+# The support belongs to the reigning character: 1 = Hitotsubashi, 2 = Nanki.
+eafp_japan_support_hitotsubashi = {
+	custom_tooltip = {
+		text = eafp_japan_shogun_support_hitotsubashi_tt
+		ruler = { set_variable = { name = eafp_shogun_support value = 1 } }
+	}
+	add_hitotsubashiha_influence_var = { VALUE = 5 }
+	if = {
+		limit = { has_journal_entry = je_bakufu_kaikaku }
+		add_hitotsubashiha_approval = { VALUE = 10 }
+		add_nankiha_approval = { VALUE = -10 }
+	}
+	custom_tooltip = eafp_japan_shogun_wishes_warning_tt
+	hidden_effect = {
+		heir ?= { disinherit_character = yes }
+		remove_variable = shogun_support_hitotsubashiha
+		remove_variable = shogun_support_nankiha
+	}
+}
+
+eafp_japan_support_nanki = {
+	custom_tooltip = {
+		text = eafp_japan_shogun_support_nanki_tt
+		ruler = { set_variable = { name = eafp_shogun_support value = 2 } }
+	}
+	add_nankiha_influence_var = { VALUE = 5 }
+	if = {
+		limit = { has_journal_entry = je_bakufu_kaikaku }
+		add_nankiha_approval = { VALUE = 10 }
+		add_hitotsubashiha_approval = { VALUE = -10 }
+	}
+	custom_tooltip = eafp_japan_shogun_wishes_warning_tt
+	hidden_effect = {
+		heir ?= { disinherit_character = yes }
+		remove_variable = shogun_support_hitotsubashiha
+		remove_variable = shogun_support_nankiha
+	}
+}
+
+# Country scope, called before changing ruler so a regency cannot change the result.
+eafp_japan_finalize_shogun_succession = {
+	if = {
+		limit = {
+			scope:eafp_previous_shogun = {
+				has_variable = eafp_shogun_support
+				NOT = { var:eafp_shogun_support = $FACTION$ }
+			}
+			has_journal_entry = je_bakuhantaisei
+		}
+		set_variable = eafp_shogun_wishes_dispute_pending
+		trigger_event = { id = eafp_japan.2106 days = 1 popup = yes }
+	}
+	if = {
+		limit = {
+			scope:eafp_previous_shogun = { has_variable = eafp_shogun_support }
+		}
+		eafp_japan_shogun_faction_victory = { FACTION = $FACTION$ }
+	}
+	scope:eafp_previous_shogun = { remove_variable = eafp_shogun_support }
+	remove_variable = shogun_support_hitotsubashiha
+	remove_variable = shogun_support_nankiha
+	scope:$CANDIDATE$ = { set_character_as_ruler = yes }
+}
+
+# Character scope, called from both the vanilla safety effect and EAFP death hook.
+# The character flag prevents either hook from resolving the same death twice.
+eafp_japan_resolve_shogun_succession = {
+	set_variable = eafp_shogun_succession_processed
+	save_scope_as = eafp_previous_shogun
+	owner = {
+		eafp_japan_ensure_faction_values = yes
+		clear_saved_scope = eafp_nanki_candidate
+		clear_saved_scope = eafp_hitotsubashi_candidate
+		if = {
+			limit = { scope:eafp_previous_shogun = { has_template = JAP_ieyoshi_tokugawa } }
+			eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iesada_tokugawa BIRTH_DATE = 1824.5.6 CANDIDATE = eafp_nanki_candidate }
+		}
+		else_if = {
+			limit = { scope:eafp_previous_shogun = { has_template = JAP_iesada_tokugawa } }
+			eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iemochi_tokugawa BIRTH_DATE = 1846.7.16 CANDIDATE = eafp_nanki_candidate }
+		}
+		else = {
+			eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iesato_tokugawa BIRTH_DATE = 1863.8.24 CANDIDATE = eafp_nanki_candidate }
+		}
+		if = {
+			limit = { scope:eafp_previous_shogun = { NOT = { has_template = JAP_yoshinobu_tokugawa } } }
+			eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 CANDIDATE = eafp_hitotsubashi_candidate }
+		}
+		heir ?= { disinherit_character = yes }
+		if = {
+			limit = {
+				exists = scope:eafp_hitotsubashi_candidate
+				OR = {
+					NOT = { exists = scope:eafp_nanki_candidate }
+					var:hitotsubashiha_influence_var > var:nankiha_influence_var
+					AND = {
+						var:hitotsubashiha_influence_var = var:nankiha_influence_var
+						scope:eafp_previous_shogun = { has_variable = eafp_shogun_support var:eafp_shogun_support = 1 }
+					}
+				}
+			}
+			eafp_japan_finalize_shogun_succession = { FACTION = 1 CANDIDATE = eafp_hitotsubashi_candidate }
+		}
+		else_if = {
+			limit = { exists = scope:eafp_nanki_candidate }
+			eafp_japan_finalize_shogun_succession = { FACTION = 2 CANDIDATE = eafp_nanki_candidate }
+		}
+		else = {
+			scope:eafp_previous_shogun = {
+				remove_variable = eafp_shogun_support
+				eafp_japan_vanilla_shogun_fallback = yes
+			}
+			remove_variable = shogun_support_hitotsubashiha
+			remove_variable = shogun_support_nankiha
+		}
+		if = {
+			limit = { ruler ?= { has_template = JAP_iesato_tokugawa } }
+			remove_variable = no_heirs
+		}
+		clear_saved_scope = eafp_nanki_candidate
+		clear_saved_scope = eafp_hitotsubashi_candidate
+	}
+}
+
+
+#수정 shogunate.2/.5에서 옮긴 바닐라 이해집단 효과. 선언이 아니라 실제 승계에 적용.
+eafp_japan_shogun_faction_victory = {
+	save_scope_value_as = { name = eafp_winning_shogun_faction value = $FACTION$ }
+	if = {
+		limit = { scope:eafp_winning_shogun_faction = 1 }
+		if = {
+			limit = { scope:eafp_previous_shogun = { has_template = JAP_ieyoshi_tokugawa } }
+			ig:ig_armed_forces ?= {
+				add_modifier = {
+					name = modifier_japan_selected_shogun_candidate
+					days = short_modifier_time
+				}
+				leader ?= {
+					add_modifier = {
+						name = modifier_power_behind_the_shogun
+						days = normal_modifier_time
+					}
+				}
+			}
+			ig:ig_landowners ?= {
+				add_modifier = {
+					name = modifier_japan_lineage_disregarded
+					days = normal_modifier_time
+				}
+			}
+		}
+		else = {
+			ig:ig_armed_forces ?= {
+				add_modifier = {
+					name = modifier_japan_selected_shogun_candidate
+					days = short_modifier_time
+				}
+				leader ?= {
+					add_modifier = {
+						name = modifier_power_behind_the_shogun
+						days = normal_modifier_time
+					}
+				}
+			}
+			ig:ig_landowners ?= {
+				add_modifier = {
+					name = modifier_hitotsubashi_faction_victory
+					days = normal_modifier_time
+				}
+			}
+		}
+	}
+	else = {
+		if = {
+			limit = { scope:eafp_previous_shogun = { has_template = JAP_ieyoshi_tokugawa } }
+			ig:ig_landowners ?= {
+				add_modifier = {
+					name = modifier_japan_selected_shogun_candidate
+					days = short_modifier_time
+				}
+				leader ?= {
+					add_modifier = {
+						name = modifier_power_behind_the_shogun
+						days = normal_modifier_time
+					}
+				}
+			}
+			ig:ig_armed_forces ?= {
+				add_modifier = {
+					name = modifier_japan_capability_disregarded
+					days = normal_modifier_time
+				}
+			}
+		}
+		else = {
+			ig:ig_landowners ?= {
+				add_modifier = {
+					name = modifier_japan_selected_shogun_candidate
+					days = short_modifier_time
+				}
+				leader ?= {
+					add_modifier = {
+						name = modifier_power_behind_the_shogun
+						days = normal_modifier_time
+					}
+				}
+			}
+			ig:ig_armed_forces ?= {
+				add_modifier = {
+					name = modifier_nanki_faction_victory
+					days = normal_modifier_time
+				}
+			}
+		}
+	}
+}

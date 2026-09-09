@@ -16,6 +16,10 @@ japan_on_monthly_pulse_country = {
 	}
 	effect = {
 		if = {
+			limit = { ruler ?= { eafp_japan_faction_succession_ruler = yes } }
+			eafp_japan_ensure_reform_journal = yes
+		}
+		if = {
 			limit = {
 				has_law_or_variant = law_type:law_isolationism
 				NOT = { has_variable = eafpjap4001 }
@@ -82,197 +86,16 @@ japan_on_monthly_pulse_country = {
 			}
 		}
 	}
+	events = { eafp_japan.2107 }
 }
 
 japan_on_character_death = {
 	trigger = {
-		owner = { c:JAP ?= THIS }
+		eafp_japan_faction_succession_ruler = yes
+		NOT = { has_variable = eafp_shogun_succession_processed }
 	}
 	effect = {
-		# 이에요시의 즉위는 이벤트로 직접
-		if = { # 이에사다의 즉위
-			limit = {
-				has_template = JAP_ieyoshi_tokugawa
-				is_ruler_of_own_country = yes
-			}
-			save_scope_as = ieyoshi_scope
-			owner = {
-				if = {
-					limit = {
-						any_scope_character = {
-							has_template = JAP_iesada_tokugawa
-						}
-					}
-					random_scope_character = {
-						limit = { has_template = JAP_iesada_tokugawa }
-						set_character_as_ruler = yes
-						set_character_busy_and_immortal = yes
-						save_scope_as = iesada_scope
-					}
-				}
-				else = {
-					create_character = {
-						template = JAP_iesada_tokugawa
-						ruler = yes
-						save_scope_as = iesada_scope
-						on_created = {
-							set_character_busy_and_immortal = yes
-						}
-					}
-				}
-				trigger_event = { id = eafp_japan.2006 popup = yes }
-			}
-		}
-		else_if = {
-			limit = { # 이에사다 이후 이에모치 또는 요시노부
-				has_template = JAP_iesada_tokugawa
-				is_ruler_of_own_country = yes
-			}
-			save_scope_as = iesada_scope
-			owner = {
-				if = {
-					limit = { var:nankiha_influence_var >= var:hitotsubashiha_influence_var }
-					if = {
-						limit = {
-							any_scope_character = {
-								has_template = JAP_iemochi_tokugawa
-							}
-						}
-						random_scope_character = {
-							limit = { has_template = JAP_iemochi_tokugawa }
-							set_character_as_ruler = yes
-							set_character_busy_and_immortal = yes
-							save_scope_as = iemochi_scope
-						}
-					}
-					else = {
-						create_character = {
-							template = JAP_iemochi_tokugawa
-							ruler = yes
-							save_scope_as = iemochi_scope
-							on_created = {
-								set_character_busy_and_immortal = yes
-							}
-						}
-					}
-					trigger_event = { id = eafp_japan.2104 popup = yes }
-				}
-				else = {
-					if = {
-						limit = {
-							any_scope_character = {
-								has_template = JAP_yoshinobu_tokugawa
-							}
-						}
-						random_scope_character = {
-							limit = { has_template = JAP_yoshinobu_tokugawa }
-							set_character_as_ruler = yes
-							save_scope_as = yoshinobu_scope
-						}
-					}
-					else = {
-						create_character = {
-							template = JAP_yoshinobu_tokugawa
-							ruler = yes
-							save_scope_as = yoshinobu_scope
-						}
-					}
-					trigger_event = { id = eafp_japan.2105 popup = yes }
-				}
-				
-			}
-		}
-		else_if = {
-			limit = { # 이에모치 이후 이에사토 또는 요시노부
-				has_template = JAP_iemochi_tokugawa
-				is_ruler_of_own_country = yes
-			}
-			save_scope_as = iemochi_scope
-			owner = {
-				if = {
-					limit = { var:nankiha_influence_var >= var:hitotsubashiha_influence_var }
-					if = {
-						limit = {
-							any_scope_character = {
-								has_template = JAP_iesato_tokugawa
-							}
-						}
-						random_scope_character = {
-							limit = { has_template = JAP_iesato_tokugawa }
-							set_character_as_ruler = yes
-							save_scope_as = iesato_scope 
-						}
-					}
-					else = {
-						create_character = {
-							template = JAP_iesato_tokugawa
-							ruler = yes
-							save_scope_as = iesato_scope
-						}
-					}
-					trigger_event = { id = eafp_japan.2108 popup = yes }
-				}
-				else = {
-					if = {
-						limit = {
-							any_scope_character = {
-								has_template = JAP_yoshinobu_tokugawa
-							}
-						}
-						random_scope_character = {
-							limit = { has_template = JAP_yoshinobu_tokugawa }
-							set_character_as_ruler = yes
-							save_scope_as = yoshinobu_scope
-						}
-					}
-					else = {
-						create_character = {
-							template = JAP_yoshinobu_tokugawa
-							ruler = yes
-							save_scope_as = yoshinobu_scope
-						}
-					}
-					trigger_event = { id = eafp_japan.2109 popup = yes }
-				}
-				
-			}
-		}
-		else_if = {
-			limit = { # 요시노부 이후 이에사토
-				has_template = JAP_yoshinobu_tokugawa
-				is_ruler_of_own_country = yes
-			}
-			save_scope_as = yoshinobu_scope
-			owner = {
-				if = {
-					limit = {
-						any_scope_character = {
-							has_template = JAP_iesato_tokugawa
-						}
-					}
-					random_scope_character = {
-						limit = { has_template = JAP_iesato_tokugawa }
-						set_character_as_ruler = yes
-						save_scope_as = iesato_scope
-					}
-				}
-				else = {
-					create_character = {
-						template = JAP_iesato_tokugawa
-						ruler = yes
-						save_scope_as = iesato_scope
-					}
-				}
-				trigger_event = { id = eafp_japan.2110 popup = yes }
-			}
-		}
-		else_if = { # 대로, 노중수좌, 노중
-			limit = {
-				owner = { has_journal_entry = je_bakuhantaisei }
-				is_bakufu_politician = yes
-			}
-			remove_bakufu_politician_role = yes
-		}
+		eafp_japan_resolve_shogun_succession = yes
 	}
 }
 

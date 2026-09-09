@@ -4284,56 +4284,20 @@ eafp_japan.1020 = { # 미치노미야의 탄생, 천황이 ruler일 때
 
 # eafp_japan.1023 없음
 
-eafp_japan.2002 = { # 양위
+eafp_japan.2002 = { # 이에나리의 양위. 즉위 안내는 바닐라 shogunate.1.
 	type = country_event
-	placement = root
-
-	title = eafp_japan.2002.t
-	desc = eafp_japan.2002.d
-	flavor = eafp_japan.2002.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		heir = {
-			save_scope_as = ieyoshi_character
-		}
-		add_journal_entry = {
-			type = je_bakufu_kaikaku
-		}
-	}
-
+	hidden = yes
 	trigger = {
 		has_law = law_type:law_bakufu
+		has_gov_regency = no
+		ruler = { has_template = JAP_ienari_tokugawa }
+		any_scope_character = { has_template = JAP_ieyoshi_tokugawa is_character_alive = yes }
 	}
-	
-	option = {
-		default_option = yes
-		name = eafp_japan.2002.a
-		scope:ieyoshi_character = {
+	immediate = {
+		eafp_japan_ensure_reform_journal = yes
+		random_scope_character = {
+			limit = { has_template = JAP_ieyoshi_tokugawa is_character_alive = yes }
 			set_character_as_ruler = yes
-		}
-		hidden_effect = {
-			create_character = {
-				template = JAP_iesada_tokugawa
-				heir = yes
-				on_created = {
-					set_character_busy_and_immortal = yes
-				}
-			}
-		}
-		show_as_tooltip = {
-			add_journal_entry = {
-				type = je_bakufu_kaikaku
-			}
 		}
 	}
 }
@@ -4371,58 +4335,6 @@ eafp_japan.2004 = { # 오고쇼의 서거
 		name = eafp_japan.2004.a
 		add_hitotsubashiha_influence_var = {
 			VALUE = 5
-		}
-	}
-}
-
-eafp_japan.2005 = { # 이에사다의 즉위 용 히든 이벤트
-	type = country_event
-	hidden = yes
-
-	trigger = {
-		has_law = law_type:law_bakufu
-	}
-
-	immediate = {
-		ruler = {
-			kill_character = yes
-		}
-	}
-}
-
-eafp_japan.2006 = { # 이에사다의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2006.t
-	desc = eafp_japan.2006.d
-	flavor = eafp_japan.2006.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:iesada_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-		
-	}
-
-	option = {
-		name = eafp_japan.2006.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:iesada_scope = {
-				set_character_as_ruler = yes
-			}
 		}
 	}
 }
@@ -4466,231 +4378,6 @@ eafp_japan.2009 = { # 쇼군의 상경
 
 # 히토츠바시 vs 난키
 
-eafp_japan.2101 = { # 일엽지추 1853년 1월 1일
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2101.t
-	desc = eafp_japan.2101.d
-	flavor = eafp_japan.2101.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		ruler = {
-			save_scope_as = ieyoshi_character
-		}
-		heir = {
-			save_scope_as = iesada_character
-		}
-		hitotsubashiha_vs_nankiha_start_effect = yes
-		trigger_event = {
-			id = eafp_japan.2102
-			years = 5
-		}
-	}
-
-	trigger = {
-		has_law = law_type:law_bakufu
-	}
-	
-	option = {
-		name = eafp_japan.2101.a
-		default_option = yes
-		custom_tooltip = {
-			text = hitotsubashiha_vs_nankiha_start_effect.tt
-		}
-		ai_chance = {
-			base = 100
-		}
-	}
-}
-
-eafp_japan.2102 = { # 후계자 결정 1858년 1월 1일
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2102.t
-	desc = eafp_japan.2102.d
-	flavor = eafp_japan.2102.f
-
-	icon = "gfx/interface/icons/event_icons/tutorial_icon.dds"
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	event_image = { 
-		video = "asia_confucianism_shinto"
-	}
-	
-	duration = 3
-	
-	immediate = {
-		
-	}
-
-	trigger = {}
-	
-	option = {
-		name = eafp_japan.2102.a
-		custom_tooltip = {
-			text = eafp_japan.2102.tta
-			set_variable = shogun_support_hitotsubashiha
-		}
-		add_hitotsubashiha_influence_var = {
-			VALUE = 5
-		}
-		add_hitotsubashiha_approval = {
-			VALUE = 10
-		}
-		add_nankiha_approval = {
-			VALUE = -10
-		}
-		ai_chance = {
-			base = 0
-		}
-	}
-
-	option = {
-		name = eafp_japan.2102.b
-		default_option = yes
-		custom_tooltip = {
-			text = eafp_japan.2102.ttb
-			set_variable = shogun_support_nankiha
-		}
-		add_nankiha_influence_var = {
-			VALUE = 5
-		}
-		add_hitotsubashiha_approval = {
-			VALUE = -10
-		}
-		add_nankiha_approval = {
-			VALUE = 10
-		}
-		ai_chance = {
-			base = 100
-		}
-	}
-
-	after = {
-		trigger_event = {
-			id = eafp_japan.2103
-			days = { 100 300 }
-		}
-	}
-}
-
-eafp_japan.2103 = { # 이에사다 & 이에모치 사망용 히든 이벤트
-	hidden = yes
-	immediate = {
-		ruler = {
-			set_character_busy_and_immortal = no
-			kill_character = yes
-		}
-	}
-}
-
-eafp_japan.2104 = { # 이에사다 -> 이에모치의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2104.t
-	desc = eafp_japan.2104.d
-	flavor = eafp_japan.2104.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:iemochi_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-		trigger_event = {
-			id = eafp_japan.2107
-			months = 90
-		}
-	}
-
-	option = {
-		name = eafp_japan.2104.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:iemochi_scope = {
-				set_character_as_ruler = yes
-			}
-		}
-		hidden_effect = {
-			if = {
-				limit = { has_variable = shogun_support_hitotsubashiha }
-				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
-			}
-			else = {
-				remove_variable = shogun_support_nankiha
-			}
-		}
-	}
-}
-
-eafp_japan.2105 = { # 이에사다 -> 요시노부의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2105.t
-	desc = eafp_japan.2105.d
-	flavor = eafp_japan.2105.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:yoshinobu_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-		
-	}
-
-	option = {
-		name = eafp_japan.2105.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:yoshinobu_scope = {
-				set_character_as_ruler = yes
-			}
-		}
-		hidden_effect = {
-			if = {
-				limit = { has_variable = shogun_support_nankiha }
-				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
-			}
-			else = {
-				remove_variable = shogun_support_hitotsubashiha
-			}
-		}
-	}
-}
 
 eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 	type = country_event
@@ -4711,30 +4398,23 @@ eafp_japan.2106 = { # 쇼군의 뜻대로 후계가 세워지지 않음
 	duration = 3
 
 	trigger = {
-		
+		has_law = law_type:law_bakufu
+		has_journal_entry = je_bakuhantaisei
+		has_variable = eafp_shogun_wishes_dispute_pending
 	}
 
-	immediate = {
-		
-	}
+	immediate = { remove_variable = eafp_shogun_wishes_dispute_pending }
 
 	option = {
 		name = eafp_japan.2106.a
 		default_option = yes
-		add_bakuhantaisei_bakufu_authority = {
-			VALUE = -250
+		if = {
+			limit = { has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -250 }
 		}
 	}
 
-	after = {
-		if = {
-			limit = { has_variable = shogun_support_nankiha }
-			remove_variable = shogun_support_nankiha
-		}
-		else = {
-			remove_variable = shogun_support_hitotsubashiha
-		}
-	}
+
 }
 
 eafp_japan.2107 = { # 후계자 결정, 이에모치가 쇼군일때
@@ -4756,188 +4436,65 @@ eafp_japan.2107 = { # 후계자 결정, 이에모치가 쇼군일때
 	duration = 3
 	
 	immediate = {
-		
+		eafp_japan_start_succession_debate = yes
+		ruler = { set_variable = eafp_shogun_debate_seen }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 CANDIDATE = yoshinobu_scope }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iesato_tokugawa BIRTH_DATE = 1863.8.24 CANDIDATE = iesato_scope }
 	}
 
-	trigger = {}
+	trigger = {
+		c:JAP ?= THIS
+		has_law = law_type:law_bakufu
+		has_gov_regency = no
+		ruler = {
+			has_template = JAP_iemochi_tokugawa
+			is_adult = yes
+			NOT = { has_variable = eafp_shogun_support }
+			NOT = { has_variable = eafp_shogun_debate_seen }
+		}
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 }
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_iesato_tokugawa BIRTH_DATE = 1863.8.24 }
+	}
+	cancellation_trigger = {
+		OR = {
+			NOT = { has_law = law_type:law_bakufu }
+			has_gov_regency = yes
+			NOT = { scope:shogun_scope = { is_ruler_of_own_country = yes is_character_alive = yes } }
+			NOT = { scope:yoshinobu_scope = { is_character_alive = yes } }
+			NOT = { scope:iesato_scope = { is_character_alive = yes } }
+		}
+	}
 	
 	option = {
 		name = eafp_japan.2107.a
-		custom_tooltip = {
-			text = eafp_japan.2102.tta
-			set_variable = shogun_support_hitotsubashiha
-		}
-		add_hitotsubashiha_influence_var = {
-			VALUE = 5
-		}
-		add_hitotsubashiha_approval = {
-			VALUE = 10
-		}
-		add_nankiha_approval = {
-			VALUE = -10
-		}
+		trigger = { scope:yoshinobu_scope = { is_character_alive = yes } }
+		eafp_japan_support_hitotsubashi = yes
 		ai_chance = {
-			base = 0
+			base = 50
+			modifier = {
+				add = 50
+				var:hitotsubashiha_influence_var > var:nankiha_influence_var
+			}
 		}
 	}
 
 	option = {
 		name = eafp_japan.2107.b
 		default_option = yes
-		custom_tooltip = {
-			text = eafp_japan.2102.ttb
-			set_variable = shogun_support_nankiha
-		}
-		add_nankiha_influence_var = {
-			VALUE = 5
-		}
-		add_hitotsubashiha_approval = {
-			VALUE = -10
-		}
-		add_nankiha_approval = {
-			VALUE = 10
-		}
+		trigger = { scope:iesato_scope = { is_character_alive = yes } }
+		eafp_japan_support_nanki = yes
 		ai_chance = {
-			base = 100
+			base = 50
+			modifier = {
+				add = 50
+				var:nankiha_influence_var > var:hitotsubashiha_influence_var
+			}
 		}
 	}
 
-	after = {
-		trigger_event = {
-			id = eafp_japan.2103
-			days = { 100 300 }
-		}
-	}
+
 }
 
-eafp_japan.2108 = { # 이에모치 -> 이에사토의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2108.t
-	desc = eafp_japan.2108.d
-	flavor = eafp_japan.2108.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:iesato_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-
-	}
-
-	option = {
-		name = eafp_japan.2108.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:iesato_scope = {
-				set_character_as_ruler = yes
-			}
-		}
-		hidden_effect = {
-			if = {
-				limit = { has_variable = shogun_support_hitotsubashiha }
-				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
-			}
-			else = {
-				remove_variable = shogun_support_nankiha
-			}
-		}
-	}
-}
-
-eafp_japan.2109 = { # 이에모치 -> 요시노부의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2109.t
-	desc = eafp_japan.2109.d
-	flavor = eafp_japan.2109.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:yoshinobu_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-		
-	}
-
-	option = {
-		name = eafp_japan.2109.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:yoshinobu_scope = {
-				set_character_as_ruler = yes
-			}
-		}
-		hidden_effect = {
-			if = {
-				limit = { has_variable = shogun_support_nankiha }
-				trigger_event = { id = eafp_japan.2106 days = { 30 60 } }
-			}
-			else = {
-				remove_variable = shogun_support_hitotsubashiha
-			}
-		}
-	}
-}
-
-eafp_japan.2110 = { # 요시노부 -> 이에사토의 즉위
-	type = country_event
-	placement = root
-
-	title = eafp_japan.2110.t
-	desc = eafp_japan.2110.d
-	flavor = eafp_japan.2110.f
-
-	gui_window = event_window_1char_tabloid
-	
-	left_icon = scope:iesato_scope
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/law_icons/monarchy.dds"
-
-	duration = 3
-
-	trigger = {
-		#Fired by on_action
-	}
-
-	immediate = {
-		remove_variable = no_heirs # 역사적 통치자의 끝
-	}
-
-	option = {
-		name = eafp_japan.2110.a
-		default_option = yes
-		show_as_tooltip = {
-			scope:iesato_scope = {
-				set_character_as_ruler = yes
-			}
-		}
-	}
-}
 
 eafp_japan.2181 = { # 히토츠바시파 정치인 암살
 	type = country_event

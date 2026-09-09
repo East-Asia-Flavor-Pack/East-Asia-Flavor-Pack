@@ -1,0 +1,71 @@
+﻿#수정 바닐라 안전장치와 EAFP 사망 on_action이 같은 승계를 중복 처리하지 않도록 연결.
+REPLACE:character_appoint_new_shogun_when_no_heir = {
+	if = {
+		limit = { eafp_japan_faction_succession_ruler = yes }
+		if = {
+			limit = { NOT = { has_variable = eafp_shogun_succession_processed } }
+			eafp_japan_resolve_shogun_succession = yes
+		}
+	}
+	else = { eafp_japan_vanilla_shogun_fallback = yes }
+}
+
+#수정 기존 본문은 이름만 분리하여 일반 쇼군과 유효한 역사 후보가 없는 경우에 그대로 사용.
+eafp_japan_vanilla_shogun_fallback = {
+	if = {
+		limit = {
+			NOT = { exists = owner.heir }
+		}
+		owner ?= {
+			if = {
+				limit = {
+					any_scope_character = {
+						is_adult = yes
+						has_variable = house_tokugawa
+						NOT = { has_role_of_type = ruler }
+					}
+				}
+				ordered_scope_character = {
+					limit = {
+						is_adult = yes
+						has_variable = house_tokugawa
+						NOT = { has_role_of_type = ruler }
+					}
+					order_by = prominence
+					position = 0
+					set_character_as_ruler = yes
+					if = {
+						limit = {
+							has_variable = daimyo_var
+						}
+						JAP_character_generate_new_daimyo = yes
+						character_clear_daimyo_status = yes
+					}
+					set_variable = shogun_var
+				}
+			}
+			else = {
+				create_character = {
+					template = JAP_backup_shogun_template
+					on_created = {
+						set_variable = shogun_var
+						set_character_as_ruler = yes
+					}
+				}
+			}
+		}
+	}
+	else_if = {
+		limit = {
+			owner.heir ?= {
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+		}
+		owner.heir ?= {
+			character_adopt_into_tokugawa = yes
+			set_variable = shogun_var
+		}
+	}
+}
