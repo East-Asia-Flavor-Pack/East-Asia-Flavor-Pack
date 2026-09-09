@@ -1,0 +1,592 @@
+﻿namespace = shogunate
+
+REPLACE:shogunate.2 = { # Debate about Iesada vs. Yoshinobu - Ieyoshi
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = shogunate.2.t
+	desc = shogunate.2.d
+	flavor = shogunate.2.f
+
+    event_image = {
+		video = "ep2_important_japanese_men_negotiating"
+	}
+
+	dlc = dlc018
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/faction_icons/faction_japan_tokugawa.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_dlc_feature = ep2_content
+		game_date >= 1850.1.1
+		ruler = {
+			has_template = JAP_ieyoshi_tokugawa
+		}
+
+		#추가 의중 표명은 재위 쇼군마다 한 번, 살아 있는 후보 둘이 있을 때만.
+		c:JAP ?= THIS
+		has_law = law_type:law_bakufu
+		has_gov_regency = no
+		ruler = {
+			NOT = { has_variable = eafp_shogun_support }
+			NOT = { has_variable = eafp_shogun_debate_seen }
+		}
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_iesada_tokugawa BIRTH_DATE = 1824.5.6 }
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 }
+		ig:ig_armed_forces = { exists = leader }
+	}
+
+#수정 빈 취소 조건을 현 쇼군·후보 생존 조건으로 대체.
+# 	cancellation_trigger = {
+# 
+# 	}
+	cancellation_trigger = { #수정
+		OR = {
+			NOT = { has_law = law_type:law_bakufu }
+			has_gov_regency = yes
+			NOT = { scope:shogun_scope = { is_ruler_of_own_country = yes is_character_alive = yes } }
+			NOT = { scope:iesada_scope = { is_character_alive = yes } }
+			NOT = { scope:yoshinobu_scope = { is_character_alive = yes } }
+		}
+	}
+
+#수정 기존 후보 생성 블록. 출생·생존·템플릿 사용 여부를 확인하는 공통 효과로 대체.
+# 	immediate = {
+# 		ruler = {
+# 			save_scope_as = shogun_scope
+# 		}
+# 		ig:ig_armed_forces ?= {
+# 			leader = {
+# 				save_scope_as = armed_forces_leader
+# 			}
+# 		}
+# 		if = {
+# 			limit = {
+# 				NOT = {
+# 					any_scope_character = {
+# 						has_template = JAP_iesada_tokugawa
+# 					}
+# 				}
+# 			}
+# 			create_character = {
+# 				template = JAP_iesada_tokugawa
+# 			}
+# 		}
+# 		if = {
+# 			limit = {
+# 				NOT = {
+# 					any_scope_character = {
+# 						has_template = JAP_yoshinobu_tokugawa
+# 					}
+# 				}
+# 			}
+# 			create_character = {
+# 				template = JAP_yoshinobu_tokugawa
+# 			}
+# 		}
+# 		random_scope_character = {
+# 			limit = {
+# 				has_template = JAP_iesada_tokugawa
+# 			}
+# 			save_scope_as = iesada_scope
+# 		}
+# 		random_scope_character = {
+# 			limit = {
+# 				has_template = JAP_yoshinobu_tokugawa
+# 			}
+# 			save_scope_as = yoshinobu_scope
+# 		}
+# 	}
+	immediate = { #수정 후보를 재생성하지 않고 파벌 경쟁을 한 번만 시작.
+		eafp_japan_start_succession_debate = yes
+		ruler = { set_variable = eafp_shogun_debate_seen }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iesada_tokugawa BIRTH_DATE = 1824.5.6 CANDIDATE = iesada_scope }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 CANDIDATE = yoshinobu_scope }
+		ig:ig_armed_forces = { leader = { save_scope_as = armed_forces_leader } }
+	}
+
+#수정 기존 즉시 후계 지정·이해집단 효과. 지정은 의중 기록으로 대체하고 승패 효과는 실제 승계 시 적용.
+# 	option = {
+# 		name = shogunate.2.a
+# 		default_option = yes
+# 		if = {
+# 			limit = {
+# 				scope:iesada_scope ?= {
+# 					is_heir_of_own_country = yes
+# 				}
+# 			}
+# 			custom_tooltip = iesada_stays_heir_tt
+# 		}
+# 		else = {
+# 			set_heir = scope:iesada_scope
+# 		}
+# 		ig:ig_landowners ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_selected_shogun_candidate
+# 				days = short_modifier_time
+# 			}
+# 			leader ?= {
+# 				add_modifier = {
+# 					name = modifier_power_behind_the_shogun
+# 					days = normal_modifier_time
+# 				}
+# 			}
+# 		}
+# 		ig:ig_armed_forces ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_capability_disregarded
+# 				days = normal_modifier_time
+# 			}
+# 		}
+# 	}
+	#수정 쇼군의 지지와 권위 손상 가능성만 안내.
+	option = {
+		name = eafp_shogunate.2.a
+		default_option = yes
+		trigger = { scope:iesada_scope = { is_character_alive = yes } }
+		eafp_japan_support_nanki = yes
+		ai_chance = {
+			base = 50
+			modifier = {
+				add = 50
+				var:nankiha_influence_var > var:hitotsubashiha_influence_var
+			}
+		}
+	}
+
+#수정 기존 즉시 후계 지정·이해집단 효과. 지정은 의중 기록으로 대체하고 승패 효과는 실제 승계 시 적용.
+# 	option = {
+# 		name = shogunate.2.b
+# 		trigger = {
+# 			ig:ig_armed_forces ?= {
+# 				is_in_government = yes
+# 			}
+# 			legitimacy >= 50
+# 		}
+# 		show_as_unavailable = {
+# 			always = yes
+# 		}
+# 		highlighted_option = yes
+# 		set_heir = scope:yoshinobu_scope
+# 		if = {
+# 			limit = {
+# 				scope:yoshinobu_scope ?= {
+# 					is_adult = no
+# 				}
+# 			}
+# 			custom_tooltip = yoshinobu_is_the_guy_info_tt
+# 		}
+# 		ig:ig_armed_forces ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_selected_shogun_candidate
+# 				days = short_modifier_time
+# 			}
+# 			leader ?= {
+# 				add_modifier = {
+# 					name = modifier_power_behind_the_shogun
+# 					days = normal_modifier_time
+# 				}
+# 			}
+# 		}
+# 		ig:ig_landowners ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_lineage_disregarded
+# 				days = normal_modifier_time
+# 			}
+# 		}
+# 	}
+	#수정 쇼군의 지지와 권위 손상 가능성만 안내.
+	option = {
+		name = eafp_shogunate.2.b
+		trigger = { scope:yoshinobu_scope = { is_character_alive = yes } }
+		eafp_japan_support_hitotsubashi = yes
+		ai_chance = {
+			base = 50
+			modifier = {
+				add = 50
+				var:hitotsubashiha_influence_var > var:nankiha_influence_var
+			}
+		}
+	}
+}
+
+REPLACE:shogunate.5 = { # Debate about Iemochi vs. Yoshinobu - Iesada
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = shogunate.5.t
+	desc = shogunate.5.d
+	flavor = shogunate.5.f
+
+    event_image = {
+		video = "ep2_important_japanese_men_negotiating"
+	}
+
+	dlc = dlc018
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_dlc_feature = ep2_content
+		ruler = {
+			has_template = JAP_iesada_tokugawa
+		}
+
+		#추가 의중 표명은 재위 쇼군마다 한 번, 살아 있는 후보 둘이 있을 때만.
+		c:JAP ?= THIS
+		has_law = law_type:law_bakufu
+		has_gov_regency = no
+		ruler = {
+			NOT = { has_variable = eafp_shogun_support }
+			NOT = { has_variable = eafp_shogun_debate_seen }
+		}
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_iemochi_tokugawa BIRTH_DATE = 1846.7.16 }
+		eafp_japan_shogun_candidate_available = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 }
+	}
+
+#수정 빈 취소 조건을 현 쇼군·후보 생존 조건으로 대체.
+# 	cancellation_trigger = {
+# 
+# 	}
+	cancellation_trigger = { #수정
+		OR = {
+			NOT = { has_law = law_type:law_bakufu }
+			has_gov_regency = yes
+			NOT = { scope:shogun_scope = { is_ruler_of_own_country = yes is_character_alive = yes } }
+			NOT = { scope:iemochi_scope = { is_character_alive = yes } }
+			NOT = { scope:yoshinobu_scope = { is_character_alive = yes } }
+		}
+	}
+
+#수정 기존 후보 생성 블록. 출생·생존·템플릿 사용 여부를 확인하는 공통 효과로 대체.
+# 	immediate = {
+# 		ruler = {
+# 			save_scope_as = shogun_scope
+# 		}
+# 		if = {
+# 			limit = {
+# 				NOT = {
+# 					any_scope_character = {
+# 						has_template = JAP_yoshinobu_tokugawa
+# 					}
+# 				}
+# 			}
+# 			create_character = {
+# 				template = JAP_yoshinobu_tokugawa
+# 			}
+# 		}
+# 		if = {
+# 			limit = {
+# 				NOT = {
+# 					any_scope_character = {
+# 						has_template = JAP_iemochi_tokugawa
+# 					}
+# 				}
+# 			}
+# 			create_character = {
+# 				template = JAP_iemochi_tokugawa
+# 			}
+# 		}
+# 		random_scope_character = {
+# 			limit = {
+# 				has_template = JAP_iemochi_tokugawa
+# 			}
+# 			save_scope_as = iemochi_scope
+# 		}
+# 		random_scope_character = {
+# 			limit = {
+# 				has_template = JAP_yoshinobu_tokugawa
+# 			}
+# 			save_scope_as = yoshinobu_scope
+# 		}
+# 		ig:ig_landowners ?= {
+# 			save_scope_as = daimyo_ig
+# 		}
+# 		ig:ig_armed_forces ?= {
+# 			save_scope_as = armed_forces_ig
+# 		}
+# 	}
+	immediate = { #수정 후보를 재생성하지 않고 파벌 경쟁을 한 번만 시작.
+		eafp_japan_start_succession_debate = yes
+		ruler = { set_variable = eafp_shogun_debate_seen }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_iemochi_tokugawa BIRTH_DATE = 1846.7.16 CANDIDATE = iemochi_scope }
+		eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 CANDIDATE = yoshinobu_scope }
+		ig:ig_landowners ?= { save_scope_as = daimyo_ig }
+		ig:ig_armed_forces ?= { save_scope_as = armed_forces_ig }
+	}
+
+#수정 기존 즉시 후계 지정·이해집단 효과. 지정은 의중 기록으로 대체하고 승패 효과는 실제 승계 시 적용.
+# 	option = {
+# 		name = shogunate.5.a
+# 		default_option = yes
+# 		set_heir = scope:iemochi_scope
+# 		scope:daimyo_ig ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_selected_shogun_candidate
+# 				days = short_modifier_time
+# 			}
+# 			leader ?= {
+# 				add_modifier = {
+# 					name = modifier_power_behind_the_shogun
+# 					days = normal_modifier_time
+# 				}
+# 			}
+# 		}
+# 		scope:armed_forces_ig ?= {
+# 			add_modifier = {
+# 				name = modifier_nanki_faction_victory
+# 				days = normal_modifier_time
+# 			}
+# 		}
+# 	}
+	#수정 쇼군의 지지와 권위 손상 가능성만 안내.
+	option = {
+		name = eafp_shogunate.5.a
+		default_option = yes
+		trigger = { scope:iemochi_scope = { is_character_alive = yes } }
+		eafp_japan_support_nanki = yes
+		ai_chance = {
+			base = 50
+			modifier = {
+				add = 50
+				var:nankiha_influence_var > var:hitotsubashiha_influence_var
+			}
+		}
+	}
+
+#수정 기존 즉시 후계 지정·이해집단 효과. 지정은 의중 기록으로 대체하고 승패 효과는 실제 승계 시 적용.
+# 	option = {
+# 		name = shogunate.5.b
+# 		trigger = {
+# 			ig:ig_armed_forces ?= {
+# 				is_in_government = yes
+# 			}
+# 			legitimacy >= 50
+# 		}
+# 		show_as_unavailable = {
+# 			always = yes
+# 		}
+# 		highlighted_option = yes
+# 		set_heir = scope:yoshinobu_scope
+# 		if = {
+# 			limit = {
+# 				scope:yoshinobu_scope ?= {
+# 					is_adult = no
+# 				}
+# 			}
+# 			custom_tooltip = yoshinobu_is_the_guy_info_tt
+# 		}
+# 		scope:armed_forces_ig ?= {
+# 			add_modifier = {
+# 				name = modifier_japan_selected_shogun_candidate
+# 				days = short_modifier_time
+# 			}
+# 			leader ?= {
+# 				add_modifier = {
+# 					name = modifier_power_behind_the_shogun
+# 					days = normal_modifier_time
+# 				}
+# 			}
+# 		}
+# 		scope:daimyo_ig ?= {
+# 			add_modifier = {
+# 				name = modifier_hitotsubashi_faction_victory
+# 				days = normal_modifier_time
+# 			}
+# 		}
+# 	}
+	#수정 쇼군의 지지와 권위 손상 가능성만 안내.
+	option = {
+		name = eafp_shogunate.5.b
+		trigger = { scope:yoshinobu_scope = { is_character_alive = yes } }
+		eafp_japan_support_hitotsubashi = yes
+		ai_chance = {
+			base = 50
+			modifier = {
+				add = 50
+				var:hitotsubashiha_influence_var > var:nankiha_influence_var
+			}
+		}
+	}
+}
+
+REPLACE:shogunate.6 = { # Accession of Iemochi
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = shogunate.6.t
+	desc = shogunate.6.d
+	flavor = shogunate.6.f
+
+    gui_window = event_window_1char_tabloid
+
+	left_icon = scope:shogun_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	dlc = dlc018
+
+	icon = "gfx/interface/icons/faction_icons/faction_japan_tokugawa.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_dlc_feature = ep2_content
+		# Triggered by on_new_ruler
+	}
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				has_template = JAP_iemochi_tokugawa
+			}
+			save_scope_as = shogun_scope
+		}
+		random_scope_character = {
+			limit = {
+				has_trait = special_character_japanese_emperor
+			}
+			save_scope_as = emperor_scope
+		}
+		if = {
+			limit = {
+				scope:shogun_scope ?= {
+					age < 16
+				}
+			}
+#수정 섭정 후보 요시노부가 사망했으면 재생성하지 않음.
+# 			if = {
+# 				limit = {
+# 					NOT = {
+# 						any_scope_character = {
+# 							has_template = JAP_yoshinobu_tokugawa
+# 						}
+# 					}
+# 				}
+# 				create_character = {
+# 					template = JAP_yoshinobu_tokugawa
+# 				}
+# 			}
+# 			random_scope_character = {
+# 				limit = {
+# 					has_template = JAP_yoshinobu_tokugawa
+# 				}
+# 				save_scope_as = yoshinobu_scope
+# 			}
+			#수정
+			eafp_japan_prepare_shogun_candidate = { TEMPLATE = JAP_yoshinobu_tokugawa BIRTH_DATE = 1837.10.28 CANDIDATE = yoshinobu_scope }
+		}
+	}
+
+	option = {
+		name = shogunate.6.a
+		default_option = yes
+		trigger = {
+			scope:shogun_scope ?= {
+				is_adult = yes
+			}
+		}
+		scope:shogun_scope ?= {
+			set_first_name = Iemochi
+		}
+		show_as_tooltip = {
+			scope:shogun_scope = {
+				set_character_as_ruler = yes
+			}
+		}
+	}
+
+	option = {
+		name = shogunate.6.a_regency
+		default_option = yes
+		trigger = {
+			scope:shogun_scope ?= {
+				is_adult = no
+			}
+		}
+		scope:shogun_scope ?= {
+			set_first_name = Iemochi
+		}
+		if = {
+			limit = {
+				scope:shogun_scope ?= {
+					is_adult = no
+				}
+			}
+			add_regency_modifier = yes
+			set_variable = { name = hide_ruler_change_notification days = 3 }
+			create_character = {
+				template = JAP_yoshiyori_tokugawa
+				on_created = {
+					set_character_as_ruler = yes
+					set_variable = { name = regency_years value = 0 }
+				}
+			}
+			set_heir = scope:shogun_scope
+		}
+	}
+
+	option = {
+		name = shogunate.6.b_regency
+		trigger = {
+			scope:shogun_scope ?= {
+				is_adult = no
+			}
+			#추가 살아 있는 섭정 후보가 있을 때만 선택 가능.
+			exists = scope:yoshinobu_scope
+			scope:yoshinobu_scope = { is_character_alive = yes }
+		}
+		scope:shogun_scope ?= {
+			set_first_name = Iemochi
+		}
+		if = {
+			limit = {
+				scope:shogun_scope ?= {
+					is_adult = no
+				}
+			}
+			add_regency_modifier = yes
+			set_variable = { name = hide_ruler_change_notification days = 3 }
+			scope:yoshinobu_scope ?= {
+				set_character_as_ruler = yes
+				set_variable = { name = regency_years value = 0 }
+			}
+			set_heir = scope:shogun_scope
+		}
+	}
+
+	after = {
+		if = {
+			limit = {
+				scope:shogun_scope ?= {
+					has_variable = daimyo_var
+				}
+			}
+			scope:shogun_scope ?= {
+				character_clear_daimyo_status = yes
+			}
+			create_character = {
+				template = JAP_tokugawa_mochitsugu
+			}
+		}
+	}
+}
