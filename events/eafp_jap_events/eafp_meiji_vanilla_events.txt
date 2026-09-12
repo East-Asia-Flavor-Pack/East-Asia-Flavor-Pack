@@ -539,3 +539,727 @@ REPLACE:ep2_meiji_pulse.9 = { # Order to Expel Barbarians
 		#추가 끝
 	}
 }
+
+REPLACE:ep2_meiji_pulse.3 = { # Shimonoseki Straits Battles
+	type = country_event
+	placement = scope:choshu_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.3.t
+	desc = ep2_meiji_pulse.3.d
+	flavor = ep2_meiji_pulse.3.f
+
+    event_image = {
+		video = "votp_gunboat_diplomacy"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/faction_icons/faction_japan_mori.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_variable = order_to_expel_barbarians_var
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_AGITATING_THRESHOLD
+		}
+		any_in_global_list = {
+			variable = great_power_country_list
+			has_strategic_region_interest_tier = {
+				strategic_region = ROOT.capital.region
+				value >= 1
+			}
+		}
+		has_state_in_state_region = STATE_CHUGOKU
+	}
+
+	cancellation_trigger = {
+		OR = {
+			NOT = {
+				has_state_in_state_region = STATE_CHUGOKU
+			}
+			has_revolution = yes
+		}
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		random_scope_character = {
+			limit = {
+				var:daimyo_var ?= s:STATE_CHUGOKU
+			}
+			save_scope_as = choshu_daimyo_scope
+		}
+		s:STATE_CHUGOKU ?= {
+			random_scope_state = {
+				limit = {
+					owner ?= ROOT
+				}
+				save_scope_as = choshu_state
+			}
+		}
+		random_in_global_list = {
+			variable = great_power_country_list
+			limit = {
+				has_strategic_region_interest_tier = {
+					strategic_region = ROOT.capital.region
+					value >= 1
+				}
+			}
+			save_scope_as = relevant_gp
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.3.a
+		default_option = yes
+		random_list = {
+			1 = {
+				modifier = {
+					add = {
+						value = scope:choshu_state.gdp
+						divide = 250000
+					}
+				}
+				custom_tooltip = choshu_domain_beats_modern_warship_tt
+				scope:choshu_state ?= {
+					add_devastation = 5
+				}
+				scope:choshu_daimyo_scope ?= {
+					add_modifier = {
+						name = modifier_defeated_westerners
+						days = normal_modifier_time
+					}
+				}
+			}
+			50 = {
+				custom_tooltip = choshu_domain_loses_to_modern_warship_tt
+				scope:choshu_state ?= {
+					add_devastation = 25
+				}
+				 # TODO PRCAL-41245 force opening of strait
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.3.b # TODO PRCAL-41245 force opening of strait
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = { c:JAP ?= THIS has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -25 }
+		}
+		#추가 끝
+		custom_tooltip = {
+			text = shimonoseki_indemnity_tt
+			create_treaty = {
+				name = treaty_name_shimonoseki_war_indemnity
+				first_country = c:JAP
+				second_country = scope:relevant_gp
+
+				is_draft = no
+				binding_period = { years = 10 } # 99 year binding period after start of game
+
+				articles_to_create = {
+					{
+						article = money_transfer
+						source_country = c:JAP
+						target_country = scope:relevant_gp
+						inputs = {
+							{ quantity = 5500 }
+						}
+					}
+				}
+			}
+			scope:relevant_gp ?= {
+				set_variable = { name = shimonoseki_gp years = 10 }
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.3.c # TODO PRCAL-41245 force opening of strait
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = { c:JAP ?= THIS has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -75 }
+		}
+		#추가 끝
+		trigger = {
+			NOT = {
+				s:STATE_KANSAI ?= {
+					any_scope_state = {
+						is_treaty_port = yes
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			text = shimonoseki_indemnity_port_tt
+			create_treaty = {
+				name = treaty_name_shimonoseki_war_indemnity
+				first_country = c:JAP
+				second_country = scope:relevant_gp
+
+				is_draft = no
+				binding_period = { years = 99 }
+
+				articles_to_create = {
+					{
+						article = treaty_port
+						source_country = c:JAP
+						target_country = scope:relevant_gp
+						inputs = {
+							{ state = s:STATE_KANSAI.region_state:JAP }
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+REPLACE:ep2_meiji_pulse.4 = { # Burning of the British Legation
+	type = country_event
+	placement = scope:edo_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.4.t
+	desc = ep2_meiji_pulse.4.d
+	flavor = ep2_meiji_pulse.4.f
+
+    event_image = {
+		video = "unspecific_fire"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_variable = order_to_expel_barbarians_var
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_AGITATING_THRESHOLD
+		}
+		any_in_global_list = {
+			variable = great_power_country_list
+			has_strategic_region_interest_tier = {
+				strategic_region = ROOT.capital.region
+				value >= 1
+			}
+		}
+		has_state_in_state_region = STATE_KANTO
+	}
+
+	cancellation_trigger = {
+		has_revolution = yes
+	}
+
+	immediate = {
+		random_in_global_list = {
+			variable = great_power_country_list
+			limit = {
+				has_strategic_region_interest_tier = {
+					strategic_region = ROOT.capital.region
+					value >= 1
+				}
+			}
+			save_scope_as = relevant_gp
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		random_scope_character = {
+			limit = {
+				loyalty < 50
+				has_variable = daimyo_var
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+			save_scope_as = daimyo_scope
+			var:daimyo_var ?= {
+				random_scope_state = {
+					limit = {
+						owner ?= c:JAP
+					}
+					save_scope_as = daimyo_state
+				}
+			}
+		}
+		s:STATE_KANTO = {
+			random_scope_state = {
+				limit = {
+					owner = ROOT
+				}
+				save_scope_as = edo_state
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.4.a
+		default_option = yes
+		change_relations = {
+			country = scope:relevant_gp
+			value = -15
+		}
+		add_modifier = {
+			name = modifier_ungovernable_capital
+			days = normal_modifier_time
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.4.b
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = {
+				eafp_japan_regional_active = yes
+				exists = scope:daimyo_state
+				scope:daimyo_state = { c:JAP ?= owner }
+			}
+			add_bakuhantaisei_state_loyalty = { TARGET = scope:daimyo_state VALUE = -5 }
+			add_bakuhantaisei_state_independency = { TARGET = scope:daimyo_state VALUE = -5 }
+		}
+		#추가 끝
+		change_relations = {
+			country = scope:relevant_gp
+			value = -5
+		}
+		scope:daimyo_state ?= {
+			add_radicals_in_state = {
+				value = large_radicals
+			}
+		}
+	}
+}
+
+REPLACE:ep2_meiji_pulse.5 = { # Assassination of Ii Naosuke
+	type = country_event
+	placement = scope:edo_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.5.t
+	desc = ep2_meiji_pulse.5.d
+	flavor = ep2_meiji_pulse.5.f
+
+    gui_window = event_window_1char_tabloid
+
+	left_icon = scope:tairo_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism >= 0.35
+		}
+		any_scope_character = {
+			loyalty < 50
+			has_variable = daimyo_var
+			NOT = {
+				has_variable = house_tokugawa
+			}
+			save_temporary_scope_as = temp_daimyo_1
+		}
+		any_scope_character = {
+			NOT = {
+				scope:temp_daimyo_1 ?= this
+			}
+			loyalty < 50
+			has_variable = daimyo_var
+			NOT = {
+				has_variable = house_tokugawa
+			}
+		}
+		has_state_in_state_region = STATE_KANTO
+		#추가 실제 막부 직위 보유자가 있을 때만 발생.
+		c:JAP ?= THIS
+		has_journal_entry = je_bakuhantaisei
+		any_scope_character = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } OR = { is_tairo = yes is_rojushuza = yes is_roju = yes } }
+	}
+
+	cancellation_trigger = {
+		#수정 기존 단일 취소 조건.
+		# has_revolution = yes
+		OR = { #추가 인물이 먼저 사망하거나 소유국이 달라졌을 때도 취소.
+			has_revolution = yes
+			NOT = { scope:tairo_scope = { is_character_alive = yes owner = ROOT } }
+		}
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		#수정 바닐라 집권 이해집단 지도자 선정·불사 처리를 실제 막부 직위 선정으로 대체.
+		# ordered_interest_group = {
+		# 	limit = {
+		# 		is_in_government = yes
+		# 	}
+		# 	order_by = ig_clout
+		# 	position = 0
+		# 	check_range_bounds = no
+		# 	save_scope_as = ruling_ig
+		# 	leader = {
+		# 		save_scope_as = tairo_scope
+		# 		set_character_immortal = yes
+		# 	}
+		# }
+		if = {
+			limit = { any_scope_character = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_tairo = yes } }
+			random_scope_character = {
+				limit = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_tairo = yes }
+				save_scope_as = tairo_scope
+				interest_group ?= { save_scope_as = ruling_ig }
+			}
+		}
+		else_if = {
+			limit = { any_scope_character = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_rojushuza = yes } }
+			random_scope_character = {
+				limit = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_rojushuza = yes }
+				save_scope_as = tairo_scope
+				interest_group ?= { save_scope_as = ruling_ig }
+			}
+		}
+		else_if = {
+			limit = { any_scope_character = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_roju = yes } }
+			random_scope_character = {
+				limit = { is_character_alive = yes NOT = { is_ruler_of_own_country = yes } is_roju = yes }
+				save_scope_as = tairo_scope
+				interest_group ?= { save_scope_as = ruling_ig }
+			}
+		}
+		random_scope_character = {
+			limit = {
+				loyalty < 50
+				has_variable = daimyo_var
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+			save_scope_as = daimyo_1_scope
+		}
+		random_scope_character = {
+			limit = {
+				NOT = {
+					scope:daimyo_1_scope ?= this
+				}
+				loyalty < 50
+				has_variable = daimyo_var
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+			save_scope_as = daimyo_2_scope
+		}
+		s:STATE_KANTO = {
+			random_scope_state = {
+				limit = {
+					owner = ROOT
+				}
+				save_scope_as = edo_state
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.5.a
+		default_option = yes
+		scope:tairo_scope ?= {
+			kill_character = yes
+		}
+		scope:edo_state ?= {
+			kill_population_in_state = {
+				pop_type = soldiers
+				value = 60
+			}
+		}
+		add_modifier = {
+			name = modifier_tairo_assassinated
+			days = long_modifier_time
+			is_decaying = yes
+		}
+	}
+}
+
+REPLACE:ep2_meiji_pulse.7 = { # Kinmon Incident
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji_pulse.7.t
+	desc = ep2_meiji_pulse.7.d
+	flavor = ep2_meiji_pulse.7.f
+
+    event_image = {
+		video = "ep2_japanese_artillery"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_law = law_type:law_bakufu
+		has_variable = order_to_expel_barbarians_var
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+		}
+		any_scope_character = {
+			loyalty < 40
+			has_variable = daimyo_var
+			NOT = {
+				has_variable = house_tokugawa
+			}
+		}
+		any_scope_character = {
+			loyalty > 65
+			has_variable = daimyo_var
+		}
+		has_state_in_state_region = STATE_KYOTO
+	}
+
+	cancellation_trigger = {
+		has_revolution = yes
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		random_scope_character = {
+			limit = {
+				loyalty < 40
+				has_variable = daimyo_var
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+			save_scope_as = daimyo_1_scope
+			set_variable = { name = monthly_cached_commander_coup_strength value = this.commander_coup_strength }
+		}
+		random_scope_character = {
+			limit = {
+				NOT = {
+					scope:daimyo_1_scope ?= this
+				}
+				loyalty > 65
+				has_variable = daimyo_var
+			}
+			save_scope_as = daimyo_2_scope
+		}
+		s:STATE_KYOTO = {
+			random_scope_state = {
+				limit = {
+					owner = ROOT
+				}
+				save_scope_as = kyoto_state
+			}
+		}
+		random_scope_character = {
+			limit = {
+				has_trait = special_character_japanese_emperor
+			}
+			save_scope_as = emperor_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.7.a
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = { c:JAP ?= THIS has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = 50 }
+		}
+		#추가 끝
+		default_option = yes
+		scope:kyoto_state ?= {
+			add_devastation = 10
+		}
+		trigger_event = { id = ep2_meiji_pulse.8 days = 30 }
+	}
+
+	option = {
+		name = ep2_meiji_pulse.7.b
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = { c:JAP ?= THIS has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -150 }
+		}
+		if = {
+			limit = {
+				eafp_japan_regional_active = yes
+				exists = scope:kyoto_state
+				scope:kyoto_state = { c:JAP ?= owner }
+			}
+			add_bakuhantaisei_state_loyalty = { TARGET = scope:kyoto_state VALUE = -10 }
+			add_bakuhantaisei_state_independency = { TARGET = scope:kyoto_state VALUE = 10 }
+		}
+		#추가 끝
+		show_as_unavailable = {
+			always = yes
+		}
+		highlighted_option = yes
+		trigger = {
+			scope:restorationist_movement_scope = {
+				is_revolutionary = yes
+			}
+		}
+		scope:kyoto_state ?= {
+			add_devastation = 10
+		}
+		custom_tooltip = kinmon_civil_war_tt
+		random_civil_war = {
+			limit = {
+				is_civil_war_type = revolution
+			}
+			add_civil_war_progress = 1
+		}
+	}
+}
+
+REPLACE:ep2_meiji_pulse.8 = { # Choshu Expeditions
+	type = country_event
+	placement = scope:expedition_state
+
+	duration = 3
+
+	title = ep2_meiji_pulse.8.t
+	desc = ep2_meiji_pulse.8.d
+	flavor = ep2_meiji_pulse.8.f
+
+    event_image = {
+		video = "ep2_important_japanese_men_negotiating"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_skull.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_law = law_type:law_bakufu
+		exists = scope:daimyo_1_scope
+		scope:daimyo_1_scope.owner ?= ROOT
+	}
+
+	cancellation_trigger = {
+		OR = {
+			NOR = {
+				scope:daimyo_1_scope.owner ?= ROOT
+				exists = scope:expedition_state
+			}
+			has_revolution = yes
+		}
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		scope:daimyo_1_scope ?= {
+			var:daimyo_var ?= {
+				random_scope_state = {
+					limit = {
+						owner ?= c:JAP
+					}
+					save_scope_as = expedition_state
+				}
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.8.a
+		default_option = yes
+		scope:daimyo_1_scope ?= { # Guy who invaded Kyoto
+			add_modifier = {
+				name = modifier_daimyo_house_arrest
+				days = long_modifier_time
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.8.b
+
+		#추가 기존 모디파이어가 없는 선택지의 막번체제 수치를 직접 조정.
+		if = {
+			limit = { c:JAP ?= THIS has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = 50 }
+		}
+		if = {
+			limit = {
+				eafp_japan_regional_active = yes
+				exists = scope:expedition_state
+				scope:expedition_state = { c:JAP ?= owner }
+			}
+			add_bakuhantaisei_state_loyalty = { TARGET = scope:expedition_state VALUE = -10 }
+			add_bakuhantaisei_state_independency = { TARGET = scope:expedition_state VALUE = -15 }
+		}
+		#추가 끝
+		scope:restorationist_movement_scope ?= {
+			add_modifier = {
+				name = modifier_daimyo_executed
+				days = short_modifier_time
+				multiplier = scope:daimyo_1_scope.prominence
+				is_decaying = yes
+			}
+		}
+		scope:daimyo_1_scope ?= { # Guy who invaded Kyoto
+			retire_character = yes
+			var:daimyo_var ?= {
+				random_scope_state = {
+					limit = {
+						owner = ROOT
+					}
+					add_radicals_in_state = {
+						value = large_radicals
+					}
+				}
+			}
+		}
+	}
+}

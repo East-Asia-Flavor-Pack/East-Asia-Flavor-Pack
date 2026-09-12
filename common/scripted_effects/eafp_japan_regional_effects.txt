@@ -31,6 +31,7 @@ eafp_japan_release_region_state = {
             limit = { has_modifier = legacy_of_sekigahara_modifier }
             remove_modifier = legacy_of_sekigahara_modifier
         }
+        eafp_japan_clear_vanilla_region_modifiers = yes
         remove_variable = eafp_japan_loyalty_cache_managed
         remove_variable = cached_daimyo_loyalty
         remove_modifier = eafp_japan_regional_tax_waste
@@ -91,6 +92,7 @@ eafp_japan_refresh_region = {
                 add_modifier = { name = modifier_reaffirm_daimyos_loyalty days = 14 }
             }
         }
+        s:STATE_$STATE$.region_state:JAP = { eafp_japan_sync_vanilla_region_modifiers = yes }
         set_variable = { name = eafp_japan_loyalty_delta_$STATE$ value = eafp_japan_loyalty_$STATE$_monthly }
         set_variable = { name = eafp_japan_independency_delta_$STATE$ value = eafp_japan_independency_$STATE$_monthly }
         s:STATE_$STATE$.region_state:JAP = {
@@ -187,6 +189,7 @@ eafp_japan_update_regional_approval = {
 eafp_japan_refresh_regions = {
     if = {
         limit = { c:JAP ?= THIS }
+        eafp_japan_sync_vanilla_country_modifiers = yes
         # 옛 JAP history의 세키가하라 유산: 주 월간 변화량을 계산하기 전에 적용.
         if = {
             limit = { eafp_japan_regional_active = yes }
@@ -438,4 +441,104 @@ add_bakuhantaisei_state_independency = {
         }
     }
     custom_description = { text = add_bakuhantaisei_state_independency object = $TARGET$ value = $VALUE$ }
+}
+
+# State scope. Same source modifier on several daimyo never multiplies a region's effect.
+eafp_japan_clear_vanilla_region_modifiers = {
+    if = { limit = { has_modifier = eafp_shinsengumi_domain_control } remove_modifier = eafp_shinsengumi_domain_control }
+    if = { limit = { has_modifier = eafp_daimyo_house_arrest_control } remove_modifier = eafp_daimyo_house_arrest_control }
+    if = { limit = { has_modifier = eafp_domain_defeated_westerners } remove_modifier = eafp_domain_defeated_westerners }
+    if = { limit = { has_modifier = eafp_earthquake_assisting_domain } remove_modifier = eafp_earthquake_assisting_domain }
+    if = { limit = { has_modifier = eafp_earthquake_affected_domain } remove_modifier = eafp_earthquake_affected_domain }
+    if = { limit = { has_modifier = eafp_tenpo_land_compensation } remove_modifier = eafp_tenpo_land_compensation }
+    if = { limit = { has_modifier = eafp_tenpo_land_confiscation } remove_modifier = eafp_tenpo_land_confiscation }
+    if = { limit = { has_modifier = eafp_earthquake_vassal_relief } remove_modifier = eafp_earthquake_vassal_relief }
+}
+
+eafp_japan_sync_vanilla_region_modifiers = {
+    eafp_japan_clear_vanilla_region_modifiers = yes
+    save_scope_as = eafp_vanilla_modifier_state
+    if = {
+        limit = { c:JAP ?= owner owner = { eafp_japan_regional_active = yes } }
+        if = {
+            limit = { owner = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var var:daimyo_var = scope:eafp_vanilla_modifier_state.state_region has_modifier = modifier_shinsengumi_meddling } } }
+            add_modifier = { name = eafp_shinsengumi_domain_control days = 14 }
+        }
+        if = {
+            limit = { owner = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var var:daimyo_var = scope:eafp_vanilla_modifier_state.state_region has_modifier = modifier_daimyo_house_arrest } } }
+            add_modifier = { name = eafp_daimyo_house_arrest_control days = 14 }
+        }
+        if = {
+            limit = { owner = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var var:daimyo_var = scope:eafp_vanilla_modifier_state.state_region has_modifier = modifier_defeated_westerners } } }
+            add_modifier = { name = eafp_domain_defeated_westerners days = 14 }
+        }
+        if = {
+            limit = { owner = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var var:daimyo_var = scope:eafp_vanilla_modifier_state.state_region has_modifier = earthquake_assisting_daimyo } } }
+            add_modifier = { name = eafp_earthquake_assisting_domain days = 14 }
+        }
+        if = {
+            limit = { owner = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var var:daimyo_var = scope:eafp_vanilla_modifier_state.state_region has_modifier = earthquake_affected_daimyo } } }
+            add_modifier = { name = eafp_earthquake_affected_domain days = 14 }
+        }
+        if = {
+            limit = { OR = { state_region = s:STATE_KANTO state_region = s:STATE_KANSAI } has_modifier = modifier_consolidated_state_land owner = { has_modifier = modifier_promotions_and_koku_redistribution } }
+            add_modifier = { name = eafp_tenpo_land_compensation days = 14 }
+        }
+        if = {
+            limit = { OR = { state_region = s:STATE_KANTO state_region = s:STATE_KANSAI } has_modifier = modifier_consolidated_state_land owner = { any_interest_group = { has_modifier = modifier_heavy_handed_land_confiscations } } }
+            add_modifier = { name = eafp_tenpo_land_confiscation days = 14 }
+        }
+        if = {
+            limit = { state_region = s:STATE_KANTO owner = { any_interest_group = { has_modifier = earthquake_vassal_support } } }
+            add_modifier = { name = eafp_earthquake_vassal_relief days = 14 }
+        }
+    }
+    clear_saved_scope = eafp_vanilla_modifier_state
+}
+
+# Country scope. Shared vanilla modifiers must never give China or Ryukyu Bakufu stats.
+eafp_japan_sync_vanilla_country_modifiers = {
+    if = { limit = { has_modifier = eafp_shinsengumi_crackdown_authority } remove_modifier = eafp_shinsengumi_crackdown_authority }
+    if = { limit = { has_modifier = eafp_daimyo_house_arrest_authority } remove_modifier = eafp_daimyo_house_arrest_authority }
+    if = { limit = { has_modifier = eafp_ryukyu_success_authority } remove_modifier = eafp_ryukyu_success_authority }
+    if = { limit = { has_modifier = eafp_ryukyu_failure_authority } remove_modifier = eafp_ryukyu_failure_authority }
+    if = { limit = { has_modifier = eafp_northern_success_authority } remove_modifier = eafp_northern_success_authority }
+    if = { limit = { has_modifier = eafp_northern_failure_authority } remove_modifier = eafp_northern_failure_authority }
+    if = { limit = { has_modifier = eafp_foreign_pressure_authority } remove_modifier = eafp_foreign_pressure_authority }
+    if = { limit = { has_modifier = eafp_foreign_apology_authority } remove_modifier = eafp_foreign_apology_authority }
+    if = {
+        limit = { c:JAP ?= THIS eafp_japan_regional_active = yes }
+        if = {
+            limit = { any_political_movement = { has_modifier = modifier_shinsengumi_crackdown } }
+            add_modifier = { name = eafp_shinsengumi_crackdown_authority days = 14 }
+        }
+        if = {
+            limit = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var has_modifier = modifier_daimyo_house_arrest } }
+            add_modifier = { name = eafp_daimyo_house_arrest_authority days = 14 }
+        }
+        if = {
+            limit = { has_modifier = modifier_ryukyu_rivalry_succeeded_ryukyu }
+            add_modifier = { name = eafp_ryukyu_success_authority days = 14 }
+        }
+        if = {
+            limit = { has_modifier = modifier_ryukyu_rivalry_failed_ryukyu }
+            add_modifier = { name = eafp_ryukyu_failure_authority days = 14 }
+        }
+        if = {
+            limit = { OR = { has_modifier = modifier_external_applications has_modifier = modifier_domestic_applications } }
+            add_modifier = { name = eafp_northern_success_authority days = 14 }
+        }
+        if = {
+            limit = { any_interest_group = { has_modifier = modifier_lost_northern_investments } }
+            add_modifier = { name = eafp_northern_failure_authority days = 14 }
+        }
+        if = {
+            limit = { any_interest_group = { has_modifier = caved_to_foreign_pressure_government } }
+            add_modifier = { name = eafp_foreign_pressure_authority days = 14 }
+        }
+        if = {
+            limit = { any_interest_group = { has_modifier = light_hand_with_foreigners } NOT = { any_interest_group = { has_modifier = caved_to_foreign_pressure_government } } }
+            add_modifier = { name = eafp_foreign_apology_authority days = 14 }
+        }
+    }
 }
