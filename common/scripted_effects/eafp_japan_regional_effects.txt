@@ -1,15 +1,6 @@
 ﻿# Country = JAP unless explicitly marked state scope. UI never owns L/I.
 # .disable sources remain unchanged; only loyalty / independency are restored.
 
-eafp_japan_initialize_regions = {
-    if = {
-        limit = { c:JAP ?= THIS NOT = { has_variable = eafp_japan_regional_ended } }
-        set_variable = eafp_japan_regional_initializing
-        eafp_japan_refresh_regions = yes
-        remove_variable = eafp_japan_regional_initializing
-    }
-}
-
 # State scope. Release only an EAFP-owned cache, then match vanilla's JAP-only
 # character loop. If no vanilla daimyo exists, its accessors use neutral default.
 eafp_japan_release_region_state = {
@@ -190,28 +181,6 @@ eafp_japan_refresh_regions = {
     if = {
         limit = { c:JAP ?= THIS }
         eafp_japan_sync_vanilla_country_modifiers = yes
-        # 옛 JAP history의 세키가하라 유산: 주 월간 변화량을 계산하기 전에 적용.
-        if = {
-            limit = { eafp_japan_regional_active = yes }
-            s:STATE_KYUSHU.region_state:JAP ?= {
-                if = {
-                    limit = { NOT = { has_modifier = legacy_of_sekigahara_modifier } }
-                    add_modifier = {
-                        name = legacy_of_sekigahara_modifier
-                        multiplier = 0.4
-                    }
-                }
-            }
-            s:STATE_CHUGOKU.region_state:JAP ?= {
-                if = {
-                    limit = { NOT = { has_modifier = legacy_of_sekigahara_modifier } }
-                    add_modifier = {
-                        name = legacy_of_sekigahara_modifier
-                        multiplier = 0.2
-                    }
-                }
-            }
-        }
         # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
         eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
         eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
@@ -248,7 +217,6 @@ eafp_japan_end_regions = {
     if = {
         limit = { c:JAP ?= THIS }
         # Set the gate before release: cache calls during cleanup cannot re-enter.
-        set_variable = eafp_japan_regional_ended
         eafp_japan_refresh_regions = yes
         remove_variable = eafp_japan_loyalty_TOHOKU
         remove_variable = eafp_japan_independency_TOHOKU

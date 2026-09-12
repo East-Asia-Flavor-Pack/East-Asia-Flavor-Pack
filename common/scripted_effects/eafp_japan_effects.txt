@@ -295,6 +295,49 @@ appoint_roju_effect = {
 	}
 }
 
+# 일본 국가 스코프. 막번체제 동안 다이묘 이해집단 지도자는 대로, 공석이면 노중수좌.
+eafp_japan_sync_daimyo_ig_leader = {
+	if = {
+		limit = {
+			c:JAP ?= THIS
+			has_journal_entry = je_bakuhantaisei
+		}
+		clear_saved_scope = eafp_bakufu_ig_leader
+		if = {
+			limit = {
+				has_variable = tairo_var
+				var:tairo_var = { is_character_alive = yes owner = c:JAP }
+			}
+			var:tairo_var = { save_scope_as = eafp_bakufu_ig_leader }
+		}
+		else_if = {
+			limit = {
+				has_variable = rojushuza_var
+				var:rojushuza_var = { is_character_alive = yes owner = c:JAP }
+			}
+			var:rojushuza_var = { save_scope_as = eafp_bakufu_ig_leader }
+		}
+		ig:ig_landowners = { save_scope_as = eafp_bakufu_daimyo_ig }
+		scope:eafp_bakufu_ig_leader ?= {
+			if = {
+				limit = { NOT = { interest_group ?= scope:eafp_bakufu_daimyo_ig } }
+				# 다른 이해집단 지도자라면 기존 지도자 역할을 해제한 뒤 소속을 옮긴다.
+				if = {
+					limit = { is_interest_group_leader = yes }
+					remove_character_role = character_role_ig_leader
+				}
+				set_interest_group = scope:eafp_bakufu_daimyo_ig
+			}
+			if = {
+				limit = { NOT = { scope:eafp_bakufu_daimyo_ig.leader ?= THIS } }
+				set_as_interest_group_leader = yes
+			}
+		}
+		clear_saved_scope = eafp_bakufu_ig_leader
+		clear_saved_scope = eafp_bakufu_daimyo_ig
+	}
+}
+
 create_bakufu_politician_character = {
 	switch = {
 		trigger = $POSITION$
@@ -436,6 +479,7 @@ create_bakufu_politician_character = {
 	scope:new_politician_scope = {
 		apply_saved_bakufu_politician_mission = yes
 	}
+	eafp_japan_sync_daimyo_ig_leader = yes
 }
 
 create_bakufu_politician_character_with_variant = {
@@ -494,6 +538,7 @@ remove_bakufu_politician_role = { # scope = character
 		}
 	}
 	set_character_busy_and_immortal = no
+	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
 remove_bakufu_politician_role_without_appointment = { # scope = character
 	if = {
@@ -521,6 +566,7 @@ remove_bakufu_politician_role_without_appointment = { # scope = character
 		}
 	}
 	set_character_busy_and_immortal = no
+	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
 
 remove_bakufu_politician_mission = { # scope = character
