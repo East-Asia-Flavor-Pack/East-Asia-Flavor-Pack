@@ -1,14 +1,47 @@
-﻿is_hitotsubashiha = {
+﻿# 인물 범위: 현재 시행법과 무관한 이념의 기본 법률 선호를 비교한다.
+# law_stance의 선호 단계별로 비교하여 같은 선호는 어느 쪽에도 포함하지 않는다.
+eafp_japan_character_prefers_law = {
 	OR = {
-		has_ideology = ideology:ideology_kaikakuha
-		has_ideology = ideology:ideology_hitotsubashiha
+		AND = {
+			law_stance = { law = law_type:$OTHER_LAW$ value = strongly_disapprove }
+			law_stance = { law = law_type:$PREFERRED_LAW$ value > strongly_disapprove }
+		}
+		AND = {
+			law_stance = { law = law_type:$OTHER_LAW$ value = disapprove }
+			law_stance = { law = law_type:$PREFERRED_LAW$ value > disapprove }
+		}
+		AND = {
+			law_stance = { law = law_type:$OTHER_LAW$ value = neutral }
+			law_stance = { law = law_type:$PREFERRED_LAW$ value > neutral }
+		}
+		AND = {
+			law_stance = { law = law_type:$OTHER_LAW$ value = approve }
+			law_stance = { law = law_type:$PREFERRED_LAW$ value > approve }
+		}
 	}
 }
 
+# 완화된 에도 체제를 선호하는 인물.
+is_hitotsubashiha = {
+	eafp_japan_character_prefers_law = {
+		PREFERRED_LAW = law_lax_edo_system
+		OTHER_LAW = law_strict_edo_system
+	}
+}
+
+# 엄격한 에도 체제를 선호하는 인물.
 is_nankiha = {
-	OR = {
-		has_ideology = ideology:ideology_hoshuha
-		has_ideology = ideology:ideology_nankiha
+	eafp_japan_character_prefers_law = {
+		PREFERRED_LAW = law_strict_edo_system
+		OTHER_LAW = law_lax_edo_system
+	}
+}
+
+# 어느 쪽에도 속하지 않는 인물을 중도파로 취급한다.
+is_bakufu_moderate = {
+	NOR = {
+		is_hitotsubashiha = yes
+		is_nankiha = yes
 	}
 }
 

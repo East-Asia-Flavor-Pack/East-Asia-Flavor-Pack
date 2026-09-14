@@ -43,30 +43,7 @@ hitotsubashiha_vs_nankiha_start_effect = {
 	clear_saved_scope = sum
 	set_variable = hitotsubashiha_vs_nankiha_start
 	bakufu_kaikaku_progress_bar_calc = yes
-	every_scope_character = {
-		if = {
-			limit = { has_ideology = ideology:ideology_kaikakuha }
-			random_list = {
-				50 = {
-					set_ideology = ideology:ideology_hitotsubashiha
-				}
-				50 = {
-					set_ideology = ideology:ideology_moderate
-				}
-			}
-		}
-		if = {
-			limit = { has_ideology = ideology:ideology_hoshuha }
-			random_list = {
-				50 = {
-					set_ideology = ideology:ideology_nankiha
-				}
-				50 = {
-					set_ideology = ideology:ideology_moderate
-				}
-			}
-		}
-	}
+
 }
 
 appoint_tairo_effect = {
@@ -171,13 +148,13 @@ appoint_rojushuza_effect = {
 				limit = {
 					any_in_list = {
 						variable = roju_varlist
-						has_ideology = ideology:ideology_moderate
+						is_bakufu_moderate = yes
 					}
 				}
 				ordered_in_list = {
 					variable = roju_varlist
 					limit = {
-						has_ideology = ideology:ideology_moderate
+						is_bakufu_moderate = yes
 					}
 					order_by = var:eafp_bakuhantaisei_politician_influence
 					position = 0
@@ -339,148 +316,98 @@ eafp_japan_sync_daimyo_ig_leader = {
 }
 
 create_bakufu_politician_character = {
-	switch = {
-		trigger = $POSITION$
-		flag:roju = {
-			create_character = {
-				age = { 40 50 }
-				role = character_role_politician
-				ideology = $IDEOLOGY$
-				religion = rel:confucian
-				save_scope_as = new_politician_scope
-				on_created = {
-					set_character_busy_and_immortal = yes
-					set_variable = {
-						name = eafp_bakuhantaisei_politician_influence
-						value = 75
-					}
-					set_variable = {
-						name = eafp_bakuhantaisei_politician_influence_max
-						value = 150
-					}
-					add_modifier = {
-						name = modifier_bakufu_recently_appointed
-						months = { 35 45 }
-					}
-					random_list = {
-						1 = { }
-						1 = {
-							add_random_trait = personality
-						}
-					}
-					c:JAP = {
-						add_to_variable_list = { name = roju_varlist target = PREV }
-					}
-				}
-			}
+	# 이념을 지정하지 않아 게임의 생성 조건 및 ideology weight를 그대로 사용한다.
+	# 보직과 성씨는 후보 선정을 마친 뒤 부여한다.
+	clear_saved_scope = new_politician_scope
+	while = {
+		limit = { NOT = { exists = scope:new_politician_scope } }
+		create_character = {
+			age = { 40 50 }
+			role = character_role_politician
+			religion = rel:confucian
+			save_scope_as = new_politician_scope
 		}
-		flag:rojushuza = {
-			create_character = {
-				age = { 40 50 }
-				role = character_role_politician
-				ideology = $IDEOLOGY$
-				religion = rel:confucian
-				save_scope_as = new_politician_scope
-				on_created = {
-					set_character_busy_and_immortal = yes
-					set_variable = {
-						name = eafp_bakuhantaisei_politician_influence
-						value = 100
-					}
-					set_variable = {
-						name = eafp_bakuhantaisei_politician_influence_max
-						value = 200
-					}
-					add_modifier = {
-						name = modifier_bakufu_recently_appointed
-						months = { 35 45 }
-					}
-					random_list = {
-						1 = { }
-						1 = {
-							add_random_trait = personality
-						}
-					}
-					c:JAP = {
-						set_variable = { name = rojushuza_var value = PREV }
-					}
-				}
+		if = {
+			limit = {
+				scope:new_politician_scope ?= { NOT = { $FACTION_TRIGGER$ = yes } }
 			}
-		}
-		flag:tairo = {
-			random_list = {
-				2 = {
-					create_character = {
-						age = { 40 50 }
-						role = character_role_politician
-						ideology = $IDEOLOGY$
-						religion = rel:confucian
-						last_name = Ii
-						save_scope_as = new_politician_scope
-						on_created = {
-							set_character_busy_and_immortal = yes
-							set_variable = {
-								name = eafp_bakuhantaisei_politician_influence
-								value = 125
-							}
-							set_variable = {
-								name = eafp_bakuhantaisei_politician_influence_max
-								value = 250
-							}
-							add_modifier = {
-								name = modifier_bakufu_recently_appointed
-								months = { 35 45 }
-							}
-							random_list = {
-								1 = { }
-								1 = {
-									add_random_trait = personality
-								}
-							}
-							c:JAP = {
-								set_variable = { name = tairo_var value = PREV }
-							}
-						}
-					}
-				}
-				1 = {
-					create_character = {
-						age = { 40 50 }
-						role = character_role_politician
-						ideology = $IDEOLOGY$
-						religion = rel:confucian
-						last_name = Sakai
-						save_scope_as = new_politician_scope
-						on_created = {
-							set_character_busy_and_immortal = yes
-							set_variable = {
-								name = eafp_bakuhantaisei_politician_influence
-								value = 250
-							}
-							set_variable = {
-								name = eafp_bakuhantaisei_politician_influence_max
-								value = 250
-							}
-							add_modifier = {
-								name = modifier_bakufu_recently_appointed
-								months = { 35 45 }
-							}
-							random_list = {
-								1 = { }
-								1 = {
-									add_random_trait = personality
-								}
-							}
-							c:JAP = {
-								set_variable = { name = tairo_var value = PREV }
-							}
-						}
-					}
-				}
-			}
+			scope:new_politician_scope ?= { retire_character = { hidden = yes } }
+			clear_saved_scope = new_politician_scope
 		}
 	}
-	scope:new_politician_scope = {
+	# 반복 한도까지 후보를 찾지 못하면 파벌별 기본 이념으로 생성한다.
+	# 난키파: 전통주의 / 히토츠바시파: 미토학 / 중도파: 중도주의.
+	if = {
+		limit = { NOT = { exists = scope:new_politician_scope } }
+		create_character = {
+			age = { 40 50 }
+			role = character_role_politician
+			ideology = $FALLBACK_IDEOLOGY$
+			religion = rel:confucian
+			save_scope_as = new_politician_scope
+		}
+	}
+	scope:new_politician_scope ?= {
+		# 일반 선정과 강제 생성 모두 같은 보직 부여 절차를 따른다.
+		set_character_busy_and_immortal = yes
+		add_modifier = {
+			name = modifier_bakufu_recently_appointed
+			months = { 35 45 }
+		}
+		random_list = {
+			1 = { }
+			1 = { add_random_trait = personality }
+		}
+		switch = {
+			trigger = $POSITION$
+			flag:roju = {
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					value = 75
+				}
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					value = 150
+				}
+				c:JAP = {
+					add_to_variable_list = { name = roju_varlist target = scope:new_politician_scope }
+				}
+			}
+			flag:rojushuza = {
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					value = 100
+				}
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					value = 200
+				}
+				c:JAP = {
+					set_variable = { name = rojushuza_var value = scope:new_politician_scope }
+				}
+			}
+			flag:tairo = {
+				random_list = {
+					2 = {
+						set_last_name = Ii
+					}
+					1 = {
+						set_last_name = Sakai
+					}
+				}
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence
+					value = 125
+				}
+				set_variable = {
+					name = eafp_bakuhantaisei_politician_influence_max
+					value = 250
+				}
+				c:JAP = {
+					set_variable = { name = tairo_var value = scope:new_politician_scope }
+				}
+			}
+		}
 		# 신규 등용 인물의 영지는 일본 소유의 주로 지정한다.
 		# 일본 본토를 상실한 경우에도 유효한 주 지역을 갖도록 수도를 기본값으로 둔다.
 		set_variable = { name = daimyo_var value = owner.capital.state_region }
@@ -515,32 +442,6 @@ create_bakufu_politician_character = {
 	eafp_japan_sync_daimyo_ig_leader = yes
 }
 
-create_bakufu_politician_character_with_variant = {
-	switch = {
-		trigger = $IDEOLOGY_FLAG$
-		flag:hitotsubashiha = {
-			if = {
-				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-				create_bakufu_politician_character = { POSITION = $POSITION$ IDEOLOGY = ideology_hitotsubashiha }
-			}
-			else = {
-				create_bakufu_politician_character = { POSITION = $POSITION$ IDEOLOGY = ideology_kaikakuha }
-			}
-		}
-		flag:nankiha = {
-			if = {
-				limit = { has_variable = hitotsubashiha_vs_nankiha_start }
-				create_bakufu_politician_character = { POSITION = $POSITION$ IDEOLOGY = ideology_nankiha }
-			}
-			else = {
-				create_bakufu_politician_character = { POSITION = $POSITION$ IDEOLOGY = ideology_hoshuha }
-			}
-		}
-		flag:moderate = {
-			create_bakufu_politician_character = { POSITION = $POSITION$ IDEOLOGY = ideology_moderate }
-		}
-	}
-}
 
 remove_bakufu_politician_role = { # scope = character
 	save_bakufu_politician_mission = yes
@@ -1143,7 +1044,7 @@ add_bakuhantaisei_politician_influence_calc_moderate = { # 중도파 등용
 		limit = { is_bakufu_politician = yes }
 		if = {
 			limit = {
-				has_ideology = ideology:ideology_moderate
+				is_bakufu_moderate = yes
 			}
 			set_variable = { # 3/4만 소모
 				name = add_bakuhantaisei_politician_influence_value_var
