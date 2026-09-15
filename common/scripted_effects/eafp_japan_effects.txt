@@ -323,6 +323,7 @@ create_bakufu_politician_character = {
 		limit = { NOT = { exists = scope:new_politician_scope } }
 		create_character = {
 			age = { 40 50 }
+			noble = yes
 			role = character_role_politician
 			religion = rel:confucian
 			save_scope_as = new_politician_scope
@@ -341,6 +342,7 @@ create_bakufu_politician_character = {
 		limit = { NOT = { exists = scope:new_politician_scope } }
 		create_character = {
 			age = { 40 50 }
+			noble = yes
 			role = character_role_politician
 			ideology = $FALLBACK_IDEOLOGY$
 			religion = rel:confucian
@@ -349,7 +351,6 @@ create_bakufu_politician_character = {
 	}
 	scope:new_politician_scope ?= {
 		# 일반 선정과 강제 생성 모두 같은 보직 부여 절차를 따른다.
-		set_character_busy_and_immortal = yes
 		add_modifier = {
 			name = modifier_bakufu_recently_appointed
 			months = { 35 45 }
@@ -408,29 +409,6 @@ create_bakufu_politician_character = {
 				}
 			}
 		}
-		# 신규 등용 인물의 영지는 일본 소유의 주로 지정한다.
-		# 일본 본토를 상실한 경우에도 유효한 주 지역을 갖도록 수도를 기본값으로 둔다.
-		set_variable = { name = daimyo_var value = owner.capital.state_region }
-		owner = {
-			random_scope_state = {
-				limit = {
-					OR = {
-						state_region = s:STATE_TOHOKU
-						state_region = s:STATE_KANTO
-						state_region = s:STATE_HOKUSHINETSU
-						state_region = s:STATE_TOKAI
-						state_region = s:STATE_KYOTO
-						state_region = s:STATE_KANSAI
-						state_region = s:STATE_CHUGOKU
-						state_region = s:STATE_SHIKOKU
-						state_region = s:STATE_KYUSHU
-					}
-				}
-				scope:new_politician_scope = {
-					set_variable = { name = daimyo_var value = PREV.state_region }
-				}
-			}
-		}
 		# 생성 시 한 번만 정치인 활동 기간을 10~15년 차감한다.
 		add_career_length = {
 			role = character_role_politician
@@ -471,7 +449,6 @@ remove_bakufu_politician_role = { # scope = character
 			appoint_roju_effect = yes
 		}
 	}
-	set_character_busy_and_immortal = no
 	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
 remove_bakufu_politician_role_without_appointment = { # scope = character
@@ -499,7 +476,6 @@ remove_bakufu_politician_role_without_appointment = { # scope = character
 			remove_list_variable = { name = roju_varlist target = PREV }
 		}
 	}
-	set_character_busy_and_immortal = no
 	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
 
