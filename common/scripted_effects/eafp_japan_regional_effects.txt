@@ -56,7 +56,7 @@ eafp_japan_refresh_region = {
         limit = { eafp_japan_regional_active = yes exists = s:STATE_$STATE$.region_state:JAP }
         if = {
             limit = { NOT = { has_variable = eafp_japan_region_initialized_$STATE$ } }
-            # 막번체제 프로그레스 바 초기값: 옛 earp_jap_values.disable 자료.
+            # 막번체제 프로그레스 바 초기값
             set_variable = { name = eafp_japan_loyalty_$STATE$ value = $LOYALTY$ }
             set_variable = { name = eafp_japan_independency_$STATE$ value = $INDEPENDENCY$ }
             set_variable = eafp_japan_region_initialized_$STATE$
@@ -180,7 +180,6 @@ eafp_japan_update_regional_approval = {
 eafp_japan_refresh_regions = {
     if = {
         limit = { c:JAP ?= THIS }
-        eafp_japan_sync_vanilla_country_modifiers = yes
         # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
         eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
         eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
@@ -462,51 +461,4 @@ eafp_japan_sync_vanilla_region_modifiers = {
         }
     }
     clear_saved_scope = eafp_vanilla_modifier_state
-}
-
-# Country scope. Shared vanilla modifiers must never give China or Ryukyu Bakufu stats.
-eafp_japan_sync_vanilla_country_modifiers = {
-    if = { limit = { has_modifier = eafp_shinsengumi_crackdown_authority } remove_modifier = eafp_shinsengumi_crackdown_authority }
-    if = { limit = { has_modifier = eafp_daimyo_house_arrest_authority } remove_modifier = eafp_daimyo_house_arrest_authority }
-    if = { limit = { has_modifier = eafp_ryukyu_success_authority } remove_modifier = eafp_ryukyu_success_authority }
-    if = { limit = { has_modifier = eafp_ryukyu_failure_authority } remove_modifier = eafp_ryukyu_failure_authority }
-    if = { limit = { has_modifier = eafp_northern_success_authority } remove_modifier = eafp_northern_success_authority }
-    if = { limit = { has_modifier = eafp_northern_failure_authority } remove_modifier = eafp_northern_failure_authority }
-    if = { limit = { has_modifier = eafp_foreign_pressure_authority } remove_modifier = eafp_foreign_pressure_authority }
-    if = { limit = { has_modifier = eafp_foreign_apology_authority } remove_modifier = eafp_foreign_apology_authority }
-    if = {
-        limit = { c:JAP ?= THIS eafp_japan_regional_active = yes }
-        if = {
-            limit = { any_political_movement = { has_modifier = modifier_shinsengumi_crackdown } }
-            add_modifier = { name = eafp_shinsengumi_crackdown_authority days = 14 }
-        }
-        if = {
-            limit = { any_scope_character = { is_character_alive = yes has_role_of_type = magnate has_variable = daimyo_var has_modifier = modifier_daimyo_house_arrest } }
-            add_modifier = { name = eafp_daimyo_house_arrest_authority days = 14 }
-        }
-        if = {
-            limit = { has_modifier = modifier_ryukyu_rivalry_succeeded_ryukyu }
-            add_modifier = { name = eafp_ryukyu_success_authority days = 14 }
-        }
-        if = {
-            limit = { has_modifier = modifier_ryukyu_rivalry_failed_ryukyu }
-            add_modifier = { name = eafp_ryukyu_failure_authority days = 14 }
-        }
-        if = {
-            limit = { OR = { has_modifier = modifier_external_applications has_modifier = modifier_domestic_applications } }
-            add_modifier = { name = eafp_northern_success_authority days = 14 }
-        }
-        if = {
-            limit = { any_interest_group = { has_modifier = modifier_lost_northern_investments } }
-            add_modifier = { name = eafp_northern_failure_authority days = 14 }
-        }
-        if = {
-            limit = { any_interest_group = { has_modifier = caved_to_foreign_pressure_government } }
-            add_modifier = { name = eafp_foreign_pressure_authority days = 14 }
-        }
-        if = {
-            limit = { any_interest_group = { has_modifier = light_hand_with_foreigners } NOT = { any_interest_group = { has_modifier = caved_to_foreign_pressure_government } } }
-            add_modifier = { name = eafp_foreign_apology_authority days = 14 }
-        }
-    }
 }

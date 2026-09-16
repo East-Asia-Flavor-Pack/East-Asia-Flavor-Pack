@@ -29,7 +29,6 @@ je_bakuhantaisei = {
 	scripted_button = appoint_tairo_button
 
 	immediate = {
-		eafp_japan_refresh_regions = yes
 		je_meiji_restoration_update_daimyos = yes
 		country_calculate_and_cache_daimyo_loyalties_per_state = yes
 		eafp_japan_sync_daimyo_ig_leader = yes
@@ -95,11 +94,25 @@ je_bakuhantaisei = {
 	on_complete = {
 		eafp_japan_end_regions = yes 
 		hidden_effect = {
+			# 소속을 잃은 인물도 국가 명부를 통해 해제한다.
+			var:tairo_var ?= { remove_bakufu_politician_role_without_appointment = yes }
+			var:rojushuza_var ?= { remove_bakufu_politician_role_without_appointment = yes }
+			if = {
+				limit = { has_variable_list = roju_varlist }
+				every_in_list = {
+					variable = roju_varlist
+					remove_bakufu_politician_role_without_appointment = yes
+				}
+			}
 			every_scope_character = {
-				limit = { is_bakufu_politician = yes }
+				limit = { has_variable = eafp_bakufu_office_position }
 				remove_bakufu_politician_role_without_appointment = yes
 			}
 		}
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
 	}
 
 	invalid = {
@@ -109,20 +122,63 @@ je_bakuhantaisei = {
 	on_invalid = {
 		eafp_japan_end_regions = yes 
 		hidden_effect = {
+			# 소속을 잃은 인물도 국가 명부를 통해 해제한다.
+			var:tairo_var ?= { remove_bakufu_politician_role_without_appointment = yes }
+			var:rojushuza_var ?= { remove_bakufu_politician_role_without_appointment = yes }
+			if = {
+				limit = { has_variable_list = roju_varlist }
+				every_in_list = {
+					variable = roju_varlist
+					remove_bakufu_politician_role_without_appointment = yes
+				}
+			}
 			every_scope_character = {
-				limit = { is_bakufu_politician = yes }
+				limit = { has_variable = eafp_bakufu_office_position }
 				remove_bakufu_politician_role_without_appointment = yes
 			}
 		}
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+		remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
 	}
 
 	on_weekly_pulse = {
 		effect = {
 			country_calculate_and_cache_daimyo_loyalties_per_state = yes
-			# 왠진 모르지만 막부 정치인 자리 비었을때 강제 활성화
+			# 역할·소속이 유효하지 않은 명부부터 정리한다. 임기는 다시 설정하지 않는다.
 			if = {
 				limit = {
-					variable_list_size = { name = roju_varlist value < 4 }
+					has_variable = tairo_var
+					NOT = { var:tairo_var ?= { is_character_alive = yes owner = c:JAP is_tairo = yes } }
+				}
+				var:tairo_var ?= { remove_bakufu_politician_role = yes }
+				remove_variable = tairo_var
+			}
+			if = {
+				limit = {
+					has_variable = rojushuza_var
+					NOT = { var:rojushuza_var ?= { is_character_alive = yes owner = c:JAP is_rojushuza = yes } }
+				}
+				var:rojushuza_var ?= { remove_bakufu_politician_role = yes }
+				remove_variable = rojushuza_var
+			}
+			if = {
+				limit = { has_variable_list = roju_varlist }
+				every_in_list = {
+					variable = roju_varlist
+					limit = { NOT = { is_character_alive = yes owner = c:JAP is_roju = yes } }
+					remove_bakufu_politician_role = yes
+				}
+			}
+			eafp_japan_sync_daimyo_ig_leader = yes
+			# 사망·임기 종료 중에는 새 등용 이벤트를 중첩시키지 않고 주간에 공석을 보충한다.
+			if = {
+				limit = {
+					OR = {
+						NOT = { has_variable_list = roju_varlist }
+						variable_list_size = { name = roju_varlist value < 4 }
+					}
 					NOT = { has_variable = recruiting_bakufu_politicians }
 				}
 				appoint_roju_effect = yes
@@ -134,37 +190,6 @@ je_bakuhantaisei = {
 				}
 				appoint_rojushuza_effect = yes
 			}
-			# invalid한 인물이 있을 때 지움
-			if = {
-				limit = {
-					has_variable = tairo_var
-					var:tairo_var.owner != ROOT
-				}
-				var:tairo_var ?= { remove_bakufu_politician_role = yes }
-				remove_variable = tairo_var
-			}
-			if = {
-				limit = {
-					has_variable = rojushuza_var
-					var:rojushuza_var.owner != ROOT
-				}
-				var:rojushuza_var ?= { remove_bakufu_politician_role = yes }
-				remove_variable = rojushuza_var
-			}
-			if = {
-				limit = {
-					any_in_list = {
-						variable = roju_varlist
-						owner != ROOT
-					}
-				}
-				every_in_list = {
-					variable = roju_varlist
-					limit = { owner != ROOT }
-					remove_bakufu_politician_role_without_appointment = yes
-				}
-			}
-			eafp_japan_sync_daimyo_ig_leader = yes
 		}
 	}
 
@@ -180,27 +205,6 @@ je_bakuhantaisei = {
 		}
 	}
 
-	on_yearly_pulse = {
-		effect = {
-			every_scope_character = { # 막부 정치인 인물 사망 판정
-				limit = {
-					is_bakufu_politician = yes
-					is_busy = yes # immortal 판정 trigger는 없음. (원래)
-
-					NOT = { has_modifier = modifier_bakufu_recently_appointed } # 최근 임명된 놈 제외
-				}
-				random_list = {
-					5 = {  }
-					1 = {
-						trigger_event = {
-							id = eafp_japan.9
-							days = { 0 364 }
-						}
-					}
-				}
-			}
-		}
-	}
 	
 	transferable = yes
 
@@ -208,8 +212,6 @@ je_bakuhantaisei = {
 
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
-
-# 텐포 대기근
 
 # 막부 개혁
 

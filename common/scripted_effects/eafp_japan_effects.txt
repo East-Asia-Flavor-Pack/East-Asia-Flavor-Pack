@@ -283,14 +283,14 @@ eafp_japan_sync_daimyo_ig_leader = {
 		if = {
 			limit = {
 				has_variable = tairo_var
-				var:tairo_var = { is_character_alive = yes owner = c:JAP }
+				var:tairo_var = { is_character_alive = yes owner = c:JAP is_tairo = yes }
 			}
 			var:tairo_var = { save_scope_as = eafp_bakufu_ig_leader }
 		}
 		else_if = {
 			limit = {
 				has_variable = rojushuza_var
-				var:rojushuza_var = { is_character_alive = yes owner = c:JAP }
+				var:rojushuza_var = { is_character_alive = yes owner = c:JAP is_rojushuza = yes }
 			}
 			var:rojushuza_var = { save_scope_as = eafp_bakufu_ig_leader }
 		}
@@ -315,16 +315,197 @@ eafp_japan_sync_daimyo_ig_leader = {
 	}
 }
 
+# 인물 범위. 임명·승진 시점부터 새 임기를 설정한다.
+# 역사적 재임 사례와 범위 선정 근거: documentation/japan_bakufu_career_lengths.md
+set_bakufu_politician_career_length = {
+	if = {
+		limit = { is_tairo = yes }
+		# 후기 대로: 사카이 다다시게(1865), 이이 나오스케(1858~1860), 나오아키(1835~1841).
+		set_career_length = {
+			role = character_role_eafp_tairo
+			years = 4
+			random_range = { 0.125 1.5 } # 6개월~6년
+		}
+	}
+	else_if = {
+		limit = { is_rojushuza = yes }
+		# 수좌: 오쿠보 다다자네(1835~1837), 미즈노 다다쿠니(1839~1843), 아베 마사히로(1845~1855).
+		set_career_length = {
+			role = character_role_eafp_rojushuza
+			years = 5
+			random_range = { 0.4 2.0 } # 2~10년
+		}
+	}
+	else_if = {
+		limit = { is_roju = yes }
+		# 노중: 오타 스케모토(1834~1841), 마쓰다이라 무네아키라(1831~1840), 오쿠보 다다자네(1818~1837).
+		set_career_length = {
+			role = character_role_eafp_roju
+			years = 10
+			random_range = { 0.7 1.9 } # 7~19년
+		}
+	}
+}
+
+# 인물 범위. 보직과 국가 조회 명부를 함께 갱신한다. 이미 같은 보직이면 임기를 건드리지 않는다.
+eafp_japan_assign_bakufu_office = {
+	if = {
+		limit = {
+			c:JAP ?= owner
+		}
+		switch = {
+			trigger = $POSITION$
+			flag:roju = {
+				if = {
+					limit = {
+						NOT = { has_role = character_role_eafp_roju }
+						c:JAP = {
+							OR = {
+								NOT = { has_variable_list = roju_varlist }
+								variable_list_size = { name = roju_varlist value < 4 }
+							}
+						}
+					}
+					eafp_japan_assign_bakufu_office_unchecked = { POSITION = flag:roju ROLE = character_role_eafp_roju }
+				}
+			}
+			flag:rojushuza = {
+				if = {
+					limit = {
+						NOT = { has_role = character_role_eafp_rojushuza }
+						c:JAP = { OR = { NOT = { has_variable = rojushuza_var } var:rojushuza_var ?= PREV } }
+					}
+					eafp_japan_assign_bakufu_office_unchecked = { POSITION = flag:rojushuza ROLE = character_role_eafp_rojushuza }
+				}
+			}
+			flag:tairo = {
+				if = {
+					limit = {
+						NOT = { has_role = character_role_eafp_tairo }
+						c:JAP = { OR = { NOT = { has_variable = tairo_var } var:tairo_var ?= PREV } }
+					}
+					eafp_japan_assign_bakufu_office_unchecked = { POSITION = flag:tairo ROLE = character_role_eafp_tairo }
+				}
+			}
+		}
+	}
+}
+
+# 내부 효과. 호출 전에 정원·생존·소속 확인을 마친다.
+eafp_japan_assign_bakufu_office_unchecked = {
+	if = {
+		limit = { has_variable = eafp_bakufu_office_position }
+		# 승진 때 정치력은 보존하고, 이전 직위의 임무는 후임에게 넘긴다.
+		eafp_japan_clear_bakufu_office = { POSITION = var:eafp_bakufu_office_position SAVE_MISSION = yes }
+	}
+	add_character_role = $ROLE$
+	set_variable = { name = eafp_bakufu_office_position value = $POSITION$ }
+	switch = {
+		trigger = $POSITION$
+		flag:roju = {
+			c:JAP = { add_to_variable_list = { name = roju_varlist target = PREV } }
+		}
+		flag:rojushuza = {
+			c:JAP = { set_variable = { name = rojushuza_var value = PREV } }
+		}
+		flag:tairo = {
+			c:JAP = { set_variable = { name = tairo_var value = PREV } }
+		}
+	}
+}
+
+# 내부 효과. 임기 콜백에서 역할이 이미 사라져도 직위 인수와 명부로 정리한다.
+# 정치력은 호출자가 처리한다. 승진은 기존 정치력을 보존해야 한다.
+eafp_japan_clear_bakufu_office = {
+	if = {
+		limit = { always = $SAVE_MISSION$ }
+		save_bakufu_politician_mission = yes
+	}
+	if = {
+		limit = { has_variable = eafp_bakuhantaisei_politician_current_mission }
+		remove_bakufu_politician_mission = yes
+	}
+	switch = {
+		trigger = $POSITION$
+		flag:roju = {
+			c:JAP ?= {
+				if = {
+					limit = { has_variable_list = roju_varlist }
+					remove_list_variable = { name = roju_varlist target = PREV }
+				}
+			}
+			if = {
+				limit = { has_role = character_role_eafp_roju }
+				remove_character_role = character_role_eafp_roju
+			}
+		}
+		flag:rojushuza = {
+			c:JAP ?= {
+				if = { limit = { var:rojushuza_var ?= PREV } remove_variable = rojushuza_var }
+			}
+			if = {
+				limit = { has_role = character_role_eafp_rojushuza }
+				remove_character_role = character_role_eafp_rojushuza
+			}
+		}
+		flag:tairo = {
+			c:JAP ?= {
+				if = { limit = { var:tairo_var ?= PREV } remove_variable = tairo_var }
+			}
+			if = {
+				limit = { has_role = character_role_eafp_tairo }
+				remove_character_role = character_role_eafp_tairo
+			}
+		}
+	}
+	remove_variable = eafp_bakufu_office_position
+}
+
+eafp_japan_end_bakufu_office = {
+	if = {
+		limit = {
+			var:eafp_bakufu_office_position ?= $POSITION$
+		}
+		eafp_japan_clear_bakufu_office = { POSITION = $POSITION$ SAVE_MISSION = $SAVE_MISSION$ }
+		remove_variable = eafp_bakuhantaisei_politician_influence
+		remove_variable = eafp_bakuhantaisei_politician_influence_max
+		c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
+		# 공석은 저널의 주간 처리에서 보충한다. 해임·사망 콜백 중 후임 생성을 재진입시키지 않는다.
+	}
+}
+
 create_bakufu_politician_character = {
 	# 이념을 지정하지 않아 게임의 생성 조건 및 ideology weight를 그대로 사용한다.
-	# 보직과 성씨는 후보 선정을 마친 뒤 부여한다.
+	# 대로의 가문을 먼저 추첨하고, 기존 이이 가문 후보가 없을 때만 새 인물을 생성한다.
 	clear_saved_scope = new_politician_scope
+	clear_saved_scope = eafp_existing_ii_tairo_scope
+	switch = {
+		trigger = $POSITION$
+		flag:tairo = {
+			random_list = {
+				2 = {
+					random_scope_character = {
+						limit = {
+							is_character_alive = yes
+							owner = c:JAP
+							has_role_of_type = magnate
+							var:daimyo_var ?= s:STATE_KYOTO
+							$FACTION_TRIGGER$ = yes
+							is_tairo = no
+						}
+						save_scope_as = new_politician_scope
+						save_scope_as = eafp_existing_ii_tairo_scope
+					}
+				}
+				1 = { }
+			}
+		}
+	}
 	while = {
 		limit = { NOT = { exists = scope:new_politician_scope } }
 		create_character = {
 			age = { 40 50 }
 			noble = yes
-			role = character_role_politician
 			religion = rel:confucian
 			save_scope_as = new_politician_scope
 		}
@@ -343,140 +524,120 @@ create_bakufu_politician_character = {
 		create_character = {
 			age = { 40 50 }
 			noble = yes
-			role = character_role_politician
 			ideology = $FALLBACK_IDEOLOGY$
 			religion = rel:confucian
 			save_scope_as = new_politician_scope
 		}
 	}
 	scope:new_politician_scope ?= {
-		# 일반 선정과 강제 생성 모두 같은 보직 부여 절차를 따른다.
-		add_modifier = {
-			name = modifier_bakufu_recently_appointed
-			months = { 35 45 }
-		}
-		random_list = {
-			1 = { }
-			1 = { add_random_trait = personality }
-		}
-		switch = {
-			trigger = $POSITION$
-			flag:roju = {
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence
-					value = 75
-				}
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence_max
-					value = 150
-				}
-				c:JAP = {
-					add_to_variable_list = { name = roju_varlist target = scope:new_politician_scope }
-				}
+		eafp_japan_assign_bakufu_office = { POSITION = $POSITION$ }
+		if = {
+			limit = { var:eafp_bakufu_office_position ?= $POSITION$ }
+			# 일반 선정과 강제 생성 모두 같은 보직 부여 절차를 따른다.
+			add_modifier = {
+				name = modifier_bakufu_recently_appointed
+				months = { 35 45 }
 			}
-			flag:rojushuza = {
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence
-					value = 100
-				}
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence_max
-					value = 200
-				}
-				c:JAP = {
-					set_variable = { name = rojushuza_var value = scope:new_politician_scope }
-				}
-			}
-			flag:tairo = {
+			if = {
+				limit = { NOT = { exists = scope:eafp_existing_ii_tairo_scope } }
 				random_list = {
-					2 = {
-						set_last_name = Ii
+					1 = { }
+					1 = { add_random_trait = personality }
+				}
+				# 신규 등용에 성공한 인물만 가문 분류를 부여한다. 기존 이이 가문은 유지한다.
+				# 아래 비율은 후다이 중심의 등용을 표현한 게임 내 생성 가중치다.
+				switch = {
+					trigger = $POSITION$
+					flag:roju = {
+						random_list = {
+							90 = { designate_as_fudai_daimyo = yes }
+							5 = { designate_as_tozama_daimyo = yes }
+							5 = { designate_as_shinpan_daimyo = yes }
+						}
 					}
-					1 = {
+					flag:rojushuza = {
+						random_list = {
+							95 = { designate_as_fudai_daimyo = yes }
+							2 = { designate_as_tozama_daimyo = yes }
+							3 = { designate_as_shinpan_daimyo = yes }
+						}
+					}
+					flag:tairo = {
+						# 신규 대로는 사카이 성씨를 사용하므로 후다이로 지정한다.
+						designate_as_fudai_daimyo = yes
+					}
+				}
+			}
+			switch = {
+				trigger = $POSITION$
+				flag:roju = {
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence
+						value = 75
+					}
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence_max
+						value = 150
+					}
+				}
+				flag:rojushuza = {
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence
+						value = 100
+					}
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence_max
+						value = 200
+					}
+				}
+				flag:tairo = {
+					if = {
+						limit = { NOT = { exists = scope:eafp_existing_ii_tairo_scope } }
 						set_last_name = Sakai
 					}
-				}
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence
-					value = 125
-				}
-				set_variable = {
-					name = eafp_bakuhantaisei_politician_influence_max
-					value = 250
-				}
-				c:JAP = {
-					set_variable = { name = tairo_var value = scope:new_politician_scope }
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence
+						value = 125
+					}
+					set_variable = {
+						name = eafp_bakuhantaisei_politician_influence_max
+						value = 250
+					}
 				}
 			}
+			set_bakufu_politician_career_length = yes
+			apply_saved_bakufu_politician_mission = yes
 		}
-		# 생성 시 한 번만 정치인 활동 기간을 10~15년 차감한다.
-		add_career_length = {
-			role = character_role_politician
-			years = -10
-			random_range = { 1.0 1.5 }
-		}
-		apply_saved_bakufu_politician_mission = yes
 	}
+	if = {
+		limit = {
+			scope:new_politician_scope ?= { NOT = { var:eafp_bakufu_office_position ?= $POSITION$ } }
+		}
+		# 후보 확정 뒤 자리가 사라졌다면 기존 인물은 보존하고 새로 만든 후보만 정리한다.
+		if = {
+			limit = { NOT = { exists = scope:eafp_existing_ii_tairo_scope } }
+			scope:new_politician_scope = { retire_character = { hidden = yes } }
+		}
+		clear_saved_scope = new_politician_scope
+	}
+	clear_saved_scope = eafp_existing_ii_tairo_scope
 	eafp_japan_sync_daimyo_ig_leader = yes
 }
 
 
 remove_bakufu_politician_role = { # scope = character
-	save_bakufu_politician_mission = yes
 	if = {
-		limit = { has_variable = eafp_bakuhantaisei_politician_current_mission }
-		remove_bakufu_politician_mission = yes
+		limit = { has_variable = eafp_bakufu_office_position }
+		eafp_japan_end_bakufu_office = { POSITION = var:eafp_bakufu_office_position SAVE_MISSION = yes }
 	}
-	remove_variable = eafp_bakuhantaisei_politician_influence
-	remove_variable = eafp_bakuhantaisei_politician_influence_max
-	if = {
-		limit = { is_tairo = yes }
-		c:JAP = {
-			remove_variable = tairo_var
-		}
-	}
-	else_if = {
-		limit = { is_rojushuza = yes }
-		c:JAP = {
-			remove_variable = rojushuza_var
-			appoint_rojushuza_effect = yes
-		}
-	}
-	else_if = {
-		limit = { is_roju = yes }
-		c:JAP = {
-			remove_list_variable = { name = roju_varlist target = PREV }
-			appoint_roju_effect = yes
-		}
-	}
-	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
+
+
 remove_bakufu_politician_role_without_appointment = { # scope = character
 	if = {
-		limit = { has_variable = eafp_bakuhantaisei_politician_current_mission }
-		remove_bakufu_politician_mission = yes
+		limit = { has_variable = eafp_bakufu_office_position }
+		eafp_japan_end_bakufu_office = { POSITION = var:eafp_bakufu_office_position SAVE_MISSION = no }
 	}
-	remove_variable = eafp_bakuhantaisei_politician_influence
-	remove_variable = eafp_bakuhantaisei_politician_influence_max
-	if = {
-		limit = { is_tairo = yes }
-		c:JAP = {
-			remove_variable = tairo_var
-		}
-	}
-	else_if = {
-		limit = { is_rojushuza = yes }
-		c:JAP = {
-			remove_variable = rojushuza_var
-		}
-	}
-	else_if = {
-		limit = { is_roju = yes }
-		c:JAP = {
-			remove_list_variable = { name = roju_varlist target = PREV }
-		}
-	}
-	c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
 }
 
 remove_bakufu_politician_mission = { # scope = character
@@ -1048,7 +1209,7 @@ save_bakufu_politician_mission = { # scope = character
 	# 인물 임무를 임시로 저장해서 나중에 뽑히는 인물이 자동으로 임무를 가질 수 있게 함
 	if = {
 		limit = {
-			is_rojushuza = yes
+			OR = { is_rojushuza = yes var:eafp_bakufu_office_position ?= flag:rojushuza }
 			has_variable = eafp_bakuhantaisei_politician_current_mission
 		}
 		c:JAP = {
@@ -1069,7 +1230,7 @@ save_bakufu_politician_mission = { # scope = character
 	}
 	else_if = {
 		limit = {
-			is_roju = yes
+			OR = { is_roju = yes var:eafp_bakufu_office_position ?= flag:roju }
 			has_variable = eafp_bakuhantaisei_politician_current_mission
 		}
 		c:JAP = {
