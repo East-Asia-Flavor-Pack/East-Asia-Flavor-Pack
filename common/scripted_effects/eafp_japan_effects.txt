@@ -47,10 +47,12 @@ hitotsubashiha_vs_nankiha_start_effect = {
 }
 
 appoint_tairo_effect = {
+	remove_variable = eafp_bakufu_recruitment_pending_tairo
 	trigger_event = { id = eafp_japan.2 }
 }
 
 appoint_rojushuza_effect = {
+	remove_variable = eafp_bakufu_recruitment_pending_rojushuza
 	if = {
 		limit = { has_variable = hide_bakufu_politician_recuiting_var }
 		hidden_effect = {
@@ -186,6 +188,7 @@ appoint_rojushuza_effect = {
 }
 
 appoint_roju_effect = {
+	remove_variable = eafp_bakufu_recruitment_pending_roju
 	if = {
 		limit = { has_variable = hide_bakufu_politician_recuiting_var }
 		hidden_effect = {
@@ -417,6 +420,8 @@ eafp_japan_assign_bakufu_office_unchecked = {
 # 내부 효과. 임기 콜백에서 역할이 이미 사라져도 직위 인수와 명부로 정리한다.
 # 정치력은 호출자가 처리한다. 승진은 기존 정치력을 보존해야 한다.
 eafp_japan_clear_bakufu_office = {
+	# 수동 역할 제거 콜백이 승진·해임 도중 후임을 다시 뽑지 않도록 한다.
+	set_variable = eafp_bakufu_office_cleanup_in_progress
 	if = {
 		limit = { always = $SAVE_MISSION$ }
 		save_bakufu_politician_mission = yes
@@ -459,6 +464,7 @@ eafp_japan_clear_bakufu_office = {
 		}
 	}
 	remove_variable = eafp_bakufu_office_position
+	remove_variable = eafp_bakufu_office_cleanup_in_progress
 }
 
 eafp_japan_end_bakufu_office = {
@@ -470,7 +476,68 @@ eafp_japan_end_bakufu_office = {
 		remove_variable = eafp_bakuhantaisei_politician_influence
 		remove_variable = eafp_bakuhantaisei_politician_influence_max
 		c:JAP ?= { eafp_japan_sync_daimyo_ig_leader = yes }
-		# 공석은 저널의 주간 처리에서 보충한다. 해임·사망 콜백 중 후임 생성을 재진입시키지 않는다.
+		# 임기 종료 콜백은 이 정리가 끝난 뒤 등용을 요청한다. 그 외 공석은 주간에 보충한다.
+	}
+}
+
+# 인물 범위. 자연 임기 종료의 정리와 후임 등용 요청을 순서대로 처리한다.
+eafp_japan_on_bakufu_office_career_end = {
+	if = {
+		limit = {
+			var:eafp_bakufu_office_position ?= $POSITION$
+			NOT = { has_variable = eafp_bakufu_office_cleanup_in_progress }
+		}
+		eafp_japan_end_bakufu_office = { POSITION = $POSITION$ SAVE_MISSION = yes }
+		c:JAP ?= {
+			if = {
+				limit = {
+					eafp_japan_regional_active = yes
+					NOT = { has_variable = eafp_bakufu_offices_dissolving }
+				}
+				switch = {
+					trigger = $POSITION$
+					flag:roju = { set_variable = eafp_bakufu_recruitment_pending_roju }
+					flag:rojushuza = { set_variable = eafp_bakufu_recruitment_pending_rojushuza }
+					flag:tairo = { set_variable = eafp_bakufu_recruitment_pending_tairo }
+				}
+				eafp_japan_process_pending_office_recruitment = yes
+			}
+		}
+	}
+}
+
+# 국가 범위. 다른 등용이 진행 중이면 요청을 보존하고 다음 주간 처리에서 재시도한다.
+eafp_japan_process_pending_office_recruitment = {
+	if = {
+		limit = {
+			eafp_japan_regional_active = yes
+			NOT = { has_variable = eafp_bakufu_offices_dissolving }
+			NOT = { has_variable = recruiting_bakufu_politicians }
+		}
+		if = {
+			limit = {
+				has_variable = eafp_bakufu_recruitment_pending_tairo
+				NOT = { has_variable = tairo_var }
+			}
+			appoint_tairo_effect = yes
+		}
+		else_if = {
+			limit = {
+				has_variable = eafp_bakufu_recruitment_pending_rojushuza
+				NOT = { has_variable = rojushuza_var }
+			}
+			appoint_rojushuza_effect = yes
+		}
+		else_if = {
+			limit = {
+				has_variable = eafp_bakufu_recruitment_pending_roju
+				OR = {
+					NOT = { has_variable_list = roju_varlist }
+					variable_list_size = { name = roju_varlist value < 4 }
+				}
+			}
+			appoint_roju_effect = yes
+		}
 	}
 }
 

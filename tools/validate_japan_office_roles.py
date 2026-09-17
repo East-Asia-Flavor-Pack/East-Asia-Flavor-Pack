@@ -59,7 +59,7 @@ def main():
         assert "character_modifier" not in definition
         callback = block(definition, "on_career_end")
         assert f"POSITION = flag:{pos}" in callback
-        assert "eafp_japan_end_bakufu_office" in callback
+        assert "eafp_japan_on_bakufu_office_career_end" in callback
         assert "has_role" not in callback  # Expired role may already be absent.
         assert f"has_role = {role}" in block(triggers, f"is_{pos}")
         assert f"has_role = {role}" in public
