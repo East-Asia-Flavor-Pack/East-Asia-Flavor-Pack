@@ -53,7 +53,7 @@ def main():
         role = f"character_role_eafp_{pos}"
         assert len(re.findall(rf"(?m)^{role}\s*=", all_roles)) == 1
         definition = block(roles, role)
-        assert "type = politician" in definition
+        assert not re.search(r"(?m)^\s*type\s*=", definition)
         assert "auto_assigned = no" in definition
         assert "spawn_characters_to_pool = no" in definition
         assert "character_modifier" not in definition
@@ -107,8 +107,24 @@ def main():
 
     end = block(effects, "eafp_japan_end_bakufu_office")
     assert "var:eafp_bakufu_office_position ?= $POSITION$" in end
-    for guard in ("eafp_bakufu_office_transition", "eafp_bakufu_office_ending"):
-        assert f"NOT = {{ has_variable = {guard} }}" in end
+    lifecycle = block(effects, "eafp_japan_on_bakufu_office_career_end")
+    assert "var:eafp_bakufu_office_position ?= $POSITION$" in lifecycle
+    assert "NOT = { has_variable = eafp_bakufu_office_cleanup_in_progress }" in lifecycle
+    cleanup = block(effects, "eafp_japan_clear_bakufu_office")
+    assert cleanup.index("set_variable = eafp_bakufu_office_cleanup_in_progress") < cleanup.index("remove_character_role")
+    assert cleanup.rindex("remove_character_role") < cleanup.index("remove_variable = eafp_bakufu_office_position") < cleanup.index("remove_variable = eafp_bakufu_office_cleanup_in_progress")
+    # Natural term expiry retires non-daimyo only, after clearing the office and before recruitment.
+    retirement = re.search(r"if = \{\s*limit = \{\s*is_character_alive = yes\s*character_is_daimyo = no\s*\}\s*retire_character = yes\s*\}", lifecycle)
+    assert retirement
+    assert lifecycle.index("eafp_japan_end_bakufu_office =") < retirement.start() < lifecycle.index("eafp_japan_process_pending_office_recruitment = yes")
+    for part in (end, cleanup, registration):
+        assert "retire_character" not in part  # Promotion/manual removal must not retire incumbents.
+    leader = block(effects, "eafp_japan_sync_daimyo_ig_leader")
+    selected = block(leader, "scope:eafp_bakufu_ig_leader ?")
+    assert "NOT = { has_role = character_role_politician }" in selected
+    assert selected.index("add_character_role = character_role_politician") < selected.index("set_as_interest_group_leader = yes")
+    assert leader.index("var:tairo_var = { save_scope_as") < leader.index("var:rojushuza_var = { save_scope_as")
+    assert "eafp_japan_sync_daimyo_ig_leader = yes" in block(history, "c:JAP")
     assert "appoint_roju_effect" not in end and "appoint_rojushuza_effect" not in end
     death = block(read(paths[5]), "eafp_japan_on_bakufu_politician_death")
     assert "has_variable = eafp_bakufu_office_position" in death
@@ -122,7 +138,8 @@ def main():
     for key in ("on_complete", "on_invalid"):
         part = block(journal, key)
         assert "remove_bakufu_politician_role_without_appointment" in part
-        assert "set_variable = eafp_bakufu_offices_dissolving" in part
+        for pos in POSITIONS:
+            assert f"remove_variable = eafp_bakufu_recruitment_pending_{pos}" in part
     weekly = block(journal, "on_weekly_pulse")
     assert "set_career_length" not in weekly and "set_bakufu_politician_career_length" not in weekly
     assert "eafp_japan_assign_bakufu_office" not in weekly  # No save migration/role recreation.
@@ -131,6 +148,9 @@ def main():
     templates = read(paths[3])
     assert "role = character_role_magnate" not in block(templates, "eafp_jap_matsudaira_muneakira_template")
     assert "role = character_role_magnate" in block(templates, "JAP_ii_naoaki")
+    assert "role = character_role_politician" in block(templates, "JAP_ii_naoaki")
+    for name in ("okubo_tadazane", "matsudaira_norihiro", "matsudaira_muneakira", "ota_sukemoto"):
+        assert "role = character_role_politician" not in block(templates, f"eafp_jap_{name}_template")
     assert "eafp_japan_is_ii_daimyo" not in triggers + effects
     assert "eafp_house_ii" not in triggers + effects
     assert not (ROOT / "common/scripted_effects/eafp_japan_ii_house_effects.txt").exists()
@@ -142,7 +162,8 @@ def main():
     assert "set_last_name = Sakai" in recruitment
     assert "name = daimyo_var" not in recruitment and "character_role_magnate" not in recruitment
     assert "switch =" not in block(recruitment, "while")
-    print("PASS: office roles, 6 initial tenures, 5 promotion branches, guarded lifecycle, cache ownership, Ii eligibility, 3 localizations, BOM/CRLF.")
+    assert "character_role_politician" not in recruitment
+    print("PASS: office roles, 6 initial tenures, 5 promotion branches, guarded lifecycle, non-daimyo retirement, leader politician role, cache ownership, Ii eligibility, 3 localizations, BOM/CRLF.")
 
 
 if __name__ == "__main__":

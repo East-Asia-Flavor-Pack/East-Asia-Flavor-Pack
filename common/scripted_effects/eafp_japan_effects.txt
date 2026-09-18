@@ -301,11 +301,6 @@ eafp_japan_sync_daimyo_ig_leader = {
 		scope:eafp_bakufu_ig_leader ?= {
 			if = {
 				limit = { NOT = { interest_group ?= scope:eafp_bakufu_daimyo_ig } }
-				# 다른 이해집단 지도자라면 기존 지도자 역할을 해제한 뒤 소속을 옮긴다.
-				if = {
-					limit = { is_interest_group_leader = yes }
-					remove_character_role = character_role_ig_leader
-				}
 				set_interest_group = scope:eafp_bakufu_daimyo_ig
 			}
 			if = {
@@ -488,6 +483,14 @@ eafp_japan_on_bakufu_office_career_end = {
 			NOT = { has_variable = eafp_bakufu_office_cleanup_in_progress }
 		}
 		eafp_japan_end_bakufu_office = { POSITION = $POSITION$ SAVE_MISSION = yes }
+		# 임무·명부·이해집단 지도자 정리를 마친 뒤 은퇴한다. 다이묘는 보직만 해제한다.
+		if = {
+			limit = {
+				is_character_alive = yes
+				character_is_daimyo = no
+			}
+			retire_character = yes
+		}
 		c:JAP ?= {
 			if = {
 				limit = {
