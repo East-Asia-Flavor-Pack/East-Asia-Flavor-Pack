@@ -2513,6 +2513,7 @@ eafp_japan.11 = { # 다이묘 영지 감독
 	duration = 1
 	immediate = {
 		# Cache incumbents for the legacy assignment / return tooltips.
+		clear_saved_scope = HOKKAIDO_character_scope
 		clear_saved_scope = TOHOKU_character_scope
 		clear_saved_scope = KANTO_character_scope
 		clear_saved_scope = HOKUSHINETSU_character_scope
@@ -2524,6 +2525,14 @@ eafp_japan.11 = { # 다이묘 영지 감독
 		clear_saved_scope = KYUSHU_character_scope
 		owner = {
 			set_variable = recruiting_bakufu_politicians
+			every_scope_character = {
+				limit = {
+					NOT = { THIS = ROOT }
+					var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_HOKKAIDO.region_state:JAP
+				}
+				save_scope_as = HOKKAIDO_character_scope
+			}
 			every_scope_character = {
 				limit = {
 					NOT = { THIS = ROOT }
@@ -2601,7 +2610,51 @@ eafp_japan.11 = { # 다이묘 영지 감독
 	trigger = {}
 
 	option = {
-		name = eafp_japan.11.TOHOKU
+		name = eafp_japan.11.HOKKAIDO
+		trigger = {
+			owner = { eafp_japan_regional_active = yes }
+			exists = s:STATE_HOKKAIDO.region_state:JAP
+		}
+		# Return the incumbent before installing the new mission and its country cost.
+		if = {
+			limit = {
+				exists = scope:HOKKAIDO_character_scope
+				scope:HOKKAIDO_character_scope = {
+					NOT = { THIS = ROOT }
+					owner = ROOT.owner
+					var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_oversee_daimyo_domains
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_HOKKAIDO.region_state:JAP
+				}
+			}
+			custom_tooltip = {
+				text = eafp_japan.11.HOKKAIDO.tt2
+				scope:HOKKAIDO_character_scope = { remove_bakufu_politician_mission = yes }
+			}
+		}
+		custom_tooltip = {
+			text = eafp_japan.11.HOKKAIDO.tt
+
+			set_variable = { name = eafp_bakuhantaisei_politician_current_mission value = flag:eafp_oversee_daimyo_domains }
+			set_variable = { name = eafp_bakuhantaisei_politician_current_mission_location value = s:STATE_HOKKAIDO.region_state:JAP }
+		}
+		owner = {
+			if = {
+				limit = { has_modifier = modifier_oversee_daimyo_domains_HOKKAIDO }
+				remove_modifier = modifier_oversee_daimyo_domains_HOKKAIDO
+			}
+			if = {
+				limit = { ROOT = { is_rojushuza = yes } }
+				add_modifier = { name = modifier_oversee_daimyo_domains_HOKKAIDO multiplier = 1.5 }
+
+			}
+			else = {
+				add_modifier = modifier_oversee_daimyo_domains_HOKKAIDO
+
+			}
+		}
+	}
+	option = {
+name = eafp_japan.11.TOHOKU
 		trigger = {
 			owner = { eafp_japan_regional_active = yes }
 			exists = s:STATE_TOHOKU.region_state:JAP
@@ -3025,6 +3078,7 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 	duration = 1
 	immediate = {
 		# Cache incumbents for the legacy assignment / return tooltips.
+		clear_saved_scope = HOKKAIDO_character_scope
 		clear_saved_scope = TOHOKU_character_scope
 		clear_saved_scope = KANTO_character_scope
 		clear_saved_scope = HOKUSHINETSU_character_scope
@@ -3036,6 +3090,14 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 		clear_saved_scope = KYUSHU_character_scope
 		owner = {
 			set_variable = recruiting_bakufu_politicians
+			every_scope_character = {
+				limit = {
+					NOT = { THIS = ROOT }
+					var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_HOKKAIDO.region_state:JAP
+				}
+				save_scope_as = HOKKAIDO_character_scope
+			}
 			every_scope_character = {
 				limit = {
 					NOT = { THIS = ROOT }
@@ -3113,7 +3175,51 @@ eafp_japan.12 = { # 다이묘 충성심 재확인
 	trigger = {}
 
 	option = {
-		name = eafp_japan.12.TOHOKU
+		name = eafp_japan.12.HOKKAIDO
+		trigger = {
+			owner = { eafp_japan_regional_active = yes }
+			exists = s:STATE_HOKKAIDO.region_state:JAP
+		}
+		# Return the incumbent before installing the new mission and its country cost.
+		if = {
+			limit = {
+				exists = scope:HOKKAIDO_character_scope
+				scope:HOKKAIDO_character_scope = {
+					NOT = { THIS = ROOT }
+					owner = ROOT.owner
+					var:eafp_bakuhantaisei_politician_current_mission ?= flag:eafp_reaffirm_daimyos_loyalty
+					var:eafp_bakuhantaisei_politician_current_mission_location ?= s:STATE_HOKKAIDO.region_state:JAP
+				}
+			}
+			custom_tooltip = {
+				text = eafp_japan.12.HOKKAIDO.tt2
+				scope:HOKKAIDO_character_scope = { remove_bakufu_politician_mission = yes }
+			}
+		}
+		custom_tooltip = {
+			text = eafp_japan.12.HOKKAIDO.tt
+
+			set_variable = { name = eafp_bakuhantaisei_politician_current_mission value = flag:eafp_reaffirm_daimyos_loyalty }
+			set_variable = { name = eafp_bakuhantaisei_politician_current_mission_location value = s:STATE_HOKKAIDO.region_state:JAP }
+		}
+		owner = {
+			if = {
+				limit = { has_modifier = modifier_reaffirm_daimyos_loyalty_HOKKAIDO }
+				remove_modifier = modifier_reaffirm_daimyos_loyalty_HOKKAIDO
+			}
+			if = {
+				limit = { ROOT = { is_rojushuza = yes } }
+				add_modifier = { name = modifier_reaffirm_daimyos_loyalty_HOKKAIDO multiplier = 1.5 }
+
+			}
+			else = {
+				add_modifier = modifier_reaffirm_daimyos_loyalty_HOKKAIDO
+
+			}
+		}
+	}
+	option = {
+name = eafp_japan.12.TOHOKU
 		trigger = {
 			owner = { eafp_japan_regional_active = yes }
 			exists = s:STATE_TOHOKU.region_state:JAP

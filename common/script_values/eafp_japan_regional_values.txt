@@ -10,6 +10,87 @@ eafp_japan_loyalty_from_ai = {
     }
 }
 
+eafp_japan_loyalty_HOKKAIDO_value = {
+    value = 50
+    if = { limit = { has_variable = eafp_japan_region_initialized_HOKKAIDO } value = var:eafp_japan_loyalty_HOKKAIDO }
+}
+eafp_japan_loyalty_HOKKAIDO_monthly = {
+    # 임무 효과는 해당 주의 변화요인 합계에 포함된다.
+    # Monthly calculation and tooltip share these signed contributions.
+    value = eafp_japan_loyalty_HOKKAIDO_from_drift
+    add = eafp_japan_loyalty_HOKKAIDO_from_radicals
+    add = eafp_japan_loyalty_HOKKAIDO_from_loyalists
+    add = eafp_japan_loyalty_HOKKAIDO_from_modifier
+    add = eafp_japan_loyalty_from_ai
+}
+eafp_japan_loyalty_HOKKAIDO_from_drift = { value = 50 subtract = eafp_japan_loyalty_HOKKAIDO_value divide = 100 }
+eafp_japan_loyalty_HOKKAIDO_from_radicals = { value = 0 s:STATE_HOKKAIDO.region_state:JAP ?= { subtract = radical_fraction } }
+eafp_japan_loyalty_HOKKAIDO_from_loyalists = { value = 0 s:STATE_HOKKAIDO.region_state:JAP ?= { add = loyalist_fraction } }
+eafp_japan_loyalty_HOKKAIDO_from_modifier = { value = 0 s:STATE_HOKKAIDO.region_state:JAP ?= { add = modifier:state_bakuhantaisei_loyalty_progress_bar_monthly_add } }
+eafp_japan_independency_HOKKAIDO_monthly = {
+    # Monthly calculation and tooltip share these signed contributions.
+    value = eafp_japan_independency_HOKKAIDO_from_loyalty
+    add = eafp_japan_independency_HOKKAIDO_from_drift
+    add = eafp_japan_independency_HOKKAIDO_from_gdp
+    add = eafp_japan_independency_HOKKAIDO_from_tax
+    add = eafp_japan_independency_HOKKAIDO_from_modifier
+}
+eafp_japan_independency_HOKKAIDO_from_loyalty = { value = 50 subtract = eafp_japan_loyalty_HOKKAIDO_value divide = 200 }
+eafp_japan_independency_HOKKAIDO_from_drift = { value = 50 subtract = var:eafp_japan_independency_HOKKAIDO divide = 200 }
+eafp_japan_independency_HOKKAIDO_from_gdp = { value = 0 if = { limit = { gdp > 0 exists = s:STATE_HOKKAIDO.region_state:JAP } add = { value = s:STATE_HOKKAIDO.region_state:JAP.gdp divide = gdp min = 0 max = 1 } } }
+eafp_japan_independency_HOKKAIDO_from_tax = { value = 0 s:STATE_HOKKAIDO.region_state:JAP ?= { if = { limit = { tax_capacity_usage > 0 } add = { value = tax_capacity_usage subtract = tax_capacity divide = tax_capacity_usage min = 0 max = 1 divide = 2 } } } }
+eafp_japan_independency_HOKKAIDO_from_modifier = { value = 0 s:STATE_HOKKAIDO.region_state:JAP ?= { add = modifier:state_bakuhantaisei_independency_progress_bar_monthly_add } }
+eafp_japan_tax_loss_HOKKAIDO = {
+    value = {
+        value = var:eafp_japan_independency_HOKKAIDO
+        divide = 100
+        desc = eafp_japan_region_effect_independency_factor
+    }
+    multiply = {
+        value = eafp_japan_regional_tax_cap
+        desc = eafp_japan_region_effect_tax_cap
+    }
+}
+
+# 국가 범위. 지역 자치 모디파이어의 해당 효과를 수치와 툴팁에서 함께 표시한다.
+eafp_japan_region_HOKKAIDO_conscription_effect_value = {
+    value = {
+        value = var:eafp_japan_independency_HOKKAIDO
+        divide = 100
+        desc = eafp_japan_region_effect_independency_factor
+    }
+    multiply = {
+        value = -50
+        desc = eafp_japan_region_effect_base_coefficient
+    }
+}
+
+# 국가 범위. 지역 자치 모디파이어의 해당 효과를 수치와 툴팁에서 함께 표시한다.
+eafp_japan_region_HOKKAIDO_political_strength_effect_value = {
+    value = {
+        value = var:eafp_japan_independency_HOKKAIDO
+        divide = 100
+        desc = eafp_japan_region_effect_independency_factor
+    }
+    multiply = {
+        value = -0.5
+        desc = eafp_japan_region_effect_base_coefficient
+    }
+}
+
+# 국가 범위. 지역 자치 모디파이어의 해당 효과를 수치와 툴팁에서 함께 표시한다.
+eafp_japan_region_HOKKAIDO_bureaucracy_effect_value = {
+    value = {
+        value = var:eafp_japan_independency_HOKKAIDO
+        divide = 100
+        desc = eafp_japan_region_effect_independency_factor
+    }
+    multiply = {
+        value = -0.5
+        desc = eafp_japan_region_effect_base_coefficient
+    }
+}
+
 eafp_japan_loyalty_TOHOKU_value = {
     value = 50
     if = { limit = { has_variable = eafp_japan_region_initialized_TOHOKU } value = var:eafp_japan_loyalty_TOHOKU }

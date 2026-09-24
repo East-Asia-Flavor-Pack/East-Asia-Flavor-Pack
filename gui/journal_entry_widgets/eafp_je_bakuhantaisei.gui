@@ -322,6 +322,53 @@ types eafp_bakuhantaisei {
 		}
 	}
 
+    type eafp_japan_region_daimyo = widget {
+        size = { 128 118 }
+        datacontext = "[Scope.GetCharacter]"
+        visible = "[Character.IsValid]"
+        widget = {
+            size = { 90 90 }
+            parentanchor = hcenter
+            character_portrait_medium = {
+                datacontext = "[Scope.AccessCharacter]"
+                using = tooltip_es
+                parentanchor = center
+                blockoverride "show_hat" {}
+                blockoverride "highlight" {}
+                blockoverride "rank_icon" {}
+            }
+            widget = {
+                size = { 30 30 }
+                parentanchor = top|right
+                tooltip = "LOYALTY_BREAKDOWN"
+                icon = {
+                    visible = "[GreaterThanOrEqualTo_CFixedPoint(Character.GetLoyalty, '(CFixedPoint)75')]"
+                    size = { 30 30 }
+                    texture = "gfx/interface/icons/generic_icons/approval_icon.dds"
+                }
+                icon = {
+                    visible = "[And(GreaterThan_CFixedPoint(Character.GetLoyalty, '(CFixedPoint)25'), LessThan_CFixedPoint(Character.GetLoyalty, '(CFixedPoint)75'))]"
+                    size = { 30 30 }
+                    texture = "gfx/interface/icons/generic_icons/maybe_icon.dds"
+                }
+                icon = {
+                    visible = "[LessThanOrEqualTo_CFixedPoint(Character.GetLoyalty, '(CFixedPoint)25')]"
+                    size = { 30 30 }
+                    texture = "gfx/interface/icons/generic_icons/disapproval_icon.dds"
+                }
+            }
+        }
+        textbox = {
+            text = "[Character.GetFullName]"
+            tooltipwidget = { FancyTooltip_Character = {} }
+            position = { 0 94 }
+            size = { 128 24 }
+            align = center|nobaseline
+            using = fontsize_small
+            elide = right
+        }
+    }
+
     type eafp_japan_regions = container {
         using = sidepanel_plus_sidebar_size
         layoutpolicy_vertical = expanding
@@ -355,717 +402,1134 @@ types eafp_bakuhantaisei {
                 visible = "[GetVariableSystem.Exists('eafp_japan_regions_list_expanded')]"
                 direction = vertical
                 spacing = 3
-                # map_list_panel-style rows: clean button, left title, right values.
-                button = {
+                flowcontainer = {
+                    name = "eafp_japan_region_HOKKAIDO_row"
+                    datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_HOKKAIDO').GetState]"
+                    direction = vertical
+                    spacing = 8
+                    background = { using = entry_bg_simple }
+
+                    widget = {
+                        name = "eafp_japan_region_HOKKAIDO_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet, 'eafp_japan_region_HOKKAIDO_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_HOKKAIDO"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
+                    }
+                    flowcontainer = {
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKKAIDO')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
+                        }
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
+                            }
+                            textbox = {
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_HOKKAIDO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKKAIDO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_HOKKAIDO_text"
+                                        tooltip = "eafp_japan_region_loyalty_HOKKAIDO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKKAIDO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_HOKKAIDO_text"
+                                        tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    spacer = { size = { 0 2 } }
+                }
+
+                flowcontainer = {
                     name = "eafp_japan_region_TOHOKU_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_TOHOKU').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet, 'eafp_japan_region_TOHOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_TOHOKU"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_TOHOKU_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet, 'eafp_japan_region_TOHOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_TOHOKU"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOHOKU').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_TOHOKU_text"
-                                tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOHOKU')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOHOKU').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_TOHOKU_text"
-                                tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOHOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_TOHOKU_text"
+                                        tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOHOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_TOHOKU_text"
+                                        tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_KANTO_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_KANTO').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet, 'eafp_japan_region_KANTO_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_KANTO"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_KANTO_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet, 'eafp_japan_region_KANTO_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_KANTO"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANTO').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_KANTO_text"
-                                tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANTO')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_KANTO_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANTO').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_KANTO_text"
-                                tooltip = "eafp_japan_region_independency_KANTO_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANTO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_KANTO_text"
+                                        tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_KANTO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANTO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_KANTO_text"
+                                        tooltip = "eafp_japan_region_independency_KANTO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_HOKUSHINETSU_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_HOKUSHINETSU').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet, 'eafp_japan_region_HOKUSHINETSU_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_HOKUSHINETSU"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_HOKUSHINETSU_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet, 'eafp_japan_region_HOKUSHINETSU_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_HOKUSHINETSU"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKUSHINETSU').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_HOKUSHINETSU_text"
-                                tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKUSHINETSU')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKUSHINETSU').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_HOKUSHINETSU_text"
-                                tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKUSHINETSU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_HOKUSHINETSU_text"
+                                        tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKUSHINETSU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_HOKUSHINETSU_text"
+                                        tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_TOKAI_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_TOKAI').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet, 'eafp_japan_region_TOKAI_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_TOKAI"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_TOKAI_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet, 'eafp_japan_region_TOKAI_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_TOKAI"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOKAI').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_TOKAI_text"
-                                tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOKAI')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOKAI').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_TOKAI_text"
-                                tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOKAI').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_TOKAI_text"
+                                        tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOKAI').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_TOKAI_text"
+                                        tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_KYOTO_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_KYOTO').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet, 'eafp_japan_region_KYOTO_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_KYOTO"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_KYOTO_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet, 'eafp_japan_region_KYOTO_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_KYOTO"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYOTO').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_KYOTO_text"
-                                tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYOTO')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYOTO').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_KYOTO_text"
-                                tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYOTO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_KYOTO_text"
+                                        tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYOTO').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_KYOTO_text"
+                                        tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_KANSAI_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_KANSAI').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet, 'eafp_japan_region_KANSAI_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_KANSAI"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_KANSAI_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet, 'eafp_japan_region_KANSAI_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_KANSAI"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANSAI').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_KANSAI_text"
-                                tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANSAI')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANSAI').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_KANSAI_text"
-                                tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANSAI').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_KANSAI_text"
+                                        tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANSAI').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_KANSAI_text"
+                                        tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_CHUGOKU_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_CHUGOKU').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet, 'eafp_japan_region_CHUGOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_CHUGOKU"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_CHUGOKU_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet, 'eafp_japan_region_CHUGOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_CHUGOKU"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_CHUGOKU').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_CHUGOKU_text"
-                                tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_CHUGOKU')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_CHUGOKU').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_CHUGOKU_text"
-                                tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_CHUGOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_CHUGOKU_text"
+                                        tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_CHUGOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_CHUGOKU_text"
+                                        tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_SHIKOKU_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_SHIKOKU').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet, 'eafp_japan_region_SHIKOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_SHIKOKU"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_SHIKOKU_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet, 'eafp_japan_region_SHIKOKU_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_SHIKOKU"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_SHIKOKU').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_SHIKOKU_text"
-                                tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_SHIKOKU')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_SHIKOKU').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_SHIKOKU_text"
-                                tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_SHIKOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_SHIKOKU_text"
+                                        tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_SHIKOKU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_SHIKOKU_text"
+                                        tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
-                button = {
+
+                flowcontainer = {
                     name = "eafp_japan_region_KYUSHU_row"
                     datacontext = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_state_KYUSHU').GetState]"
-                    enabled = "[State.IsValid]"
-                    onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-                    using = clean_button
-                    using = tooltip_es
-                    size = { 504 80 }
-                    tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet, 'eafp_japan_region_KYUSHU_effects_text', 'eafp_japan_region_unavailable')]"
+                    direction = vertical
+                    spacing = 8
                     background = { using = entry_bg_simple }
-                    textbox = {
-                        visible = "[State.IsValid]"
-                        # GetName carries the native state-name color/link formatting.
-                        text = "[State.GetName]"
-                        tooltipwidget = { FancyTooltip_State = {} }
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                    }
-                    textbox = {
-                        visible = "[Not(State.IsValid)]"
-                        text = "STATE_KYUSHU"
-                        position = { 10 0 }
-                        parentanchor = left|vcenter
-                        autoresize = yes
-                        align = left|vcenter|nobaseline
-                        alwaystransparent = yes
-                    }
-                    textbox = {
-                        visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet)]"
-                        text = "eafp_japan_region_unavailable"
-                        position = { 154 0 }
-                        parentanchor = left|vcenter
-                        size = { 344 56 }
-                        multiline = yes
-                        alwaystransparent = yes
+
+                    widget = {
+                        name = "eafp_japan_region_KYUSHU_title"
+                        size = { 504 32 }
+                        using = tooltip_es
+                        tooltip = "[SelectLocalization(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet, 'eafp_japan_region_KYUSHU_effects_text', 'eafp_japan_region_unavailable')]"
+                        background = {
+                            using = dark_area
+                            modify_texture = {
+                                texture = "gfx/interface/masks/fade_horizontal_center.dds"
+                                spriteType = Corneredstretched
+                                spriteborder = { 0 0 }
+                                blend_mode = alphamultiply
+                            }
+                        }
+                        # The container follows the text width; only the state name is clickable.
+                        container = {
+                            visible = "[State.IsValid]"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            minimumsize = { 0 24 }
+                            textbox = {
+                                text = "[State.GetName]"
+                                autoresize = yes
+                                align = left|vcenter|nobaseline
+                                alwaystransparent = yes
+                                tooltipwidget = { FancyTooltip_State = {} }
+                            }
+                        }
+                        textbox = {
+                            visible = "[Not(State.IsValid)]"
+                            text = "STATE_KYUSHU"
+                            position = { 10 0 }
+                            parentanchor = left|vcenter
+                            autoresize = yes
+                            align = left|vcenter|nobaseline
+                            alwaystransparent = yes
+                        }
                     }
                     flowcontainer = {
-                        visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet]"
-                        position = { 154 8 }
-                        direction = vertical
-                        spacing = 4
-                        green_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYUSHU').GetValue]"
-                            }
-                            textbox = {
-                                text = "eafp_japan_region_loyalty_KYUSHU_text"
-                                tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
-                            }
+                        direction = horizontal
+                        spacing = 12
+                        margin = { 10 0 }
+                        fixedgridbox = {
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYUSHU')]"
+                            datamodel_wrap = 1
+                            minimumsize = { 128 118 }
+                            addcolumn = 128
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
-                        bad_progressbar_horizontal = {
-                            block "progressbar_size" { size = { 344 30 } }
-                            tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
-                            blockoverride "values" {
-                                min = 0
-                                max = 100
-                                value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYUSHU').GetValue]"
+                        flowcontainer = {
+                            direction = vertical
+                            spacing = 4
+                            widget = {
+                                size = { 344 20 }
                             }
                             textbox = {
-                                text = "eafp_japan_region_independency_KYUSHU_text"
-                                tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
-                                autoresize = yes
-                                align = nobaseline
-                                margin_left = 10
-                                parentanchor = vcenter
+                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet)]"
+                                text = "eafp_japan_region_unavailable"
+                                size = { 344 56 }
+                                multiline = yes
+                            }
+                            flowcontainer = {
+                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet]"
+                                direction = vertical
+                                spacing = 4
+                                green_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYUSHU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_loyalty_KYUSHU_text"
+                                        tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
+                                bad_progressbar_horizontal = {
+                                    block "progressbar_size" { size = { 344 30 } }
+                                    tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
+                                    blockoverride "values" {
+                                        min = 0
+                                        max = 100
+                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYUSHU').GetValue]"
+                                    }
+                                    textbox = {
+                                        text = "eafp_japan_region_independency_KYUSHU_text"
+                                        tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
+                                        autoresize = yes
+                                        align = nobaseline
+                                        margin_left = 10
+                                        parentanchor = vcenter
+                                    }
+                                }
                             }
                         }
                     }
+                    spacer = { size = { 0 2 } }
                 }
             }
         }

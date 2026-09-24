@@ -22,6 +22,10 @@ eafp_japan_release_region_state = {
             limit = { has_modifier = legacy_of_sekigahara_modifier }
             remove_modifier = legacy_of_sekigahara_modifier
         }
+        if = {
+            limit = { has_modifier = eafp_bakufu_protection_modifier }
+            remove_modifier = eafp_bakufu_protection_modifier
+        }
         eafp_japan_clear_vanilla_region_modifiers = yes
         remove_variable = eafp_japan_loyalty_cache_managed
         remove_variable = cached_daimyo_loyalty
@@ -119,6 +123,11 @@ eafp_japan_update_regional_approval = {
     set_local_variable = { name = eafp_japan_approval_sum value = 0 }
     set_local_variable = { name = eafp_japan_region_count value = 0 }
     if = {
+        limit = { has_variable = eafp_japan_region_active_HOKKAIDO }
+        change_local_variable = { name = eafp_japan_region_count add = 1 }
+        change_local_variable = { name = eafp_japan_approval_sum add = { value = var:eafp_japan_loyalty_HOKKAIDO subtract = 50 divide = 50 multiply = { value = 100 subtract = var:eafp_japan_independency_HOKKAIDO divide = 100 } } }
+    }
+    if = {
         limit = { has_variable = eafp_japan_region_active_TOHOKU }
         change_local_variable = { name = eafp_japan_region_count add = 1 }
         change_local_variable = { name = eafp_japan_approval_sum add = { value = var:eafp_japan_loyalty_TOHOKU subtract = 50 divide = 50 multiply = { value = 100 subtract = var:eafp_japan_independency_TOHOKU divide = 100 } } }
@@ -174,10 +183,43 @@ eafp_japan_update_regional_approval = {
     remove_local_variable = eafp_japan_region_count
 }
 
+# Country scope. Match vanilla's living-daimyo selection, grouped by the assigned domain.
+eafp_japan_refresh_region_daimyos = {
+    if = {
+        limit = { has_variable_list = eafp_japan_region_daimyos_$STATE$ }
+        clear_variable_list = eafp_japan_region_daimyos_$STATE$
+    }
+    if = {
+        limit = { eafp_japan_regional_active = yes }
+        every_scope_character = {
+            limit = {
+                is_character_alive = yes
+                has_variable = daimyo_var
+                var:daimyo_var ?= s:STATE_$STATE$
+            }
+            owner = {
+                add_to_variable_list = { name = eafp_japan_region_daimyos_$STATE$ target = prev }
+            }
+        }
+    }
+}
+
 eafp_japan_refresh_regions = {
     if = {
         limit = { c:JAP ?= THIS }
+        eafp_japan_refresh_region_daimyos = { STATE = HOKKAIDO }
+        eafp_japan_refresh_region_daimyos = { STATE = TOHOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = KANTO }
+        eafp_japan_refresh_region_daimyos = { STATE = HOKUSHINETSU }
+        eafp_japan_refresh_region_daimyos = { STATE = TOKAI }
+        eafp_japan_refresh_region_daimyos = { STATE = KYOTO }
+        eafp_japan_refresh_region_daimyos = { STATE = KANSAI }
+        eafp_japan_refresh_region_daimyos = { STATE = CHUGOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = SHIKOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = KYUSHU }
         # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
+        # 에조치는 중간 이상의 충성도와 높은 자치 정도로 시작한다.
+        eafp_japan_refresh_region = { STATE = HOKKAIDO LOYALTY = 65 INDEPENDENCY = 60 }
         eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
         eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
         eafp_japan_refresh_region = { STATE = HOKUSHINETSU LOYALTY = 75 INDEPENDENCY = 25 }
@@ -196,6 +238,7 @@ eafp_japan_monthly_regions = {
     if = {
         limit = { eafp_japan_regional_active = yes }
         eafp_japan_refresh_regions = yes
+        eafp_japan_monthly_region = { STATE = HOKKAIDO }
         eafp_japan_monthly_region = { STATE = TOHOKU }
         eafp_japan_monthly_region = { STATE = KANTO }
         eafp_japan_monthly_region = { STATE = HOKUSHINETSU }
@@ -214,6 +257,23 @@ eafp_japan_end_regions = {
         limit = { c:JAP ?= THIS }
         # Set the gate before release: cache calls during cleanup cannot re-enter.
         eafp_japan_refresh_regions = yes
+        remove_variable = eafp_japan_region_state_HOKKAIDO
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKKAIDO } clear_variable_list = eafp_japan_region_daimyos_HOKKAIDO }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOHOKU } clear_variable_list = eafp_japan_region_daimyos_TOHOKU }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KANTO } clear_variable_list = eafp_japan_region_daimyos_KANTO }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKUSHINETSU } clear_variable_list = eafp_japan_region_daimyos_HOKUSHINETSU }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOKAI } clear_variable_list = eafp_japan_region_daimyos_TOKAI }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KYOTO } clear_variable_list = eafp_japan_region_daimyos_KYOTO }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KANSAI } clear_variable_list = eafp_japan_region_daimyos_KANSAI }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_CHUGOKU } clear_variable_list = eafp_japan_region_daimyos_CHUGOKU }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_SHIKOKU } clear_variable_list = eafp_japan_region_daimyos_SHIKOKU }
+        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KYUSHU } clear_variable_list = eafp_japan_region_daimyos_KYUSHU }
+        remove_variable = eafp_japan_loyalty_HOKKAIDO
+        remove_variable = eafp_japan_independency_HOKKAIDO
+        remove_variable = eafp_japan_region_initialized_HOKKAIDO
+        remove_variable = eafp_japan_region_active_HOKKAIDO
+        remove_variable = eafp_japan_loyalty_delta_HOKKAIDO
+        remove_variable = eafp_japan_independency_delta_HOKKAIDO
         remove_variable = eafp_japan_loyalty_TOHOKU
         remove_variable = eafp_japan_independency_TOHOKU
         remove_variable = eafp_japan_region_initialized_TOHOKU
@@ -278,6 +338,12 @@ add_bakuhantaisei_state_loyalty = {
             eafp_japan_refresh_regions = yes
             switch = {
                 trigger = $TARGET$.state_region
+                s:STATE_HOKKAIDO = {
+                    if = {
+                        limit = { has_variable = eafp_japan_region_active_HOKKAIDO $TARGET$ = { c:JAP ?= owner } }
+                        set_variable = { name = eafp_japan_loyalty_HOKKAIDO value = { value = var:eafp_japan_loyalty_HOKKAIDO add = $VALUE$ min = 0 max = 100 } }
+                    }
+                }
                 s:STATE_TOHOKU = {
                     if = {
                         limit = { has_variable = eafp_japan_region_active_TOHOKU $TARGET$ = { c:JAP ?= owner } }
@@ -346,6 +412,12 @@ add_bakuhantaisei_state_independency = {
             eafp_japan_refresh_regions = yes
             switch = {
                 trigger = $TARGET$.state_region
+                s:STATE_HOKKAIDO = {
+                    if = {
+                        limit = { has_variable = eafp_japan_region_active_HOKKAIDO $TARGET$ = { c:JAP ?= owner } }
+                        set_variable = { name = eafp_japan_independency_HOKKAIDO value = { value = var:eafp_japan_independency_HOKKAIDO add = $VALUE$ min = 0 max = 100 } }
+                    }
+                }
                 s:STATE_TOHOKU = {
                     if = {
                         limit = { has_variable = eafp_japan_region_active_TOHOKU $TARGET$ = { c:JAP ?= owner } }

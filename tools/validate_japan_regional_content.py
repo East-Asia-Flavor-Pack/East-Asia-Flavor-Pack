@@ -7,7 +7,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-REGIONS = ('TOHOKU', 'KANTO', 'HOKUSHINETSU', 'TOKAI', 'KYOTO', 'KANSAI',
+REGIONS = ('HOKKAIDO', 'TOHOKU', 'KANTO', 'HOKUSHINETSU', 'TOKAI', 'KYOTO', 'KANSAI',
            'CHUGOKU', 'SHIKOKU', 'KYUSHU')
 
 
@@ -40,9 +40,9 @@ def main():
     boshin = read('events/eafp_jap_events/eafp_boshin_war.txt')
     # Jomini scripted-effect arguments must be scalar tokens, not formula blocks.
     assert not re.search(r'add_bakuhantaisei_state_\w+\s*=\s*\{[^{}]*VALUE\s*=\s*\{', boshin)
-    assert boshin.count('save_scope_value_as = { name = eafp_japan_boshin_regional_change') == 63
-    assert boshin.count('VALUE = scope:eafp_japan_boshin_regional_change') == 63
-    assert boshin.count('clear_saved_scope = eafp_japan_boshin_regional_change') == 63
+    assert boshin.count('save_scope_value_as = { name = eafp_japan_boshin_regional_change') == 7 * len(REGIONS)
+    assert boshin.count('VALUE = scope:eafp_japan_boshin_regional_change') == 7 * len(REGIONS)
+    assert boshin.count('clear_saved_scope = eafp_japan_boshin_regional_change') == 7 * len(REGIONS)
     for region in REGIONS:
         assert effects.count(f'eafp_japan_refresh_region = {{ STATE = {region} ') == 1
         assert effects.count(f'eafp_japan_monthly_region = {{ STATE = {region} }}') == 1
@@ -61,12 +61,12 @@ def main():
     assert je.count('eafp_japan_monthly_regions = yes') == 1
     assert je.count('eafp_japan_end_regions = yes') == 2
     assert 'name = "widget_je_bakuhantaisei_japan_regions"' in je and 'name = "widget_je_bakuhantaisei_japan_regions"' in gui
-    assert gui.count('green_progressbar_horizontal = {') == 9
-    assert gui.count('bad_progressbar_horizontal = {') == 9
-    assert gui.count('block \"progressbar_size\" { size = { 344 30 } }') == 18
+    assert gui.count('green_progressbar_horizontal = {') == len(REGIONS)
+    assert gui.count('bad_progressbar_horizontal = {') == len(REGIONS)
+    assert gui.count('block \"progressbar_size\" { size = { 344 30 } }') == 2 * len(REGIONS)
     panel = gui.split('type eafp_japan_regions = container {', 1)[1].split('\n}\n\nflowcontainer =', 1)[0]
     assert panel.count('section_header_button = {') == 1
-    assert panel.count('using = clean_button') == 9
+    assert panel.count('using = clean_button') == 10 # State-name buttons only, including Hokkaido
     assert panel.count("GetVariableSystem.Toggle('eafp_japan_regions_list_expanded')") == 1
     for region in REGIONS:
         assert f'name = "eafp_japan_region_{region}_row"' in panel
@@ -94,7 +94,7 @@ def main():
             assert len(re.findall(r'^\s*' + re.escape(key) + r':', loc, re.M)) == 1, (lang, key)
     print(f'PASS: {len(REGIONS)} regions, one monthly owner, cache contract, lifecycle hooks, '
           f'{len(regional_files)} script/GUI files, {len(keys)} UI keys in three languages, '
-          '63 proportional calls with scalar arguments.')
+          f'{7 * len(REGIONS)} proportional calls with scalar arguments.')
 
 
 if __name__ == '__main__':
