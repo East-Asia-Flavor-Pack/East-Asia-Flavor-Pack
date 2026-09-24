@@ -323,7 +323,7 @@ types eafp_bakuhantaisei {
 	}
 
     type eafp_japan_region_daimyo = widget {
-        size = { 128 118 }
+        size = { 120 118 }
         datacontext = "[Scope.GetCharacter]"
         visible = "[Character.IsValid]"
         widget = {
@@ -357,12 +357,31 @@ types eafp_bakuhantaisei {
                     texture = "gfx/interface/icons/generic_icons/disapproval_icon.dds"
                 }
             }
+
+            ig_button = {
+				datacontext = "[Character.GetInterestGroup]"
+				parentanchor = bottom|left
+				block "ig_button_size" {
+					size = { 35 35 }
+				}
+				using = tooltip_ws
+				blockoverride "in_government_icon" {}
+			}
+			icon = {
+				datacontext = "[Character.GetIdeology]"
+				texture = "[Ideology.GetTexture]"
+				tooltipwidget = {
+					FancyTooltip_Ideology = {}
+				}
+				size = { 35 35 }
+				parentanchor = bottom|right
+			}
         }
         textbox = {
             text = "[Character.GetFullName]"
             tooltipwidget = { FancyTooltip_Character = {} }
             position = { 0 94 }
-            size = { 128 24 }
+            size = { 120 24 }
             align = center|nobaseline
             using = fontsize_small
             elide = right
@@ -431,6 +450,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -448,68 +468,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKKAIDO')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKKAIDO').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_HOKKAIDO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKKAIDO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_HOKKAIDO_text"
                                     tooltip = "eafp_japan_region_loyalty_HOKKAIDO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKKAIDO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_HOKKAIDO_text"
-                                        tooltip = "eafp_japan_region_loyalty_HOKKAIDO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKKAIDO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_HOKKAIDO_text"
-                                        tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKKAIDO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_HOKKAIDO_text"
+                                    tooltip = "eafp_japan_region_independency_HOKKAIDO_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKKAIDO')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -544,6 +559,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -561,68 +577,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOHOKU')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOHOKU').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOHOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_TOHOKU_text"
                                     tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOHOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_TOHOKU_text"
-                                        tooltip = "eafp_japan_region_loyalty_TOHOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOHOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_TOHOKU_text"
-                                        tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOHOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_TOHOKU_text"
+                                    tooltip = "eafp_japan_region_independency_TOHOKU_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOHOKU')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -657,6 +668,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -674,68 +686,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANTO')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANTO').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANTO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_KANTO_text"
                                     tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANTO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_KANTO_text"
-                                        tooltip = "eafp_japan_region_loyalty_KANTO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_KANTO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANTO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_KANTO_text"
-                                        tooltip = "eafp_japan_region_independency_KANTO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_KANTO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANTO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_KANTO_text"
+                                    tooltip = "eafp_japan_region_independency_KANTO_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANTO')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -770,6 +777,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -787,68 +795,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKUSHINETSU')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_HOKUSHINETSU').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKUSHINETSU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_HOKUSHINETSU_text"
                                     tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_HOKUSHINETSU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_HOKUSHINETSU_text"
-                                        tooltip = "eafp_japan_region_loyalty_HOKUSHINETSU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKUSHINETSU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_HOKUSHINETSU_text"
-                                        tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_HOKUSHINETSU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_HOKUSHINETSU_text"
+                                    tooltip = "eafp_japan_region_independency_HOKUSHINETSU_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_HOKUSHINETSU')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -883,6 +886,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -900,68 +904,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOKAI')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_TOKAI').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOKAI').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_TOKAI_text"
                                     tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_TOKAI').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_TOKAI_text"
-                                        tooltip = "eafp_japan_region_loyalty_TOKAI_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOKAI').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_TOKAI_text"
-                                        tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_TOKAI').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_TOKAI_text"
+                                    tooltip = "eafp_japan_region_independency_TOKAI_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_TOKAI')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -996,6 +995,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -1013,68 +1013,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYOTO')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYOTO').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYOTO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_KYOTO_text"
                                     tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYOTO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_KYOTO_text"
-                                        tooltip = "eafp_japan_region_loyalty_KYOTO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYOTO').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_KYOTO_text"
-                                        tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYOTO').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_KYOTO_text"
+                                    tooltip = "eafp_japan_region_independency_KYOTO_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYOTO')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -1109,6 +1104,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -1126,68 +1122,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANSAI')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KANSAI').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANSAI').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_KANSAI_text"
                                     tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KANSAI').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_KANSAI_text"
-                                        tooltip = "eafp_japan_region_loyalty_KANSAI_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANSAI').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_KANSAI_text"
-                                        tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KANSAI').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_KANSAI_text"
+                                    tooltip = "eafp_japan_region_independency_KANSAI_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KANSAI')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -1222,6 +1213,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -1239,68 +1231,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_CHUGOKU')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_CHUGOKU').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_CHUGOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_CHUGOKU_text"
                                     tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_CHUGOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_CHUGOKU_text"
-                                        tooltip = "eafp_japan_region_loyalty_CHUGOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_CHUGOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_CHUGOKU_text"
-                                        tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_CHUGOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_CHUGOKU_text"
+                                    tooltip = "eafp_japan_region_independency_CHUGOKU_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_CHUGOKU')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -1335,6 +1322,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -1352,68 +1340,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_SHIKOKU')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_SHIKOKU').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_SHIKOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_SHIKOKU_text"
                                     tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_SHIKOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_SHIKOKU_text"
-                                        tooltip = "eafp_japan_region_loyalty_SHIKOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_SHIKOKU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_SHIKOKU_text"
-                                        tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_SHIKOKU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_SHIKOKU_text"
+                                    tooltip = "eafp_japan_region_independency_SHIKOKU_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_SHIKOKU')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }
@@ -1448,6 +1431,7 @@ types eafp_bakuhantaisei {
                             minimumsize = { 0 24 }
                             textbox = {
                                 text = "[State.GetName]"
+                                parentanchor = left|vcenter
                                 autoresize = yes
                                 align = left|vcenter|nobaseline
                                 alwaystransparent = yes
@@ -1465,68 +1449,63 @@ types eafp_bakuhantaisei {
                         }
                     }
                     flowcontainer = {
-                        direction = horizontal
-                        spacing = 12
+                        direction = vertical
+                        spacing = 6
                         margin = { 10 0 }
-                        fixedgridbox = {
-                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYUSHU')]"
-                            datamodel_wrap = 1
-                            minimumsize = { 128 118 }
-                            addcolumn = 128
-                            addrow = 118
-                            item = { eafp_japan_region_daimyo = {} }
+                        textbox = {
+                            visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet)]"
+                            text = "eafp_japan_region_unavailable"
+                            size = { 484 56 }
+                            multiline = yes
                         }
                         flowcontainer = {
+                            visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet]"
                             direction = vertical
                             spacing = 4
-                            widget = {
-                                size = { 344 20 }
-                            }
-                            textbox = {
-                                visible = "[Not(JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet)]"
-                                text = "eafp_japan_region_unavailable"
-                                size = { 344 56 }
-                                multiline = yes
-                            }
-                            flowcontainer = {
-                                visible = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_region_active_KYUSHU').IsSet]"
-                                direction = vertical
-                                spacing = 4
-                                green_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
+                            green_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYUSHU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_loyalty_KYUSHU_text"
                                     tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_loyalty_KYUSHU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_loyalty_KYUSHU_text"
-                                        tooltip = "eafp_japan_region_loyalty_KYUSHU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
-                                }
-                                bad_progressbar_horizontal = {
-                                    block "progressbar_size" { size = { 344 30 } }
-                                    tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
-                                    blockoverride "values" {
-                                        min = 0
-                                        max = 100
-                                        value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYUSHU').GetValue]"
-                                    }
-                                    textbox = {
-                                        text = "eafp_japan_region_independency_KYUSHU_text"
-                                        tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
-                                        autoresize = yes
-                                        align = nobaseline
-                                        margin_left = 10
-                                        parentanchor = vcenter
-                                    }
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
                                 }
                             }
+                            bad_progressbar_horizontal = {
+                                block "progressbar_size" { size = { 484 30 } }
+                                tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
+                                blockoverride "values" {
+                                    min = 0
+                                    max = 100
+                                    value = "[JournalEntry.GetCountry.MakeScope.Var('eafp_japan_independency_KYUSHU').GetValue]"
+                                }
+                                textbox = {
+                                    text = "eafp_japan_region_independency_KYUSHU_text"
+                                    tooltip = "eafp_japan_region_independency_KYUSHU_tooltip"
+                                    autoresize = yes
+                                    align = nobaseline
+                                    margin_left = 10
+                                    parentanchor = vcenter
+                                }
+                            }
+                        }
+                        fixedgridbox = {
+                            minimumsize = { 484 118 }
+                            background = { using = dark_area }
+                            datamodel = "[JournalEntry.GetCountry.MakeScope.GetList('eafp_japan_region_daimyos_KYUSHU')]"
+                            datamodel_wrap = 4
+                            flipdirection = yes
+                            addcolumn = 121
+                            addrow = 118
+                            item = { eafp_japan_region_daimyo = {} }
                         }
                     }
                     spacer = { size = { 0 2 } }

@@ -63,13 +63,15 @@ def main():
     assert 'name = "widget_je_bakuhantaisei_japan_regions"' in je and 'name = "widget_je_bakuhantaisei_japan_regions"' in gui
     assert gui.count('green_progressbar_horizontal = {') == len(REGIONS)
     assert gui.count('bad_progressbar_horizontal = {') == len(REGIONS)
-    assert gui.count('block \"progressbar_size\" { size = { 344 30 } }') == 2 * len(REGIONS)
+    assert gui.count('block \"progressbar_size\" { size = { 484 30 } }') == 2 * len(REGIONS)
     panel = gui.split('type eafp_japan_regions = container {', 1)[1].split('\n}\n\nflowcontainer =', 1)[0]
     assert panel.count('section_header_button = {') == 1
     assert panel.count('using = clean_button') == 10 # State-name buttons only, including Hokkaido
     assert panel.count("GetVariableSystem.Toggle('eafp_japan_regions_list_expanded')") == 1
     for region in REGIONS:
         assert f'name = "eafp_japan_region_{region}_row"' in panel
+        assert f"eafp_japan_region_daimyos_{region}_expanded" not in panel
+        assert f"GetList('eafp_japan_region_daimyos_{region}')" in panel
         assert f"'eafp_japan_region_{region}_effects_text'" in panel
         assert f'text = "eafp_japan_region_{region}_effects_text"' not in panel
         assert f'eafp_japan_region_{region}_expanded' not in panel
