@@ -1,0 +1,794 @@
+﻿# Generated from tools/data/japan_additional_daimyos.json.
+# Edit the roster and run tools/generate_japan_additional_daimyos.py.
+
+# Character scope. Historical registration never rewinds a han's succession counter.
+eafp_japan_register_han_daimyo = {
+	if = {
+		limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+		set_variable = { name = daimyo_var value = s:STATE_$STATE$ }
+		set_variable = { name = daimyo_han_var value = flag:$HAN$ }
+		s:STATE_$STATE$ = {
+			if = {
+				limit = {
+					OR = {
+						NOT = { has_variable = eafp_daimyo_chain_id_$HAN$ }
+						var:eafp_daimyo_chain_id_$HAN$ < $INDEX$
+					}
+				}
+				set_variable = { name = eafp_daimyo_chain_id_$HAN$ value = $INDEX$ }
+			}
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_kumamoto_daimyo = {
+	owner = { eafp_japan_generate_kumamoto_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_kumamoto_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_KYUSHU }
+		}
+		s:STATE_KYUSHU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_kumamoto } }
+				set_variable = { name = eafp_daimyo_chain_id_kumamoto value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_kumamoto = 0 }
+						is_template_used = eafp_jap_hosokawa_yoshikuni_kumamoto
+					}
+					AND = {
+						s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_kumamoto = 1 }
+						is_template_used = eafp_jap_hosokawa_morihisa_kumamoto
+					}
+				}
+			}
+			s:STATE_KYUSHU = { change_variable = { name = eafp_daimyo_chain_id_kumamoto add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_kumamoto = 0 }
+				game_date >= 1835.7.23
+			}
+			create_character = { template = eafp_jap_hosokawa_yoshikuni_kumamoto }
+		}
+		else_if = {
+			limit = {
+				s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_kumamoto = 1 }
+				game_date >= 1839.4.14
+			}
+			create_character = { template = eafp_jap_hosokawa_morihisa_kumamoto }
+		}
+		else = { eafp_japan_generate_random_kumamoto_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_kumamoto_daimyo = {
+	create_character = {
+		last_name = Hosokawa
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_KYUSHU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_KYUSHU }
+				set_variable = { name = daimyo_han_var value = flag:kumamoto }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_saga_daimyo = {
+	owner = { eafp_japan_generate_saga_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_saga_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_KYUSHU }
+		}
+		s:STATE_KYUSHU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_saga } }
+				set_variable = { name = eafp_daimyo_chain_id_saga value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_saga = 0 }
+						is_template_used = eafp_jap_nabeshima_naohiro_saga
+					}
+				}
+			}
+			s:STATE_KYUSHU = { change_variable = { name = eafp_daimyo_chain_id_saga add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_saga = 0 }
+				game_date >= 1846.10.17
+			}
+			create_character = { template = eafp_jap_nabeshima_naohiro_saga }
+		}
+		else = { eafp_japan_generate_random_saga_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_saga_daimyo = {
+	create_character = {
+		last_name = Nabeshima
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_KYUSHU
+		interest_group = ig_industrialists
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_KYUSHU }
+				set_variable = { name = daimyo_han_var value = flag:saga }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_fukuoka_daimyo = {
+	owner = { eafp_japan_generate_fukuoka_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_fukuoka_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_KYUSHU }
+		}
+		s:STATE_KYUSHU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_fukuoka } }
+				set_variable = { name = eafp_daimyo_chain_id_fukuoka value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_fukuoka = 0 }
+						is_template_used = eafp_jap_kuroda_nagatomo_fukuoka
+					}
+				}
+			}
+			s:STATE_KYUSHU = { change_variable = { name = eafp_daimyo_chain_id_fukuoka add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_KYUSHU = { var:eafp_daimyo_chain_id_fukuoka = 0 }
+				game_date >= 1839.2.2
+			}
+			create_character = { template = eafp_jap_kuroda_nagatomo_fukuoka }
+		}
+		else = { eafp_japan_generate_random_fukuoka_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_fukuoka_daimyo = {
+	create_character = {
+		last_name = Kuroda
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_KYUSHU
+		interest_group = ig_industrialists
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_KYUSHU }
+				set_variable = { name = daimyo_han_var value = flag:fukuoka }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_okayama_daimyo = {
+	owner = { eafp_japan_generate_okayama_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_okayama_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_CHUGOKU }
+		}
+		s:STATE_CHUGOKU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_okayama } }
+				set_variable = { name = eafp_daimyo_chain_id_okayama value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 0 }
+						is_template_used = eafp_jap_ikeda_yoshimasa_okayama
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 1 }
+						is_template_used = eafp_jap_ikeda_mochimasa_okayama
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 2 }
+						is_template_used = eafp_jap_ikeda_akimasa_okayama
+					}
+				}
+			}
+			s:STATE_CHUGOKU = { change_variable = { name = eafp_daimyo_chain_id_okayama add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 0 }
+				game_date >= 1823.8.10
+			}
+			create_character = { template = eafp_jap_ikeda_yoshimasa_okayama }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 1 }
+				game_date >= 1839.11.16
+			}
+			create_character = { template = eafp_jap_ikeda_mochimasa_okayama }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_okayama = 2 }
+				game_date >= 1836.6.16
+			}
+			create_character = { template = eafp_jap_ikeda_akimasa_okayama }
+		}
+		else = { eafp_japan_generate_random_okayama_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_okayama_daimyo = {
+	create_character = {
+		last_name = Ikeda
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_CHUGOKU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_CHUGOKU }
+				set_variable = { name = daimyo_han_var value = flag:okayama }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_hiroshima_daimyo = {
+	owner = { eafp_japan_generate_hiroshima_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_hiroshima_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_CHUGOKU }
+		}
+		s:STATE_CHUGOKU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_hiroshima } }
+				set_variable = { name = eafp_daimyo_chain_id_hiroshima value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 0 }
+						is_template_used = eafp_jap_asano_yoshiteru_hiroshima
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 1 }
+						is_template_used = eafp_jap_asano_nagamichi_hiroshima
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 2 }
+						is_template_used = eafp_jap_asano_nagakoto_hiroshima
+					}
+				}
+			}
+			s:STATE_CHUGOKU = { change_variable = { name = eafp_daimyo_chain_id_hiroshima add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 0 }
+				game_date >= 1836.12.19
+			}
+			create_character = { template = eafp_jap_asano_yoshiteru_hiroshima }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 1 }
+				game_date >= 1812.9.4
+			}
+			create_character = { template = eafp_jap_asano_nagamichi_hiroshima }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_hiroshima = 2 }
+				game_date >= 1842.8.28
+			}
+			create_character = { template = eafp_jap_asano_nagakoto_hiroshima }
+		}
+		else = { eafp_japan_generate_random_hiroshima_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_hiroshima_daimyo = {
+	create_character = {
+		last_name = Asano
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_CHUGOKU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_CHUGOKU }
+				set_variable = { name = daimyo_han_var value = flag:hiroshima }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_tottori_daimyo = {
+	owner = { eafp_japan_generate_tottori_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_tottori_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_CHUGOKU }
+		}
+		s:STATE_CHUGOKU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_tottori } }
+				set_variable = { name = eafp_daimyo_chain_id_tottori value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 0 }
+						is_template_used = eafp_jap_ikeda_yoshiyuki_tottori
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 1 }
+						is_template_used = eafp_jap_ikeda_yoshitaka_tottori
+					}
+					AND = {
+						s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 2 }
+						is_template_used = eafp_jap_ikeda_yoshinori_tottori
+					}
+				}
+			}
+			s:STATE_CHUGOKU = { change_variable = { name = eafp_daimyo_chain_id_tottori add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 0 }
+				game_date >= 1832.5.24
+			}
+			create_character = { template = eafp_jap_ikeda_yoshiyuki_tottori }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 1 }
+				game_date >= 1834.5.1
+			}
+			create_character = { template = eafp_jap_ikeda_yoshitaka_tottori }
+		}
+		else_if = {
+			limit = {
+				s:STATE_CHUGOKU = { var:eafp_daimyo_chain_id_tottori = 2 }
+				game_date >= 1837.8.13
+			}
+			create_character = { template = eafp_jap_ikeda_yoshinori_tottori }
+		}
+		else = { eafp_japan_generate_random_tottori_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_tottori_daimyo = {
+	create_character = {
+		last_name = Ikeda
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_CHUGOKU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_CHUGOKU }
+				set_variable = { name = daimyo_han_var value = flag:tottori }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_fukui_daimyo = {
+	owner = { eafp_japan_generate_fukui_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_fukui_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_HOKUSHINETSU }
+		}
+		s:STATE_HOKUSHINETSU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_fukui } }
+				set_variable = { name = eafp_daimyo_chain_id_fukui value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_HOKUSHINETSU = { var:eafp_daimyo_chain_id_fukui = 0 }
+						is_template_used = eafp_jap_matsudaira_yoshinaga_fukui
+					}
+					AND = {
+						s:STATE_HOKUSHINETSU = { var:eafp_daimyo_chain_id_fukui = 1 }
+						is_template_used = eafp_jap_matsudaira_mochiaki_fukui
+					}
+				}
+			}
+			s:STATE_HOKUSHINETSU = { change_variable = { name = eafp_daimyo_chain_id_fukui add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_HOKUSHINETSU = { var:eafp_daimyo_chain_id_fukui = 0 }
+				game_date >= 1828.10.10
+			}
+			create_character = { template = eafp_jap_matsudaira_yoshinaga_fukui }
+		}
+		else_if = {
+			limit = {
+				s:STATE_HOKUSHINETSU = { var:eafp_daimyo_chain_id_fukui = 1 }
+				game_date >= 1836.9.17
+			}
+			create_character = { template = eafp_jap_matsudaira_mochiaki_fukui }
+		}
+		else = { eafp_japan_generate_random_fukui_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_fukui_daimyo = {
+	create_character = {
+		last_name = Matsudaira
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_HOKUSHINETSU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_HOKUSHINETSU }
+				set_variable = { name = daimyo_han_var value = flag:fukui }
+			}
+			designate_as_shinpan_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_tsu_daimyo = {
+	owner = { eafp_japan_generate_tsu_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_tsu_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_TOKAI }
+		}
+		s:STATE_TOKAI = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_tsu } }
+				set_variable = { name = eafp_daimyo_chain_id_tsu value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_TOKAI = { var:eafp_daimyo_chain_id_tsu = 0 }
+						is_template_used = eafp_jap_todo_takakiyo_tsu
+					}
+				}
+			}
+			s:STATE_TOKAI = { change_variable = { name = eafp_daimyo_chain_id_tsu add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_TOKAI = { var:eafp_daimyo_chain_id_tsu = 0 }
+				game_date >= 1837.10.19
+			}
+			create_character = { template = eafp_jap_todo_takakiyo_tsu }
+		}
+		else = { eafp_japan_generate_random_tsu_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_tsu_daimyo = {
+	create_character = {
+		last_name = Todo
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_TOKAI
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_TOKAI }
+				set_variable = { name = daimyo_han_var value = flag:tsu }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_kubota_daimyo = {
+	owner = { eafp_japan_generate_kubota_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_kubota_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_TOHOKU }
+		}
+		s:STATE_TOHOKU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_kubota } }
+				set_variable = { name = eafp_daimyo_chain_id_kubota value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_TOHOKU = { var:eafp_daimyo_chain_id_kubota = 0 }
+						is_template_used = eafp_jap_satake_yoshichika_kubota
+					}
+					AND = {
+						s:STATE_TOHOKU = { var:eafp_daimyo_chain_id_kubota = 1 }
+						is_template_used = eafp_jap_satake_yoshitaka_kubota
+					}
+				}
+			}
+			s:STATE_TOHOKU = { change_variable = { name = eafp_daimyo_chain_id_kubota add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_TOHOKU = { var:eafp_daimyo_chain_id_kubota = 0 }
+				game_date >= 1839.7.2
+			}
+			create_character = { template = eafp_jap_satake_yoshichika_kubota }
+		}
+		else_if = {
+			limit = {
+				s:STATE_TOHOKU = { var:eafp_daimyo_chain_id_kubota = 1 }
+				game_date >= 1825.9.9
+			}
+			create_character = { template = eafp_jap_satake_yoshitaka_kubota }
+		}
+		else = { eafp_japan_generate_random_kubota_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_kubota_daimyo = {
+	create_character = {
+		last_name = Satake
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_TOHOKU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_TOHOKU }
+				set_variable = { name = daimyo_han_var value = flag:kubota }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
+
+# Character or State scope: matches vanilla succession callers.
+JAP_character_generate_tosa_daimyo = {
+	owner = { eafp_japan_generate_tosa_daimyo = yes }
+}
+
+# Country scope. The state-region counter is unique to this han and survives civil wars.
+eafp_japan_generate_tosa_daimyo = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = japan_daimyo_abolished }
+			any_scope_state = { state_region = s:STATE_SHIKOKU }
+		}
+		s:STATE_SHIKOKU = {
+			if = {
+				limit = { NOT = { has_variable = eafp_daimyo_chain_id_tosa } }
+				set_variable = { name = eafp_daimyo_chain_id_tosa value = 0 }
+			}
+		}
+		# Skip used historical people, including dead, retired and foreign characters.
+		# Each iteration advances the counter; at most the historical roster's length.
+		while = {
+			limit = {
+				OR = {
+					AND = {
+						s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 0 }
+						is_template_used = eafp_jap_yamauchi_toyoteru_tosa
+					}
+					AND = {
+						s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 1 }
+						is_template_used = eafp_jap_yamauchi_toyoatsu_tosa
+					}
+					AND = {
+						s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 2 }
+						is_template_used = eafp_jap_yamauchi_toyoshige_tosa
+					}
+					AND = {
+						s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 3 }
+						is_template_used = eafp_jap_yamauchi_toyonori_tosa
+					}
+				}
+			}
+			s:STATE_SHIKOKU = { change_variable = { name = eafp_daimyo_chain_id_tosa add = 1 } }
+		}
+		if = {
+			limit = {
+				s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 0 }
+				game_date >= 1815.4.8
+			}
+			create_character = { template = eafp_jap_yamauchi_toyoteru_tosa }
+		}
+		else_if = {
+			limit = {
+				s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 1 }
+				game_date >= 1824.7.2
+			}
+			create_character = { template = eafp_jap_yamauchi_toyoatsu_tosa }
+		}
+		else_if = {
+			limit = {
+				s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 2 }
+				game_date >= 1827.11.27
+			}
+			create_character = { template = eafp_jap_yamauchi_toyoshige_tosa }
+		}
+		else_if = {
+			limit = {
+				s:STATE_SHIKOKU = { var:eafp_daimyo_chain_id_tosa = 3 }
+				game_date >= 1846.5.10
+			}
+			create_character = { template = eafp_jap_yamauchi_toyonori_tosa }
+		}
+		else = { eafp_japan_generate_random_tosa_daimyo = yes }
+	}
+}
+
+# Country scope. An interim random successor does not consume an unborn historical heir.
+eafp_japan_generate_random_tosa_daimyo = {
+	create_character = {
+		last_name = Yamauchi
+		noble = yes
+		culture = cu:japanese
+		role = character_role_magnate
+		role = character_role_politician
+		holding_type = building_manor_house
+		home_region = STATE_SHIKOKU
+		interest_group = ig_landowners
+		on_created = {
+			if = {
+				limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
+				set_variable = { name = daimyo_var value = s:STATE_SHIKOKU }
+				set_variable = { name = daimyo_han_var value = flag:tosa }
+			}
+			designate_as_tozama_daimyo = yes
+		}
+	}
+}
