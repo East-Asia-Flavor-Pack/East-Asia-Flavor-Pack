@@ -45,20 +45,117 @@ eafp_mgl_spawn_independence_cabinet = {
 	if = { limit = { NOT = { has_variable = eafp_mgl_magsarjav_spawned } } create_character = { template = eafp_mgl_magsarjav_character_template } set_variable = eafp_mgl_magsarjav_spawned }
 }
 
-# Like the vanilla Russian succession chain, historical character templates are
-# identified directly. This avoids persistent marker variables on each incarnation.
-eafp_mgl_enthrone_current_jebtsundamba = {
-	set_variable = eafp_mgl_bogd_enthroned
-	set_variable = eafp_mgl_jebtsundamba_succession_active
-	random_scope_character = {
+# Character scope. Like Japan's emperor_var, keep one country-owned reference
+# for the journal portrait, the religious office and the eventual head of state.
+eafp_mgl_register_jebtsundamba = {
+	set_character_busy_and_immortal = yes
+	add_character_role = character_role_eafp_jebtsundamba
+	owner = { set_variable = { name = eafp_mgl_jebtsundamba_var value = PREV } }
+	if = {
+		limit = { owner = { has_variable = eafp_mgl_bogd_enthroned } }
+		set_character_as_ruler = yes
+	}
+	else = { set_as_interest_group_leader = yes }
+}
+
+# Country scope. Reuse the living historical character before creating a new one.
+# Install the successor before killing the predecessor to avoid a random ruler.
+eafp_mgl_select_jebtsundamba = {
+	if = {
 		limit = {
 			OR = {
-				has_template = eafp_mgl_fifth_jebtsundamba_character_template
-				has_template = eafp_mgl_sixth_jebtsundamba_character_template
-				has_template = eafp_mgl_seventh_jebtsundamba_character_template
-				has_template = eafp_mgl_bogd_khan_character_template
+				NOT = { exists = var:eafp_mgl_jebtsundamba_var }
+				var:eafp_mgl_jebtsundamba_var ?= { NOT = { has_template = $TEMPLATE$ } }
 			}
 		}
-		set_character_as_ruler = yes
+		clear_saved_scope = eafp_mgl_previous_jebtsundamba
+		var:eafp_mgl_jebtsundamba_var ?= { save_scope_as = eafp_mgl_previous_jebtsundamba }
+		if = {
+			limit = { any_scope_character = { has_template = $TEMPLATE$ } }
+			random_scope_character = {
+				limit = { has_template = $TEMPLATE$ }
+				eafp_mgl_register_jebtsundamba = yes
+			}
+		}
+		else = {
+			create_character = {
+				template = $TEMPLATE$
+				on_created = { eafp_mgl_register_jebtsundamba = yes }
+			}
+		}
+		scope:eafp_mgl_previous_jebtsundamba ?= {
+			set_character_busy_and_immortal = no
+			kill_character = { hidden = yes }
+		}
+		clear_saved_scope = eafp_mgl_previous_jebtsundamba
+	}
+}
+
+# The office remains occupied until the next incarnation's installation, as in
+# Japan's continuous imperial succession. The eighth incarnation ends in 1924.
+eafp_mgl_update_jebtsundamba = {
+	if = {
+		limit = {
+			has_variable = eafp_mgl_bogd_enthroned
+			NOR = {
+				has_law_or_variant = law_type:law_monarchy
+				has_law_or_variant = law_type:law_theocracy
+			}
+		}
+		remove_variable = eafp_mgl_bogd_enthroned
+		remove_variable = no_heirs
+		var:eafp_mgl_jebtsundamba_var ?= { set_as_interest_group_leader = yes }
+	}
+	if = {
+		limit = { game_date >= 1924.5.20 }
+		if = {
+			limit = { NOT = { has_variable = eafp_mgl_eighth_succession_closed } }
+			set_variable = eafp_mgl_eighth_succession_closed
+			remove_variable = no_heirs
+			remove_variable = eafp_mgl_bogd_enthroned
+			var:eafp_mgl_jebtsundamba_var ?= {
+				set_character_busy_and_immortal = no
+				kill_character = { hidden = yes }
+			}
+			remove_variable = eafp_mgl_jebtsundamba_var
+		}
+	}
+	else_if = {
+		limit = { game_date >= 1874.1.1 }
+		eafp_mgl_select_jebtsundamba = { TEMPLATE = eafp_mgl_bogd_khan_character_template }
+	}
+	else_if = {
+		limit = { game_date >= 1850.1.1 }
+		eafp_mgl_select_jebtsundamba = { TEMPLATE = eafp_mgl_seventh_jebtsundamba_character_template }
+	}
+	else_if = {
+		limit = { game_date >= 1843.1.1 }
+		eafp_mgl_select_jebtsundamba = { TEMPLATE = eafp_mgl_sixth_jebtsundamba_character_template }
+	}
+	else = {
+		eafp_mgl_select_jebtsundamba = { TEMPLATE = eafp_mgl_fifth_jebtsundamba_character_template }
+	}
+	if = {
+		limit = {
+			NOT = { has_variable = eafp_mgl_bogd_enthroned }
+			exists = var:eafp_mgl_jebtsundamba_var
+		}
+		var:eafp_mgl_jebtsundamba_var = { set_as_interest_group_leader = yes }
+	}
+}
+
+# Completion effect: promotion happens here, without waiting for an event option.
+eafp_mgl_enthrone_current_jebtsundamba = {
+	eafp_mgl_update_jebtsundamba = yes
+	if = {
+		limit = { exists = var:eafp_mgl_jebtsundamba_var }
+		set_variable = eafp_mgl_bogd_enthroned
+		set_variable = no_heirs
+		if = {
+			limit = { NOR = { has_law_or_variant = law_type:law_monarchy has_law_or_variant = law_type:law_theocracy } }
+			activate_law = law_type:law_monarchy
+		}
+		heir ?= { disinherit_character = yes }
+		var:eafp_mgl_jebtsundamba_var = { set_character_as_ruler = yes }
 	}
 }

@@ -5,24 +5,52 @@ je_eafp_mgl_restoration_of_the_state = {
 	weight = 260
 	transferable = no
 
+	widget = {
+		gui = "gui/journal_entry_widgets/eafp_mongolia_widgets.gui"
+		name = "widget_je_eafp_mgl_jebtsundamba"
+		container = "custom_widget_container_je_icon"
+	}
+
 	is_shown_when_inactive = { c:MGL ?= ROOT }
 	possible = {
 		c:MGL ?= ROOT
 		NOT = { has_variable = eafp_mgl_restoration_started }
-		NOT = { is_subject_of = c:CHI }
 	}
 	immediate = {
 		set_variable = eafp_mgl_restoration_started
-		trigger_event = { id = eafp_mgl.100 popup = yes }
+		# History creates the character; do not spawn it here before character history loads.
+		random_scope_character = {
+			limit = { has_template = eafp_mgl_fifth_jebtsundamba_character_template }
+			owner = { set_variable = { name = eafp_mgl_jebtsundamba_var value = PREV } }
+		}
+	}
+	on_weekly_pulse = {
+		effect = { eafp_mgl_update_jebtsundamba = yes }
+	}
+	on_monthly_pulse = {
+		effect = {
+			if = {
+				limit = {
+					game_date >= 1911.1.1
+					NOT = { has_variable = eafp_mgl_independence_conference_started }
+				}
+				set_variable = eafp_mgl_independence_conference_started
+				trigger_event = { id = eafp_mgl.100 popup = yes }
+			}
+		}
 	}
 
 	complete = { is_subject = no }
 	on_complete = {
 		set_variable = eafp_mgl_restoration_complete
+		eafp_mgl_enthrone_current_jebtsundamba = yes
 		trigger_event = { id = eafp_mgl.102 popup = yes }
 		if = { limit = { exists = c:TIB } trigger_event = { id = eafp_mgl.200 days = 60 popup = yes } }
 		trigger_event = { id = eafp_mgl.210 days = 90 popup = yes }
-		add_journal_entry = { type = je_eafp_mgl_bogd_khanate }
+		if = {
+			limit = { has_variable = eafp_mgl_bogd_enthroned }
+			add_journal_entry = { type = je_eafp_mgl_bogd_khanate }
+		}
 	}
 }
 
@@ -290,88 +318,5 @@ je_eafp_mgl_develop_the_united_mongol_lands = {
 	on_complete = {
 		add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
 		trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
-	}
-}
-
-je_eafp_mgl_kiakhta_settlement = {
-	icon = "gfx/interface/icons/event_icons/event_trade.dds"
-	group = je_group_historical_content
-	weight = 220
-	transferable = no
-	is_shown_when_inactive = { c:MGL ?= ROOT }
-	possible = {
-		c:MGL ?= ROOT
-		is_country_alive = yes
-		game_date >= 1915.1.1
-		is_subject = no
-		exists = c:RUS
-		exists = c:CHI
-		NOT = { has_variable = eafp_mgl_kiakhta_started }
-	}
-	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_kiakhta_resolved_tt
-			has_variable = eafp_mgl_kiakhta_resolved
-		}
-	}
-	immediate = {
-		set_variable = eafp_mgl_kiakhta_started
-		trigger_event = { id = eafp_mgl.600 days = 7 popup = yes }
-	}
-}
-
-je_eafp_mgl_autonomy_in_peril = {
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-	group = je_group_historical_content
-	weight = 220
-	transferable = no
-	is_shown_when_inactive = { c:MGL ?= ROOT }
-	possible = {
-		c:MGL ?= ROOT
-		is_country_alive = yes
-		game_date >= 1919.1.1
-		exists = c:CHI
-		c:CHI = { army_power_projection > root.army_power_projection }
-		OR = {
-			NOT = { exists = c:RUS }
-			c:RUS = { is_at_war = yes }
-			c:RUS = { is_revolutionary = yes }
-		}
-		NOT = { has_variable = eafp_mgl_autonomy_crisis_started }
-	}
-	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_autonomy_crisis_resolved_tt
-			has_variable = eafp_mgl_autonomy_crisis_resolved
-		}
-	}
-	immediate = {
-		set_variable = eafp_mgl_autonomy_crisis_started
-		trigger_event = { id = eafp_mgl.610 days = 7 popup = yes }
-	}
-}
-
-je_eafp_mgl_people_revolution = {
-	icon = "gfx/interface/icons/event_icons/event_protest.dds"
-	group = je_group_historical_content
-	weight = 220
-	transferable = no
-	is_shown_when_inactive = { c:MGL ?= ROOT }
-	possible = {
-		c:MGL ?= ROOT
-		is_country_alive = yes
-		game_date >= 1920.1.1
-		has_variable = eafp_mgl_revolutionary_network_ready
-		NOT = { has_variable = eafp_mgl_people_revolution_started }
-	}
-	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_people_revolution_complete_tt
-			has_variable = eafp_mgl_people_revolution_complete
-		}
-	}
-	immediate = {
-		set_variable = eafp_mgl_people_revolution_started
-		trigger_event = { id = eafp_mgl.620 days = 7 popup = yes }
 	}
 }
