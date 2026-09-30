@@ -45,15 +45,23 @@ eafp_mgl_spawn_independence_cabinet = {
 	if = { limit = { NOT = { has_variable = eafp_mgl_magsarjav_spawned } } create_character = { template = eafp_mgl_magsarjav_character_template } set_variable = eafp_mgl_magsarjav_spawned }
 }
 
+# Character scope. Clear the old combined protection, then restore immortality
+# alone so the officeholder is available for normal character interactions.
+eafp_mgl_clear_legacy_busy_protection = {
+	set_character_busy_and_immortal = no
+	set_character_immortal = yes
+	set_variable = eafp_mgl_busy_protection_cleared
+}
+
 # Character scope. Like Japan's emperor_var, keep one country-owned reference
 # for the journal portrait, the religious office and the eventual head of state.
 eafp_mgl_register_jebtsundamba = {
-	set_character_busy_and_immortal = yes
+	eafp_mgl_clear_legacy_busy_protection = yes
 	add_character_role = character_role_eafp_jebtsundamba
 	owner = { set_variable = { name = eafp_mgl_jebtsundamba_var value = PREV } }
 	if = {
 		limit = { owner = { has_variable = eafp_mgl_bogd_enthroned } }
-		set_character_as_ruler = yes
+		owner = { eafp_mgl_install_bogd_ruler = yes }
 	}
 	else = { set_as_interest_group_leader = yes }
 }
@@ -65,15 +73,25 @@ eafp_mgl_select_jebtsundamba = {
 		limit = {
 			OR = {
 				NOT = { exists = var:eafp_mgl_jebtsundamba_var }
+				var:eafp_mgl_jebtsundamba_var ?= { is_character_alive = no }
 				var:eafp_mgl_jebtsundamba_var ?= { NOT = { has_template = $TEMPLATE$ } }
+			}
+			OR = {
+				any_scope_character = { has_template = $TEMPLATE$ is_character_alive = yes }
+				NOT = { is_template_used = $TEMPLATE$ }
 			}
 		}
 		clear_saved_scope = eafp_mgl_previous_jebtsundamba
-		var:eafp_mgl_jebtsundamba_var ?= { save_scope_as = eafp_mgl_previous_jebtsundamba }
+		var:eafp_mgl_jebtsundamba_var ?= {
+			if = {
+				limit = { is_character_alive = yes }
+				save_scope_as = eafp_mgl_previous_jebtsundamba
+			}
+		}
 		if = {
-			limit = { any_scope_character = { has_template = $TEMPLATE$ } }
+			limit = { any_scope_character = { has_template = $TEMPLATE$ is_character_alive = yes } }
 			random_scope_character = {
-				limit = { has_template = $TEMPLATE$ }
+				limit = { has_template = $TEMPLATE$ is_character_alive = yes }
 				eafp_mgl_register_jebtsundamba = yes
 			}
 		}
@@ -82,6 +100,13 @@ eafp_mgl_select_jebtsundamba = {
 				template = $TEMPLATE$
 				on_created = { eafp_mgl_register_jebtsundamba = yes }
 			}
+		}
+		# Like japan_monarchy events, display the successor already installed above.
+		# Initial history and recovery without a predecessor do not announce a succession.
+		if = {
+			limit = { exists = scope:eafp_mgl_previous_jebtsundamba }
+			var:eafp_mgl_jebtsundamba_var = { save_scope_as = eafp_mgl_successor }
+			trigger_event = { id = eafp_mgl.104 popup = yes }
 		}
 		scope:eafp_mgl_previous_jebtsundamba ?= {
 			set_character_busy_and_immortal = no
@@ -135,6 +160,17 @@ eafp_mgl_update_jebtsundamba = {
 	else = {
 		eafp_mgl_select_jebtsundamba = { TEMPLATE = eafp_mgl_fifth_jebtsundamba_character_template }
 	}
+	# Migrate an existing save once per officeholder. Do not clear busy states
+	# subsequently assigned by other gameplay on every weekly/monthly pulse.
+	var:eafp_mgl_jebtsundamba_var ?= {
+		if = {
+			limit = {
+				is_character_alive = yes
+				NOT = { has_variable = eafp_mgl_busy_protection_cleared }
+			}
+			eafp_mgl_clear_legacy_busy_protection = yes
+		}
+	}
 	if = {
 		limit = {
 			NOT = { has_variable = eafp_mgl_bogd_enthroned }
@@ -144,18 +180,47 @@ eafp_mgl_update_jebtsundamba = {
 	}
 }
 
-# Called by the enthronement event's immediate; its option only shows the tooltip.
-eafp_mgl_enthrone_current_jebtsundamba = {
-	eafp_mgl_update_jebtsundamba = yes
+# Country scope. Mirror country_restore_japanese_emperor's removal of the old
+# regime's heir and regency before appointing the existing religious officeholder.
+# A child Jebtsundamba can then enter his own vanilla regency.
+eafp_mgl_install_bogd_ruler = {
+	set_variable = no_heirs
 	if = {
-		limit = { exists = var:eafp_mgl_jebtsundamba_var }
-		set_variable = eafp_mgl_bogd_enthroned
-		set_variable = no_heirs
-		if = {
-			limit = { NOR = { has_law_or_variant = law_type:law_monarchy has_law_or_variant = law_type:law_theocracy } }
-			activate_law = law_type:law_monarchy
+		limit = { has_gov_regency = yes }
+		heir ?= { remove_character_role = character_role_heir }
+		remove_regency_modifier = yes
+	}
+	else = { heir ?= { disinherit_character = yes } }
+	ig:ig_devout ?= { add_ruling_interest_group = yes }
+	var:eafp_mgl_jebtsundamba_var = { set_character_as_ruler = yes }
+}
+
+# Called by the enthronement event's immediate; its option only shows the result.
+eafp_mgl_enthrone_current_jebtsundamba = {
+	if = {
+		limit = {
+			c:MGL ?= this
+			is_subject = no
+			game_date < 1924.5.20
+			NOT = { has_variable = eafp_mgl_bogd_enthroned }
 		}
-		heir ?= { disinherit_character = yes }
-		var:eafp_mgl_jebtsundamba_var = { set_character_as_ruler = yes }
+		eafp_mgl_update_jebtsundamba = yes
+		if = {
+			limit = {
+				exists = var:eafp_mgl_jebtsundamba_var
+				var:eafp_mgl_jebtsundamba_var = { is_character_alive = yes }
+			}
+			set_variable = eafp_mgl_bogd_enthroned
+			set_variable = no_heirs
+			if = {
+				limit = { has_law = law_type:law_eafp_military_headquarters }
+				activate_law = law_type:law_autocracy
+			}
+			if = {
+				limit = { NOR = { has_law_or_variant = law_type:law_monarchy has_law_or_variant = law_type:law_theocracy } }
+				activate_law = law_type:law_monarchy
+			}
+			eafp_mgl_install_bogd_ruler = yes
+		}
 	}
 }

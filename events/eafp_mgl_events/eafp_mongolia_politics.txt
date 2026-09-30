@@ -1,4 +1,4 @@
-namespace = eafp_mgl
+﻿namespace = eafp_mgl
 
 eafp_mgl.100 = {
 	dlc = dlc_eafp
@@ -34,12 +34,58 @@ eafp_mgl.103 = {
 	event_image = { video = "southamerica_aristocrats" }
 	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
 	icon = "gfx/interface/icons/event_icons/event_default.dds"
-	trigger = { game_date < 1924.5.20 }
-	immediate = { eafp_mgl_enthrone_current_jebtsundamba = yes }
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:eafp_mgl_bogd_ruler
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+	trigger = {
+		c:MGL ?= this
+		is_subject = no
+		game_date < 1924.5.20
+		NOT = { has_variable = eafp_mgl_bogd_enthroned }
+	}
+	immediate = {
+		eafp_mgl_enthrone_current_jebtsundamba = yes
+		var:eafp_mgl_jebtsundamba_var ?= { save_scope_as = eafp_mgl_bogd_ruler }
+	}
+	cancellation_trigger = { NOT = { exists = scope:eafp_mgl_bogd_ruler } }
 	option = {
 		name = eafp_mgl.103.a
 		default_option = yes
-		show_as_tooltip = { eafp_mgl_enthrone_current_jebtsundamba = yes }
+		custom_tooltip = eafp_mgl_bogd_enthroned_tt
+	}
+}
+
+# The character reference, religious office and (after independence) crown have
+# already passed to this character, just as in Japan's imperial accession events.
+eafp_mgl.104 = {
+	dlc = dlc_eafp
+	type = country_event
+	placement = root
+	title = eafp_mgl.104.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { has_variable = eafp_mgl_bogd_enthroned }
+				desc = eafp_mgl.104.d_bogd
+			}
+			triggered_desc = {
+				trigger = { always = yes }
+				desc = eafp_mgl.104.d
+			}
+		}
+	}
+	flavor = eafp_mgl.104.f
+	duration = 3
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:eafp_mgl_successor
+	icon = "gfx/interface/icons/event_icons/event_default.dds"
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+	cancellation_trigger = { NOT = { exists = scope:eafp_mgl_successor } }
+	option = {
+		name = eafp_mgl.104.a
+		default_option = yes
+		custom_tooltip = eafp_mgl_jebtsundamba_succeeded_tt
 	}
 }
 

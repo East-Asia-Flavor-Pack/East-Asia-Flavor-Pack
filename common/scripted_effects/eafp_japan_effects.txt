@@ -1469,105 +1469,81 @@ weekly_pulse_bakufu_kaikaku_progress_bar_faction = {
 		name = nankiha_influence_var_monthly_add
 		value = 0
 	}
-	# 인물에 따른 파벌 변수 변화
-	set_variable = {
-		name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character
-		value = 0
-	}
-	set_variable = {
-		name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character
-		value = 0
-	}
-	set_variable = {
-		name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_nankiha_character
-		value = 0
-	}
-	set_variable = {
-		name = bakufu_kaikaku_progress_bar_nankiha_from_hitotsubashiha_character
-		value = 0
-	}
+	# 인물 명망의 합계로 소속 파벌의 영향력을 계산한다.
+	set_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character value = 0 }
+	set_variable = { name = bakufu_kaikaku_hitotsubashiha_approval_from_character_loyalty value = 0 }
+	set_local_variable = { name = eafp_hitotsubashiha_character_count value = 0 }
+	set_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character value = 0 }
+	set_variable = { name = bakufu_kaikaku_nankiha_approval_from_character_loyalty value = 0 }
+	set_local_variable = { name = eafp_nankiha_character_count value = 0 }
 	every_scope_character = {
+		limit = { is_character_alive = yes }
 		if = {
-			limit = {
-				is_hitotsubashiha = yes
-			}
-			if = {
-				limit = {
-					popularity >= -10
+			limit = { is_hitotsubashiha = yes }
+			owner = {
+				change_variable = {
+					name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character
+					add = PREV.prominence
 				}
-				owner = {
-					change_variable = {
-						name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character
-						add = {
-							value = PREV.popularity
-							add = 10
-						}
-					}
+				change_variable = {
+					name = bakufu_kaikaku_hitotsubashiha_approval_from_character_loyalty
+					add = PREV.loyalty
 				}
-			}
-			else = {
-				owner = {
-					change_variable = {
-						name = bakufu_kaikaku_progress_bar_nankiha_from_hitotsubashiha_character
-						subtract = {
-							value = PREV.popularity
-							add = 10
-						}
-					}
-				}
+				change_local_variable = { name = eafp_hitotsubashiha_character_count add = 1 }
 			}
 		}
 		else_if = {
-			limit = {
-				is_nankiha = yes
-			}
-			if = {
-				limit = {
-					popularity >= -10
+			limit = { is_nankiha = yes }
+			owner = {
+				change_variable = {
+					name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character
+					add = PREV.prominence
 				}
-				owner = {
-					change_variable = {
-						name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character
-						add = {
-							value = PREV.popularity
-							add = 10
-						}
-					}
+				change_variable = {
+					name = bakufu_kaikaku_nankiha_approval_from_character_loyalty
+					add = PREV.loyalty
 				}
-			}
-			else = {
-				owner = {
-					change_variable = {
-						name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_nankiha_character
-						subtract = {
-							value = PREV.popularity
-							add = 10
-						}
-					}
-				}
+				change_local_variable = { name = eafp_nankiha_character_count add = 1 }
 			}
 		}
 	}
-	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character multiply = 0.0025 } # 수치조정 TODO
-	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character multiply = 0.0025 } # 수치조정 TODO
-	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_nankiha_character multiply = 0.0025 } # 수치조정 TODO
-	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_hitotsubashiha_character multiply = 0.0025 } # 수치조정 TODO
+	# 평균 충성도 50은 중립. 0~100에서 지지도 월간 -1~+1, 인물이 없으면 0.
+	change_variable = { name = bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character multiply = 0.0025 }
 	change_variable = {
 		name = hitotsubashiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_hitotsubashiha_character
 	}
+	if = {
+		limit = { local_var:eafp_hitotsubashiha_character_count > 0 }
+		set_variable = {
+			name = bakufu_kaikaku_hitotsubashiha_approval_from_character_loyalty
+			value = {
+				value = var:bakufu_kaikaku_hitotsubashiha_approval_from_character_loyalty
+				divide = local_var:eafp_hitotsubashiha_character_count
+				subtract = 50
+				divide = 50
+			}
+		}
+	}
+	remove_local_variable = eafp_hitotsubashiha_character_count
+	change_variable = { name = bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character multiply = 0.0025 }
 	change_variable = {
 		name = nankiha_influence_var_monthly_add
 		add = var:bakufu_kaikaku_progress_bar_nankiha_from_nankiha_character
 	}
-	change_variable = {
-		name = hitotsubashiha_influence_var_monthly_add
-		add = var:bakufu_kaikaku_progress_bar_hitotsubashiha_from_nankiha_character
+	if = {
+		limit = { local_var:eafp_nankiha_character_count > 0 }
+		set_variable = {
+			name = bakufu_kaikaku_nankiha_approval_from_character_loyalty
+			value = {
+				value = var:bakufu_kaikaku_nankiha_approval_from_character_loyalty
+				divide = local_var:eafp_nankiha_character_count
+				subtract = 50
+				divide = 50
+			}
+		}
 	}
-	change_variable = {
-		name = nankiha_influence_var_monthly_add
-		add = var:bakufu_kaikaku_progress_bar_nankiha_from_hitotsubashiha_character
-	}
+	remove_local_variable = eafp_nankiha_character_count
 
 	# 이해집단
 	set_variable = {
