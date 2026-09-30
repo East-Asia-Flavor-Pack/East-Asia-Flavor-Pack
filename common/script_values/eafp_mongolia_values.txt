@@ -74,17 +74,6 @@ eafp_mgl_heartland_light_industry_levels = {
 	}
 }
 
-# Current GDP of the states owned by this country in the Mongol heartland.
-# Used against the journal's fixed opening-day target, following the vanilla
-# Grunderzeit pattern of storing a baseline and comparing it to a live total.
-eafp_mgl_heartland_gdp = {
-	value = 0
-	every_scope_state = {
-		limit = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
-		add = this.gdp
-	}
-}
-
 eafp_mgl_united_state_count = {
 	value = 0
 	every_country = {
@@ -96,146 +85,12 @@ eafp_mgl_united_state_count = {
 	}
 }
 
-eafp_mgl_united_stable_state_count = {
-	value = 0
-	every_country = {
-		limit = { is_eafp_mgl_united_industry_partner = yes }
-		every_scope_state = {
-			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area market_access >= 0.85 devastation < 0.1 turmoil < 0.15 }
-			add = 1
-		}
-	}
-}
-
-eafp_mgl_united_sustainable_state_count = {
-	value = 0
-	every_country = {
-		limit = { is_eafp_mgl_united_industry_partner = yes }
-		every_scope_state = {
-			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area market_access >= 0.9 average_sol >= 10 devastation < 0.1 turmoil < 0.15 }
-			add = 1
-		}
-	}
-}
-
-eafp_mgl_united_admin_state_count = {
-	value = 0
-	every_country = {
-		limit = { OR = { c:MGL ?= this top_overlord = c:MGL } }
-		every_scope_state = {
-			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area }
-			add = 1
-		}
-	}
-}
-
-eafp_mgl_united_admin_ready_state_count = {
-	value = 0
-	every_country = {
-		limit = { OR = { c:MGL ?= this top_overlord = c:MGL } }
-		every_scope_state = {
-			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area tax_capacity >= tax_capacity_usage }
-			add = 1
-		}
-	}
-}
-
-eafp_mgl_united_coal_levels = {
-	value = 0
-	every_country = { limit = { is_eafp_mgl_united_industry_partner = yes } every_scope_building = { limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } is_building_type = building_coal_mine } add = this.level } }
-}
-
-eafp_mgl_united_iron_levels = {
-	value = 0
-	every_country = { limit = { is_eafp_mgl_united_industry_partner = yes } every_scope_building = { limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } is_building_type = building_iron_mine } add = this.level } }
-}
-
-eafp_mgl_united_lead_levels = {
-	value = 0
-	every_country = { limit = { is_eafp_mgl_united_industry_partner = yes } every_scope_building = { limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } is_building_type = building_lead_mine } add = this.level } }
-}
-
-eafp_mgl_united_sulfur_levels = {
-	value = 0
-	every_country = { limit = { is_eafp_mgl_united_industry_partner = yes } every_scope_building = { limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } is_building_type = building_sulfur_mine } add = this.level } }
-}
-
-eafp_mgl_united_logging_levels = {
-	value = 0
-	every_country = { limit = { is_eafp_mgl_united_industry_partner = yes } every_scope_building = { limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } is_building_type = building_logging_camp } add = this.level } }
-}
-
-eafp_mgl_united_raw_material_levels = {
-	value = eafp_mgl_united_coal_levels
-	add = eafp_mgl_united_iron_levels
-	add = eafp_mgl_united_lead_levels
-	add = eafp_mgl_united_sulfur_levels
-	add = eafp_mgl_united_logging_levels
-}
-
-eafp_mgl_united_raw_material_types = {
-	value = 0
-	if = { limit = { eafp_mgl_united_coal_levels >= 1 } add = 1 }
-	if = { limit = { eafp_mgl_united_iron_levels >= 1 } add = 1 }
-	if = { limit = { eafp_mgl_united_lead_levels >= 1 } add = 1 }
-	if = { limit = { eafp_mgl_united_sulfur_levels >= 1 } add = 1 }
-	if = { limit = { eafp_mgl_united_logging_levels >= 1 } add = 1 }
-}
-
-eafp_mgl_united_transport_power_levels = {
-	value = 0
-	every_country = {
-		limit = { is_eafp_mgl_united_industry_partner = yes }
-		every_scope_building = {
-			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_construction_sector is_building_type = building_railway is_building_type = building_power_plant } }
-			add = this.level
-		}
-	}
-}
-
-eafp_mgl_united_manufacturing_levels = {
-	value = 0
-	every_country = {
-		limit = { is_eafp_mgl_united_industry_partner = yes }
-		every_scope_building = {
-			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_tooling_workshop is_building_type = building_food_industry is_building_type = building_textile_mill } }
-			add = this.level
-		}
-	}
-}
-
-eafp_mgl_united_manufacturing_state_count = {
-	value = 0
-	every_country = {
-		limit = { is_eafp_mgl_united_industry_partner = yes }
-		every_scope_state = {
-			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area any_scope_building = { OR = { is_building_type = building_tooling_workshop is_building_type = building_food_industry is_building_type = building_textile_mill } level >= 1 } }
-			add = 1
-		}
-	}
-}
-
-eafp_mgl_united_stable_state_share = {
-	value = eafp_mgl_united_stable_state_count
-	if = { limit = { eafp_mgl_united_state_count > 0 } divide = eafp_mgl_united_state_count }
-}
-
-eafp_mgl_united_sustainable_state_share = {
-	value = eafp_mgl_united_sustainable_state_count
-	if = { limit = { eafp_mgl_united_state_count > 0 } divide = eafp_mgl_united_state_count }
-}
-
-eafp_mgl_united_admin_ready_state_share = {
-	value = eafp_mgl_united_admin_ready_state_count
-	if = { limit = { eafp_mgl_united_admin_state_count > 0 } divide = eafp_mgl_united_admin_state_count }
-}
-
 eafp_mgl_united_raw_building_count = {
 	value = 0
 	every_country = {
 		limit = { is_eafp_mgl_united_industry_partner = yes }
 		every_scope_building = {
-			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_lead_mine is_building_type = building_sulfur_mine is_building_type = building_logging_camp } }
+			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_logging_camp } }
 			add = 1
 		}
 	}
@@ -246,7 +101,7 @@ eafp_mgl_united_healthy_raw_building_count = {
 	every_country = {
 		limit = { is_eafp_mgl_united_industry_partner = yes }
 		every_scope_building = {
-			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_lead_mine is_building_type = building_sulfur_mine is_building_type = building_logging_camp } cash_reserves_ratio > 0.25 }
+			limit = { state = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area } OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_logging_camp } cash_reserves_ratio > 0.25 }
 			add = 1
 		}
 	}
@@ -282,4 +137,17 @@ eafp_mgl_united_healthy_industry_building_count = {
 eafp_mgl_united_healthy_industry_building_share = {
 	value = eafp_mgl_united_healthy_industry_building_count
 	if = { limit = { eafp_mgl_united_industry_building_count > 0 } divide = eafp_mgl_united_industry_building_count }
+}
+
+# Live GDP of all currently participating states, compared with the journal's
+# fixed opening-day target. Ownership and treaty changes update this total.
+eafp_mgl_united_gdp = {
+	value = 0
+	every_country = {
+		limit = { is_eafp_mgl_united_industry_partner = yes }
+		every_scope_state = {
+			limit = { is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area }
+			add = this.gdp
+		}
+	}
 }

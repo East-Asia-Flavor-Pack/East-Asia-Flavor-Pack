@@ -28,47 +28,13 @@ je_eafp_mgl_restoration_of_the_state = {
 		effect = { eafp_mgl_update_jebtsundamba = yes }
 	}
 	on_monthly_pulse = {
-		effect = {
-			if = {
-				limit = {
-					game_date >= 1911.1.1
-					NOT = { has_variable = eafp_mgl_independence_conference_started }
-				}
-				set_variable = eafp_mgl_independence_conference_started
-				trigger_event = { id = eafp_mgl.100 popup = yes }
-			}
-		}
+		events = { eafp_mgl.100 }
 	}
 
 	complete = { is_subject = no }
 	on_complete = {
-		set_variable = eafp_mgl_restoration_complete
-		eafp_mgl_enthrone_current_jebtsundamba = yes
-		trigger_event = { id = eafp_mgl.102 popup = yes }
-		if = { limit = { exists = c:TIB } trigger_event = { id = eafp_mgl.200 days = 60 popup = yes } }
+		trigger_event = { id = eafp_mgl.103 popup = yes }
 		trigger_event = { id = eafp_mgl.210 days = 90 popup = yes }
-		if = {
-			limit = { has_variable = eafp_mgl_bogd_enthroned }
-			add_journal_entry = { type = je_eafp_mgl_bogd_khanate }
-		}
-	}
-}
-
-je_eafp_mgl_bogd_khanate = {
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
-	group = je_group_historical_content
-	should_be_pinned_by_default_uninvolved_or_context = yes
-	weight = 255
-	transferable = no
-
-	immediate = { trigger_event = { id = eafp_mgl.103 days = 7 popup = yes } }
-	complete = {
-		bureaucracy >= 0
-		custom_description = {
-			text = eafp_mgl_heartland_administration_levels_greater_or_equal
-			value = 3
-			eafp_mgl_heartland_administration_levels >= 3
-		}
 	}
 }
 
@@ -84,7 +50,6 @@ je_eafp_mgl_unite_the_mongols = {
 		c:MGL ?= ROOT
 		is_country_alive = yes
 		is_subject = no
-		has_variable = eafp_mgl_restoration_complete
 		NOT = { has_variable = eafp_mgl_unification_started }
 	}
 	immediate = {
@@ -184,11 +149,11 @@ je_eafp_mgl_echoes_of_chinggis = {
 	}
 }
 
-je_eafp_mgl_develop_the_heartland = {
+je_eafp_mgl_develop_the_united_mongol_lands = {
 	icon = "gfx/interface/icons/event_icons/event_industry.dds"
 	group = je_group_technology
 	should_be_pinned_by_default_uninvolved_or_context = yes
-	weight = 235
+	weight = 230
 	transferable = no
 
 	is_shown_when_inactive = {
@@ -197,24 +162,22 @@ je_eafp_mgl_develop_the_heartland = {
 	}
 
 	possible = {
-		any_scope_state = {
-			is_in_geographic_region = geographic_region_eafp_mgl_heartland
-			count >= 2
-		}
+		eafp_mgl_united_state_count >= 2
 	}
 
 	immediate = {
-		# Freeze the opening-day regional GDP target, as in the vanilla German
-		# economic journal, while the current regional GDP remains a live value.
+		# Freeze the opening-day target; current participating GDP remains live.
 		set_variable = {
-			name = eafp_mgl_heartland_gdp_goal
+			name = eafp_mgl_united_gdp_goal
 			value = {
-				value = eafp_mgl_heartland_gdp
+				value = eafp_mgl_united_gdp
 				multiply = 1.5
 			}
 		}
 		trigger_event = { id = eafp_mgl.500 days = 7 popup = yes }
+		trigger_event = { id = eafp_mgl.520 days = 7 popup = yes }
 	}
+
 	on_yearly_pulse = {
 		random_events = {
 			40 = 0
@@ -232,75 +195,6 @@ je_eafp_mgl_develop_the_heartland = {
 			10 = eafp_mgl.512
 			10 = eafp_mgl.513
 			10 = eafp_mgl.514
-		}
-	}
-	complete = {
-		any_scope_state = {
-			is_in_geographic_region = geographic_region_eafp_mgl_heartland
-			count >= 2
-		}
-		custom_tooltip = {
-			text = eafp_mgl_heartland_gdp_growth_goal_tt
-			has_variable = eafp_mgl_heartland_gdp_goal
-			eafp_mgl_heartland_gdp >= var:eafp_mgl_heartland_gdp_goal
-		}
-		any_scope_building = {
-			filter = {
-				state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
-				OR = { is_building_type = building_coal_mine is_building_type = building_iron_mine is_building_type = building_logging_camp }
-			}
-			percent >= 0.75
-			cash_reserves_ratio > 0.25
-		}
-
-		NOT = { is_subject_type = subject_type_military_headquarters_china }
-		any_scope_building = {
-			filter = {
-				state = { is_in_geographic_region = geographic_region_eafp_mgl_heartland }
-				OR = {
-					is_building_type = building_tooling_workshop
-					is_building_type = building_power_plant
-					is_building_type = building_food_industry
-					is_building_type = building_textile_mill
-				}
-			}
-			percent >= 0.75
-			cash_reserves_ratio > 0.25
-		}
-	}
-	on_complete = {
-		remove_variable = eafp_mgl_heartland_gdp_goal
-		set_variable = eafp_mgl_industrial_combine_unlocked
-		add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
-		trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
-	}
-	on_invalid = { remove_variable = eafp_mgl_heartland_gdp_goal }
-}
-
-je_eafp_mgl_develop_the_united_mongol_lands = {
-	icon = "gfx/interface/icons/event_icons/event_industry.dds"
-	group = je_group_technology
-	should_be_pinned_by_default_uninvolved_or_context = yes
-	weight = 230
-	transferable = no
-
-	is_shown_when_inactive = {
-		c:MGL ?= ROOT
-		is_player = yes
-	}
-
-	possible = {
-		has_variable = eafp_mgl_unification_started
-		eafp_mgl_united_state_count >= 2
-	}
-
-	immediate = {
-		trigger_event = { id = eafp_mgl.520 days = 7 popup = yes }
-	}
-
-	on_yearly_pulse = {
-		random_events = {
-			70 = 0
 			10 = eafp_mgl.521
 			10 = eafp_mgl.522
 			10 = eafp_mgl.523
@@ -309,14 +203,31 @@ je_eafp_mgl_develop_the_united_mongol_lands = {
 		}
 	}
 	complete = {
-		custom_tooltip = { text = eafp_mgl_united_goal_market_tt eafp_mgl_united_market_complete = yes }
-		custom_tooltip = { text = eafp_mgl_united_goal_administration_tt eafp_mgl_united_administration_complete = yes }
-		custom_tooltip = { text = eafp_mgl_united_goal_resources_tt eafp_mgl_united_raw_materials_complete = yes }
-		custom_tooltip = { text = eafp_mgl_united_goal_industry_tt eafp_mgl_united_industry_complete = yes }
-		custom_tooltip = { text = eafp_mgl_united_goal_sustainable_tt eafp_mgl_united_sustainable_complete = yes }
+		eafp_mgl_united_state_count >= 2
+		custom_tooltip = {
+			text = eafp_mgl_united_gdp_growth_goal_tt
+			has_variable = eafp_mgl_united_gdp_goal
+			eafp_mgl_united_gdp >= var:eafp_mgl_united_gdp_goal
+		}
+		custom_tooltip = {
+			text = eafp_mgl_united_raw_reserves_goal_tt
+			eafp_mgl_united_raw_building_count > 0
+			eafp_mgl_united_healthy_raw_building_share >= 0.75
+		}
+		NOT = { is_subject_type = subject_type_military_headquarters_china }
+		custom_tooltip = {
+			text = eafp_mgl_united_industry_reserves_goal_tt
+			eafp_mgl_united_industry_building_count > 0
+			eafp_mgl_united_healthy_industry_building_share >= 0.75
+		}
 	}
 	on_complete = {
+		remove_variable = eafp_mgl_united_gdp_goal
+		set_variable = eafp_mgl_industrial_combine_unlocked
+		add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
+		trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
 		add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
 		trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
 	}
+	on_invalid = { remove_variable = eafp_mgl_united_gdp_goal }
 }
