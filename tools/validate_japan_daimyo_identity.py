@@ -94,18 +94,28 @@ def main():
     appointment = read(ROOT / 'common/scripted_effects/eafp_japan_effects.txt')
     assert 'var:daimyo_han_var ?= flag:hikone' in appointment
     assert 'var:daimyo_var ?= s:STATE_KYOTO' not in clean(appointment)
-    event_files = ('events/eafp_jap_events/eafp_meiji_vanilla_events.txt',
-                   'events/eafp_jap_events/eafp_daimyo_vanilla_events.txt')
-    events = clean(''.join(read(ROOT / p) for p in event_files))
+    event_path = ROOT / 'events/000_eafp_japan_overrides.txt'
+    structural_check(event_path)
+    events = clean(read(event_path))
     assert events.count('var:daimyo_han_var ?= flag:hikone') == 2
     assert events.count('var:daimyo_han_var ?= flag:choshu') == 2
     assert events.count('var:daimyo_han_var ?= flag:matsumae') == 1
     assert 'var:daimyo_var ?= s:STATE_CHUGOKU' not in events
     assert 'var:daimyo_var ?= s:STATE_HOKKAIDO' not in events
 
+    # Events use plain IDs, with one mod definition per overridden event.
+    assert not re.search(r'^\s*REPLACE:', events, re.M)
+    event_keys = re.findall(r'^([\w]+\.\d+)\s*=', events, re.M)
+    event_definitions = {}
+    for path in (ROOT / 'events').rglob('*.txt'):
+        for key in re.findall(r'^(?:REPLACE:)?([\w]+\.\d+)\s*=', read(path), re.M):
+            event_definitions.setdefault(key, []).append(path)
+    for key in event_keys:
+        assert event_definitions[key] == [event_path], (key, event_definitions[key])
+
     # No competing definitions may override these new REPLACE blocks.
     for category in ('common/character_templates', 'common/scripted_effects',
-                     'common/customizable_localization', 'events'):
+                     'common/customizable_localization'):
         seen = {}
         for path in (ROOT / category).rglob('*.txt'):
             for key in re.findall(r'^REPLACE:([\w.]+)\s*=', read(path), re.M):
