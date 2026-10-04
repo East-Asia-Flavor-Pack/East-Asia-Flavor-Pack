@@ -471,15 +471,11 @@ documentation/
 
 ##### 7.3.16 `je_eafpjap2310`
 
-- **처리:** 원형 보존 재가동
-- **활성 키:** 기존 `je_eafpjap2310` 유지
-- 숫자형 ID를 포함한 별도 사임 요구 JE, 대상 인물 스코프와 기한을 유지한다. 현지화의 파벌 표기가 실제 원본 이벤트 호출과 일치하는지만 교정한다.
+- **처리:** 2026-10-05 삭제. 대응 사임 요구 이벤트와 월간 호출·전용 번역도 제거했다.
 
 ##### 7.3.17 `je_eafpjap2311`
 
-- **처리:** 원형 보존 재가동
-- **활성 키:** 기존 `je_eafpjap2311` 유지
-- `je_eafpjap2310`과 별개의 파벌 사임 요구 JE를 원형대로 유지한다. 대상 인물이 DLC 인물과 중복 생성되지 않도록 인물 스코프 획득부만 수정한다.
+- **처리:** 2026-10-05 삭제. 대응 사임 요구 이벤트와 월간 호출·전용 번역도 제거했다.
 
 ##### 7.3.18 `je_boshin_war_sabaku`
 
@@ -2935,16 +2931,77 @@ set_variable = { name = daimyo_han_var value = flag:hikone }
 
 ### 이념·이해집단·특성
 
-이름·생일·계승 순서는 역사 자료에 근거한다. 게임의 이념, 이해집단, trait 배정은 그 행적을 게임 규칙에 대응시킨 해석이며 역사 자료의 직접 분류가 아니다.
+2026-10-05 재검토: 추가된 10개 번의 역사 인물 32명의 이념을 검토했다. 후속 요청에 따라 중신 주도 번정의 정책도 배정 근거로 삼았다. 현재 템플릿과 생성 원본 JSON을 일치시켰으며, 인물별 판단과 출처를 JSON의 `ideology_rationale`, `ideology_sources`에도 기록한다.
 
-- 나베시마 나오마사·구로다 나가히로는 기술 도입과 번정 쇄신을 반영해 막부개혁가와 산업가를 배정했다.
-- 마쓰다이라 요시나가·야마우치 도요시게 등 막부 틀 안의 현실적 개혁을 지향한 인물에는 `ideology_bakufu_reformer`를 사용했다.
-- 미토가 출신 이케다 모치마사·요시노리는 미토학으로 배정했다.
-- 이후 근대화·유신에 참여한 후계자 일부는 개혁가로 배정했다. 행적이 불분명한 단기·어린 번주는 중도파를 중심으로 설정했다.
+배정은 사료에 적힌 행동과 재임기의 실제 번정 정책을 게임 이념의 법률 선호로 대응한 해석이다. 번주가 중신에게 정무를 맡긴 경우에는 그 중신·실무진이 시행한 정책을 번주의 게임 이념으로 대표시킨다. 직접 친정하지 않았다는 이유만으로 중도파를 부여하지 않는다. 당사자들의 자기 규정이 아니며, 정적 템플릿의 특성상 재임 중·후반기의 대표 정책도 반영한다. 1836년에 후대의 모든 정책을 이미 주장했다는 뜻은 아니다. 원문 문서의 공개 번각·발췌와 이를 분석한 대학·공공기관 자료를 우선했으며, 모든 고문서 원본을 직접 판독한 것은 아니다.
+
+- 서양 기술·개국·산업 진흥은 `ideology_modernizer_leader`, 신분·직업 제한 완화는 `ideology_reformer`로 구별한다.
+- `ideology_protectionist`는 번 주도 경제 진흥을 표현하는 근사치다. 관세 정책 전체가 사료로 입증되었다는 뜻은 아니다.
+- `ideology_jingoist_leader`는 해방·군비 확충을 표현한다. 이 이념에 묶인 식민지 선호까지 해당 인물의 실제 주장으로 간주하지 않는다.
+- `ideology_royalist`는 조정·군주 중심 정부를 지지한 행적에 대응한다. 게임의 왕당파 이념 자체에는 천황과 쇼군을 구별하는 기능이 없다. 배외주의가 확인되지 않은 존왕 인물에게 `ideology_shojoi`를 일괄 부여하지 않는다.
+- 정책 근거가 부족한 인물의 기존 배정은 유지하고 그 한계를 표에 적었다. 중도파 유지는 실제 중립 사상이 입증되었다는 뜻이 아니다.
+- EAFP 파벌 판정은 계속 에도 지위 질서에 대한 법률 선호를 따른다. 이념을 다양화해도 그 법률에 특별한 선호가 없는 왕당파·권위주의자·보호주의자 등은 게임의 파벌 판정에서 중도파가 될 수 있다. 역사 속 후계 지지 파벌과 게임 이념을 강제로 일치시키지 않는다.
+
+| 번 | 인물 | 적용 이념 | 처리 | 판단 근거와 확인 자료 |
+| --- | --- | --- | --- | --- |
+| 구마모토 | 호소카와 나리모리 | `ideology_authoritarian` | 변경 | 실학파의 결당을 경계하고 배제를 추진한 기록을 반영한다. 번주 권한과 정치적 통제를 중시하는 권위주의자로 해석한다. [구마모토대학 영청문고연구센터 연보 16호, 「横井小楠の人脈と思想形成過程」, 50–51쪽](https://eisei.kumamoto-u.ac.jp/docs/16%E5%8F%B7.pdf) |
+| 구마모토 | 호소카와 요시쿠니 | `ideology_traditionalist` | 유지 | 기존 전통주의 배정을 유지한다. 이번에 확인한 자료만으로 기존 배정을 다른 강한 이념으로 바꿀 근거는 충분하지 않다. [기존 인물 전기](https://ja.wikipedia.org/wiki/細川韶邦); 정책 재분류 근거 부족 |
+| 구마모토 | 호소카와 모리히사 | `ideology_modernizer_leader` | 변경 | 실학파 중심 개혁과 서양식 교육 도입을 반영한다. 일반적인 권리 확대보다 교육·기술의 근대화를 우선한다. [구마모토대학, 구마모토 양학교 개교 당시 서간 소개](https://www.kumamoto-u.ac.jp/daigakujouhou/kouhou/pressrelease/2021-file/release211019-1.pdf) |
+| 사가 | 나베시마 나오마사 | `ideology_bakufu_reformer` | 기존 템플릿 유지·JSON 동기화 | 현재 게임 템플릿의 막부개혁가 배정을 보존하고 생성 원본을 동기화한다. 기술·산업·번정 쇄신에 관한 기존 조사 자료는 유지하되, 그 행적만으로 현대화 추구자로 재분류하지 않는다. [사가성혼마루역사관, 막말·유신기 사가](https://saga-museum.jp/sagajou/about/ishin.html) |
+| 사가 | 나베시마 나오히로 | `ideology_royalist` | 변경 | 신정부의 진무 명령을 받고 관군 측에 참여한 행적을 군주 중심 국가에 대한 지지로 해석한다. [사가대학 도서관보 42호, 소장 「行政官達（戊辰軍功賞典につき）」 해설](https://www.lib.saga-u.ac.jp/assets/pdf/about/public/hikarino/hikarino42.pdf) |
+| 후쿠오카 | 쿠로다 나가히로 | `ideology_bakufu_reformer` | 기존 템플릿 유지·JSON 동기화 | 현재 게임 템플릿의 막부개혁가 배정을 보존하고 생성 원본을 동기화한다. 기술·산업·번정 쇄신에 관한 기존 조사 자료는 유지하되, 그 행적만으로 현대화 추구자로 재분류하지 않는다. [후쿠오카시박물관, 구로다 나가히로 전시](https://museum.city.fukuoka.jp/sp/exhibition/508/) |
+| 후쿠오카 | 쿠로다 나가토모 | `ideology_bakufu_reformer` | 변경 | 공무합체 노선에서 번주 대리로 직접 활동한 기록을 반영한다. 조정·막부·유력 번의 협력을 통한 체제 조정을 막부개혁가로 해석하며, 양부의 서양 기술 선호를 그대로 물려주지는 않는다. [후쿠오카시박물관, 「福岡藩主の絵画と書跡・文芸」](https://museum.city.fukuoka.jp/archives/leaflet/479/index02.html) |
+| 오카야마 | 이케다 나리토시 | `ideology_moderate` | 유지 | 재임기 중신이 집행한 구체적 정책 노선의 근거가 충분하지 않아 중도파를 유지한다. 후임 요시마사 때의 존양·긴축 노선을 소급하지 않는다. [기존 인물 전기](https://ja.wikipedia.org/wiki/池田斉敏); 정책 재분류 근거 부족 |
+| 오카야마 | 이케다 요시마사 | `ideology_shojoi` | 변경 | 페리 내항 후 개국에 부정적인 견해를 제시하고 막부의 하문에 존양 방침으로 답한 기록을 반영한다. [오카야마대학·오카야마시티뮤지엄, 「幕末維新期の池田家」 도록, 1·19쪽](https://www.lib.okayama-u.ac.jp/ikeda/pdf/r7.pdf) |
+| 오카야마 | 이케다 모치마사 | `ideology_mitogaku` | 유지 | 미토가 출신이며 존양론의 고조 속에서 입양·취임하고 국사 주선에 참여했다. 기존 미토학 배정을 유지한다. [오카야마대학·오카야마시티뮤지엄, 「幕末維新期の池田家」 도록, 1·19쪽](https://www.lib.okayama-u.ac.jp/ikeda/pdf/r7.pdf) |
+| 오카야마 | 이케다 아키마사 | `ideology_royalist` | 변경 | 요시노부 추토 칙명 후 모치마사를 대신해 계승한 경위와 관군 참여를 반영한다. 이를 자유주의 개혁 전반으로 확대하지 않는다. [오카야마대학·오카야마시티뮤지엄, 「幕末維新期の池田家」 도록, 1·19쪽](https://www.lib.okayama-u.ac.jp/ikeda/pdf/r7.pdf) |
+| 히로시마 | 아사노 나리타카 | `ideology_protectionist` | 중신 정책 반영 | 세키 구란도·이마나카 스케치카가 실권을 가진 번정의 목면·모시 전매, 육회법 등 상업·금융 통제 정책을 반영한다. 중신 주도의 번정 노선을 대표하는 보호주의 배정이며, 자유방임이나 개인의 근대적 관세론을 뜻하지 않는다. [히로시마성, 역대 성주와 나리타카 재임기의 중신 정치](https://hiroshimacastle.jp/history/lord-of-castle) |
+| 히로시마 | 아사노 요시테루 | `ideology_moderate` | 유지 | 개혁파와의 교류와 취임에 대한 기대는 확인되지만, 짧은 재임 중 어느 중신 집단이 어떤 개혁을 집행했는지는 충분히 확인되지 않았다. 나가미치 때의 쓰지 쇼소 등용과 실제 개혁을 소급하지 않아 중도파를 유지한다. [히로시마시립도서관, 아사노가 역대 당주 전시 패널](https://www.library.city.hiroshima.jp/news/docs/2019asanoshi_panel_rekidai.pdf) |
+| 히로시마 | 아사노 나가미치 | `ideology_bakufu_reformer` | 기존 템플릿 유지·JSON 동기화 | 현재 게임 템플릿의 막부개혁가 배정을 보존하고 생성 원본을 동기화한다. 기술·산업·번정 쇄신에 관한 기존 조사 자료는 유지하되, 그 행적만으로 현대화 추구자로 재분류하지 않는다. [히로시마시립도서관, 아사노가 역대 당주 전시 패널](https://www.library.city.hiroshima.jp/news/docs/2019asanoshi_panel_rekidai.pdf) |
+| 히로시마 | 아사노 나가코토 | `ideology_royalist` | 변경 | 폐번치현 당시 유시에서 조정 명령 준수를 요구한 기록을 반영한다. 군주 중심 중앙정부 수용을 나타내는 왕당파로 배정한다. [히로시마성, 아사노 나가코토의 폐번치현 당시 「御諭書」 해설·번각](https://www.mogurin.or.jp/museum/hwm/details/tenzi06/1/t06_1_g3_dai02.html) |
+| 돗토리 | 이케다 나리미치 | `ideology_protectionist` | 중신 정책 반영 | 덴포기에도 확인되는 번의 철 생산·유통 통제와 산원체역을 통한 집하·판매 운영을 반영한다. 특정 가로 개인의 사상보다 재임기 번정 실무의 경제 노선을 대표하는 보호주의 배정이다. [일본국제문제연구소 조사보고, 근도가 문서·융통회소 기록을 인용한 철 유통 해설](https://www.jiia.or.jp/jic/2022/01/1.pdf) |
+| 돗토리 | 이케다 요시유키 | `ideology_moderate` | 유지 | 재임기 중신의 구체적 집행 노선을 충분히 확인하지 못해 중도파를 유지한다. 어린 번주라는 이유만으로 배정을 보류한 것은 아니며, 후대 요시노리 시기의 미토학·군제 개혁을 소급하지 않는다. [돗토리현, 이케다 요시유키](https://www.pref.tottori.lg.jp/82539.htm) |
+| 돗토리 | 이케다 요시타카 | `ideology_moderate` | 유지 | 1848–1850년의 실권 중신과 집행 정책을 충분히 특정하지 못해 중도파를 유지한다. 앞선 덴포기 자료만으로 같은 정책의 계속 시행을 단정하지 않는다. [기존 인물 전기](https://ja.wikipedia.org/wiki/池田慶栄); 정책 재분류 근거 부족 |
+| 돗토리 | 이케다 요시노리 | `ideology_mitogaku` | 유지 | 나리아키에게 직접 배웠고 미토의 덴포 개혁을 본보기로 삼은 번정 개혁이 확인되어 미토학을 유지한다. [돗토리현, 이케다 요시노리](https://www.pref.tottori.lg.jp/82541.htm) |
+| 후쿠이 | 마츠다이라 나리사와 | `ideology_traditionalist` | 중신 정책 반영 | 선대부터 실권을 가졌으며 1840년에야 실각한 마쓰다이라 슈메 등 수구파 중신의 번정을 반영한다. 나리사와 재임기의 구체제 유지 노선을 전통주의로 해석하고, 요시나가 때 오카베·아마카타·나카네가 추진한 개혁은 소급하지 않는다. [후쿠이현사, 「改革の始動」](https://www.library-archives.pref.fukui.lg.jp/fukui/07/kenshi/T4/T4-6-01-01-01-02.htm) |
+| 후쿠이 | 마츠다이라 요시나가 | `ideology_modernizer_leader` | 변경 | 요코이 쇼난 등 개혁 인재 등용과 적극적 개국론으로의 전환을 반영한다. 도쿠가와가 옹호와 근대화 정책은 구분한다. [국립국회도서관, 마쓰다이라 요시나가](https://www.ndl.go.jp/portrait/datas/195) |
+| 후쿠이 | 마츠다이라 모치아키 | `ideology_reformer` | 변경 | 사족의 농공상 종사와 직업 제한 완화, 신분에 구애받지 않는 인재 등용을 건의한 점을 반영한다. 단순한 군사 기술 개량보다 사회제도 개혁에 가깝다. [후쿠이현사 통사편 5, 모치아키의 신분·직업 개혁 건의](https://www.library-archives.pref.fukui.lg.jp/fukui/07/kenshi/T5/T5-0a1-02-01-03-03.htm) |
+| 쓰 | 도도 다카유키 | `ideology_jingoist_leader` | 변경 | 해안 방비의 직접 점검, 포대·대포 정비를 반영해 군비 확충 성향을 배정한다. 정복전쟁·식민주의까지 사료로 확인했다는 뜻은 아니다. [미에현사, 「長官日記」 등 막말 해방 자료 해설](https://www.bunka.pref.mie.lg.jp/rekishi/kenshi/asp/shijyo/detail597.html) |
+| 쓰 | 도도 다카키요 | `ideology_moderate` | 유지 | 기념비에서 확인되는 번의 토지 매매 규정과 재임기 실무진의 구체적 정책 결정을 구분한다. 짧은 지번사 재임기의 집행 노선을 충분히 특정하지 못해 중도파를 유지한다. [욧카이치시 미에지구 마을만들기추진위원회, 도도 다카키요 기념비](https://mie-ru.org/history_and_culture/31-todotakakiyonohi/) |
+| 구보타 | 사타케 요시히로 | `ideology_protectionist` | 변경 | 양잠 등 번 주도의 산업 진흥을 반영해 보호주의자로 해석한다. 자유무역이나 자유방임을 지지했다는 의미는 아니다. [아키타시, 사타케가 역대 번주 해설](https://www.city.akita.akita.jp/city/pl/pb/koho/htm/20251003/100306.html) |
+| 구보타 | 사타케 요시치카 | `ideology_jingoist_leader` | 변경 | 외국 선박에 대비한 쓰치자키·아라야 포대 설치를 군비 확충 성향으로 해석한다. 어린 번주 개인의 사상보다 재임기 정책에 근거한 제한적인 배정이다. [아키타시, 사타케가 역대 번주 해설](https://www.city.akita.akita.jp/city/pl/pb/koho/htm/20251003/100306.html) |
+| 구보타 | 사타케 요시타카 | `ideology_royalist` | 변경 | 보신전쟁에서 신정부 측을 선택한 행적을 반영한다. 존왕과 배외적 쇄국 지지를 구별한다. [아키타시, 사타케가 역대 번주 해설](https://www.city.akita.akita.jp/city/pl/pb/koho/htm/20251003/100306.html) |
+| 토사 | 야마우치 도요스케 | `ideology_traditionalist` | 유지 | 기존 질서 아래 전매 통제를 강화했고, 후계자의 개혁 인사들이 기존 가신들의 반발과 그에게 한 호소로 실각한 점을 반영해 유지한다. [고치성역사박물관, 토사번 역대 번주](https://www.kochi-johaku.jp/column/3819/) |
+| 토사 | 야마우치 도요테루 | `ideology_protectionist` | 변경 | 절약·재정 쇄신과 신진 실무 관료 등용을 번 주도의 경제 개혁으로 해석한다. 구체적 관세율 주장까지 입증된 것은 아니다. [고치성역사박물관, 토사번 역대 번주](https://www.kochi-johaku.jp/column/3819/) |
+| 토사 | 야마우치 도요아쓰 | `ideology_moderate` | 유지 | 취임 12일 동안 실제로 집행된 중신 정책이나 전임 개혁 집단의 지속 여부를 충분히 확인하지 못해 중도파를 유지한다. 짧은 재임 자체를 이념 배정의 배제 기준으로 삼지는 않는다. [고치성역사박물관, 토사번 역대 번주](https://www.kochi-johaku.jp/column/3819/) |
+| 토사 | 야마우치 도요시게 | `ideology_bakufu_reformer` | 유지 | 재정·해방·교육 개혁과 공무합체, 대정봉환 및 도쿠가와가 옹호를 함께 반영해 막부개혁가를 유지한다. [고치성역사박물관, 토사번 역대 번주](https://www.kochi-johaku.jp/column/3819/) |
+| 토사 | 야마우치 도요노리 | `ideology_royalist` | 변경 | 관군 파병과 판적봉환 참여를 반영해 왕당파로 배정한다. 후일 사업·교육 활동만으로 재임기 모든 자유주의 법률 선호를 부여하지 않는다. [고치성역사박물관, 토사번 역대 번주](https://www.kochi-johaku.jp/column/3819/) |
+
+후속 배정 기준: 나리타카는 세키·이마나카의 전매·금융 정책, 나리사와는 마쓰다이라 슈메 등의 수구파 번정, 나리미치는 덴포기의 철 생산·유통 통제를 반영했다. 정책의 성공 여부와 이념 방향은 구별한다. 당시 반대파의 주장이나 후대의 개혁을 해당 재임기의 집행 정책으로 혼동하지 않는다.
+
+남은 중도파 6명은 나리토시·요시테루·요시유키·요시타카·다카키요·도요아쓰다. 개인의 직접 정책이 없다는 사실만으로 유지한 것이 아니라, 이번에 확인한 자료에서 해당 재임기 실권을 가진 중신 집단의 구체적 집행 노선을 충분히 확정하지 못한 경우다. 요시테루의 개혁파 교류·기대와 나가미치 때의 실제 개혁 착수도 구분한다. 재임이 짧다는 사실만으로 변경을 배제하지 않는다.
+
+나오마사·나가히로·나가미치는 기존 게임 템플릿의 `ideology_bakufu_reformer`를 보존하고 JSON을 일치시켰다. 재생성으로 이 세 인물의 기존 배정이 되돌아가지 않게 한다.
+
+이념 분포(현재 게임 템플릿·JSON 공통):
+
+| 이념 | 인원 |
+| --- | --- |
+| `ideology_authoritarian` | 1 |
+| `ideology_bakufu_reformer` | 5 |
+| `ideology_jingoist_leader` | 2 |
+| `ideology_mitogaku` | 2 |
+| `ideology_moderate` | 6 |
+| `ideology_modernizer_leader` | 2 |
+| `ideology_protectionist` | 4 |
+| `ideology_reformer` | 1 |
+| `ideology_royalist` | 5 |
+| `ideology_shojoi` | 1 |
+| `ideology_traditionalist` | 3 |
+
+이해집단과 기존 특성은 이번 이념 검토에서 변경하지 않았다.
+
 - 특성은 혁신적·꼼꼼함·신중함·정치적 수완 등을 1~2개 부여했다. 생성일에 만 16세 미만이면 바닐라 방식의 `trait_child` 조건도 적용한다.
-- 이 인물들은 실제 번주이므로 귀족·다이묘·magnate·politician으로 생성한다. 막부 관직만 가진 인물의 역할 설정에는 영향을 주지 않는다.
-
-정확한 인물별 게임 설정과 원전 URL은 `tools/data/japan_additional_daimyos.json`에 보관했다.
 
 ### 승계와 이벤트 연결
 
@@ -4750,7 +4807,7 @@ inverse VALUE = +X  →  direct VALUE = -X
 
 - `scratch/japan_stage4_runtime_qa/selected_fix_pass3_error.log`
 - `scratch/japan_stage4_runtime_qa/selected_fix_pass3_game.log`
-- `scratch/japan_stage4_runtime_qa/selected_fix_pass3_debug.log`
+- `scratch/japan_stage4_runtime_qa/selected_fix_pass3_debug.logorphan`
 
 검증을 위해 일시 변경한 `content_load.json`은 매 실행 후 백업 바이트와 동일하게 복원했고 Victoria 3 프로세스도 종료했다.
 
@@ -4794,7 +4851,7 @@ flowchart TD
     START["일본 시작 설정"]:::N
     B["[A] 막번체제<br/>je_bakuhantaisei"]:::A
     T["[M] 텐포 위기<br/>je_tenpo_crisis"]:::M
-    S["[V] 쇄국<br/>je_sakoku"]:::V
+    S["[M] 쇄국<br/>je_sakoku / 타불령 철회 버튼"]:::M
     R["[M] 명예로운 유신<br/>je_meiji_restoration"]:::M
     K["[A] 막부 개혁<br/>je_bakufu_kaikaku"]:::A
     KEND["[A] 네 분야 개혁 완료<br/>eafp_japan.2999 / 막번체제 관리 종료"]:::A
@@ -4877,6 +4934,8 @@ flowchart TD
 
 지역 저널을 주별로 따로 생성하지 않는다. 에조치를 포함한 각 주의 충성도·독립성은 막번체제 아래에서 관리하며, 한 주에 여러 번이 있어도 주 충성도를 다이묘 개인 충성도의 산술평균으로 바꾸지 않는다. 추가 10개 번의 다이묘도 공용 승계 경로를 사용한다. 번을 특정하는 사건은 `daimyo_han_var`로 대상을 구분한다.
 
+2026-10-03 후속 변경: 막부 정치인 개인의 월간 정치적 영향력 증가량은 **직위별 기본값 + 인물 명망 × 0.2**다. 기본값은 대로 3, 노중 수좌 1.5, 노중 0으로 조정했으며, 파벌 영향력·중도파 보너스·특성·인기 보정을 제거했다. 위젯의 계산 내역 툴팁에도 기본값과 명망만 표시한다. 이 변경은 막부 개혁 저널의 파벌 영향력 계산과 별개다.
+
 ### 20.3. 막부 개혁과 파벌 대립
 
 ```mermaid
@@ -4891,8 +4950,6 @@ flowchart TD
     FIN["[A] je_bakufu_zaisei<br/>재정·편입주의 도시화와 철도"]:::A
     RESULT["[A] 네 완료 변수 모두 충족<br/>eafp_japan.2999"]:::A
     CONFLICT["[A] .2181~.2184 암살·축출<br/>.4008 양이 사건"]:::A
-    DEMAND["[A] .2310 / .2311 사임 요구"]:::A
-    DJ["[A] je_eafpjap2310 / je_eafpjap2311<br/>사임 성공 또는 365일 경과에 따른 지지도 변화"]:::A
     DRILL["[A] eafp_japan.2401"]:::A
     SOURCES --> ENTRY
     ENTRY --> J
@@ -4906,9 +4963,6 @@ flowchart TD
     INNER -. "완료 변수" .-> RESULT
     FIN -. "완료 변수" .-> RESULT
     J -. "월간 조건부 무작위" .-> CONFLICT
-    J -. "월간 조건부 무작위" .-> DEMAND
-    DEMAND --> DJ
-    DJ -. "지지도 반영" .-> J
     ARMY -. "월간 무작위" .-> DRILL
     classDef V fill:#e7f0fc,stroke:#35689a,color:#172b45;
     classDef M fill:#fff0d9,stroke:#b76a16,color:#4d2b05;
@@ -4919,6 +4973,8 @@ flowchart TD
 ```
 
 `je_bakufu_kaikaku.on_invalid`에도 파벌 modifier 정리와 `bakufu_kaikaku_complete_var` 설정이 있다. 따라서 그 변수만 보고 성공 이벤트 `.2999`가 발생했다고 판단하면 안 된다. `.2999`는 네 분야를 완료한 `on_complete`에서 호출된다.
+
+2026-10-05: `eafp_japan.2310/.2311`과 사임 요구 저널 `je_eafpjap2310/je_eafpjap2311`을 삭제했다. 막부 개혁 저널의 월간 후보에서도 제거했다.
 
 ### 20.4. 쇼군의 뜻·후계 분쟁·즉위와 황실
 
@@ -4971,8 +5027,10 @@ flowchart TD
     WAR["[A] first_opium_war.153<br/>1차 아편전쟁 청 패전 결말"]:::A
     SHOCK["[M] tenpo_events.6<br/>옛 .2007의 파벌 효과·막부 권위 반영"]:::M
     RTC["[A] eafp_event_rtc.1 / .2<br/>열강 / 조선의 전쟁 결과 반응"]:::A
-    S["[V] je_sakoku"]:::V
-    ST["[V] ep2_sakoku.2 버튼 사건<br/>ep2_sakoku.3 모리슨호 사건"]:::V
+    S["[M] je_sakoku"]:::M
+    ED["[A] 이국선 타불령 철회 버튼<br/>헤이민·다이묘 불만 0.5배"]:::A
+    ST["[M] 쇄국 철회 → ep2_sakoku.2<br/>타불령 유지 시 IG·운동 효과 1.5배"]:::M
+    MOR["[V] ep2_sakoku.3 모리슨호 사건"]:::V
     SE["[V] ep2_sakoku.4 개방 완료<br/>ep2_sakoku.5 무효화"]:::V
     START -. "시작 시 함께 활성" .-> J
     J -->|immediate / 2개월 후| INTRO
@@ -4984,7 +5042,9 @@ flowchart TD
     J -->|기한 만료| FAIL
     WAR -->|일본에 3~7일 후| SHOCK
     WAR --> RTC
-    S -. "버튼 / 연간 무작위" .-> ST
+    S -->|타불령만 철회| ED
+    S -->|쇄국 철회 버튼| ST
+    S -. "연간 무작위" .-> MOR
     S -->|각각 완료 / 무효화| SE
     SHOCK -. "개항 압력·정치적 영향" .-> S
     classDef V fill:#e7f0fc,stroke:#35689a,color:#172b45;
@@ -4997,12 +5057,17 @@ flowchart TD
 
 아편전쟁 충격은 EAFP 1차 아편전쟁 결말에서 발생한다. 덮어쓴 `events/opium_wars_events.txt`의 기존 `opium_wars.4 → tenpo_events.6` 호출은 주석 처리되어 있다. `tenpo_famine.*`는 별도 활성 namespace로 유지하지 않으며, 이관된 사건은 `.101/.102`를 사용한다.
 
+2026-10-03 후속 변경: 쇄국 저널에 `eafp_repeal_ikokusen_uchiharairei_button`을 추가했다. 타불령이 붙은 법률에서 해당 증보만 제거하고, 헤이민(`ig_rural_folk`)과 다이묘(`ig_landowners`)에 `forced_transition_from_tradition`을 `multiplier = 0.5`로 부여한다. 기본 지지도 -5의 절반인 -2.5이며, 기존 5년 지속·점감 조건을 유지한다.
+
+기존 쇄국 철회 버튼은 타불령을 보유한 경우 `ep2_sakoku.2`의 이해집단·정치운동 modifier를 모두 1.5배로 적용한다. 선택 법률 지지 집단의 `overdue_break_with_tradition`, 쇄국 지지 집단의 `forced_transition_from_tradition`, 유신파의 `modifier_ended_sakoku_movement`가 대상이다. 타불령이 없으면 1배다. 이벤트 immediate에서 법률 변경 전 배율을 저장하며, 버튼 미리보기와 custom_tooltip도 같은 조건을 설명한다. modifier 지속 기간은 늘리지 않는다.
+
 ### 20.6. 명예로운 유신·황실 혼인·세 가지 결말
 
 ```mermaid
 flowchart TD
     J["[M] je_meiji_restoration"]:::M
-    INTRO["[V] ep2_meiji.1"]:::V
+    INTRO["[M] ep2_meiji.1<br/>막번체제 활성 시 막부 권위 -100"]:::M
+    INTRO -->|"류큐 존재 · 일본에 후속 표시"| RYU_OPEN["[A] eafp_japan.4002<br/>류큐에 자유무역 적용"]:::A
     STRAT["[V] ep2_meiji.2<br/>공무합체 / 공의여론 방침"]:::V
     MARR["[M] ep2_meiji.3 황실 혼인<br/>EAFP 파벌 효과 병합"]:::M
     MJ["[V] je_meiji_imperial_marriage<br/>조약·쇄국·조약항 조건 / 1825일"]:::V
@@ -5011,7 +5076,7 @@ flowchart TD
     PRO["[V] ep2_meiji.5 왕정복고 선포"]:::V
     P52["[M] ep2_meiji.52<br/>조슈번 다이묘를 번 식별자로 선택"]:::M
     P51["[V] ep2_meiji.51 사직 수락"]:::V
-    P6["[V] ep2_meiji.6"]:::V
+    P6["[M] ep2_meiji.6<br/>번벌 과두정 활성화"]:::M
     P7["[V] ep2_meiji.7"]:::V
     IMP["[V] meiji.1 천황 승리<br/>천황 통치·막부법 폐지·안정 6개월 등"]:::V
     COURT["[V] ep2_meiji.8 공무합체<br/>혼인·막부 쇄신·안정 조건"]:::V
@@ -5319,13 +5384,12 @@ flowchart TD
 
 바닐라 종교 저널은 유지한다. 삭제된 EAFP `je_shinto`·`shinto_events.*`를 신불분리의 후속으로 넣지 않는다. 일상·재해 사건은 정기 호출 후보이며 특정 저널을 순서대로 완료해야 나오는 목록이 아니다. `japan_events.31`은 텐포 위기의 월간 후보로 앞 도표에 표시했다.
 
+`eafp_japan.5002`(천도 결정)와 `eafp_japan.5003`(정체서)는 삭제했다. 두 사건 사이의 후속 호출과 전용 번역도 제거했다.
+
 ### 20.14. 정의는 남았지만 일반 진행에 연결하지 않은 사건
 
 | 구분 | 이벤트 | 현재 조사 결과 |
 | --- | --- | --- |
-| [U] EAFP 추가 | `eafp_japan.4002` | 류큐 개항 사건 정의는 있으나 활성 호출을 찾지 못했다. |
-| [U] EAFP 추가 | `eafp_japan.4004` | 외국인의 후지산 등반 사건 정의는 있으나 활성 호출을 찾지 못했다. |
-| [U] EAFP 추가 | `eafp_japan.5002 → eafp_japan.5003` | 둘 사이의 후속 연결은 남아 있으나 `.5002`를 시작시키는 활성 호출을 찾지 못했다. |
 | [U] EAFP 추가 | `hanbatsu_oligarchy_events.1` | 정의는 남아 있으나 호출할 활성 저널·이벤트를 찾지 못했다. |
 | [U] 바닐라 잔존 정의 | `meiji.13` | 강제 개항 사건으로 `orphan = yes`가 있으며, 활성 호출을 찾지 못했다. 일반 개항 경로에 연결하지 않는다. |
 | [V] 디버그 전용 | `ep2_meiji.1000` | 바닐라에 `orphan = yes`인 디버그 이벤트로 정의되어 있다. 정상 진행의 사건으로 연결하지 않는다. |
@@ -5340,6 +5404,7 @@ flowchart TD
 | 명예로운 유신 | [M] | 개시 시 막부 개혁 저널 생성 보장, 번과 다이묘 위젯 사용. 주요 바닐라 결말 구조는 유지한다. |
 | 다이묘 | [M/A] | 번 식별자와 주 위치를 분리하고 10개 번을 추가한다. 승계·퇴임·특정 번 대상 사건에 반영한다. |
 | 쇼군 승계 | [M/A] | `.2/.5`를 후계 지지 선언으로 바꾸고, EAFP 영향력 기반 승계·불일치 권위 손실을 연결한다. |
+| 쇄국 철회 | [M/A] | 타불령 단독 철회 버튼을 추가하고, 타불령 유지 중 쇄국 철회의 이해집단·운동 효과를 1.5배로 조정한다. 실제 효과는 `events/000_eafp_japan_overrides.txt`의 일반 ID `ep2_sakoku.2`에서 처리한다. |
 | 텐포 위기 | [M/A] | `.2` 결과별 `.102`, `.101` 추가, `.4`의 막부 인사 선택, `.6`의 아편전쟁 충격과 파벌 효과를 적용한다. |
 | 혼인·양이 사건 | [M/A] | 황실 혼인에 파벌 효과를 병합하고 유신기 사건에 권위·지역 효과를 넣는다. 나마무기 회답 `.4006`을 유지한다. |
 | modifier 간접 효과 | [M] | 기존 modifier에 막부 권위·주 충성도·독립성 월간 변화량을 추가한다. 사건 본문이 바닐라여도 결과는 EAFP 계산에 연결될 수 있다. |
@@ -5351,17 +5416,17 @@ flowchart TD
 
 ### 20.16. 이벤트 정의 대조 목록
 
-대조한 고유 이벤트 정의는 **199개**다. 바닐라 본문 유지 104개, EAFP 교체 20개, EAFP 추가 75개로 구분했다.
+대조한 고유 이벤트 정의는 **195개**다. 바닐라 본문 유지 101개, EAFP 교체 23개, EAFP 추가 71개로 구분했다.
 
 다음 표는 바닐라 일본 이벤트 디렉터리, 바닐라 `events/meiji_restoration.txt`, EAFP 일본 이벤트 디렉터리의 **실제 정의 ID**를 대조한 목록이다. 큰 사건 묶음을 도표에서 생략 없이 찾아보기 위한 색인이다. 한 셀의 번호 목록은 표 첫 열의 namespace를 공유한다. `[U]` 항목도 정의 자체는 존재하므로 `[A]` 열에 포함되며, 연결 여부는 20.14절을 따른다.
 
 | Namespace | [V] 바닐라 본문 | [M] EAFP 교체 | [A] EAFP 추가 |
 | --- | --- | --- | --- |
 | `boshin_war` | — | — | .9, .10, .11 |
-| `eafp_japan` | — | — | .1, .2, .3, .4, .5, .6, .7, .9, .11, .12, .1001, .1002, .1003, .1004, .1005, .1006, .1007, .1009, .1012, .1014, .1015, .1018, .1019, .1020, .2002, .2004, .2009, .2106, .2107, .2181, .2182, .2183, .2184, .2310, .2311, .2401, .2999, .4001, .4002, .4004, .4006, .4008, .5002, .5003 |
-| `ep2_meiji` | .1, .2, .5, .6, .7, .8, .9, .51, .1000 | .3, .4, .41, .52 | — |
+| `eafp_japan` | — | — | .1, .2, .3, .4, .5, .6, .7, .9, .11, .12, .1001, .1002, .1003, .1004, .1005, .1006, .1007, .1009, .1012, .1014, .1015, .1018, .1019, .1020, .2002, .2004, .2009, .2106, .2107, .2181, .2182, .2183, .2184, .2401, .2999, .4001, .4002, .4004, .4006, .4008 |
+| `ep2_meiji` | .2, .5, .7, .8, .9, .51, .1000 | .1, .3, .4, .6, .41, .52 | — |
 | `ep2_meiji_pulse` | .6 | .1, .2, .3, .4, .5, .7, .8, .9, .11 | — |
-| `ep2_sakoku` | .2, .3, .4, .5 | — | — |
+| `ep2_sakoku` | .3, .4, .5 | .2 | — |
 | `ezo_republic` | .1 | .2 | — |
 | `formosa_expedition_events` | — | — | .1, .2 |
 | `hanbatsu_oligarchy_events` | — | — | .1 |
@@ -5401,4 +5466,3 @@ flowchart TD
 바닐라 조사 경로는 `D:/SteamLibrary/steamapps/common/Victoria 3/game`이다. 특히 북방 원본 저널 파일명은 `common/journal_entries/07_hokkaido.txt`이며, 모드 교체 파일명과 다르다.
 
 검증은 활성 정의 ID, 명시적 이벤트 호출, 저널 생성·완료·실패·무효화, 정기 이벤트 후보, Markdown 코드 블록과 Mermaid 그래프 구조를 대상으로 했다. `show_as_tooltip`·`event_outcome_*_effect_desc`의 표시용 효과를 실행 경로로 세지 않았다. 무작위 사건의 실제 발생 빈도, DLC 조합별 화면과 게임 내 스코프 동작은 이 문서 작업에서 실행 검증하지 않았다.
-

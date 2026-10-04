@@ -1,0 +1,133 @@
+﻿#수정: 타불령 유지 시 쇄국 철회 효과의 툴팁을 1.5배로 표시한다.
+REPLACE:je_sakoku_stop_being_closed_button = {
+	name = "je_sakoku_stop_being_closed_button"
+	desc = "je_sakoku_stop_being_closed_button_desc"
+
+	visible = {
+		has_variable = je_sakoku_maybe_we_should_open_up
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = faced_sufficient_pressure_to_abolish_sakoku_tt
+			has_variable = je_sakoku_maybe_we_should_open_up
+		}
+	}
+
+	effect = {
+		if = { # 추가
+			limit = {
+				any_active_law = {
+					has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+				}
+			}
+			custom_tooltip = eafp_sakoku_repeal_with_edict_tt
+			set_variable = ended_sakoku_with_uchiharairei
+		}
+		trigger_event = { id = ep2_sakoku.2 }
+		show_as_tooltip = {
+			deactivate_law = law_type:law_sakoku
+			every_interest_group = {
+				limit = {
+					law_stance = {
+						law = law_type:law_isolationism
+						value > neutral
+					}
+				}
+				add_modifier = {
+					name = forced_transition_from_tradition
+					multiplier = { # 추가
+						value = 1
+						if = {
+							limit = {
+								ROOT.any_active_law = {
+									has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+								}
+							}
+							add = 0.5
+						}
+					}
+					days = normal_modifier_time
+					is_decaying = yes
+				}
+			}
+			random_political_movement = {
+				limit = {
+					is_political_movement_type = movement_meiji_restorationist
+				}
+				add_modifier = {
+					name = modifier_ended_sakoku_movement
+					multiplier = { # 추가
+						value = 1
+						if = {
+							limit = {
+								ROOT.any_active_law = {
+									has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+								}
+							}
+							add = 0.5
+						}
+					}
+					days = normal_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+	}
+}
+
+eafp_repeal_ikokusen_uchiharairei_button = { # 추가
+	name = "eafp_repeal_ikokusen_uchiharairei_button"
+	desc = "eafp_repeal_ikokusen_uchiharairei_button_desc"
+
+	visible = {
+		any_active_law = {
+			has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+		}
+	}
+
+	possible = {
+		any_active_law = {
+			has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+		}
+	}
+
+	effect = {
+		random_active_law = {
+			limit = {
+				has_amendment = amendment_type:amendment_eafp_ikokusen_uchiharairei
+			}
+			random_scope_amendment = {
+				limit = {
+					amendment_type:amendment_eafp_ikokusen_uchiharairei ?= this.type
+				}
+				remove_amendment = yes
+			}
+		}
+		every_interest_group = {
+			limit = {
+				law_stance = {
+					law = law_type:law_isolationism
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = forced_transition_from_tradition
+				multiplier = 0.5
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			add_modifier = {
+				name = modifier_ended_sakoku_movement
+				multiplier = 0.5
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+	}
+}

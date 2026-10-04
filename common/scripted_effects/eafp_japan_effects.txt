@@ -1,25 +1,47 @@
 ﻿REPLACE:country_calculate_and_cache_daimyo_loyalties_per_state = {
-    eafp_japan_vanilla_daimyo_cache = yes
-    # 주 충성도 원본은 EAFP 국가 변수. 인물 수와 무관하게 마지막에 덮어쓴다.
-    c:JAP ?= { eafp_japan_refresh_regions = yes }
+    #수정
+    if = {
+        limit = { eafp_japan_regional_active = yes }
+		# 활성 시 주 충성도를 캐시에 반영.
+		eafp_japan_refresh_regions = yes
+    }
+	else = {
+		# 비활성화된 경우에만 바닐라 다이묘 충성도 캐시를 계산.
+		vanilla_daimyo_loyalty_calc = yes
+	}
 }
 
-# Vanilla source: 00_victoria_ep2_scripted_effects.txt; no recursive REPLACE call.
-eafp_japan_vanilla_daimyo_cache = {
-	every_scope_character = {
-		limit = {
-			has_role_of_type = magnate
-			has_variable = daimyo_var
-		}
-		save_scope_as = temp_daimyo_scope
-		var:daimyo_var ?= {
-			random_scope_state ={
+# 바닐라 계산 대로 하되 다이묘 여럿 있으면 평균 매겨서 하기
+vanilla_daimyo_loyalty_calc = {
+	every_scope_state = {
+		limit = { c:JAP ?= owner }
+		save_scope_as = eafp_daimyo_loyalty_cache_state
+		set_variable = { name = cached_daimyo_loyalty value = 0 }
+		set_variable = { name = eafp_daimyo_loyalty_cache_count value = 0 }
+		owner = {
+			every_scope_character = {
 				limit = {
-					c:JAP ?= owner
+					is_character_alive = yes
+					has_role_of_type = magnate
+					has_variable = daimyo_var
+					var:daimyo_var ?= scope:eafp_daimyo_loyalty_cache_state.state_region
 				}
-				set_variable = { name = cached_daimyo_loyalty value = scope:temp_daimyo_scope.loyalty }
+				scope:eafp_daimyo_loyalty_cache_state = {
+					change_variable = { name = cached_daimyo_loyalty add = PREV.loyalty }
+					change_variable = { name = eafp_daimyo_loyalty_cache_count add = 1 }
+				}
 			}
 		}
+		if = {
+			limit = { var:eafp_daimyo_loyalty_cache_count > 0 }
+			change_variable = { name = cached_daimyo_loyalty divide = var:eafp_daimyo_loyalty_cache_count }
+		}
+		else = {
+			# 다이묘가 없으면 기존 캐시를 지워 바닐라의 중립값(50)을 사용한다.
+			remove_variable = cached_daimyo_loyalty
+		}
+		remove_variable = eafp_daimyo_loyalty_cache_count
+		clear_saved_scope = eafp_daimyo_loyalty_cache_state
 	}
 }
 

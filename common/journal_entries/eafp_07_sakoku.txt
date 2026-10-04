@@ -1,0 +1,97 @@
+﻿REPLACE:je_sakoku = { # I am in Spain, without the Spain
+    icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+    group = je_group_historical_content
+
+    possible = {
+        # triggered by history
+    }
+
+    scripted_button = je_sakoku_stop_being_closed_button
+    scripted_button = eafp_repeal_ikokusen_uchiharairei_button #추가: 타불령만 별도로 철회.
+
+    immediate = {
+    }
+
+    on_monthly_pulse = {
+    }
+
+    on_yearly_pulse = {
+        random_events = {
+            90 = 0
+            10 = ep2_sakoku.3
+        }
+    }
+
+    complete = {
+        NOR = {
+            has_law = law_type:law_sakoku
+            has_law = law_type:law_closed_borders
+        }
+    }
+
+    on_complete = {
+        trigger_event = { id = ep2_sakoku.4 }
+    }
+
+    event_outcome_completed_effect_desc = {
+        header = ep2_sakoku.4.a
+        effect = {
+            every_interest_group = {
+                limit = {
+                    law_stance = {
+                        law = law_type:law_isolationism
+                        value < neutral
+                    }
+                }
+                add_modifier = {
+                    name = the_picked_lock_modifier
+                    days = long_modifier_time
+                    is_decaying = yes
+                }
+            }
+        }
+    }
+    fail = {
+        OR = {
+            NOT = {
+                has_law = law_type:law_monarchy
+            }
+            custom_tooltip = {
+                text = ruler_is_japanese_emperor_tt
+                has_variable = japan_emperor_restored
+            }
+        }
+    }
+
+    on_fail = {
+        trigger_event = { id = ep2_sakoku.5 }
+    }
+
+    event_outcome_failed_effect_desc = {
+        header = ep2_sakoku.5.a
+            effect = {
+            every_interest_group = {
+                limit = {
+                    law_stance = {
+                        law = law_type:law_isolationism
+                        value > neutral
+                    }
+                }
+                add_modifier = {
+                    name = sakoku_entrenched_modifier
+                    days = long_modifier_time
+                    is_decaying = yes
+                }
+            }
+        }
+    }
+
+    invalid = {
+    }
+
+    weight = 5000
+
+      
+    should_be_pinned_by_default_uninvolved_or_context = yes
+}

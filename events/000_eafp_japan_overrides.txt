@@ -7,9 +7,123 @@ namespace = ep2_meiji_pulse
 namespace = ezo_republic
 namespace = shogunate
 namespace = tenpo_events
+namespace = ep2_sakoku
 
 
 # --- Meiji restoration and pulse events ---
+
+#수정: 바닐라 존황양이 사건에 막부 권위 감소를 추가.
+ep2_meiji.1 = { # Sonnō Jōi
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.1.t
+	desc = ep2_meiji.1.d
+	flavor = ep2_meiji.1.f
+
+    event_image = {
+		video = "asia_westerners_arriving"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		ordered_interest_group = {
+			limit = {
+				is_in_government = yes
+			}
+			order_by = ig_clout
+			position = 0
+			check_range_bounds = no
+			save_scope_as = ruling_ig
+			leader = {
+				save_scope_as = tairo_scope
+				set_character_immortal = yes
+			}
+		}
+		hidden_effect = {
+			set_strategy = ai_strategy_industrial_expansion
+			set_strategy = ai_strategy_meiji_restoration
+			set_strategy = ai_strategy_maintain_power_balance
+		}
+	}
+
+	option = {
+		name = ep2_meiji.1.a
+		default_option = yes
+		if = { #추가: 일본 개항에 따른 류큐 개항 사건은 일본에 표시.
+			limit = { exists = c:RYU }
+			trigger_event = { id = eafp_japan.4002 }
+		}
+		if = { #추가
+			limit = { has_journal_entry = je_bakuhantaisei }
+			add_bakuhantaisei_bakufu_authority = { VALUE = -200 }
+		}
+		if = {
+			limit = {
+				has_modifier = forced_market_opening
+			}
+			every_scope_character = {
+				limit = {
+					has_ideology = ideology:ideology_shojoi
+				}
+				add_modifier = {
+					name = shogun_forced_to_open_market_character
+					days = very_long_modifier_time
+					is_decaying = yes
+				}
+			}
+			random_political_movement = {
+				limit = {
+					is_political_movement_type = movement_tokugawa_loyalist
+				}
+				add_modifier = {
+					name = shogun_forced_to_open_market
+					days = long_modifier_time
+					is_decaying = yes
+				}
+			}
+		}
+		if = {
+			limit = {
+				owner = {
+					any_political_movement = {
+						is_political_movement_type = movement_tokugawa_loyalist
+						has_core_ideology = ideology:ideology_tokugawa_loyalist_movement
+					}
+				}
+			}
+			owner = {
+				random_political_movement = {
+					limit = {
+						is_political_movement_type = movement_tokugawa_loyalist
+						has_core_ideology = ideology:ideology_tokugawa_loyalist_movement
+					}
+					set_core_ideology = ideology_tokugawa_loyalist_movement_2
+					add_character_ideology = ideology_modernizer_leader
+				}
+			}
+		}
+	}
+
+	after = {
+		hidden_effect = {
+			scope:tairo_scope ?= {
+				set_character_immortal = no
+			}
+		}
+	}
+}
 
 #수정: 바닐라 황실 혼인 경로에 EAFP 파벌 효과만 추가
 ep2_meiji.3 = { # Imperial Marriage
@@ -435,6 +549,93 @@ ep2_meiji.41 = { # Boshin War - Ahistorical
 
 	after = {
 		clear_generated_names = yes
+	}
+}
+
+#수정: ep2_meiji.7과 동일하게 선택지에서 법률 활성화.
+
+ep2_meiji.6 = { # Restoration - Meeting at Kogosho
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.6.t
+	desc = ep2_meiji.6.d
+	flavor = ep2_meiji.6.f
+
+    event_image = {
+		video = "ep2_intellectual_writer"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				has_variable = former_shogun_var # designates Taikun
+			}
+			save_scope_as = shogun_scope
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_tokugawa_loyalist
+			}
+			save_scope_as = loyalist_movement_scope
+		}
+		activate_law = law_type:law_hanbatsu_oligarchy # 추가
+	}
+
+	option = {
+		name = ep2_meiji.6.a
+		default_option = yes
+		show_as_tooltip = { # 추가
+			activate_law = law_type:law_hanbatsu_oligarchy
+		}
+		scope:shogun_scope ?= {
+			if = {
+				limit = {
+					NOT = {
+						has_role = character_role_politician # Should never evaluate true, but it is best to be safe
+					}
+				}
+				add_character_role = character_role_politician
+			}
+			if = {
+				limit = {
+					has_role = character_role_magnate
+				}
+				remove_character_role = character_role_magnate
+			}
+		}
+		ordered_scope_character = {
+			limit = {
+				is_interest_group_type = ig_landowners
+				NOT = {
+					scope:shogun_scope ?= this
+				}
+				NOT = {
+					has_variable = house_tokugawa
+				}
+			}
+			order_by = prominence
+			position = 0
+			set_as_interest_group_leader = yes
+		}
+		scope:loyalist_movement_scope ?= {
+			add_modifier = {
+				name = modifier_retreat_to_osaka
+				days = short_modifier_time
+			}
+		}
 	}
 }
 
@@ -3352,6 +3553,177 @@ tenpo_events.102 = { # 오시오 반란의 여파
 					months = 60
 				}
 			}
+		}
+	}
+}
+
+#수정: 쇄국 철회 당시 타불령의 존재 여부를 모든 이해집단·정치운동 효과에 반영한다.
+ep2_sakoku.2 = {
+	type = country_event
+	placement = ROOT
+	title = ep2_sakoku.2.t
+	desc = ep2_sakoku.2.d
+	flavor = ep2_sakoku.2.f
+
+	duration = 3
+
+	event_image = {
+		video = "asia_farmers_market"
+	}
+
+	dlc = dlc018
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_scales.dds"
+
+	trigger = {
+		# triggered by je_sakoku_stop_being_closed_button
+	}
+
+	immediate = {
+		# if any IG is in favor of Free Trade, save them
+		random_interest_group = {
+			limit = {
+				is_in_government = yes
+				law_enactment_stance = {
+					law = law_type:law_free_trade
+					value > neutral
+				}
+				is_marginal = no
+			}
+			save_scope_as = free_trade_ig
+		}
+
+		# if Protectionism is an option, also save a pro-Protectionist IG.
+		if = {
+			limit = {
+				has_technology_researched = stock_exchange
+			}
+			random_interest_group = {
+				limit = {
+					is_in_government = yes
+					NOT = { scope:free_trade_ig = this }
+					law_enactment_stance = {
+						law = law_type:law_protectionism
+						value > neutral
+					}
+					is_marginal = no
+				}
+				save_scope_as = protectionism_ig
+			}
+		}
+
+		remove_variable = je_sakoku_maybe_we_should_open_up
+	}
+
+	option = {
+		name = ep2_sakoku.2.a
+		default_option = yes
+		ai_chance = {
+			base = 10
+		}
+		activate_law = law_type:law_mercantilism
+		every_interest_group = {
+			limit = {
+				law_enactment_stance = {
+					law = law_type:law_mercantilism
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = overdue_break_with_tradition
+				days = normal_modifier_time
+			}
+		}
+	}
+	option = {
+		name = ep2_sakoku.2.b
+		ai_chance = {
+			base = 10
+		}
+		trigger = {
+			exists = scope:free_trade_ig
+		}
+		activate_law = law_type:law_free_trade
+		every_interest_group = {
+			limit = {
+				law_enactment_stance = {
+					law = law_type:law_free_trade
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = overdue_break_with_tradition
+				days = normal_modifier_time
+			}
+		}
+	}
+	option = {
+		name = ep2_sakoku.2.c
+		ai_chance = {
+			base = 10
+		}
+		trigger = {
+			exists = scope:protectionism_ig
+		}
+		activate_law = law_type:law_protectionism
+		every_interest_group = {
+			limit = {
+				law_enactment_stance = {
+					law = law_type:law_protectionism
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = overdue_break_with_tradition
+				days = normal_modifier_time
+			}
+		}
+	}
+	after = {
+		every_interest_group = {
+			limit = {
+				law_stance = {
+					law = law_type:law_isolationism
+					value > neutral
+				}
+			}
+			add_modifier = {
+				name = forced_transition_from_tradition
+				multiplier = { # 추가
+					value = 1
+					if = {
+						limit = { ROOT = { has_variable = ended_sakoku_with_uchiharairei } }
+						add = 0.5
+					}
+				}
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			add_modifier = {
+				name = modifier_ended_sakoku_movement
+				multiplier = { # 추가
+					value = 1
+					if = {
+						limit = { ROOT = { has_variable = ended_sakoku_with_uchiharairei } }
+						add = 0.5
+					}
+				}
+				days = normal_modifier_time
+				is_decaying = yes
+			}
+		}
+		if = {
+			limit = {
+				has_variable = ended_sakoku_with_uchiharairei
+			}
+			remove_variable = ended_sakoku_with_uchiharairei
 		}
 	}
 }
