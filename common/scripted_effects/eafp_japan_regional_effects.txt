@@ -44,6 +44,70 @@ eafp_japan_release_region_state = {
     }
 }
 
+# Country scope. Remove the previous regional influence before measuring base loyalty.
+eafp_japan_clear_daimyo_regional_loyalty = {
+    every_scope_character = {
+        limit = { has_modifier = eafp_japan_regional_daimyo_loyalty_modifier }
+        remove_modifier = eafp_japan_regional_daimyo_loyalty_modifier
+    }
+}
+
+# Country scope. All members receive half the gap between state loyalty and the
+# unmodified group average. Measure the resulting actual average for state drift.
+eafp_japan_update_region_daimyo_loyalty = {
+    set_local_variable = { name = eafp_japan_daimyo_loyalty_sum value = 0 }
+    set_local_variable = { name = eafp_japan_daimyo_loyalty_count value = 0 }
+    every_scope_character = {
+        limit = {
+            is_character_alive = yes
+            has_role_of_type = magnate
+            has_variable = daimyo_var
+            var:daimyo_var ?= s:STATE_$STATE$
+        }
+        change_local_variable = { name = eafp_japan_daimyo_loyalty_sum add = loyalty }
+        change_local_variable = { name = eafp_japan_daimyo_loyalty_count add = 1 }
+    }
+    if = {
+        limit = {
+            has_local_variable = eafp_japan_daimyo_loyalty_count
+            local_var:eafp_japan_daimyo_loyalty_count > 0
+        }
+        set_variable = {
+            name = eafp_japan_daimyo_average_loyalty_$STATE$
+            value = {
+                value = local_var:eafp_japan_daimyo_loyalty_sum
+                divide = local_var:eafp_japan_daimyo_loyalty_count
+            }
+        }
+        every_scope_character = {
+            limit = {
+                is_character_alive = yes
+                has_role_of_type = magnate
+                has_variable = daimyo_var
+                var:daimyo_var ?= s:STATE_$STATE$
+            }
+            add_modifier = {
+                name = eafp_japan_regional_daimyo_loyalty_modifier
+                multiplier = {
+                    value = owner.var:eafp_japan_loyalty_$STATE$
+                    subtract = owner.var:eafp_japan_daimyo_average_loyalty_$STATE$
+                    multiply = 0.75
+                }
+                days = 14
+            }
+        }
+    }
+    else = {
+        # With no daimyo, there is no loyalty feedback toward an arbitrary neutral value.
+        set_variable = {
+            name = eafp_japan_daimyo_average_loyalty_$STATE$
+            value = var:eafp_japan_loyalty_$STATE$
+        }
+    }
+    remove_local_variable = eafp_japan_daimyo_loyalty_sum
+    remove_local_variable = eafp_japan_daimyo_loyalty_count
+}
+
 # Only called in JAP scope. Foreign portions are released, never assigned JAP L.
 eafp_japan_refresh_region = {
     remove_variable = eafp_japan_region_active_$STATE$
@@ -87,6 +151,7 @@ eafp_japan_refresh_region = {
             }
         }
         s:STATE_$STATE$.region_state:JAP = { eafp_japan_sync_vanilla_region_modifiers = yes }
+        eafp_japan_update_region_daimyo_loyalty = { STATE = $STATE$ }
         set_variable = { name = eafp_japan_loyalty_delta_$STATE$ value = eafp_japan_loyalty_$STATE$_monthly }
         set_variable = { name = eafp_japan_independency_delta_$STATE$ value = eafp_japan_independency_$STATE$_monthly }
         s:STATE_$STATE$.region_state:JAP = {
@@ -97,6 +162,7 @@ eafp_japan_refresh_region = {
         }
     }
     else = {
+        remove_variable = eafp_japan_daimyo_average_loyalty_$STATE$
         remove_variable = eafp_japan_region_state_$STATE$
         s:STATE_$STATE$ = { every_scope_state = { eafp_japan_release_region_state = yes } }
         # A mission may still point at the lost state object. Clear its country cost
@@ -205,29 +271,33 @@ eafp_japan_refresh_region_daimyos = {
 }
 
 eafp_japan_refresh_regions = {
-    eafp_japan_refresh_region_daimyos = { STATE = HOKKAIDO }
-    eafp_japan_refresh_region_daimyos = { STATE = TOHOKU }
-    eafp_japan_refresh_region_daimyos = { STATE = KANTO }
-    eafp_japan_refresh_region_daimyos = { STATE = HOKUSHINETSU }
-    eafp_japan_refresh_region_daimyos = { STATE = TOKAI }
-    eafp_japan_refresh_region_daimyos = { STATE = KYOTO }
-    eafp_japan_refresh_region_daimyos = { STATE = KANSAI }
-    eafp_japan_refresh_region_daimyos = { STATE = CHUGOKU }
-    eafp_japan_refresh_region_daimyos = { STATE = SHIKOKU }
-    eafp_japan_refresh_region_daimyos = { STATE = KYUSHU }
-    # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
-    eafp_japan_refresh_region = { STATE = HOKKAIDO LOYALTY = 65 INDEPENDENCY = 25 }
-    eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
-    eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
-    eafp_japan_refresh_region = { STATE = HOKUSHINETSU LOYALTY = 75 INDEPENDENCY = 25 }
-    eafp_japan_refresh_region = { STATE = TOKAI LOYALTY = 75 INDEPENDENCY = 25 }
-    eafp_japan_refresh_region = { STATE = KYOTO LOYALTY = 83.5 INDEPENDENCY = 16.5 }
-    eafp_japan_refresh_region = { STATE = KANSAI LOYALTY = 83.5 INDEPENDENCY = 16.5 }
-    eafp_japan_refresh_region = { STATE = CHUGOKU LOYALTY = 45.8 INDEPENDENCY = 54.2 }
-    eafp_japan_refresh_region = { STATE = SHIKOKU LOYALTY = 67.5 INDEPENDENCY = 32.5 }
-    eafp_japan_refresh_region = { STATE = KYUSHU LOYALTY = 28.8 INDEPENDENCY = 71.2 }
-    # 이걸로 값 계산
-    eafp_japan_update_regional_approval = yes
+    custom_tooltip = {
+        text = eafp_japan_refresh_regions_tt
+        eafp_japan_clear_daimyo_regional_loyalty = yes
+        eafp_japan_refresh_region_daimyos = { STATE = HOKKAIDO }
+        eafp_japan_refresh_region_daimyos = { STATE = TOHOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = KANTO }
+        eafp_japan_refresh_region_daimyos = { STATE = HOKUSHINETSU }
+        eafp_japan_refresh_region_daimyos = { STATE = TOKAI }
+        eafp_japan_refresh_region_daimyos = { STATE = KYOTO }
+        eafp_japan_refresh_region_daimyos = { STATE = KANSAI }
+        eafp_japan_refresh_region_daimyos = { STATE = CHUGOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = SHIKOKU }
+        eafp_japan_refresh_region_daimyos = { STATE = KYUSHU }
+        # 주에 loyalty, independency 값이 없는 경우 이걸로 재설정
+        eafp_japan_refresh_region = { STATE = HOKKAIDO LOYALTY = 65 INDEPENDENCY = 25 }
+        eafp_japan_refresh_region = { STATE = TOHOKU LOYALTY = 77.5 INDEPENDENCY = 22.5 }
+        eafp_japan_refresh_region = { STATE = KANTO LOYALTY = 92.5 INDEPENDENCY = 7.5 }
+        eafp_japan_refresh_region = { STATE = HOKUSHINETSU LOYALTY = 75 INDEPENDENCY = 25 }
+        eafp_japan_refresh_region = { STATE = TOKAI LOYALTY = 75 INDEPENDENCY = 25 }
+        eafp_japan_refresh_region = { STATE = KYOTO LOYALTY = 83.5 INDEPENDENCY = 16.5 }
+        eafp_japan_refresh_region = { STATE = KANSAI LOYALTY = 83.5 INDEPENDENCY = 16.5 }
+        eafp_japan_refresh_region = { STATE = CHUGOKU LOYALTY = 45.8 INDEPENDENCY = 54.2 }
+        eafp_japan_refresh_region = { STATE = SHIKOKU LOYALTY = 67.5 INDEPENDENCY = 32.5 }
+        eafp_japan_refresh_region = { STATE = KYUSHU LOYALTY = 28.8 INDEPENDENCY = 71.2 }
+        # 이걸로 값 계산
+        eafp_japan_update_regional_approval = yes
+    }
 }
 
 eafp_japan_monthly_regions = {
@@ -251,8 +321,8 @@ eafp_japan_monthly_regions = {
 eafp_japan_end_regions = {
     if = {
         limit = { c:JAP ?= THIS }
-        # Set the gate before release: cache calls during cleanup cannot re-enter.
         eafp_japan_refresh_regions = yes
+        eafp_japan_clear_daimyo_regional_loyalty = yes
         remove_variable = eafp_japan_region_state_HOKKAIDO
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKKAIDO } clear_variable_list = eafp_japan_region_daimyos_HOKKAIDO }
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOHOKU } clear_variable_list = eafp_japan_region_daimyos_TOHOKU }
@@ -264,60 +334,70 @@ eafp_japan_end_regions = {
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_CHUGOKU } clear_variable_list = eafp_japan_region_daimyos_CHUGOKU }
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_SHIKOKU } clear_variable_list = eafp_japan_region_daimyos_SHIKOKU }
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_KYUSHU } clear_variable_list = eafp_japan_region_daimyos_KYUSHU }
+        remove_variable = eafp_japan_daimyo_average_loyalty_HOKKAIDO
         remove_variable = eafp_japan_loyalty_HOKKAIDO
         remove_variable = eafp_japan_independency_HOKKAIDO
         remove_variable = eafp_japan_region_initialized_HOKKAIDO
         remove_variable = eafp_japan_region_active_HOKKAIDO
         remove_variable = eafp_japan_loyalty_delta_HOKKAIDO
         remove_variable = eafp_japan_independency_delta_HOKKAIDO
+        remove_variable = eafp_japan_daimyo_average_loyalty_TOHOKU
         remove_variable = eafp_japan_loyalty_TOHOKU
         remove_variable = eafp_japan_independency_TOHOKU
         remove_variable = eafp_japan_region_initialized_TOHOKU
         remove_variable = eafp_japan_region_active_TOHOKU
         remove_variable = eafp_japan_loyalty_delta_TOHOKU
         remove_variable = eafp_japan_independency_delta_TOHOKU
+        remove_variable = eafp_japan_daimyo_average_loyalty_KANTO
         remove_variable = eafp_japan_loyalty_KANTO
         remove_variable = eafp_japan_independency_KANTO
         remove_variable = eafp_japan_region_initialized_KANTO
         remove_variable = eafp_japan_region_active_KANTO
         remove_variable = eafp_japan_loyalty_delta_KANTO
         remove_variable = eafp_japan_independency_delta_KANTO
+        remove_variable = eafp_japan_daimyo_average_loyalty_HOKUSHINETSU
         remove_variable = eafp_japan_loyalty_HOKUSHINETSU
         remove_variable = eafp_japan_independency_HOKUSHINETSU
         remove_variable = eafp_japan_region_initialized_HOKUSHINETSU
         remove_variable = eafp_japan_region_active_HOKUSHINETSU
         remove_variable = eafp_japan_loyalty_delta_HOKUSHINETSU
         remove_variable = eafp_japan_independency_delta_HOKUSHINETSU
+        remove_variable = eafp_japan_daimyo_average_loyalty_TOKAI
         remove_variable = eafp_japan_loyalty_TOKAI
         remove_variable = eafp_japan_independency_TOKAI
         remove_variable = eafp_japan_region_initialized_TOKAI
         remove_variable = eafp_japan_region_active_TOKAI
         remove_variable = eafp_japan_loyalty_delta_TOKAI
         remove_variable = eafp_japan_independency_delta_TOKAI
+        remove_variable = eafp_japan_daimyo_average_loyalty_KYOTO
         remove_variable = eafp_japan_loyalty_KYOTO
         remove_variable = eafp_japan_independency_KYOTO
         remove_variable = eafp_japan_region_initialized_KYOTO
         remove_variable = eafp_japan_region_active_KYOTO
         remove_variable = eafp_japan_loyalty_delta_KYOTO
         remove_variable = eafp_japan_independency_delta_KYOTO
+        remove_variable = eafp_japan_daimyo_average_loyalty_KANSAI
         remove_variable = eafp_japan_loyalty_KANSAI
         remove_variable = eafp_japan_independency_KANSAI
         remove_variable = eafp_japan_region_initialized_KANSAI
         remove_variable = eafp_japan_region_active_KANSAI
         remove_variable = eafp_japan_loyalty_delta_KANSAI
         remove_variable = eafp_japan_independency_delta_KANSAI
+        remove_variable = eafp_japan_daimyo_average_loyalty_CHUGOKU
         remove_variable = eafp_japan_loyalty_CHUGOKU
         remove_variable = eafp_japan_independency_CHUGOKU
         remove_variable = eafp_japan_region_initialized_CHUGOKU
         remove_variable = eafp_japan_region_active_CHUGOKU
         remove_variable = eafp_japan_loyalty_delta_CHUGOKU
         remove_variable = eafp_japan_independency_delta_CHUGOKU
+        remove_variable = eafp_japan_daimyo_average_loyalty_SHIKOKU
         remove_variable = eafp_japan_loyalty_SHIKOKU
         remove_variable = eafp_japan_independency_SHIKOKU
         remove_variable = eafp_japan_region_initialized_SHIKOKU
         remove_variable = eafp_japan_region_active_SHIKOKU
         remove_variable = eafp_japan_loyalty_delta_SHIKOKU
         remove_variable = eafp_japan_independency_delta_SHIKOKU
+        remove_variable = eafp_japan_daimyo_average_loyalty_KYUSHU
         remove_variable = eafp_japan_loyalty_KYUSHU
         remove_variable = eafp_japan_independency_KYUSHU
         remove_variable = eafp_japan_region_initialized_KYUSHU
