@@ -30,6 +30,7 @@ eafp_japan_release_region_state = {
         remove_variable = eafp_japan_loyalty_cache_managed
         remove_variable = cached_daimyo_loyalty
         remove_modifier = eafp_japan_regional_autonomy
+        if = { limit = { has_modifier = eafp_japan_regional_loyalty } remove_modifier = eafp_japan_regional_loyalty }
         if = {
             limit = { c:JAP ?= owner }
             save_scope_as = eafp_japan_released_state
@@ -159,6 +160,12 @@ eafp_japan_refresh_region = {
             set_variable = eafp_japan_loyalty_cache_managed
             remove_modifier = eafp_japan_regional_autonomy
             add_modifier = { name = eafp_japan_regional_autonomy multiplier = { value = owner.var:eafp_japan_independency_$STATE$ divide = 100 } days = 14 }
+            if = { limit = { has_modifier = eafp_japan_regional_loyalty } remove_modifier = eafp_japan_regional_loyalty }
+            add_modifier = {
+                name = eafp_japan_regional_loyalty
+                multiplier = owner.eafp_japan_region_$STATE$_tokugawa_support_effect_value
+                days = 14
+            }
         }
     }
     else = {
@@ -323,6 +330,10 @@ eafp_japan_end_regions = {
         limit = { c:JAP ?= THIS }
         eafp_japan_refresh_regions = yes
         eafp_japan_clear_daimyo_regional_loyalty = yes
+        every_scope_state = {
+            limit = { has_modifier = eafp_japan_regional_loyalty }
+            remove_modifier = eafp_japan_regional_loyalty
+        }
         remove_variable = eafp_japan_region_state_HOKKAIDO
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKKAIDO } clear_variable_list = eafp_japan_region_daimyos_HOKKAIDO }
         if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOHOKU } clear_variable_list = eafp_japan_region_daimyos_TOHOKU }
