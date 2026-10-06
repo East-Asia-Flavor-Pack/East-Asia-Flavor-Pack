@@ -627,10 +627,6 @@ create_bakufu_politician_character = {
 		if = {
 			limit = { var:eafp_bakufu_office_position ?= $POSITION$ }
 			# 일반 선정과 강제 생성 모두 같은 보직 부여 절차를 따른다.
-			add_modifier = {
-				name = modifier_bakufu_recently_appointed
-				months = { 35 45 }
-			}
 			if = {
 				limit = { NOT = { exists = scope:eafp_existing_ii_tairo_scope } }
 				random_list = {
@@ -700,6 +696,13 @@ create_bakufu_politician_character = {
 			}
 			set_bakufu_politician_career_length = yes
 			apply_saved_bakufu_politician_mission = yes
+			# 등용 성공 인물의 스코프를 정리하기 전에 알림을 보낸다.
+			switch = {
+				trigger = $POSITION$
+				flag:roju = { post_notification = eafp_bakufu_politician_roju_appointed_notification }
+				flag:rojushuza = { post_notification = eafp_bakufu_politician_rojushuza_appointed_notification }
+				flag:tairo = { post_notification = eafp_bakufu_politician_tairo_appointed_notification }
+			}
 		}
 	}
 	if = {

@@ -24,7 +24,21 @@ eafp_japan_on_bakufu_politician_death = {
     effect = {
         if = {
             limit = { c:JAP = { eafp_japan_regional_active = yes } }
+            # 보직 변수가 삭제되기 전에 기존 후임 요청 변수에 직위를 기록한다.
+            c:JAP = {
+                if = {
+                    limit = { NOT = { has_variable = eafp_bakufu_offices_dissolving } }
+                    switch = {
+                        trigger = PREV.var:eafp_bakufu_office_position
+                        flag:roju = { set_variable = eafp_bakufu_recruitment_pending_roju }
+                        flag:rojushuza = { set_variable = eafp_bakufu_recruitment_pending_rojushuza }
+                        flag:tairo = { set_variable = eafp_bakufu_recruitment_pending_tairo }
+                    }
+                }
+            }
             remove_bakufu_politician_role = yes
+            # 명부 정리 후 기존 등용 잠금과 우선순위에 따라 후임 요청을 처리한다.
+            c:JAP = { eafp_japan_process_pending_office_recruitment = yes }
         }
         else = { remove_bakufu_politician_role_without_appointment = yes }
         c:JAP ?= { eafp_japan_refresh_regions = yes }
