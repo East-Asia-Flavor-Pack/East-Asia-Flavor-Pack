@@ -5,6 +5,17 @@ description: Build, edit, review, or debug Victoria 3 mods using the local Victo
 
 # Victoria 3 Modding
 
+## Required: Reuse Existing Systems and Minimize New State
+
+These constraints apply to both modifications and additions. Treat them as implementation requirements, not optional cleanup advice.
+
+- **Understand and modify the existing system first.** Trace the feature's entry points, callers, conditions, effects, state, and cleanup before editing. Extend the existing event chain, journal, on-action, or helper at the point that owns the behavior. Do not append a parallel event chain, polling hook, compatibility wrapper, or second implementation merely to avoid understanding the current one.
+- **Do not add variables by default.** Use existing engine state, existing feature state, direct triggers, or supported calculated values when they already express the condition. Do not introduce flags, counters, cached booleans, or mirrored progress just to remember something that can be checked directly. Reuse an existing variable only when its meaning, scope, and lifetime actually match; never repurpose unrelated state.
+- A new variable is justified only when the requested behavior requires information that cannot be recovered from existing state, such as a past player choice or an initial snapshot. Explain that concrete need, define its owner and initialization, and handle its updates and end-of-life/reset paths as applicable. Convenience and speculative future use are not sufficient reasons.
+- **Keep one-use effects and triggers inline.** Do not extract a non-repeated block into `common/scripted_effects/` or `common/scripted_triggers/` just to give it a name, shorten an event, or prepare for possible reuse. Repeated execution of the same call site, such as a monthly pulse, does not count as multiple uses. Reuse a compatible existing helper; create a new one only for actual shared logic at multiple call sites, or a verified engine interface that requires a named definition.
+- Preserve the existing source of truth and execution order. When replacing behavior, update its existing callers and remove only the obsolete logic made redundant by this change; do not leave two active paths that can apply the same effect or maintain conflicting state. Check all callers before changing a shared definition.
+- Before finishing, review every added variable, helper, event hook, and definition against these rules. Remove unnecessary additions and briefly justify any necessary new state or abstraction in the handoff.
+
 ## Core Workflow
 
 1. Identify the mod root and game root before editing.
@@ -14,6 +25,7 @@ description: Build, edit, review, or debug Victoria 3 mods using the local Victo
 
 2. Read the nearest existing mod pattern first.
    - Prefer files in the same feature area, country, or namespace.
+   - Trace the current implementation and its callers; identify where the requested behavior belongs before adding definitions or state.
    - Treat `.disable` files as intentionally disabled examples. Do not rename or enable them unless the user asks.
    - Preserve local naming prefixes such as `eafp_` and existing folder conventions.
 
@@ -27,8 +39,8 @@ description: Build, edit, review, or debug Victoria 3 mods using the local Victo
    - Use these logs to confirm trigger/effect names, scopes, modifier types, and custom localization functions.
 
 5. Implement the smallest scoped edit.
-   - Add new definitions in the matching `common/<type>/` folder.
-   - Add events under `events/` with a clear namespace.
+   - Update or extend existing definitions first, following the required reuse and state rules above.
+   - When a genuinely new definition is needed, place it in the matching `common/<type>/` folder; place necessary new events under `events/` with the feature's namespace conventions.
    - Add all visible strings to every required `localization/<language>/..._l_<language>.yml` file.
    - Add GUI/assets only when script-side support and localization are already wired.
    - When creating or editing text files for the mod, save them as UTF-8 with BOM and CRLF line endings.

@@ -7,7 +7,7 @@
 - Reuse vanilla scope patterns. Common scopes include `ROOT`, `THIS`, `PREV`, `root`, `prev`, `scope:<name>`, `c:TAG`, `s:STATE`, and typed references such as `law_type:law_x`.
 - Save scopes before later localization or event use with `save_scope_as = name`.
 - Use `hidden_effect` for non-player-facing follow-up effects.
-- Prefer named scripted effects/triggers when repeated logic appears more than twice.
+- Follow the required reuse and state rules in `../SKILL.md`: keep one-use effects/triggers inline, reuse compatible existing definitions, and extract new helpers only for actual shared logic or a verified engine requirement. Execution frequency alone is not reuse.
 
 ## Events
 
@@ -88,9 +88,9 @@ Scripted progress bars live in `common/scripted_progress_bars/`. Vanilla support
 
 ## Scripted Effects, Triggers, And Values
 
-- Put reusable effects in `common/scripted_effects/`.
-- Put reusable boolean checks in `common/scripted_triggers/`.
-- Put numeric formulas in `common/script_values/`.
+- Search existing definitions and their callers before adding a helper or formula. Extend the current feature at its existing integration point.
+- Put genuinely shared effects in `common/scripted_effects/` and genuinely shared boolean checks in `common/scripted_triggers/`; keep one-use blocks at their call site unless an engine interface requires a named definition.
+- Use `common/script_values/` for shared numeric formulas or consumers that require a named value. Use direct calculations where supported instead of introducing a variable to cache a derivable result.
 - Search `documentation/effects.log`, `documentation/triggers.log`, and `documentation/data_types_script.txt` when a trigger/effect fails or scope is uncertain.
 - Use parameterized scripted effects only after finding a vanilla example with matching syntax.
 

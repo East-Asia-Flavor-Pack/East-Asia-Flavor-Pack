@@ -65,6 +65,9 @@ rg -n "event_image|video =|icon =" events common
 
 ## Final Review
 
+- Verify the change follows `../SKILL.md`'s required reuse and state rules: each new variable stores necessary non-derivable information, and each new scripted effect/trigger has actual multiple call sites or a verified engine requirement.
+- Verify the existing feature owns the new behavior; no parallel implementation, duplicate event hook, mirrored state, or obsolete active path was left behind. Check affected callers of shared definitions.
+- For any necessary new variable, verify its scope, initialization, readers/writers, and reset or cleanup paths; explain why existing state cannot express the requirement.
 - Confirm every new player-facing object has localization.
 - Confirm all ids use the repo prefix and do not collide with vanilla.
 - Confirm event chains have an activation path and terminal path.

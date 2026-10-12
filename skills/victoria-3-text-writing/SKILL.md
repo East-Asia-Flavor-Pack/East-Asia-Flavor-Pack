@@ -7,6 +7,10 @@ description: Draft, rewrite, translate, or review player-facing Victoria 3 mod l
 
 Write localization that is structurally valid, historically grounded, and clearly divided by UI function. Match the current feature's terminology and voice without copying its mistakes.
 
+## Preserve Existing Implementation
+
+Use the feature's existing keys, scopes, variables, conditions, and localization branches. Do not add gameplay variables, duplicate feature logic, or extract one-use effects/triggers into scripted helpers merely to support new wording. If the authorized task also includes script changes, follow the required reuse and state rules in [Victoria 3 Modding](../victoria-3-modding/SKILL.md#required-reuse-existing-systems-and-minimize-new-state): trace and extend the existing system first, derive conditions from existing state where possible, and justify any necessary new state or shared helper.
+
 ## Workflow
 
 1. Read the script that consumes the text before drafting.
