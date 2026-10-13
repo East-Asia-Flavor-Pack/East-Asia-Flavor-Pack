@@ -903,8 +903,6 @@ flowchart TD
     RI["[V] ryukyu_rivalry.8 시작"]:::V
     RR["[V] .1~.4 외교 버튼 / .6 연간 사건"]:::V
     RE["[V] ryukyu_rivalry.5 일본·청 경쟁 결산<br/>.7 류큐 자체 진척 결산"]:::V
-    ANN["[A] 일본의 류큐 병합 외교전<br/>je_ryukyu_disposition"]:::A
-    CHI["[A] 청 측 je_ryukyu_disposition_chi"]:::A
     OWNS["일본이 류큐 주 전체 소유"]:::N
     F["[A] je_formosa_expedition"]:::A
     SURVEY["[A] 조사 버튼·진행도 24 초과<br/>formosa_expedition_events.2 / 대만 명분"]:::A
@@ -916,9 +914,7 @@ flowchart TD
     R --> RI
     R -. "버튼 / 연간 무작위" .-> RR
     R -->|각 진척 조건| RE
-    RE -. "이후 외교 상황에 따라 별도 병합 시도" .-> ANN
-    ANN --> CHI
-    ANN -. "실제 외교전·전쟁 결과로 병합한 경우" .-> OWNS
+    RE -. "이후 실제 외교전·전쟁 결과로 병합한 경우" .-> OWNS
     OWNS -. "활성화 조건" .-> F
     F -->|조사 진행| SURVEY
     F -->|완료| FE
@@ -933,7 +929,7 @@ flowchart TD
 
 ```
 
-`je_ryukyu_disposition` 두 저널은 현재 완료 효과가 비어 있다. 이 저널이 자동으로 류큐를 병합한다고 해석하지 않는다. 대만 원정은 **일본의 류큐 주 전체 소유**가 활성화 조건이므로 시작부터 이어지는 경로가 아니다. 조선의 류큐 개입은 바닐라 `je_ryukyu_rivalry`를 대체하거나 그 진척도를 공유하지 않는 별도 저널이다. 조선 대만 경로는 관련 대외 분기까지만 묶어 표시했다.
+류큐 병합은 실제 외교전·전쟁 결과에 따른다. 대만 원정은 **일본의 류큐 주 전체 소유**가 활성화 조건이므로 시작부터 이어지는 경로가 아니다. 조선의 류큐 개입은 바닐라 `je_ryukyu_rivalry`를 대체하거나 그 진척도를 공유하지 않는 별도 저널이다. 조선 대만 경로는 관련 대외 분기까지만 묶어 표시했다.
 
 ---
 
