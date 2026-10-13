@@ -1,9 +1,11 @@
 # 조선 콘텐츠 정리
 
-> 기준: 2026-10-07, 저장소 커밋 `aa3f9261`의 스크립트와 한국어 현지화.
+> 기준: 2026-10-07, 저장소 커밋 `aa3f9261`의 스크립트와 한국어 현지화. 조선 쟁탈 부분은 2026-10-13 구현으로 갱신했다.
 > 조선(KOR)의 고유 콘텐츠 및 직접 연결되는 공통 콘텐츠를 정리한다. 게임 실행 검증이 아닌 소스 분석이며, 설명문과 구현이 다르면 구현을 기준으로 적었다. `.disable`, 주석 처리된 내용, 기획 문서는 현재 활성 콘텐츠와 구분한다.
 
 ## 목차
+
+- [조선 쟁탈전: 활성 구현](#scramble-for-korea)
 
 1. [전체 구조와 시작 상태](#overview)
 2. [주상의 상태와 왕위 계승](#royal-health)
@@ -761,14 +763,13 @@ flowchart TD
 
 상세 흐름도: [비활성·주석 처리·차단된 정의](#flow-disabled), [간도 일지](#flow-manchuria).
 
-이 절은 문서의 설명 범위를 명확히 하기 위한 구분이다. 아래 사항을 문서화하면서 게임 스크립트는 수정하지 않았다.
+이 절은 미완성 콘텐츠의 구분이다. 조선 쟁탈전은 2026-10-13 활성 구현으로 전환되어 아래 별도 절에서 설명한다.
 
 ### 미완성 또는 현재 진행 경로에서 제외한 항목
 
 | 항목 | 현재 상태 |
 |---|---|
 | 간도 구상 `je_gando_ambition` | `.txt`에 정의되어 있지만 `complete`와 `on_complete`가 비어 있음. 완성된 간도 획득 경로로 볼 수 없음 |
-| 조선 쟁탈전 `je_scramble_for_korea` | 일지와 이벤트가 `.disable`. 현지화·수치·기획은 남아 있지만 활성 흐름에 포함하지 않음 |
 | 동아시아 헌법 | 이벤트 파일이 `.disable`. 군민동치의 투표권 분기와 별개로 취급 |
 | 서원의 폐단 `je_korean_seowon` | 한국어 현지화는 있으나 활성 일지 정의는 검색에서 확인되지 않음 |
 | 구판 조선 유신·한일동조론 등 | 오래된 현지화 키만으로 활성 콘텐츠라고 판정하지 않음 |
@@ -779,7 +780,6 @@ flowchart TD
 flowchart LR
     A["간도 준비 조건 충족"] --> B["간도 일지 정의"]
     B --> C["완료 조건·보상 비어 있음"]
-    D["조선 쟁탈전 기획·잔존 데이터"] --> E["일지·이벤트 disable: 활성 진행 없음"]
     F["동아시아 헌법 이벤트"] --> G["disable: 현행 군민동치와 구분"]
 ```
 
@@ -796,7 +796,69 @@ flowchart LR
 | 만주 정착 | 대상 주 모두에 한국 문화 공동체가 없어야 하는 조건 |
 | 신민회 | 사업 건물과 달리 설립 조건은 서울 섬유 공장 |
 
-근거: [간도 포함 개혁 일지](../common/journal_entries/eafp_korean_reformation.txt), [비활성 쟁탈전 일지](../common/journal_entries/eafp_scramble_for_korea.disable), [비활성 쟁탈전 이벤트](../events/eafp_scramble_for_korea_events.disable), [쟁탈전 설계안](../scratch/scramble_for_korea_journal_design_plan.md), [비활성 헌법 이벤트](../events/eafp_eastasian_constitution_events.disable). 나머지 구현 차이의 근거는 각 콘텐츠 절의 소스 링크를 참조한다.
+근거: [간도 포함 개혁 일지](../common/journal_entries/eafp_korean_reformation.txt), [쟁탈전 일지](../common/journal_entries/eafp_scramble_for_korea.txt), [쟁탈전 이벤트](../events/eafp_scramble_for_korea_events.txt), [쟁탈전 설계안](../scratch/scramble_for_korea_journal_design_plan.md), [비활성 헌법 이벤트](../events/eafp_eastasian_constitution_events.disable). 나머지 구현 차이의 근거는 각 콘텐츠 절의 소스 링크를 참조한다.
+
+
+<a id="scramble-for-korea"></a>
+## 조선 쟁탈전 — 2026-10-13 활성 구현
+
+청 존재·중국 미붕괴, 일본의 기존 `japan_restoration_complete`, 미승인 조선을 조건으로 국제 일지를 시작한다. 일본은 막부 유지·군주제 폐지로 유신 일지를 끝낸 경우도 포함한다. 조선은 기본 관여국, 청·일은 각 전용 조건, 다른 열강은 동북아 이해관계 3 이상에서 참가하고 2 이상에서 유지한다. 참가 여부는 실제 JE 관여 상태가 원본이다.
+
+각 관여국의 `scramble_for_korea_participants_influence`를 0–100으로 관리하고 custom GUI가 관여국별 막대를 표시한다. 해군력·외교 관계 점수는 산정하지 않는다. 금전 지원·의무·고문·조선이 속한 블록의 지도자(청 포함 월 +1), 조선 등급·외세 압력 억제를 적용한다. 조선의 하위 개혁 4개는 각 +5, 상위 개혁 완료는 추가 +10이다. 활성 중 조선의 지렛대 저항은 -50%다.
+
+외국의 단독 100은 영향력 승리다. 조선은 독립·승인·단독 100을 모두 충족해야 승리하며 동률이면 계속 경쟁한다. 청 이외 직접 종주국은 자동 승리한다. 청 종속 조선에 다른 관여국이 영향력으로 승리하면 조선을 승자에게 이전한다. 조청전쟁 저널과의 연결은 없으며, 일반 전쟁 규칙은 실제 전쟁·외교 상태만 읽는다.
+
+```mermaid
+flowchart TD
+    J["je_scramble_for_korea"] --> ENTRY{"최초 참가·재참가 국가"}
+    ENTRY -->|조선| E1[".1 풍전등화"]
+    ENTRY -->|청·일| E2[".2 한반도를 향한 야망"]
+    ENTRY -->|기타 열강| E3[".3 조선 문제"]
+    E1 --> LOOP
+    E2 --> LOOP
+    E3 --> LOOP
+    LOOP -->|신규 참가·재참가| ENTRY
+    J --> LOOP["참가 동기화 / 월간 영향력 / 종료 판정"]
+    REFORM["하위 개혁 각 +5 / 상위 완료 +10"] --> LOOP
+    LOOP --> E4[".4 개화파 지원"]
+    LOOP --> E5[".5 조선 내 사업"]
+    LOOP --> E10[".10 거류민 분쟁"]
+    LOOP --> E11[".11 고문단 충돌"]
+    LOOP --> E12[".12 친외국 로비 지원"]
+    B5["상권 버튼"] --> E5
+    B6["고문 버튼"] --> E6[".6 군사고문 제안"]
+    B8["권익 주장 버튼"] --> E8[".8 종주권·권익 주장"]
+    B9["포섭 버튼"] --> E9[".9 후원자 탐색"]
+    BSELF["자주 외교 버튼 / 조선 +3·단독 외국 선두 -3"] --> LOOP
+    E9 --> E12
+    E4 --> E7[".7 조선 수락·거부·절충"]
+    E5 --> E7
+    E6 --> E7
+    E10 --> E7
+    E12 --> E7
+    E7 -->|고문 수락| E13[".13 경쟁국 대응"]
+    E7 -->|그 밖의 응답| LOOP
+    E8 --> E13
+    E11 -->|중재| LOOP
+    E11 -->|철수 요구| E13
+    E13 --> LOOP
+    LOOP -->|일본 승리| E23[".23 일본 우세"]
+    LOOP -->|청 영향력 승리| E24[".24 청 우세"]
+    LOOP -->|조선 독립·승인·단독 100| E20[".20 자주권 확보"]
+    LOOP -->|존속 조건 상실| E21[".21 경쟁 중단"]
+    LOOP -->|기타 국가 승리| E22[".22 새로운 패권국"]
+    E23 --> END["종료 잠금·외교 효과 1회·임시 상태 정리"]
+    E24 --> END
+    E20 --> END
+    E21 --> END
+    E22 --> END
+```
+
+제안 거부·유효성 상실은 해당 체인만 닫는다. 미결 제안은 조선의 임시 잠금 하나로 직렬화하며, 이탈한 국가가 재참가해도 취소된 제안은 되살아나지 않는다. 최종 결과 이벤트는 통지만 담당하고 종속관계·보상은 JE 종료 콜백이 한 번만 처리한다.
+
+소스: [일지](../common/journal_entries/eafp_scramble_for_korea.txt), [이벤트 18개](../events/eafp_scramble_for_korea_events.txt), [GUI](../gui/journal_entry_widgets/eafp_je_scramble_for_korea.gui), [설계·구현 기록](../scratch/scramble_for_korea_journal_design_plan.md), [검증 도구](../tools/validate_korea_scramble.py).
+
+정적 구조·참조와 실제 트리거를 읽는 조건 사례는 검증했다. 게임 실행 환경을 확인하지 못했으므로 GUI 표시·콜백 순서·DLC 호환성·이벤트 만료·종속관계 이전은 게임 내 확인이 남아 있다.
 
 <a id="source-index"></a>
 ## 21. 이벤트·소스 찾아보기
@@ -884,11 +946,11 @@ flowchart LR
 | [events/soi_events/00_ep1_korea_events.txt](../events/soi_events/00_ep1_korea_events.txt) | 0 | 14 | 활성 파일 |
 | [events/eafp_ryukyu_events.txt](../events/eafp_ryukyu_events.txt) | 0 | 9 | 활성 파일 |
 | [events/eafp_eastasian_expansionism_events.txt](../events/eafp_eastasian_expansionism_events.txt) | 0 | 8 | 활성 파일 |
-| [common/journal_entries/eafp_scramble_for_korea.disable](../common/journal_entries/eafp_scramble_for_korea.disable) | 1 | 0 | 비활성 |
-| [events/eafp_scramble_for_korea_events.disable](../events/eafp_scramble_for_korea_events.disable) | 0 | 5 | 비활성 |
+| [common/journal_entries/eafp_scramble_for_korea.txt](../common/journal_entries/eafp_scramble_for_korea.txt) | 1 | 0 | 활성 구현, 게임 실행 미검증 |
+| [events/eafp_scramble_for_korea_events.txt](../events/eafp_scramble_for_korea_events.txt) | 0 | 18 | 활성 구현, 게임 실행 미검증 |
 | [events/eafp_eastasian_constitution_events.disable](../events/eafp_eastasian_constitution_events.disable) | 0 | 5 | 비활성 |
 
-총 **일지 36개·이벤트 249개**를 개별 노드로 수록했다. 이 수에는 비활성·차단·주석 정의도 포함되며 마지막 그림에서 구분한다. 원본 핵심 파일의 정의 283개와 호출 추적·주석 복원으로 추가된 2개를 대조했다. 외부 호출 지점과 정의 미확인 참조는 그림에 별도로 표시한다.
+기존 상세 도표의 기준은 2026-10-07이다. 조선 쟁탈전은 아래 활성 구현 절의 일지 1개·이벤트 18개로 갱신했으며, 과거 비활성 도표의 관련 노드와 호출은 제거했다.
 
 - [주상의 상태·도입·왕실 활동](#flow-health)
 - [철종 성학·경연](#flow-education)
@@ -2214,16 +2276,6 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    n_africa_colonial_events_4["africa_colonial_events.4<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_5["africa_colonial_events.5<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_6["africa_colonial_events.6<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_7["africa_colonial_events.7<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_40["africa_colonial_events.40<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_41["africa_colonial_events.41<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_51["africa_colonial_events.51<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_53["africa_colonial_events.53<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_africa_colonial_events_54["africa_colonial_events.54<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_amazon_2["amazon.2<br/>외부 정의·저장소에서 본문 미확인"]:::external
     n_eafp_eastasian_constitution_events_2["eafp_eastasian_constitution_events.2<br/>비활성 파일"]:::disabled
     n_eafp_eastasian_constitution_events_3["eafp_eastasian_constitution_events.3<br/>비활성 파일"]:::disabled
     n_eafp_eastasian_constitution_events_4["eafp_eastasian_constitution_events.4<br/>비활성 파일"]:::disabled
@@ -2231,32 +2283,10 @@ flowchart TD
     n_eafp_eastasian_constitution_events_6["eafp_eastasian_constitution_events.6<br/>비활성 파일"]:::disabled
     n_eafp_kor_mainline_336["eafp_kor_mainline.336<br/>주석 처리"]:::disabled
     n_eafp_kor_mainline_338["eafp_kor_mainline.338<br/>주석 처리"]:::disabled
-    n_je_scramble_for_korea["je_scramble_for_korea<br/>조선 쟁탈전<br/>비활성 파일"]:::disabled
     n_korea_monarchy_1["korea_monarchy.1<br/>기본 왕실 사건 차단: always = no"]:::disabled
     n_korea_monarchy_2["korea_monarchy.2<br/>기본 왕실 사건 차단: always = no"]:::disabled
     n_korea_monarchy_3["korea_monarchy.3<br/>기본 왕실 사건 차단: always = no"]:::disabled
     n_korea_monarchy_4["korea_monarchy.4<br/>기본 왕실 사건 차단: always = no"]:::disabled
-    n_patagonia_2["patagonia.2<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_scramble_for_korea_events_1["scramble_for_korea_events.1<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_scramble_for_korea_events_2["scramble_for_korea_events.2<br/>외부 정의·저장소에서 본문 미확인"]:::external
-    n_scramble_for_korea_events_4["scramble_for_korea_events.4<br/>조선에서의 선교 활동<br/>비활성 파일"]:::disabled
-    n_scramble_for_korea_events_5["scramble_for_korea_events.5<br/>비활성 파일"]:::disabled
-    n_scramble_for_korea_events_10["scramble_for_korea_events.10<br/>비활성 파일"]:::disabled
-    n_scramble_for_korea_events_11["scramble_for_korea_events.11<br/>비활성 파일"]:::disabled
-    n_scramble_for_korea_events_12["scramble_for_korea_events.12<br/>비활성 파일"]:::disabled
-    n_je_scramble_for_korea -.->|"시작 / 호출"| n_scramble_for_korea_events_1
-    n_je_scramble_for_korea -.->|"완료 / 호출"| n_scramble_for_korea_events_2
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_4
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_5
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_6
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 5"| n_africa_colonial_events_7
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_patagonia_2
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_amazon_2
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_40
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_41
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_51
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_53
-    n_je_scramble_for_korea -.->|"매월 / 무작위 후보·가중치 10"| n_africa_colonial_events_54
     n_eafp_eastasian_constitution_events_2 -.->|"선택 eafp_eastasian_constitution_events.2.a / 호출"| n_eafp_eastasian_constitution_events_3
     n_eafp_eastasian_constitution_events_2 -.->|"선택 eafp_eastasian_constitution_events.2.b / 호출"| n_eafp_eastasian_constitution_events_3
     n_eafp_eastasian_constitution_events_3 -.->|"선택 eafp_eastasian_constitution_events.3.a / 호출"| n_eafp_eastasian_constitution_events_4
@@ -2281,15 +2311,9 @@ flowchart TD
 | `eafp_eastasian_constitution_events.6` | 동적 제목 또는 현지화 미확인 | [events/eafp_eastasian_constitution_events.disable:267](../events/eafp_eastasian_constitution_events.disable#L267) | 비활성 파일 |
 | `eafp_kor_mainline.336` | 동적 제목 또는 현지화 미확인 | [events/eafp_kor_events/eafp_kor_mainline.txt:8624](../events/eafp_kor_events/eafp_kor_mainline.txt#L8624) | 주석 정의 |
 | `eafp_kor_mainline.338` | 동적 제목 또는 현지화 미확인 | [events/eafp_kor_events/eafp_kor_mainline.txt:8750](../events/eafp_kor_events/eafp_kor_mainline.txt#L8750) | 주석 정의 |
-| `je_scramble_for_korea` | 조선 쟁탈전 | [common/journal_entries/eafp_scramble_for_korea.disable:1](../common/journal_entries/eafp_scramble_for_korea.disable#L1) | 비활성 파일 |
 | `korea_monarchy.1` | 기본 왕실 사건 차단: always = no | [events/soi_events/00_ep1_korea_events.txt:891](../events/soi_events/00_ep1_korea_events.txt#L891) | trigger가 always = no |
 | `korea_monarchy.2` | 기본 왕실 사건 차단: always = no | [events/soi_events/00_ep1_korea_events.txt:899](../events/soi_events/00_ep1_korea_events.txt#L899) | trigger가 always = no |
 | `korea_monarchy.3` | 기본 왕실 사건 차단: always = no | [events/soi_events/00_ep1_korea_events.txt:907](../events/soi_events/00_ep1_korea_events.txt#L907) | trigger가 always = no |
 | `korea_monarchy.4` | 기본 왕실 사건 차단: always = no | [events/soi_events/00_ep1_korea_events.txt:915](../events/soi_events/00_ep1_korea_events.txt#L915) | trigger가 always = no |
-| `scramble_for_korea_events.4` | 조선에서의 선교 활동 | [events/eafp_scramble_for_korea_events.disable:3](../events/eafp_scramble_for_korea_events.disable#L3) | 비활성 파일 |
-| `scramble_for_korea_events.5` | 동적 제목 또는 현지화 미확인 | [events/eafp_scramble_for_korea_events.disable:146](../events/eafp_scramble_for_korea_events.disable#L146) | 비활성 파일 |
-| `scramble_for_korea_events.10` | 동적 제목 또는 현지화 미확인 | [events/eafp_scramble_for_korea_events.disable:252](../events/eafp_scramble_for_korea_events.disable#L252) | 비활성 파일 |
-| `scramble_for_korea_events.11` | 동적 제목 또는 현지화 미확인 | [events/eafp_scramble_for_korea_events.disable:344](../events/eafp_scramble_for_korea_events.disable#L344) | 비활성 파일 |
-| `scramble_for_korea_events.12` | 동적 제목 또는 현지화 미확인 | [events/eafp_scramble_for_korea_events.disable:476](../events/eafp_scramble_for_korea_events.disable#L476) | 비활성 파일 |
 
 <!-- END GENERATED JOSEON FLOWCHARTS -->

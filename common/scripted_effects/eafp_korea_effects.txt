@@ -1805,3 +1805,165 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 		}
 	}
 }
+
+
+# Country scope; used by reform callbacks, monthly calculation and event choices.
+scramble_for_korea_change_influence = {
+    if = {
+        limit = {
+            scramble_for_korea_participant = yes
+            NOT = { has_global_variable = scramble_for_korea_finished }
+        }
+        if = {
+            limit = { NOT = { has_variable = scramble_for_korea_participants_influence } }
+            set_variable = { name = scramble_for_korea_participants_influence value = 0 }
+        }
+        change_variable = { name = scramble_for_korea_participants_influence add = $AMOUNT$ }
+        clamp_variable = { name = scramble_for_korea_participants_influence min = 0 max = 100 }
+    }
+}
+# Called on departure and at both terminal paths; button cooldowns deliberately survive departure.
+scramble_for_korea_clear_country = {
+    remove_variable = scramble_for_korea_participants_influence
+    remove_modifier = modifier_korea_scramble_advisers
+}
+# Shared weekly/monthly JE synchronization. Membership is always changed first.
+scramble_for_korea_sync = {
+    every_country = {
+        if = {
+            limit = {
+                is_involved_in_journal_entry = je_scramble_for_korea
+                NOT = { scramble_for_korea_eligible = yes }
+            }
+            scope:journal_entry = { remove_involved_country = prev }
+            scramble_for_korea_clear_country = yes
+        }
+        else_if = {
+            limit = {
+                NOT = { is_involved_in_journal_entry = je_scramble_for_korea }
+                scramble_for_korea_eligible = yes
+            }
+            scope:journal_entry = { add_involved_country = prev }
+        }
+        if = {
+            limit = { is_involved_in_journal_entry = je_scramble_for_korea }
+            if = {
+                limit = { NOT = { has_variable = scramble_for_korea_participants_influence } }
+                set_variable = { name = scramble_for_korea_participants_influence value = 0 }
+            }
+        }
+        else_if = {
+            limit = { has_variable = scramble_for_korea_participants_influence }
+            scramble_for_korea_clear_country = yes
+        }
+    }
+    # Keep the lock until the old event closes, including after departure/re-entry.
+    c:KOR ?= {
+        if = {
+            limit = {
+                has_variable = scramble_for_korea_pending_offer
+                NOT = { var:scramble_for_korea_pending_offer = flag:scramble_for_korea_cancelled }
+                OR = {
+                    NOT = { exists = var:scramble_for_korea_pending_offer }
+                    var:scramble_for_korea_pending_offer ?= { NOT = { scramble_for_korea_participant = yes } }
+                    scramble_for_korea_war = yes
+                }
+            }
+            set_variable = { name = scramble_for_korea_pending_offer value = flag:scramble_for_korea_cancelled days = 365 }
+        }
+    }
+}
+scramble_for_korea_cleanup = {
+    every_country = {
+        scramble_for_korea_clear_country = yes
+        remove_modifier = modifier_korea_scramble_diplomatic_cost
+        remove_modifier = modifier_korea_scramble_administration_cost
+        every_interest_group = {
+            remove_modifier = modifier_korea_enlightenment_support
+            remove_modifier = modifier_reject_korea_enlightenment_support
+            remove_modifier = modifier_curtailed_kor_labor_abuses
+            remove_modifier = modifier_struggling_kor_colonists
+        }
+    }
+    c:KOR ?= {
+        remove_modifier = modifier_kor_foreign_influence
+        remove_variable = scramble_for_korea_pending_offer
+        every_political_movement = { remove_modifier = modifier_enlightenment_support_from_foreign }
+        every_scope_building = { remove_modifier = modifier_kor_improved_labor_conditions }
+    }
+}
+# Country scope. Buttons and the monthly lottery use this same offer entry point.
+scramble_for_korea_begin_offer = {
+    if = {
+        limit = {
+            scramble_for_korea_participant = yes
+            scramble_for_korea_running = yes
+            NOT = { any_country = { scramble_for_korea_score_winner = yes } }
+            c:KOR = { NOT = { has_variable = scramble_for_korea_pending_offer } }
+        }
+        save_scope_as = scramble_actor
+        c:KOR = { set_variable = { name = scramble_for_korea_pending_offer value = scope:scramble_actor days = 365 } }
+        save_scope_value_as = { name = scramble_kind value = $EVENT$ }
+        if = {
+            limit = { scope:scramble_kind = 11 }
+            c:KOR = { trigger_event = { id = scramble_for_korea_events.11 popup = yes } }
+        }
+        else = { trigger_event = { id = scramble_for_korea_events.$EVENT$ popup = yes } }
+    }
+}
+# Only the current chain can release its lock. Cancelled locks block newer offers.
+scramble_for_korea_close_offer = {
+    c:KOR ?= {
+        if = {
+            limit = {
+                OR = {
+                    var:scramble_for_korea_pending_offer ?= scope:scramble_actor
+                    var:scramble_for_korea_pending_offer ?= flag:scramble_for_korea_cancelled
+                }
+            }
+            remove_variable = scramble_for_korea_pending_offer
+        }
+    }
+}
+# Shared by adviser acceptance and rights claims. Exactly one strongest rival responds.
+scramble_for_korea_rival_response = {
+    if = {
+        limit = {
+            any_country = {
+                scramble_for_korea_participant = yes
+                NOR = { c:KOR ?= this this = scope:scramble_actor }
+            }
+        }
+        random_country = {
+            limit = {
+                scramble_for_korea_participant = yes
+                NOR = { c:KOR ?= this this = scope:scramble_actor }
+                var:scramble_for_korea_participants_influence = scramble_for_korea_rival_lead
+            }
+            save_scope_as = scramble_rival
+            trigger_event = { id = scramble_for_korea_events.13 popup = yes }
+        }
+    }
+    else = { scramble_for_korea_close_offer = yes }
+}
+
+# Country-scoped notification shared by JE members and a nonmember overlord winner.
+scramble_for_korea_notify_result = {
+    if = { limit = { scope:scramble_winner = { c:KOR ?= this } } trigger_event = { id = scramble_for_korea_events.20 popup = yes } }
+    else_if = { limit = { scope:scramble_winner = { c:JAP ?= this } } trigger_event = { id = scramble_for_korea_events.23 popup = yes } }
+    else_if = { limit = { scope:scramble_winner = { c:CHI ?= this } } trigger_event = { id = scramble_for_korea_events.24 popup = yes } }
+    else = { trigger_event = { id = scramble_for_korea_events.22 popup = yes } }
+}
+
+# Country scope; shared by initial participation and later entry/re-entry.
+scramble_for_korea_notify_participation = {
+    if = {
+        limit = { c:KOR ?= this }
+        trigger_event = { id = scramble_for_korea_events.1 popup = yes }
+    }
+    else_if = {
+        limit = { OR = { c:CHI ?= this c:JAP ?= this } }
+        trigger_event = { id = scramble_for_korea_events.2 popup = yes }
+    }
+    else = { trigger_event = { id = scramble_for_korea_events.3 popup = yes } }
+}

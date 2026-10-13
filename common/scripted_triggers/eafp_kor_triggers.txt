@@ -42,3 +42,140 @@ eafp_jqw_war_support_below_high_trigger = {
 		var:eafp_var_jqw_current_war_support < 50
 	}
 }
+
+
+# Shared by the international JE, buttons, events and calculations. Country scope.
+scramble_for_korea_eligible = {
+    OR = {
+        c:KOR ?= this
+        AND = {
+            c:CHI ?= this
+            NOT = { has_global_variable = china_shatters }
+            OR = {
+                c:KOR ?= { is_subject_of = c:CHI }
+                is_country_type = recognized
+            }
+        }
+        AND = {
+            c:JAP ?= this
+            has_variable = japan_restoration_complete
+            is_country_type = recognized
+        }
+        AND = {
+            NOR = { c:KOR ?= this c:CHI ?= this c:JAP ?= this }
+            country_rank >= rank_value:great_power
+            OR = {
+                has_strategic_region_interest_tier = { strategic_region = sr:region_northeast_asia value >= 3 }
+                AND = {
+                    is_involved_in_journal_entry = je_scramble_for_korea
+                    has_strategic_region_interest_tier = { strategic_region = sr:region_northeast_asia value >= 2 }
+                }
+            }
+        }
+    }
+}
+scramble_for_korea_participant = {
+    is_involved_in_journal_entry = je_scramble_for_korea
+    scramble_for_korea_eligible = yes
+}
+# These world-state checks work with a contextless JE as well as country events.
+scramble_for_korea_overlord_wins = {
+    exists = c:KOR
+    c:KOR = {
+        is_subject = yes
+        exists = overlord
+        overlord ?= { NOT = { c:CHI ?= this } }
+    }
+}
+scramble_for_korea_invalid = {
+    NOT = { scramble_for_korea_overlord_wins = yes }
+    OR = {
+        NOT = { exists = c:KOR }
+        NOT = { exists = c:CHI }
+        NOT = { exists = c:JAP }
+        has_global_variable = china_shatters
+    }
+}
+scramble_for_korea_war = {
+    OR = {
+        c:KOR ?= { is_at_war = yes }
+        any_country = {
+            scramble_for_korea_participant = yes
+            any_country = {
+                scramble_for_korea_participant = yes
+                has_war_with = prev
+            }
+        }
+    }
+}
+scramble_for_korea_running = {
+    NOT = { has_global_variable = scramble_for_korea_finished }
+    c:KOR ?= {
+        is_involved_in_journal_entry = je_scramble_for_korea
+        OR = { is_subject = no exists = overlord }
+    }
+    NOR = {
+        scramble_for_korea_invalid = yes
+        scramble_for_korea_overlord_wins = yes
+        scramble_for_korea_war = yes
+    }
+}
+scramble_for_korea_score_winner = {
+    scramble_for_korea_participant = yes
+    has_variable = scramble_for_korea_participants_influence
+    var:scramble_for_korea_participants_influence >= 100
+    any_country = {
+        count = 1
+        scramble_for_korea_participant = yes
+        has_variable = scramble_for_korea_participants_influence
+        var:scramble_for_korea_participants_influence >= 100
+    }
+    OR = {
+        NOT = { c:KOR ?= this }
+        AND = { is_subject = no is_country_type = recognized }
+    }
+}
+# A single country-valued lock serializes the complete proposal/response chain.
+# Cancellation changes its value to a flag; it is not released until that event closes.
+scramble_for_korea_offer_valid = {
+    scramble_for_korea_running = yes
+    NOT = { any_country = { scramble_for_korea_score_winner = yes } }
+    exists = scope:scramble_actor
+    scope:scramble_actor = { scramble_for_korea_participant = yes }
+    c:KOR = { var:scramble_for_korea_pending_offer ?= scope:scramble_actor }
+}
+
+
+scramble_for_korea_offer_available = {
+    scramble_for_korea_participant = yes
+    scramble_for_korea_running = yes
+    NOT = { any_country = { scramble_for_korea_score_winner = yes } }
+    c:KOR = {
+        OR = {
+            NOT = { has_variable = scramble_for_korea_pending_offer }
+            var:scramble_for_korea_pending_offer ?= prev
+        }
+    }
+}
+# Saved building/IG/pop must still exist when Korea answers, not merely when offered.
+scramble_for_korea_response_valid = {
+    scramble_for_korea_offer_valid = yes
+    trigger_if = {
+        limit = { scope:scramble_kind = 5 }
+        exists = scope:scramble_building
+        scope:scramble_building = {
+            owner = c:KOR
+            levels_owned_by_country = { target = scope:scramble_actor value > 0 }
+        }
+    }
+    trigger_if = {
+        limit = { scope:scramble_kind = 12 }
+        exists = scope:scramble_ig
+        scope:scramble_ig = { owner = c:KOR }
+    }
+    trigger_if = {
+        limit = { scope:scramble_kind = 10 }
+        exists = scope:scramble_pop
+        scope:scramble_pop = { owner = c:KOR culture = { is_primary_culture_of = scope:scramble_actor } }
+    }
+}

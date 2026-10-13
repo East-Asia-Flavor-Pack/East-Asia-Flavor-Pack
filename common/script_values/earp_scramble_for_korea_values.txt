@@ -1,1 +1,76 @@
-﻿
+﻿# Country-scoped formulas shared by the monthly pulse and the GUI.
+scramble_for_korea_money_support = {
+    value = 0
+    save_temporary_scope_as = scramble_payer
+    every_scope_treaty = {
+        every_scope_article = {
+            limit = {
+                has_type = money_transfer
+                source_country = scope:scramble_payer
+                target_country = c:KOR
+                input_quantity > 0
+            }
+            add = { value = input_quantity divide = 1000 }
+        }
+    }
+    min = 0
+    max = 1
+}
+scramble_for_korea_monthly_change = {
+    value = 0
+    if = {
+        limit = { scramble_for_korea_running = yes scramble_for_korea_participant = yes }
+        if = {
+            limit = { c:KOR ?= this }
+            if = {
+                limit = {
+                    NOT = {
+                        any_country = {
+                            scramble_for_korea_participant = yes
+                            NOT = { c:KOR ?= this }
+                            var:scramble_for_korea_participants_influence >= 50
+                        }
+                    }
+                }
+                add = { value = 0.5 desc = korea_scramble_drift_pressure }
+            }
+            if = { limit = { country_rank = rank_value:great_power } add = { value = 0.75 desc = korea_scramble_drift_rank } }
+            else_if = {
+                limit = { OR = { country_rank = rank_value:major_power country_rank = rank_value:unrecognized_major_power } }
+                add = { value = 0.5 desc = korea_scramble_drift_rank }
+            }
+            else_if = {
+                limit = { OR = { country_rank = rank_value:minor_power country_rank = rank_value:unrecognized_regional_power } }
+                add = { value = 0.25 desc = korea_scramble_drift_rank }
+            }
+        }
+        else = {
+            add = { value = scramble_for_korea_money_support desc = korea_scramble_drift_money }
+            if = { limit = { c:KOR = { owes_obligation_to = prev } } add = { value = 0.5 desc = korea_scramble_drift_obligation } }
+            if = { limit = { has_modifier = modifier_korea_scramble_advisers } add = { value = 0.5 desc = korea_scramble_drift_advisers } }
+            if = {
+                limit = { is_power_bloc_leader = yes is_in_same_power_bloc = c:KOR }
+                add = { value = 1 desc = korea_scramble_drift_bloc }
+            }
+        }
+    }
+    min = -1
+    max = 1
+}
+scramble_for_korea_foreign_lead = {
+    value = 0
+    every_country = {
+        limit = { scramble_for_korea_participant = yes NOT = { c:KOR ?= this } }
+        min = var:scramble_for_korea_participants_influence
+    }
+}
+scramble_for_korea_rival_lead = {
+    value = 0
+    every_country = {
+        limit = {
+            scramble_for_korea_participant = yes
+            NOR = { c:KOR ?= this this = scope:scramble_actor }
+        }
+        min = var:scramble_for_korea_participants_influence
+    }
+}
