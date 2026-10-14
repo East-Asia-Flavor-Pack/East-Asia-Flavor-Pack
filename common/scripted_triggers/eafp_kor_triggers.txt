@@ -88,12 +88,20 @@ scramble_for_korea_overlord_wins = {
     }
 }
 scramble_for_korea_invalid = {
+    NOT = { exists = c:KOR }
+}
+# Actual JE membership decides an uncontested Korean victory after departures.
+# A non-Qing direct overlord still takes precedence, even if it is not involved.
+scramble_for_korea_korea_unopposed = {
+    NOT = { has_global_variable = scramble_for_korea_finished }
+    exists = c:KOR
+    c:KOR = { is_involved_in_journal_entry = je_scramble_for_korea }
     NOT = { scramble_for_korea_overlord_wins = yes }
-    OR = {
-        NOT = { exists = c:KOR }
-        NOT = { exists = c:CHI }
-        NOT = { exists = c:JAP }
-        has_global_variable = china_shatters
+    NOT = {
+        any_country = {
+            is_involved_in_journal_entry = je_scramble_for_korea
+            NOT = { c:KOR ?= this }
+        }
     }
 }
 scramble_for_korea_war = {
@@ -117,6 +125,7 @@ scramble_for_korea_running = {
     NOR = {
         scramble_for_korea_invalid = yes
         scramble_for_korea_overlord_wins = yes
+        scramble_for_korea_korea_unopposed = yes
         scramble_for_korea_war = yes
     }
 }
