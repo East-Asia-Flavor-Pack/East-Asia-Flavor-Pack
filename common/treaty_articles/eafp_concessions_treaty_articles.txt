@@ -1,0 +1,213 @@
+﻿eafp_grant_concession = {
+	kind = directed
+	cost = 0
+	icon = "gfx/interface/icons/diplomatic_treaties_articles_icons/treaty_port_treaties.dds"
+	# An executed, non-renegotiable article must not repeat its one-time effect.
+	flags = { can_be_enforced }
+	usage_limit = once_per_side_with_same_inputs
+	maintenance_paid_by = target_country
+	required_inputs = { state }
+
+	visible = { NOT = { is_country_type = decentralized } }
+	possible = { always = yes }
+	state_valid_trigger = {
+		scope:input = {
+			owner = root
+			eafp_concession_can_grant = { HOLDER = scope:other_country }
+		}
+	}
+	can_ratify = {
+		custom_tooltip = {
+			text = eafp_grant_concession_valid_tt
+			OR = {
+				eafp_concession_unchanged_article = { ARTICLE = eafp_grant_concession }
+				AND = {
+					exists = scope:article.input_state
+					scope:article.input_state = {
+						owner = scope:source_country
+						eafp_concession_can_grant = { HOLDER = scope:target_country }
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			text = eafp_concession_duplicate_article_tt
+			trigger_if = {
+				limit = { exists = scope:treaty exists = scope:article.input_state }
+				NOT = {
+					scope:treaty = {
+						any_scope_article_option = {
+							count > 1
+							has_type = eafp_grant_concession
+							source_country = scope:source_country
+							target_country = scope:target_country
+							input_state = scope:article.input_state
+						}
+					}
+				}
+			}
+		}
+		# Grant and return preconditions are mutually exclusive for new articles.
+		# Do not reject a return because a locked, previously executed grant remains.
+	}
+	on_entry_into_force = {
+		scope:article_options = {
+			source_country = { save_scope_as = concession_host }
+			target_country = { save_scope_as = concession_holder }
+			input_state ?= {
+				save_scope_as = concession_state
+				eafp_concession_grant_effect = yes
+			}
+		}
+	}
+	# Enforcement already executes on_entry_into_force.
+	on_enforced = {}
+	on_withdrawal = {}
+	on_break = {}
+	ai = {
+		treaty_categories = { economy trade expansion }
+		article_ai_usage = { request offer }
+		evaluation_chance = { value = 0.1 }
+		state_input_filter = {
+			scope:input = {
+				owner = root
+			eafp_concession_can_grant = { HOLDER = scope:other_country }
+			}
+		}
+		inherent_accept_score = {
+			value = 0
+			if = {
+				limit = { exists = scope:article.input_state }
+				add = { value = 30 desc = "EAFP_CONCESSION_AI_RIGHT" }
+				add = { value = 20 desc = "EAFP_CONCESSION_AI_TRADE_CENTER" }
+				if = {
+					limit = { scope:source_country.prestige <= scope:target_country.prestige }
+					add = {
+						value = scope:article.input_state.eafp_concession_state_share
+						divide = 100
+						max = 100
+						desc = "EAFP_CONCESSION_AI_INCOME"
+					}
+				}
+				if = {
+					limit = { this = scope:source_country }
+					multiply = -1
+				}
+			}
+		}
+		wargoal_score_multiplier = { value = 1 }
+	}
+	wargoal = {
+		contestion_type = control_target_state
+		maneuvers = { value = 10 }
+		infamy = { value = 5 }
+	}
+}
+
+eafp_return_concession = {
+	kind = directed
+	cost = 0
+	icon = "gfx/interface/icons/diplomatic_treaties_articles_icons/treaty_port_treaties.dds"
+	# An executed, non-renegotiable article must not repeat its one-time effect.
+	flags = { can_be_enforced }
+	usage_limit = once_per_side_with_same_inputs
+	maintenance_paid_by = source_country
+	required_inputs = { state }
+
+	visible = { NOT = { is_country_type = decentralized } }
+	possible = { always = yes }
+	state_valid_trigger = {
+		scope:input = {
+			owner = scope:other_country
+			eafp_concession_eligible_state = yes
+			eafp_concession_has_holder = { HOLDER = root }
+		}
+	}
+	can_ratify = {
+		custom_tooltip = {
+			text = eafp_return_concession_valid_tt
+			OR = {
+				eafp_concession_unchanged_article = { ARTICLE = eafp_return_concession }
+				AND = {
+					exists = scope:article.input_state
+					scope:article.input_state = {
+						owner = scope:target_country
+						eafp_concession_eligible_state = yes
+						eafp_concession_has_holder = { HOLDER = scope:source_country }
+					}
+				}
+			}
+		}
+		custom_tooltip = {
+			text = eafp_concession_duplicate_article_tt
+			trigger_if = {
+				limit = { exists = scope:treaty exists = scope:article.input_state }
+				NOT = {
+					scope:treaty = {
+						any_scope_article_option = {
+							count > 1
+							has_type = eafp_return_concession
+							source_country = scope:source_country
+							target_country = scope:target_country
+							input_state = scope:article.input_state
+						}
+					}
+				}
+			}
+		}
+		# Grant and return preconditions are mutually exclusive for new articles.
+		# Do not reject a return because a locked, previously executed grant remains.
+	}
+	on_entry_into_force = {
+		scope:article_options = {
+			target_country = { save_scope_as = concession_host }
+			source_country = { save_scope_as = concession_holder }
+			input_state ?= {
+				save_scope_as = concession_state
+				eafp_concession_return_effect = yes
+			}
+		}
+	}
+	# Enforcement already executes on_entry_into_force.
+	on_enforced = {}
+	on_withdrawal = {}
+	on_break = {}
+	ai = {
+		treaty_categories = { economy trade expansion }
+		article_ai_usage = { request offer }
+		evaluation_chance = { value = 0.1 }
+		state_input_filter = {
+			scope:input = {
+				owner = scope:other_country
+			eafp_concession_eligible_state = yes
+			eafp_concession_has_holder = { HOLDER = root }
+			}
+		}
+		inherent_accept_score = {
+			value = 0
+			if = {
+				limit = { exists = scope:article.input_state }
+				add = { value = 20 desc = "EAFP_CONCESSION_AI_RIGHT" }
+				if = {
+					limit = { scope:target_country.prestige <= scope:source_country.prestige }
+					add = {
+						value = scope:article.input_state.eafp_concession_state_share
+						divide = 100
+						max = 100
+						desc = "EAFP_CONCESSION_AI_INCOME"
+					}
+				}
+				if = {
+					limit = { this = scope:source_country }
+					multiply = -1
+				}
+			}
+		}
+		wargoal_score_multiplier = { value = 1 }
+	}
+	wargoal = {
+		contestion_type = control_own_capital
+		maneuvers = { value = 10 }
+		infamy = { value = 0 }
+	}
+}

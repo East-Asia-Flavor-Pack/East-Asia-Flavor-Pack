@@ -1,0 +1,138 @@
+﻿# All callers provide concession_state (state), concession_host and concession_holder (countries).
+# Called from the monthly incident and the police-conflict option.
+eafp_concession_start_return_war = {
+	if = {
+		limit = { scope:concession_host = { eafp_concession_can_start_return_war = yes } }
+		scope:concession_holder = {
+			create_diplomatic_play = {
+				name = dp_eafp_concession_incident
+				type = dp_eafp_concession_incident
+				initiator = scope:concession_host
+				war = yes
+				add_war_goal = {
+					holder = scope:concession_host
+					type = eafp_concession_incident_return
+					country = scope:concession_holder
+					state = scope:concession_state
+					primary_demand = yes
+				}
+			}
+		}
+		if = {
+			limit = { scope:concession_host = { has_war_with = scope:concession_holder } }
+			scope:concession_host = { trigger_event = { id = concessions_in_china.205 } }
+		}
+	}
+}
+
+# State scope; used only for an identified civil-war split or a same-owner merge.
+# Inheritance never calls grant, so it cannot award another trade center.
+eafp_concession_inherit_state_rights = {
+	every_in_list = {
+		variable = concession_owner_varlist
+		$TARGET$ = {
+			if = {
+				limit = { NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = prev } } }
+				add_to_variable_list = { name = concession_owner_varlist target = prev }
+			}
+		}
+	}
+}
+
+# Rights live on actual states, never state regions or province anchors.
+eafp_concession_grant_effect = {
+	if = {
+		limit = {
+			owner = scope:concession_host
+			eafp_concession_can_grant = { HOLDER = scope:concession_holder }
+		}
+		# Use add_ownership for the extra holder-owned levels, not level = 5.
+		# Do not pass level or reset existing production methods/reserves.
+		if = {
+			limit = { any_scope_building = { is_building_type = building_trade_center } }
+			create_building = {
+				building = building_trade_center
+				add_ownership = { country = { country = scope:concession_holder levels = 5 } }
+			}
+		}
+		else = {
+			create_building = {
+				building = building_trade_center
+				activate_production_methods = { pm_trade_center_trade_quantity_normal }
+				add_ownership = { country = { country = scope:concession_holder levels = 5 } }
+			}
+		}
+		add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
+		eafp_concession_refresh_effect = yes
+	}
+}
+
+eafp_concession_return_effect = {
+	if = {
+		limit = {
+			owner = scope:concession_host
+			eafp_concession_has_holder = { HOLDER = scope:concession_holder }
+		}
+		remove_list_variable = { name = concession_owner_varlist target = scope:concession_holder }
+		# Trade-center ownership is not confiscated when a concession is returned.
+		eafp_concession_refresh_effect = yes
+	}
+}
+
+# One global refresh, reused by the weekly chain, treaty entry and state-owner changes.
+# No money is moved here and this effect never schedules another callback.
+eafp_concession_refresh_effect = {
+	clear_global_variable_list = concession_candidate_states_gvarlist
+	every_state = {
+		limit = { has_variable_list = concession_owner_varlist }
+		save_temporary_scope_as = eafp_refresh_state
+		every_in_list = {
+			variable = concession_owner_varlist
+			if = {
+				limit = {
+					OR = {
+						is_country_alive = no
+						this = scope:eafp_refresh_state.owner
+					}
+				}
+				scope:eafp_refresh_state = {
+					remove_list_variable = { name = concession_owner_varlist target = prev }
+				}
+			}
+		}
+		if = {
+			limit = { any_in_list = { variable = concession_owner_varlist always = yes } }
+			add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
+		}
+	}
+	every_country = {
+		# Include countries that have just lost their last right or their last host state.
+		remove_modifier = concession_payment
+		remove_modifier = concession_paid
+		if = {
+			limit = { eafp_concession_host_debit > 0 }
+			add_modifier = { name = concession_payment multiplier = eafp_concession_host_debit }
+		}
+		if = {
+			limit = { eafp_concession_holder_credit > 0 }
+			add_modifier = { name = concession_paid multiplier = eafp_concession_holder_credit }
+		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_concessions_in_china }
+				any_scope_state = { any_in_list = { variable = concession_owner_varlist always = yes } }
+			}
+			add_journal_entry = { type = je_concessions_in_china }
+		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_concessions_in_china2 }
+				any_in_global_list = {
+					variable = concession_candidate_states_gvarlist
+					is_target_in_variable_list = { name = concession_owner_varlist target = prev }
+				}
+			}
+			add_journal_entry = { type = je_concessions_in_china2 }
+		}
+	}
+}
