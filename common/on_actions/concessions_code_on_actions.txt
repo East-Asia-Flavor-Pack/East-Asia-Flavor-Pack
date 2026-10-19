@@ -1,21 +1,8 @@
-﻿# A single rootless chain: neither acquisition nor load starts a second timer.
-eafp_concessions_start = {
-	effect = {
-		eafp_concession_refresh_effect = yes
-		trigger_event = { on_action = eafp_concessions_weekly days = 7 }
-	}
-}
-eafp_concessions_weekly = {
-	effect = {
-		eafp_concession_refresh_effect = yes
-		trigger_event = { on_action = eafp_concessions_weekly days = 7 }
-	}
-}
-eafp_concessions_state_changed = {
+﻿eafp_concessions_state_changed = {
 	trigger = {
 		OR = {
 			has_variable_list = concession_owner_varlist
-			is_in_geographic_region = geographic_region_han_homelands
+			is_in_geographic_region = geographic_region_china_proper
 		}
 	}
 	effect = {
@@ -64,56 +51,5 @@ eafp_concessions_civil_war_start = {
 			}
 		}
 		eafp_concession_refresh_effect = yes
-	}
-}
-eafp_concessions_monthly = {
-	effect = {
-		every_state = {
-			limit = { eafp_concession_active_holder_count > 0 }
-			save_scope_as = concession_state
-			owner = { save_scope_as = concession_host }
-			random = {
-				chance = 5
-				random_in_list = {
-					variable = concession_owner_varlist
-					limit = {
-						is_country_alive = yes
-						NOT = { this = scope:concession_host }
-						prestige >= scope:concession_host.prestige
-					}
-					save_scope_as = concession_holder
-					random_list = {
-						20 = { trigger_event = { id = concessions_in_china.200 } }
-						20 = { scope:concession_host = { trigger_event = { id = concessions_in_china.201 } } }
-						20 = { trigger_event = { id = concessions_in_china.202 } }
-						15 = { trigger_event = { id = concessions_in_china.203 } }
-						2 = {
-							trigger = { relations:scope:concession_host <= -50 }
-							scope:concession_state = { eafp_concession_return_effect = yes }
-							scope:concession_host = { trigger_event = { id = concessions_in_china.204 } }
-						}
-						1 = {
-							trigger = {
-								relations:scope:concession_host <= -50
-								scope:concession_host = { eafp_concession_can_start_return_war = yes }
-							}
-							eafp_concession_start_return_war = yes
-						}
-						10 = {
-							trigger = {
-								scope:concession_host = {
-									OR = { has_revolution = yes has_any_secessionists_broken_out = yes }
-								}
-							}
-							trigger_event = { id = concessions_in_china.206 }
-						}
-						10 = {
-							trigger = { any_state = { eafp_concession_can_grant = { HOLDER = prev } } }
-							trigger_event = { id = concessions_in_china.207 }
-						}
-					}
-				}
-			}
-		}
 	}
 }

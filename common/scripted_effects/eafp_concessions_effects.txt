@@ -79,8 +79,8 @@ eafp_concession_return_effect = {
 	}
 }
 
-# One global refresh, reused by the weekly chain, treaty entry and state-owner changes.
-# No money is moved here and this effect never schedules another callback.
+# One global refresh, used by the international JE and immediate right/ownership changes.
+# No money is moved here and this effect never schedules a timer or creates country journal entries.
 eafp_concession_refresh_effect = {
 	clear_global_variable_list = concession_candidate_states_gvarlist
 	every_state = {
@@ -116,23 +116,6 @@ eafp_concession_refresh_effect = {
 		if = {
 			limit = { eafp_concession_holder_credit > 0 }
 			add_modifier = { name = concession_paid multiplier = eafp_concession_holder_credit }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_concessions_in_china }
-				any_scope_state = { any_in_list = { variable = concession_owner_varlist always = yes } }
-			}
-			add_journal_entry = { type = je_concessions_in_china }
-		}
-		if = {
-			limit = {
-				NOT = { has_journal_entry = je_concessions_in_china2 }
-				any_in_global_list = {
-					variable = concession_candidate_states_gvarlist
-					is_target_in_variable_list = { name = concession_owner_varlist target = prev }
-				}
-			}
-			add_journal_entry = { type = je_concessions_in_china2 }
 		}
 	}
 }

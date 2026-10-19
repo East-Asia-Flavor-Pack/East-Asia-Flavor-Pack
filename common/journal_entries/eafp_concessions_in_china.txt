@@ -1,28 +1,89 @@
-﻿je_concessions_in_china = {
+﻿# One persistent international entry owns the scheduled refresh and incident lottery.
+je_concessions_in_china = {
 	icon = "gfx/interface/icons/event_icons/event_scales.dds"
-	group = je_group_foreign_affairs
+	group = je_group_global_international_situations
+	is_shown_when_inactive = { always = yes }
+	possible = { always = yes }
+	should_be_involved = { eafp_concession_involved_country = yes }
+	should_show_when_not_involved = { always = yes }
 	widget = {
 		gui = "gui/journal_entry_widgets/eafp_concessions_in_china.gui"
 		name = "widget_eafp_concessions"
 		container = "custom_widget_container_1"
 	}
-	complete = {
-		NOT = { any_scope_state = { any_in_list = { variable = concession_owner_varlist always = yes } } }
+	immediate = { eafp_concession_refresh_effect = yes }
+	on_weekly_pulse = {
+		effect = {
+			eafp_concession_refresh_effect = yes
+			every_country = {
+				if = {
+					limit = {
+						eafp_concession_involved_country = yes
+						NOT = { is_involved_in_journal_entry = je_concessions_in_china }
+					}
+					scope:journal_entry = { add_involved_country = prev }
+				}
+				else_if = {
+					limit = {
+						is_involved_in_journal_entry = je_concessions_in_china
+						NOT = { eafp_concession_involved_country = yes }
+					}
+					scope:journal_entry = { remove_involved_country = prev }
+				}
+			}
+		}
 	}
+	on_monthly_pulse = {
+		effect = {
+			every_state = {
+				limit = { eafp_concession_active_holder_count > 0 }
+				save_scope_as = concession_state
+				owner = { save_scope_as = concession_host }
+				random = {
+					chance = 5
+					random_in_list = {
+						variable = concession_owner_varlist
+						limit = {
+							is_country_alive = yes
+							NOT = { this = scope:concession_host }
+							prestige >= scope:concession_host.prestige
+						}
+						save_scope_as = concession_holder
+						random_list = {
+							20 = { trigger_event = { id = concessions_in_china.200 } }
+							20 = { scope:concession_host = { trigger_event = { id = concessions_in_china.201 } } }
+							20 = { trigger_event = { id = concessions_in_china.202 } }
+							15 = { trigger_event = { id = concessions_in_china.203 } }
+							2 = {
+								trigger = { relations:scope:concession_host <= -50 }
+								scope:concession_state = { eafp_concession_return_effect = yes }
+								scope:concession_host = { trigger_event = { id = concessions_in_china.204 } }
+							}
+							1 = {
+								trigger = {
+									relations:scope:concession_host <= -50
+									scope:concession_host = { eafp_concession_can_start_return_war = yes }
+								}
+								eafp_concession_start_return_war = yes
+							}
+							10 = {
+								trigger = {
+									scope:concession_host = {
+										OR = { has_revolution = yes has_any_secessionists_broken_out = yes }
+									}
+								}
+								trigger_event = { id = concessions_in_china.206 }
+							}
+							10 = {
+								trigger = { any_state = { eafp_concession_can_grant = { HOLDER = prev } } }
+								trigger_event = { id = concessions_in_china.207 }
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	# Remain active without concessions so later grants still receive weekly updates.
 	weight = 600
-	transferable = yes
-}
-je_concessions_in_china2 = {
-	icon = "gfx/interface/icons/event_icons/event_scales.dds"
-	group = je_group_foreign_affairs
-	widget = {
-		gui = "gui/journal_entry_widgets/eafp_concessions_in_china.gui"
-		name = "widget_eafp_concessions"
-		container = "custom_widget_container_1"
-	}
-	complete = {
-		NOT = { any_state = { is_target_in_variable_list = { name = concession_owner_varlist target = root } } }
-	}
-	weight = 600
-	transferable = yes
 }

@@ -1,6 +1,7 @@
 ﻿"""Static integration checks for China's concessions (not an engine interpreter).
 
-Run: python tools/validate_china_concessions.py --game-root "D:/SteamLibrary/steamapps/common/Victoria 3/game"
+Run: python tools/validate_china_concessions.py --game-root "C:/Users/user/Documents/GitHub/Vic3-vanilla" --source-only
+Omit --source-only when checking an installed game with its assets.
 Runtime scenarios and limitations are in documentation/china_concessions_design_plan.md.
 """
 from argparse import ArgumentParser
@@ -33,7 +34,10 @@ def feature_files():
 def main():
     parser = ArgumentParser(description=__doc__)
     parser.add_argument("--game-root", type=Path, required=True)
-    game = parser.parse_args().game_root
+    parser.add_argument("--source-only", action="store_true",
+                        help="Skip asset existence checks for a vanilla script checkout")
+    args = parser.parse_args()
+    game = args.game_root
     assert (game / "common/treaty_articles/treaty_articles.md").is_file(), game
 
     files = feature_files()
@@ -70,10 +74,26 @@ def main():
     entries = read(ROOT / "common/on_actions/00_code_on_actions_definition.txt")
     effects = read(ROOT / "common/scripted_effects/eafp_concessions_effects.txt")
     treaties = read(ROOT / "common/treaty_articles/eafp_concessions_treaty_articles.txt")
-    assert len(re.findall(r"on_action\s*=\s*eafp_concessions_weekly\s+days\s*=\s*7", hooks)) == 2
-    assert "on_action = eafp_concessions_weekly" not in effects
-    assert entries.count("eafp_concessions_start") == 1
-    assert entries.count("eafp_concessions_monthly") == 1
+    je = read(ROOT / "common/journal_entries/eafp_concessions_in_china.txt")
+    je_code = unquoted(je)
+    assert re.findall(r"^(je_\w+)\s*=", je_code, re.M) == ["je_concessions_in_china"]
+    assert definitions["je_concessions_in_china2"] == 0, "No country-specific concession JE"
+    assert "group = je_group_global_international_situations" in je_code
+    groups_code = unquoted("\n".join(read(p) for p in (game / "common/journal_entry_groups").glob("*.txt")))
+    assert re.search(r"je_group_global_international_situations\s*=\s*\{\s*context\s*=\s*none", groups_code)
+    for trigger in ("is_shown_when_inactive", "possible", "should_show_when_not_involved"):
+        assert re.search(trigger + r"\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
+    assert not re.search(r"\b(?:complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
+        "The international JE must persist and calculate only once per pulse"
+    assert len(re.findall(r"\bon_weekly_pulse\s*=", je_code)) == 1
+    assert len(re.findall(r"\bon_monthly_pulse\s*=", je_code)) == 1
+    assert re.search(r"on_weekly_pulse\s*=\s*\{\s*effect\s*=\s*\{\s*eafp_concession_refresh_effect\s*=\s*yes", je_code)
+    assert re.search(r"on_monthly_pulse\s*=\s*\{\s*effect\s*=\s*\{\s*every_state\s*=", je_code)
+    assert "should_be_involved = { eafp_concession_involved_country = yes }" in je_code
+    assert "add_involved_country = prev" in je_code and "remove_involved_country = prev" in je_code
+    for obsolete in ("eafp_concessions_start", "eafp_concessions_weekly", "eafp_concessions_monthly"):
+        assert not re.search(r"\b" + obsolete + r"\b", clean + unquoted(entries)), ("Obsolete timer", obsolete)
+    assert not re.search(r"\badd_journal_entry\s*=", clean), "Use automatic international JE activation"
     assert "can_be_renegotiated" not in unquoted(treaties)
     assert len(re.findall(r"on_enforced\s*=\s*\{\s*\}", treaties)) == 2
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
@@ -84,8 +104,9 @@ def main():
     assert values.count("add = weekly_profit") == 1
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
-    for key, sign in (("concession_payment", "-1"), ("concession_paid", "1")):
-        assert re.search(r"^" + key + r"\s*=\s*\{[^}]*country_tax_income_add\s*=\s*" + sign + r"\s*\}", mods, re.M)
+    for key, modifier in (("concession_payment", "country_expenses_add"),
+                          ("concession_paid", "country_tax_income_add")):
+        assert re.search(r"^" + key + r"\s*=\s*\{[^}]*" + modifier + r"\s*=\s*1\s*\}", mods, re.M)
 
     # Check all installed urban building-group inheritance, including owner buildings.
     groups = {}
@@ -112,22 +133,28 @@ def main():
     gates = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     actual_groups = set(re.findall(r"is_building_group\s*=\s*(bg_\w+)", gates))
     assert actual_groups == expected_groups, ("Urban filter mismatch", actual_groups ^ expected_groups)
-    region = "geographic_region_han_homelands"
-    assert any(re.search(r"^" + region + r"\s*=", read(p), re.M)
-               for p in (game / "common/geographic_regions").glob("*.txt"))
-    for asset in set(re.findall(r'(?:icon|texture|video)\s*=\s*"?([^"\s}]+)', code)):
-        assert (ROOT / asset).is_file() or (game / asset).is_file(), ("Missing asset", asset)
+    region = "geographic_region_china_proper"
+    assert definitions[region] == 1, ("Missing/duplicate concession region", region)
+    assert set(re.findall(r"is_in_geographic_region\s*=\s*(\w+)", clean)) == {region}, \
+        "Concession geography must use China Proper"
+    assert re.search(r"eafp_concession_eligible_state\s*=\s*\{\s*"
+                     r"is_in_geographic_region\s*=\s*" + region + r"\b", gates)
+    if not args.source_only:
+        for asset in set(re.findall(r'(?:icon|texture|video)\s*=\s*"?([^"\s}]+)', code)):
+            assert (ROOT / asset).is_file() or (game / asset).is_file(), ("Missing asset", asset)
 
     gui = read(ROOT / "gui/journal_entry_widgets/eafp_concessions_in_china.gui")
-    je = read(ROOT / "common/journal_entries/eafp_concessions_in_china.txt")
     assert 'name = "widget_eafp_concessions"' in gui
-    assert je.count('name = "widget_eafp_concessions"') == 2
+    assert je.count('name = "widget_eafp_concessions"') == 1
+    sgui = read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
+    assert "JournalEntry.GetCountry" not in gui and "viewer" not in gui + sgui, \
+        "All observers must see the same international overview"
     assert "scripted_button" not in je
     keys = set(re.findall(r"(?:text|tooltip|title|desc|flavor|name|custom_tooltip)\s*=\s*\"?((?:concessions_in_china\.\d+\.|eafp_(?:grant|return)_concession_|eafp_concession_|EAFP_CONCESSION_AI_)\w+)", code))
     # Script names, effects, and saved scopes are not localization keys.
     keys = {k for k in keys if k not in definitions and k != "eafp_concession_compensation"}
-    for key in ("je_concessions_in_china", "je_concessions_in_china2"):
-        keys.update((key, key + "_reason", key + "_status"))
+    for key in ("je_concessions_in_china",):
+        keys.update((key, key + "_reason"))
     for key in ("eafp_grant_concession", "eafp_return_concession"):
         keys.update(key + suffix for suffix in ("", "_desc", "_effects_desc", "_article_short_desc"))
     keys.update(("concept_concession_desc", "concession_payment", "concession_paid",
@@ -158,7 +185,8 @@ def main():
     assert len(events) == 8 and len(set(events)) == 8
     print(f"PASS: {len(files)} feature files; {len(feature_definitions)} unique definitions; "
           f"{len(expected_groups)} urban groups; {len(keys)} localized keys in 3 languages; "
-          "assets, hooks, treaty callbacks, removed mechanisms and encoding.")
+          "international journal pulses, hooks, treaty callbacks, removed mechanisms and encoding.")
+    print("SKIP: asset existence (--source-only)." if args.source_only else "PASS: asset existence.")
     print("Runtime behavior (money units, ownership +5, state selection, war goal targets, "
           "save/reload, state merge order and GUI) still requires Victoria 3.")
 

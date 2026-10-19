@@ -6,13 +6,13 @@
 
 1. 국가 간 조약 협상의 조계 양도·조계 반환 항목에서 원하는 실제 state를 선택한다. 바닐라 무역항처럼 조약 비준·발효 또는 조약 항목 강제로 처리하며, 특약 보유·소비를 조건으로 하는 저널 버튼은 제거한다.
 2. 획득·반환은 해당 조약 항목의 강제 관철 전쟁 목표로도 작동한다. 월간 사건의 자동 전쟁·강제 반환은 유지한다.
-3. 대상 지리는 기존 `geographic_region_han_homelands`를 사용한다. 별도의 관내18성 주 ID 목록이나 프로빈스 거점을 만들지 않는다.
+3. 대상 지리는 모드의 `geographic_region_china_proper`를 사용한다. 조계 시스템에 별도의 주 ID 목록이나 프로빈스 거점을 만들지 않는다.
 4. 권리의 원본은 실제 state의 `concession_owner_varlist`다. state와 외국 보유국의 조합은 하나뿐이며 규모·확대·상한·주권 침해량을 계산하지 않는다.
 5. 현재 주 소유국 위신이 보유국보다 높으면 해당 조계의 경제 효과와 신규 사건을 중단한다. 동률이면 작동하며, 중단된 권리도 반환할 수 있다.
 6. 영향받는 건물은 게임 분류상 `category = urban`에 속하는 **도시 건물 전체**다. 도심지·공장 외에도 해당 분류에 속하는 건물을 포함한다.
-7. 각 state의 도시 건물 전체 `weekly_profit` 합계를 기준으로 보유국별 조계 수입을 계산한다. 해당 주의 중국 소유국에는 음수, 작동 중인 외국 보유국에는 같은 금액의 양수 `country_tax_income_add` modifier를 적용한다.
-8. 건물의 수입·산출량·투입량·임금·지분은 조계 경제 효과로 변경하지 않는다. 경제 부담과 이익은 양국의 국가 수입 modifier로만 처리하며, 기본 조계 수입에 직접 현금 지급 효과를 추가하지 않는다.
-9. 매주 갱신하는 것은 현금 지급이 아니라 **modifier 값**이다. 기존 값을 교체하므로 여러 번 갱신해도 누적 지급이 생기지 않는다. 월간 갈등 사건은 별도 처리한다.
+7. 각 state의 도시 건물 전체 `weekly_profit` 합계를 기준으로 보유국별 조계 수입을 계산한다. 해당 주의 중국 소유국에는 `country_expenses_add`, 작동 중인 외국 보유국에는 같은 금액의 `country_tax_income_add` modifier를 양수로 적용한다.
+8. 건물의 수입·산출량·투입량·임금·지분은 조계 경제 효과로 변경하지 않는다. 경제 부담과 이익은 중국 측 국가 지출과 보유국 국가 수입 modifier로만 처리하며, 기본 조계 수입에 직접 현금 지급 효과를 추가하지 않는다.
+9. 단일 국제 저널의 `on_weekly_pulse`에서 **modifier 값**을 갱신하고 `on_monthly_pulse`에서 갈등 사건을 처리한다. 기존 값을 교체하므로 여러 번 갱신해도 누적 지급이 생기지 않으며 참가국 수만큼 계산을 반복하지 않는다.
 10. 영속 변경번호·지급 완료 표시·버전 저장값을 두지 않는다. 현재 주·소유국·보유국 목록·위신을 직접 검사하고, 기록된 과거 상태와 비교하는 체계를 만들지 않는다.
 11. 직접 조회 가능한 수치는 계산식으로 읽는다. 조계 규모·추정 세원·유지비·사건 수입 배율·위신 상한 같은 설정 변수도 만들지 않는다.
 12. 국가가 해당 state의 조계를 새로 획득할 때, 같은 state에 그 국가가 직접 소유하는 무역소(`building_trade_center`) 5단계를 추가로 부여한다. 조계 양도 조약의 합의 발효·강제 관철에 동일하게 적용하고, 이미 보유한 조계의 중복 처리·작동 재개·정기 갱신에서는 부여하지 않는다.
@@ -29,27 +29,27 @@ flowchart TD
     F --> G
     G --> H["state별 urban 건물 weekly_profit 합산"]
     H --> I["주간 순이익 합계 × 보유국당 비율 계산"]
-    I --> J["중국 소유국 음수·작동 보유국 양수 국가 수입 modifier 교체"]
+    I --> J["중국 소유국 지출·작동 보유국 수입 modifier 교체"]
     J --> K["엔진 경제 틱이 양국 국고에 반영"]
     G --> L["작동 조계에 월간 갈등 사건"]
     L -->|강제 반환| F
     L -->|전쟁 결과로 반환 목표 관철| F
 ```
 
-이 문서는 실행 가능한 API가 확인된 부분과 아직 확인되지 않은 부분을 구분한다. 건물 수입을 낮추는 modifier는 필요 없다. 건물 `weekly_profit` 조회 문법은 확인했다. 남은 실행 확인 사항은 양수·음수 `country_tax_income_add`의 금액 단위 및 실제 예산 반영이다.
+이 문서는 실행 가능한 API가 확인된 부분과 아직 확인되지 않은 부분을 구분한다. 건물 수입을 낮추는 modifier는 필요 없다. 건물 `weekly_profit` 조회 문법은 확인했다. 남은 실행 확인 사항은 `country_expenses_add`와 `country_tax_income_add`의 금액 단위 및 실제 예산 반영이다.
 
 ## 2. 대상 지리와 실제 state
 
 ### 2.1. 기존 geographic region 사용
 
-이 저장소의 `concept_china_proper_desc`는 중국 본토·관내18성을 한족 본토 주 지역으로 설명하며, 관련 코드도 `geographic_region_han_homelands`를 사용한다. 따라서 설치·반환 화면·경제 처리·사건의 공통 지리 조건을 다음으로 통일한다.
+설치·반환 화면·경제 처리·사건의 공통 지리 조건은 관내18성을 정의한 모드의 `geographic_region_china_proper`로 통일한다. 주 소유권 변경 hook도 같은 지역을 검사하되 기존 조계 권리가 있는 주의 갱신 경로는 유지한다.
 
 ```paradox
 # 현재 스코프: 실제 state
-is_in_geographic_region = geographic_region_han_homelands
+is_in_geographic_region = geographic_region_china_proper
 ```
 
-정의는 기본 게임 `common/geographic_regions/04_geographic_regions_asia.txt`에 있다. 현재 설치본의 이 지역에는 `STATE_SHENGJING`과 `STATE_FORMOSA`도 포함되어 있다. 이번 명세는 사용자가 지정한 **기존 geographic region을 사용한다는 규칙**을 우선하여 이 정의를 그대로 따른다.
+정의는 모드의 `common/geographic_regions/eafp_geographic_regions.txt`에 있다. 바닐라 한족 본토에서 `STATE_SHENGJING`과 `STATE_FORMOSA`를 제외한 26개 주 지역을 포함한다. 성경·대만은 조계 대상에서 제외한다.
 
 주 지역 수를 상수로 고정하지 않는다. 양도·반환 조약 항목의 state 입력 필터에서 기존 geographic region을 직접 검사한다. 지역별 반환 전쟁 목표를 별도로 생성하지 않는다.
 
@@ -77,12 +77,11 @@ is_in_geographic_region = geographic_region_han_homelands
 
 기존 `establish_concession_button`, `return_concession_button`의 JE 연결과 특약 기반 실행 경로는 제거한다. 특약 방향·보유·생성·소비를 조계 항목의 조건이나 효과에 넣지 않는다. 사용자가 별도로 구성하는 바닐라 조약의 다른 교환 항목과 조계의 필수 조건은 구별한다.
 
-| 기존 저널 | 남길 역할 |
-| --- | --- |
-| `je_concessions_in_china2` | 외국의 보유 조계·경제 수입·위신 중단 현황 |
-| `je_concessions_in_china` | 주 소유국의 조계 현황·국가 수입 부담·보유국 목록 |
+`je_concessions_in_china` 하나를 `je_group_global_international_situations`에 둔다. 바닐라 그룹의 `context = none`을 사용하므로 국가별 사본 없이 하나의 국제 저널이 전체 조계의 현황과 정기 계산을 담당한다. 기존 외국 보유국용 `je_concessions_in_china2` 정의와 국가별 `add_journal_entry` 호출은 제거한다.
 
-조약 항목은 JE가 없거나 조계를 아직 보유하지 않아도 자격이 맞으면 사용 가능해야 한다. 저널은 현황 표시용이며 조계 획득·반환을 직접 실행하는 버튼을 갖지 않는다. 주간 경제 갱신도 JE 존재에 의존하지 않는다.
+관내 18성에서 조계가 있는 주의 소유국과 그 조계 보유국을 참가국으로 표시하고, 나머지 국가도 같은 전체 현황을 열람한다. 위신 때문에 수입이 중단되어도 권리가 남아 있으면 참가국을 유지한다. 참가국 목록은 주간 pulse에서 현재 권리에 맞춰 추가·제거한다.
+
+조약 항목은 저널 참가 여부나 기존 조계 보유 여부와 무관하게 자격이 맞으면 사용할 수 있다. 저널에는 조계 획득·반환 버튼을 두지 않으며 협상은 기본 조약 화면에서 진행한다.
 
 ### 3.2. 두 조약 항목의 방향과 입력
 
@@ -234,7 +233,7 @@ scope:concession_state = {
 
 `every_scope_building`으로 실제 state에 속한 건물을 한 번씩 순회한다. urban 소유 건물도 자기 `weekly_profit`만 더하며, 그 건물이 소유한 다른 주의 생산 건물을 재순회하지 않는다. 손실 건물도 합계에 포함한 뒤, 주 전체 합계가 0 이하이면 이전액을 0으로 둔다.
 
-`country_tax_income_add`의 금액 단위, 음수 적용과 multiplier의 엔진 처리, 예산에 반영되는 경제 기간은 실행 검증 대상이다. 건물 이익은 계산 기준일 뿐 조계 modifier가 건물 자체의 매출·비용·이익을 변경하지 않는다.
+`country_expenses_add`와 `country_tax_income_add`의 금액 단위 및 multiplier의 엔진 처리, 예산에 반영되는 경제 기간은 실행 검증 대상이다. 건물 이익은 계산 기준일 뿐 조계 modifier가 건물 자체의 매출·비용·이익을 변경하지 않는다.
 
 ### 4.3. 읽기 전용 합산
 
@@ -246,7 +245,7 @@ state에서 도시 건물 전체의 주간 순이익을 합산하는 계산식�
 
 UI는 계산 결과와 현재 적용된 modifier를 읽기만 한다. UI를 열어서 modifier·권리·국고·사건 결과를 변경하지 않는다.
 
-## 5. 중국 측과 보유국의 국가 수입 modifier
+## 5. 중국 측 국가 지출과 보유국 국가 수입 modifier
 
 ### 5.1. 주간 순이익 합계와 보유국별 몫
 
@@ -268,25 +267,25 @@ P(s) = max(0, U(s)) × 0.05
 해당 주의 중국 소유국 부담액:
     D(s) = sum(R(s, h), active holders) = P(s) × N(s)
 
-국가 c의 음수 modifier 기준 금액:
+국가 c의 지출 modifier 기준 금액:
     c가 현재 소유한 적격 state들의 D(s) 합계
 
-국가 c의 양수 modifier 기준 금액:
+국가 c의 수입 modifier 기준 금액:
     c가 작동 조계를 가진 모든 state의 R(s, c) 합계
 ```
 
 U(s)를 먼저 합산하고 그 합계가 0 이하일 때 해당 주의 부담액·수취액을 0으로 둔다. 건물마다 양수 순이익만 따로 골라 합산하지 않는다. 보유국 수가 증가하면 중국 측 부담액도 증가한다. 정해진 총액을 보유국 수로 나누지 않는다.
 
-| 도시 건물의 주간 순이익 합계 | 작동국 수 | 중국 측 국가 수입 변화 | 보유국별 국가 수입 변화 |
+| 도시 건물의 주간 순이익 합계 | 작동국 수 | 중국 측 국가 지출 변화 | 보유국별 국가 수입 변화 |
 | --- | --- | --- | --- |
-| £10,000 | 1 | -£500/주 | +£500/주 |
-| £10,000 | 2 | -£1,000/주 | +£500/주 |
-| £10,000 | 3 | -£1,500/주 | +£500/주 |
+| £10,000 | 1 | +£500/주 | +£500/주 |
+| £10,000 | 2 | +£1,000/주 | +£500/주 |
+| £10,000 | 3 | +£1,500/주 | +£500/주 |
 | £10,000 | 0 | £0 | £0 |
 
 건물의 주간 순이익 합계는 **과세 기준에 해당하는 게임상 계산 기준**이며 조계 효과로 실제 감소시키는 금액이 아니다. 건물의 매출·상품·임금·배당을 이 처리에서 변경하지 않는다. 중국 측 부담은 정부 예산에 발생한다.
 
-고정소수점 정밀도로 보유국별 몫을 한 번 확정한 뒤 중국 측 부담액을 그 몫들의 합으로 만든다. 양쪽을 서로 다른 순서로 반올림하여 차액이 생기게 하지 않는다. 정부 현금 보유액이나 기존 세금 수입으로 부담액을 임의 제한하지 않는다. 국가 수입 modifier의 엔진 하한이 음수 적용을 막는다면 실제 동작을 확인해야 하며, 중국 측에는 적용되지 않은 금액을 보유국에 지급한 채 완료 처리하지 않는다.
+고정소수점 정밀도로 보유국별 몫을 한 번 확정한 뒤 중국 측 부담액을 그 몫들의 합으로 만든다. 양쪽을 서로 다른 순서로 반올림하여 차액이 생기게 하지 않는다. 정부 현금 보유액이나 기존 세금 수입으로 부담액을 임의 제한하지 않는다. 국가 지출·수입 modifier의 실제 예산 반영을 확인해야 하며, 중국 측에 비용이 적용되지 않은 금액을 보유국에 지급한 채 완료 처리하지 않는다.
 
 ### 5.2. 두 국가 modifier
 
@@ -304,7 +303,7 @@ concession_paid = {
 }
 ```
 
-국가 수입 modifier 패턴은 저장소의 `likin_tax_income_modifier`에서도 확인된다. 양수·음수 적용과 주간 통화 단위는 실행 검증한다.
+국가 지출·수입 modifier의 양수 적용 패턴은 저장소의 `CHImis11c2`와 `CHImis11c2_recipient`에서도 확인된다. 주간 통화 단위와 예산 반영은 실행 검증한다.
 
 각 국가에 역할별 modifier를 최대 하나씩 둔다. 중국 소유국의 여러 주 부담은 `concession_payment` 하나에, 보유국의 여러 주 수입은 `concession_paid` 하나에 합산한다. 같은 국가가 지급과 수취 역할을 모두 갖는 경우 두 modifier를 독립 유지한다. 주마다 같은 ID를 반복 추가하여 마지막 주만 남게 하거나 값을 누적시키지 않는다.
 
@@ -312,7 +311,7 @@ concession_paid = {
 
 ### 5.3. 갱신과 예산 반영
 
-기본 조계 수입에는 `add_treasury`를 사용하지 않는다. `country_expenses_add`를 더하여 중국 측에 같은 비용을 이중 청구하지 않는다. 엔진이 음수·양수 국가 수입 modifier를 예산과 국고에 반영하도록 한다.
+기본 조계 수입에는 `add_treasury`를 사용하지 않는다. 중국 측 비용은 `country_expenses_add`로만 반영하며 음수 `country_tax_income_add`를 함께 적용하지 않는다. 엔진이 중국 측 지출과 보유국 수입을 예산과 국고에 반영하도록 한다.
 
 매주 현재 권리·위신·도시 건물 순이익을 읽고 모든 국가의 부담액·수취액을 먼저 계산한다. 같은 효과 체인에서 기존 modifier를 제거 후 재적용하거나 검증된 방식으로 대체한다. 양쪽 갱신 사이에 날짜 지연을 두지 않는다. 같은 상태에서 여러 번 갱신해도 같은 금액으로 끝나며 일회성 현금 거래가 발생하지 않는다.
 
@@ -320,7 +319,7 @@ concession_paid = {
 
 검증식은 다음과 같다.
 
-`모든 중국 측 조계 modifier의 수입 감소 절댓값 합계 = 모든 보유국 조계 modifier의 수입 증가 합계`
+`모든 중국 측 조계 modifier의 지출 증가 합계 = 모든 보유국 조계 modifier의 수입 증가 합계`
 
 이는 두 조계 modifier의 직접 효과에 관한 식이다. 국가 전체 예산의 흑자·적자, 다른 세금·지출과 혼동하지 않는다. 건물 수입은 계산 기준으로만 사용하며 감소했는지 검증하는 대상이 아니다.
 
@@ -358,9 +357,9 @@ concession_paid = {
 | 제안 ID | 입력 | 책임 |
 | --- | --- | --- |
 | `eafp_concession_can_grant` | state, host, holder | geographic region·소유·생존·중복 없음 확인 |
-| `eafp_concession_grant_effect` | state, holder | 신규 등록 여부와 무역소 부여 가능 조건 검증, 권리와 holder 직접 소유 무역소 5단계 추가, 저널·경제 효과 갱신 |
+| `eafp_concession_grant_effect` | state, holder | 신규 등록 여부와 무역소 부여 가능 조건 검증, 권리와 holder 직접 소유 무역소 5단계 추가, 현황 목록·경제 효과 갱신 |
 | `eafp_concession_return_effect` | state, holder | 조약 발효·목표 관철·사건에서 해당 원소만 제거 |
-| `eafp_concession_refresh_effect` | 현재 조계 및 이전 modifier가 남은 대상 전체 | 권리 정리와 중국 측·보유국 국가 수입 modifier 재계산. 현금 지급·사건 추첨 없음 |
+| `eafp_concession_refresh_effect` | 현재 조계 및 이전 modifier가 남은 대상 전체 | 권리 정리와 중국 측 지출·보유국 수입 modifier 재계산. 현금 지급·사건 추첨 없음 |
 | `eafp_concession_is_urban_building` | building | 최종 urban category 필터. 실제 API 또는 정의로부터 도출한 그룹 조건 사용 |
 
 특약 관련 생성·소비 효과는 설치/반환 경로에서 제거한다. 조약 발효와 월간 사건은 같은 공용 효과를 사용한다. 이미 없는 조계의 반환은 무동작으로 끝내며, 강제 관철의 추가 callback에서 공용 효과를 다시 호출하지 않는다.
@@ -375,33 +374,33 @@ concession_paid = {
 
 ## 8. 주간 modifier 갱신과 월간 사건
 
-### 8.1. 주간 단일 진입점
+### 8.1. 국제 저널의 단일 정기 진입점
 
-일반 주간 코드 hook은 확인되지 않았으므로 이름을 임의로 만들지 않는다. 저장소의 on-action 문서에는 `trigger_event = { on_action = … days = … }` 지연 호출이 있다. **새 게임 시작 후 한 번 시작하는 전역 7일 on-action 체인**으로 주간 전체 갱신을 예약하는 구현안을 사용한다.
+국제 저널은 `is_shown_when_inactive = { always = yes }`와 `possible = { always = yes }`로 자동 활성화된다. `immediate`에서 한 번 전체 갱신하고, 이후 저널 자체의 `on_weekly_pulse`가 공용 `eafp_concession_refresh_effect`를 호출한다. `on_monthly_pulse`에는 기존 state별 사건 추첨을 직접 둔다. 참가국별 callback에서 전체 계산을 실행하지 않는다.
 
-`on_game_started_after_lobby`에서 한 번 예약하고, 주간 callback은 modifier를 갱신한 뒤 자신을 7일 후 한 번만 예약한다. 이 연결을 일반 로드·월간 pulse·국가별 JE pulse·획득/반환 helper에 중복 배치하지 않는다. 예약된 on-action이 저장·재로드 후 이어지는지 확인한다. 별도 시작 flag나 지급 기록은 만들지 않는다. 이는 API 적용을 시험해야 하는 구현안이며, 전역 무루트 지연 호출의 저장 동작이 확인되어야 한다.
+완료·실패·무효화 조건을 두지 않아 조계가 없을 때도 국제 저널을 유지한다. 마지막 조계 반환 후 새 조계가 생겨도 같은 저널의 정기 갱신이 계속된다. 기존 `eafp_concessions_start`, `eafp_concessions_weekly`, `eafp_concessions_monthly` on-action과 신규 게임 시작·글로벌 월간 hook의 연결은 제거한다. 자체 지연 예약이나 시작 flag는 없다.
 
-스케줄러와 refresh는 분리한다. 획득·반환·소유권 변화가 refresh를 호출해도 다음 주 예약을 추가하지 않는다. 국가별 저널은 UI 역할을 맡고 독립적인 현금 지급 루프를 갖지 않는다.
+획득·반환·소유권 변화는 공용 refresh를 즉시 호출해 양국 modifier와 현황을 함께 반영한다. 참가국 추가·제거는 다음 주간 pulse에서 반영되며, 그 사이에도 모든 국가가 동일한 현황을 볼 수 있다. 저장·재로드 및 기존 국가별 저널이 남은 저장 파일의 전환은 게임 실행 검증 대상이다.
 
 ### 8.2. 갱신 순서
 
 ```mermaid
 flowchart TD
-    A["전역 주간 callback"] --> B["현재 권리와 기존 조계 국가 modifier가 있는 국가 탐색"]
+    A["국제 저널 on_weekly_pulse"] --> B["현재 권리와 기존 조계 국가 modifier가 있는 국가 탐색"]
     B --> C["현재 중국 소유국·holder·위신 판정"]
     C --> D["state별 urban 건물 weekly_profit 합산"]
     D --> E["합계 × 비율로 보유국별 몫 계산"]
     E --> F["중국 측 부담·보유국 수취를 국가별 합산"]
-    F --> G["음수·양수 country_tax_income_add를 함께 교체"]
+    F --> G["country_expenses_add와 country_tax_income_add를 함께 교체"]
     G --> H["합계가 0인 국가 역할의 modifier 제거"]
-    H --> I["다음 callback을 7일 후 한 번 예약"]
+    H --> I["현재 권리에 맞춰 국제 저널 참가국 동기화"]
     G --> J["엔진 경제 틱이 수입에 반영"]
 ```
 
 ```text
-weekly callback:
+international journal on_weekly_pulse:
     refresh all concession modifiers
-    schedule this callback once after 7 days
+    synchronize involved countries from current rights
 
 refresh all concession modifiers:
     gather states with rights and countries with either concession income modifier
@@ -422,9 +421,9 @@ refresh all concession modifiers:
 
 ### 8.3. 월간 사건
 
-기존 글로벌 `on_monthly_pulse`의 조계 handler는 실제 state당 월 한 번 사건을 시도한다. 작동 조계가 있는 state의 초기 시도 확률은 5%다. holder 수만큼 추첨을 반복하지 않는다. 조건에 맞는 사건과 작동 holder 하나를 고른다.
+국제 저널의 `on_monthly_pulse`에서 실제 state당 월 한 번 사건을 시도한다. 작동 조계가 있는 state의 초기 시도 확률은 5%다. holder 수만큼 추첨을 반복하지 않는다. 조건에 맞는 사건과 작동 holder 하나를 고른다.
 
-월간 사건·UI·로드는 주간 callback을 새로 예약하지 않는다. 사건이 조계를 제거하면 즉시 refresh를 호출하지만 과거 수입을 소급 환수하거나 추가 현금을 지급하지 않는다.
+월간 사건은 국제 저널 한 곳에서만 추첨하며 UI 표시나 참가국 수에 따라 추첨 횟수가 늘지 않는다. 사건이 조계를 제거하면 즉시 refresh를 호출하지만 과거 수입을 소급 환수하거나 추가 현금을 지급하지 않는다.
 
 ## 9. 조약 항목의 강제 관철과 전쟁 목표
 
@@ -558,7 +557,7 @@ return(state, holder):
 
 기본 조약 협상 화면의 항목 목록에 조계 양도·반환을 표시한다. state 입력에는 실제 주와 현재 소유국을 표시한다. 양도 툴팁은 선택 주의 권리와 “획득국 직접 소유 무역소 +5단계”, 반환 툴팁은 해당 보유국의 권리 제거와 기존 무역소 소유 유지, 양쪽은 위신에 따른 작동 여부를 설명한다.
 
-저널 행은 실제 state 하나를 나타내며, 보유국 국기·작동 여부·실제 양국 위신을 보여 준다. 경제 툴팁에는 도시 건물 주간 순이익 합계·보유국당 비율·작동국 수·중국 측 부담·보유국별 수입을 표시한다. 건물 수입은 기준값이고, 실제 경제 효과는 국가 수입 modifier임을 설명한다.
+국제 저널은 관내 18성의 조계가 있는 모든 실제 state를 같은 목록에 표시한다. 국가별 소유국 필터나 `JournalEntry.GetCountry`에 의존하지 않는다. 각 행은 실제 state 하나를 나타내며, 보유국 국기·작동 여부·실제 양국 위신을 보여 준다. 경제 툴팁에는 도시 건물 주간 순이익 합계·보유국당 비율·작동국 수·중국 측 부담·보유국별 수입을 표시한다. 건물 수입은 기준값이고, 실제 경제 효과는 중국 측 국가 지출·보유국 국가 수입 modifier임을 설명한다.
 
 기존 `GetGlobalList('concession_candidate_states_gvarlist')`를 현황용으로 재사용한다면 원소는 실제 state로 유지한다. `State.MakeScope.GetList('concession_owner_varlist')`에서 현재 권리를 읽는다. 이 목록으로 독립적인 협상·특약 버튼을 다시 만들지 않는다. 조약 선택·합의는 바닐라 UI 경로에서 처리한다.
 
@@ -567,7 +566,7 @@ return(state, holder):
 조약 항목의 `ai` 블록에서 바닐라 방식의 `article_ai_usage`, `state_input_filter`, `inherent_accept_score`, `contextual_accept_score`, `wargoal_score_multiplier`를 정의한다. 저널 버튼의 `ai_chance`로 실행하지 않는다. `request`·`offer` 값은 설치본 실제 조약 예제 형식을 기준으로 검증한다.
 
 - 양도 수취국: 예상 조계 수입·무역소 5단계·위신·전략 가치를 평가한다.
-- 양도 제공국: 국가 수입 부담과 조약의 다른 대가를 평가한다.
+- 양도 제공국: 국가 지출 부담과 조약의 다른 대가를 평가한다.
 - 반환 수취국: 앞으로 줄일 수 있는 국가 부담액을 평가한다.
 - 반환 제공국: 상실할 조계 수입을 평가한다. 반환 시 무역소는 유지됨을 가치 계산에 반영한다.
 - 전쟁 목표: 같은 항목의 가치를 군사력·동맹·관계와 함께 평가한다.
@@ -579,7 +578,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 
 `localization/korean/eafp_china_l_korean.yml`, `localization/english/eafp_china_l_english.yml`, `localization/simp_chinese/eafp_china_l_simp_chinese.yml`을 함께 갱신한다.
 
-필수 문구는 조계 양도·반환 조약 항목명/설명, source·target·대상 state, 조건 실패·초안 충돌·AI 수락 이유, 신규 무역소 +5단계, 위신 중단·동률 작동, 도시 건물 순이익 기준과 양국 국가 수입 변화, 강제 관철 목표·자동 전쟁·강제 반환 알림이다. 특약 소비 버튼의 설명·툴팁·연결은 제거한다. `concept_concession_desc`도 조약으로 얻는 비영토적 권리임을 설명하도록 갱신한다.
+필수 문구는 조계 양도·반환 조약 항목명/설명, source·target·대상 state, 조건 실패·초안 충돌·AI 수락 이유, 신규 무역소 +5단계, 위신 중단·동률 작동, 도시 건물 순이익 기준과 중국 측 국가 지출·보유국 국가 수입 변화, 강제 관철 목표·자동 전쟁·강제 반환 알림이다. 특약 소비 버튼의 설명·툴팁·연결은 제거한다. `concept_concession_desc`도 조약으로 얻는 비영토적 권리임을 설명하도록 갱신한다.
 
 조약 탈퇴만으로 권리나 무역소가 자동 반환되지 않고 별도 반환 항목이 필요함을 명시한다. 이미 실행한 조약 조항은 기록, 현재 권리는 저널 현황이라는 차이를 설명한다.
 
@@ -587,18 +586,18 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 
 ### 13.1. 확인한 근거와 미확정 API
 
-기준 게임 루트는 `D:/SteamLibrary/steamapps/common/Victoria 3/game`이며 앞선 조사에서 런처 `rawVersion=1.13.11`을 확인했다. 아래는 파일·문서 확인 결과이며 이번 구현에서는 격리된 사용자 폴더로 게임을 실행하여 120초간 초기 로딩 로그를 확인했다. 캠페인에서의 동작 검증은 수행하지 않았다.
+현재 참조하는 바닐라 소스는 사용자 지정 경로 `C:/Users/user/Documents/GitHub/Vic3-vanilla`다. 국제 저널의 그룹·자동 활성화·pulse·참가국 API는 이 소스와 저장소의 저널 문서에서 확인했다. 이전 구현에는 1.13.11 초기 로딩 로그 확인 기록이 있으나, 이번 국제 저널 전환 후 게임 실행이나 캠페인 검증은 수행하지 않았다.
 
 | 자료 | 확인 내용 |
 | --- | --- |
 | `localization/korean/eafp_china_l_korean.yml`의 `concept_china_proper_desc` | 관내18성과 한족 본토 지역의 연결 |
-| 게임 `common/geographic_regions/04_geographic_regions_asia.txt` | `geographic_region_han_homelands`의 실제 정의 |
+| 모드 `common/geographic_regions/eafp_geographic_regions.txt` | 조계 대상인 `geographic_region_china_proper`의 실제 정의 |
 | 게임 `common/building_groups/00_building_groups.txt` | urban category, 제조업·서비스·도시시설·소유 건물 및 상속 |
 | `documentation/triggers.log` | building `weekly_profit` 조회 문법 확인; 사용자 승인 후 기준으로 채택 |
-| `documentation/modifiers.log` | 국가 `country_tax_income_add`와 세금 수입의 순 보너스/불이익 설명 확인 |
+| `documentation/modifiers.log` | 국가 `country_expenses_add`와 `country_tax_income_add` 설명 확인 |
 | `common/static_modifiers/eafp_chi_modifiers.txt`의 `likin_tax_income_modifier` | `country_tax_income_add = 1` 패턴 |
-| `common/on_actions/_on_actions.md` | `trigger_event`로 지연 on-action 호출 |
-| 게임 `common/on_actions/00_code_on_actions.txt` | 신규 게임 시작 후 `on_game_started_after_lobby` |
+| 바닐라 `common/journal_entry_groups/00_journal_entries.txt` | `je_group_global_international_situations`의 `context = none` |
+| `common/journal_entries/journal_entries.md`, 바닐라 `99_test_global_je.txt` | 자동 활성화·주간/월간 pulse·국제 저널 참가국 추가/제거 |
 | 게임 `common/treaty_articles/14_treaty_port.txt` | directed·state 입력·usage_limit·can_be_enforced·발효/추가 강제 callback |
 | 게임 `common/treaty_articles/treaty_articles.md` | 조약 스코프·입력 필터·재협상·발효·탈퇴·항목별 전쟁 설정 |
 | 게임 `common/treaty_articles/06_transfer_state.txt` | 초안의 중복 입력·최종 소유권 재검증 패턴 |
@@ -611,7 +610,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | 게임 `common/buildings/11_private_infrastructure.txt` | `building_trade_center`, `bg_trade`, `ownership_type = self` |
 | `common/scripted_triggers/eafp_chinese_interregnum_triggers.txt` | 중국 국가 판정·실제 위신 비교 |
 
-건물 `weekly_profit` 조회와 계산식을 구현했다. 국가 수입 modifier의 양수·음수 적용 및 예산 단위는 실행 검증이 필요하다.
+건물 `weekly_profit` 조회와 계산식을 구현했다. 국가 지출·수입 modifier의 적용 및 예산 단위는 실행 검증이 필요하다.
 
 ### 13.2. 기존 코드 교체
 
@@ -620,30 +619,30 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 - 옛 `je_concession_calc`와 임의 AI 정산 담당자 방식은 사용하지 않는다.
 - 옛 `concessions_in_china.1`의 직접 지급·중복 경제 효과를 새 modifier 갱신으로 대체한다.
 - `concession_building_modifier`는 경제 처리에 적용하지 않고 옛 정부 지분 변경 코드도 되살리지 않는다.
-- `concession_payment`는 `country_tax_income_add = -1`로 교체한다. 옛 `country_expenses_add`와 동시에 사용하지 않는다.
+- `concession_payment`는 `country_expenses_add = 1`을 사용한다. 중국 측 부담을 음수 `country_tax_income_add`로 중복 적용하지 않는다.
 - `concession_paid`는 `country_tax_income_add = 1`로 통일한다. 양국 모두 국가별 합산값으로 교체한다.
 - 일반 전쟁 승리·항복에서 목표와 무관하게 조계를 지급·반환하는 경로는 연결하지 않는다.
-- 국가별 JE 주간 지급과 전역 주간 예약 체계를 동시에 운용하지 않는다.
+- 국제 저널 하나의 주간·월간 pulse만 정기 진입점으로 사용하며 국가별 JE와 지연 on-action 체인을 제거한다.
 
 ### 13.3. 구현 파일
 
 | 파일 | 작업 |
 | --- | --- |
-| `common/journal_entries/eafp_concessions_in_china.txt` | 특약 버튼 연결 제거, 양측 조계 현황 유지 |
+| `common/journal_entries/eafp_concessions_in_china.txt` | 단일 국제 저널, 전체 조계 현황·주간 정산·참가국 동기화·월간 사건 |
 | 기존 특약 버튼의 `.disable` 파일 | 비활성 상태 유지, 신규 JE에 연결하지 않음 |
 | `common/scripted_guis/concessions_in_china_sgui.txt` | 특약 실행 경로 제거, 필요한 현황 UI 기능만 유지 |
 | `gui/journal_entry_widgets/eafp_concessions_in_china.gui` | 도시 건물 순이익 기준·양국 예산 변화·위신·조약 경로 안내 |
 | `common/script_values/eafp_concessions_values.txt` | urban 주간 순이익 합계·중국 측 부담·보유국 몫 계산식 |
-| `common/scripted_triggers/eafp_concessions_triggers.txt` | 기존 geographic region, urban 건물, 권리·위신 판정 |
+| `common/scripted_triggers/eafp_concessions_triggers.txt` | China Proper·urban 건물·권리·위신·국제 저널 참가국 판정 |
 | `common/scripted_effects/eafp_concessions_effects.txt` | 신규 설치 시 국가 소유 무역소 5단계 부여, 반환·경제 modifier 전체 재계산 |
-| `common/static_modifiers/eafp_chi_modifiers.txt` | 음수·양수 `country_tax_income_add` 국가 modifier |
-| `common/on_actions/concessions_code_on_actions.txt` | 단일 주간 예약 callback, 월간 사건, 소유 변경 갱신 |
-| `common/on_actions/00_code_on_actions_definition.txt` | 신규 게임 시작 예약·기존 월간 호출 연결 |
+| `common/static_modifiers/eafp_chi_modifiers.txt` | 중국 측 `country_expenses_add`·보유국 `country_tax_income_add` 국가 modifier |
+| `common/on_actions/concessions_code_on_actions.txt` | 소유 변경·내전 분할의 권리 승계와 즉시 갱신 |
+| `common/on_actions/00_code_on_actions_definition.txt` | 조계의 별도 시작·월간 연결 제거, 소유 변경·내전 hook 유지 |
 | `common/treaty_articles/eafp_concessions_treaty_articles.txt` | 양도·반환 항목, 입력·비준 검증, 발효 효과, AI, wargoal |
 | 바닐라 `enforce_treaty_article` / `dp_default_treaty_article` | 일반 조약 요구의 강제 경로 재사용 |
 | `common/war_goal_types/eafp_concessions_war_goals.txt`, `common/diplomatic_plays/eafp_concessions_diplomatic_plays.txt` | 사건 전용 내부 반환 목표와 전쟁 생성 연결 |
 | `events/eafp_chi_events/eafp_concessions_in_china_events.txt` | 옛 특약 선택 이벤트 제거, 월간 사건·반환 목표 자동 전쟁·결과 알림 |
-| 세 언어의 `eafp_china_l_*.yml`, `eafp_concessions_l_*.yml` | 도시 건물 주간 순이익을 기준으로 중국 측 세금 수입 감소/보유국 세금 수입 증가 설명 |
+| 세 언어의 `eafp_china_l_*.yml`, `eafp_concessions_l_*.yml` | 국제 저널 공통 관점과 중국 측 국가 지출·보유국 국가 수입 설명 |
 
 조약의 state 입력 필터는 기존 geographic region 정의를 사용한다. 별도 지역별 목표·국가 목록·프로빈스 매핑을 대상의 원본으로 만들지 않는다. urban 필터 생성이 필요하면 게임/모드 building group의 최종 category 상속에서 도출한다.
 
@@ -654,12 +653,12 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 ### 14.1. 정적 검사
 
 - 권리 저장은 실제 state의 국가 목록뿐이며 변경번호·지급 완료·버전 데이터가 없다.
-- 지리 필터는 기존 `geographic_region_han_homelands`와 일치하고 독립적인 주 ID 예외표를 사용하지 않는다.
+- 지리 필터는 모드의 `geographic_region_china_proper`와 일치하고 조계 시스템에 독립적인 주 ID 예외표를 사용하지 않는다.
 - 도시 건물 필터는 실제 최종 urban 분류와 일치하고 도심·제조업 외 urban 건물도 포함한다.
 - 기준값은 사용자가 승인한 도시 건물 `weekly_profit` 합계이며 매출·정부 세수로 대체하지 않는다.
-- 기본 조계 경제 효과는 국가 `country_tax_income_add`의 음수·양수 한 쌍이다. 건물 modifier·`country_expenses_add`·`add_treasury`를 함께 적용하지 않는다.
+- 기본 조계 경제 효과는 중국 측 `country_expenses_add`와 보유국 `country_tax_income_add`의 양수 한 쌍이다. 건물 modifier·음수 세입 modifier·`add_treasury`를 함께 적용하지 않는다.
 - 국가별 지급/수취 역할마다 modifier 하나를 합산값으로 교체한다. 같은 국가에 두 역할이 있으면 독립 합산한다.
-- 주간 스케줄러는 새 게임 시작 한 곳과 자기 예약 한 곳만 갖는다. 획득·반환·로드·UI에서 예약하지 않는다.
+- 정기 계산은 국제 저널의 주간·월간 pulse에만 둔다. 국가별 JE 생성·자기 예약·글로벌 월간 사건 연결이 남지 않았는지 검사한다.
 - JE의 특약 획득·반환 버튼과 연결된 실행 경로가 제거되어 있고 기본 조약 화면에서 두 조계 항목을 선택할 수 있다.
 - 조약 방향은 양도 host→holder, 반환 holder→host이며 두 경우 모두 선택 주의 현재 소유자는 host다.
 - `on_entry_into_force`만 권리 변경·신규 무역소 부여를 수행하고 `on_enforced`가 반복 실행하지 않는다.
@@ -670,11 +669,11 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 
 | 번호 | 상황 | 기대 결과 |
 | --- | --- | --- |
-| T01 | 기존 geographic region의 모든 state와 경계 밖 state 검사 | 기존 지역 정의대로만 대상 판정 |
+| T01 | `geographic_region_china_proper` 소속 state와 성경·대만 등 경계 밖 state 검사 | 관내18성만 지리 조건을 충족하며 성경·대만은 설치·경제 효과·신규 사건 대상에서 제외 |
 | T02 | 제조업·도심·미술·금융/기업 소유 건물 검사 | 최종 category가 urban인 건물의 자체 수입 모두 포함 |
 | T03 | rural/development 건물 검사 | urban이 아니면 제외, 명칭만으로 포함하지 않음 |
 | T04 | 도시 건물 주간 순이익 합계 £10,000, 작동국 1/2/3 | 중국 측 -£500/-£1,000/-£1,500, 보유국별 +£500/주 |
-| T05 | 양쪽 국가 예산·국고 경제 틱 비교 | 중국 측 조계 수입 감소 절댓값 합과 보유국 조계 수입 증가 합 일치 |
+| T05 | 양쪽 국가 예산·국고 경제 틱 비교 | 중국 측 조계 국가 지출 증가 합과 보유국 조계 수입 증가 합 일치 |
 | T06 | 같은 조건에서 조계 적용 전후 건물 비교 | 조계가 건물 수입·생산·투입·임금·지분을 직접 변경하지 않음 |
 | T07 | 같은 상태에서 refresh 여러 번 | 같은 modifier 값, 누적 modifier·직접 현금 지급 없음 |
 | T08 | 다음 주에도 도시 건물 순이익 동일 | 같은 부담·수취 금액 유지, 이전 국가 차감액을 기준 수입에서 다시 빼지 않음 |
@@ -693,15 +692,15 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | T21 | 자동 강제 반환/자동 전쟁 | 알림 전에 결과 적용, 실제 전쟁과 반환 목표 확인 |
 | T22 | 분할·통일·정식 양도·holder 자기 병합 | 현재 목록과 도시 건물 순이익에서 재계산, 이전 소유국 부담 정리 |
 | T23 | 도시 건물 철거·category 변경 | 현재 도시 건물 순이익 합계로 중국 측 부담·보유국 수취 동시 갱신 |
-| T24 | 한 주간 callback 뒤 저장·재로드 | 기존 예약 한 개가 이어짐, 로드로 새 체인 생성 없음 |
-| T25 | 모든 AI 소멸 | 전역 예약 체인으로 갱신 지속 |
-| T26 | UI·월간 사건·소유 변경 refresh | 추가 주간 예약 없음, 사건 배상 외 직접 현금 지급 없음 |
+| T24 | 국제 저널 주간 pulse 뒤 저장·재로드 | 같은 국제 저널 한 개의 주간 정산·월간 사건 지속, 중복 없음 |
+| T25 | 참가국 소멸 또는 마지막 조계 반환 뒤 재획득 | 국제 저널 유지, 다음 pulse에서 참가국과 경제 효과 재반영 |
+| T26 | UI·참가국 증가·월간 사건·소유 변경 refresh | 참가국 수와 무관하게 주당 정산 한 번·주별 월간 추첨 한 번, 즉시 refresh는 추가 현금 지급 없음 |
 | T27 | 도시 건물 주간 순이익 합계가 0 이하 | 해당 주의 양쪽 경제 기여 0, 반대 방향 송금 없음 |
-| T28 | 세 언어 저널·예산 툴팁 | 건물 수입 기준과 중국 측/보유국 세금 수입 변화 설명 일치 |
+| T28 | 세 언어 국제 저널·예산 툴팁 | 모든 국가에 같은 주 목록, 중국 측 국가 지출·보유국 수입 설명 일치 |
 | T29 | 주간 갱신 사이의 시장 가격 변화 | 양쪽 적용 금액을 함께 유지하고 다음 갱신에서 함께 변경 |
 | T30 | 국가가 지급과 수취 역할을 동시에 가짐 | 두 역할의 국가 modifier 독립 유지, 각 합계·순효과 정확 |
 | T31 | 중국 host의 주가 다른 중국 국가 또는 비중국 국가로 양도 | 이전 host 부담 제거, 새 중국 host면 재판정, 비중국 host면 해당 주 효과 중단 |
-| T32 | 부담액이 중국 측 기존 세금 수입·현금 보유액보다 큼 | 요청한 음수 효과의 실제 적용 검증, 엔진 제한으로 양쪽 금액이 어긋나면 구현 실패로 기록 |
+| T32 | 부담액이 중국 측 기존 세금 수입·현금 보유액보다 큼 | 요청한 지출 증가의 실제 적용 검증, 엔진 제한으로 양쪽 금액이 어긋나면 구현 실패로 기록 |
 | T33 | 무역소가 없는 주의 양도 조약 발효 | 해당 실제 state에 무역소 총 5단계 생성, 획득국 직접 소유 5단계 |
 | T34 | 기존 무역소 총 12단계, 획득국 소유 2단계인 주에서 신규 획득 | 동일 건물이 총 17단계·획득국 소유 7단계, 별도 건물 생성 없음, 타 소유자 단계·기존 생산 방식 유지 |
 | T35 | 같은 주에서 다른 국가가 새로 조계 획득 | 새 보유국 소유 5단계 추가, 먼저 보유한 국가의 소유 단계 유지 |
@@ -711,7 +710,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | T39 | 권리의 분할·통일·양도 승계 | 무역소 보상 추가 없음, 실제 건물·소유권의 엔진 이전 결과 유지 |
 | T40 | 무역소 부여 가능 조건 미충족 | 조약 양도 비준 불가 사유 표시, 권리만 생기는 부분 성공 없음 |
 | T41 | 양도 항목 강제 목표 수락·양보·평화 관철 | 정확한 state의 동일 무역소에 획득국 직접 소유 +5단계가 한 번 적용 |
-| T42 | JE가 없는 미보유 외국이 조약 협상 | 기본 조약 화면에서 적격 양도 항목 선택 가능 |
+| T42 | 국제 저널 비참가국인 미보유 외국이 조약 협상 | 기본 조약 화면에서 적격 양도 항목 선택 가능, 획득 후 다음 주간 pulse에서 참가 |
 | T43 | 반환 항목에서 state 선택 | source holder의 영토가 아닌 target 중국 host의 해당 주를 선택 가능 |
 | T44 | 동일 초안의 중복 양도 또는 같은 권리의 양도+반환 | source/target 방향을 정규화해 충돌 거부, 다중 보상 없음 |
 | T45 | 기존 항목을 포함한 조약 재협상·재로드 | 기존 권리 효과 재실행 없음, 무역소 추가 없음, 기존 항목 때문에 새 비준이 잘못 막히지 않음 |
@@ -724,10 +723,10 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | 미확정 항목 | 검증 기준 |
 | --- | --- |
 | 건물 주간 순이익 조회 | 문서상 API 확인 완료. 게임에서 `weekly_profit` 표시 및 갱신 시점 대조 |
-| 국가 `country_tax_income_add` 금액 단위 | 같은 주간 통화 금액의 음수·양수 효과가 같은 경제 기간에 반영 |
-| 음수 적용과 엔진 하한 | 중국 측 실제 감소액과 외국 실제 증가액 일치, 적자·부채 상황에서도 검증 |
+| 국가 지출·수입 modifier 금액 단위 | 같은 주간 통화 금액의 지출·수입 효과가 같은 경제 기간에 반영 |
+| 지출 적용과 엔진 제한 | 중국 측 실제 비용과 외국 실제 증가액 일치, 적자·부채 상황에서도 검증 |
 | urban category 직접 검사 또는 상속 필터 | 최종 게임 분류와 모든 건물의 포함 여부 일치 |
-| 무루트 지연 on-action 체인 | 신규 게임 1회 시작, 7일 주기, 저장·재로드 후 한 체인 유지 |
+| 국제 저널 활성화·pulse·참가국 | 신규 게임 자동 활성화, 주간 정산·월간 사건 단일 실행, 저장·재로드 및 옛 국가별 저널 저장 파일 전환 |
 | 국가별 modifier 교체와 제거 | 반환·중단·소유권 이전 후 잔여 부담·수입 없음 |
 | 국가 직접 소유 무역소 신규 생성·기존 건물 확장 | 같은 실제 state의 총단계와 holder 소유 단계가 각각 +5, 기존 타국 단계·생산 방식 보존 |
 | 건물 부여와 권리 등록의 실행 조건 | 외국 국가 소유 가능 여부·생성 제한 확인, 지연 없는 효과 체인에서 부분 성공 방지 |
@@ -735,7 +734,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | 조약 발효·강제·재협상 callback | 신규 항목만 1회 권리 변경, 추가 on_enforced·재협상에서 무역소 중복 없음 |
 | 사건용 반환 목표의 대상 전달 | host/holder/실제 state가 정확한 목표로 전쟁 시작; 관철 시 해당 권리만 제거 |
 
-국가 modifier의 음수 적용 등 런타임 항목을 게임에서 확인하지 않은 상태에서는 실행 검증 완료라고 보고하지 않는다. 건물 직접 감액 API는 이 설계에 필요 없다. 계획 문서 수정과 실제 실행 검증을 구분한다.
+국가 modifier의 지출·수입 적용 등 런타임 항목을 게임에서 확인하지 않은 상태에서는 실행 검증 완료라고 보고하지 않는다. 건물 직접 감액 API는 이 설계에 필요 없다. 계획 문서 수정과 실제 실행 검증을 구분한다.
 
 ## 15. 역사 자료와 게임상 추상화
 
@@ -746,18 +745,18 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | [1927년 한커우 반환, FRUS](https://history.state.gov/historicaldocuments/frus1927v02/d438) | 조계 반환과 모든 치외법권 폐지를 동일시하지 않음 |
 | [1925년 상하이 사건과 국제 조사, FRUS](https://history.state.gov/historicaldocuments/frus1925v01/d552) | 경찰 충돌·공동 조사·전쟁 가능성을 사건으로 표현 |
 
-외교문서는 작성국의 시각을 담으며 권리 주장의 정당성을 판정하는 자료로 쓰지 않는다. 도시 건물의 주간 순이익 합계를 기준으로 중국 측 국가 수입을 차감하고 같은 금액을 외국 국가 수입에 더하는 것은 조계의 경제적 부담과 이익을 표현하는 게임 규칙이며, 실제 역사적 시정 예산이나 민간 배당의 정기 국고 송금을 그대로 재현한다는 뜻은 아니다.
+외교문서는 작성국의 시각을 담으며 권리 주장의 정당성을 판정하는 자료로 쓰지 않는다. 도시 건물의 주간 순이익 합계를 기준으로 중국 측 국가 지출을 늘리고 같은 금액을 외국 국가 수입에 더하는 것은 조계의 경제적 부담과 이익을 표현하는 게임 규칙이며, 실제 역사적 시정 예산이나 민간 배당의 정기 국고 송금을 그대로 재현한다는 뜻은 아니다.
 
 ## 16. 코드 반영 상태와 검증 경계
 
-- 조약 2개, 월간 사건 8개, 주간 갱신 체인, 국가 세입 modifier, 양측 JE와 상태별 GUI, 세 언어 문구를 작성했다.
+- 조약 2개, 월간 사건 8개, 국가 지출·수입 modifier, 국제 JE 하나와 주별 GUI, 세 언어 문구를 구현했다. 국제 JE가 주간 정산과 월간 사건을 실행한다.
 - 계산 기준은 사용자 승인에 따라 `weekly_profit`이며 비율은 계획의 임시값 5%다. 기준액을 저장하는 영속 변수는 없다. 국가별 modifier는 주간 전체 갱신에서 교체한다.
 - 권리의 원본은 실제 state의 `concession_owner_varlist` 하나다. `concession_candidate_states_gvarlist`는 매번 권리 목록에서 재작성하는 GUI/조회용 state 색인이다. 사건 저장 스코프와 분할·병합 임시 스코프는 새 영속 장부가 아니다.
 - 무역소 보상은 신규 획득 helper에서만 실행한다. `add_ownership`으로 국가 소유 5단계를 요청하고 기존 건물에는 생산 방식을 지정하지 않는다. 실제 기존 총단계와 외국 소유 단계의 +5 동작은 실행 시험 대상이다.
 - 소유권 변경 hook에서는 같은 region에서 **현재 소유국이 같은** 비무역항 state 조각만 합집합 처리한다. 내전 시작에서는 원국과 지정된 반란국의 같은 region 조각 사이에서만 복사한다. 권리 승계는 무역소를 추가하지 않는다. 엔진이 hook 전에 state를 삭제·병합하는 경로의 보존 여부는 실행 검증이 필요하다.
 - 조약 AI는 권리의 기본 가치, 현재 위신 조건에서의 주간 수취액, 신규 양도의 무역소 보상 가치를 고려한다. 반환 시 유지되는 무역소를 반환 가치에서 빼지 않는다. 나머지 조약 대가와 전쟁 여건은 바닐라 평가를 사용한다.
-- 정적 검증 결과: 활성 기능 파일 11개, 정의 41개, urban 그룹 13개, 번역 키 76개 × 3개 언어 검사 통과.
-- 정적 검증 명령: `python tools/validate_china_concessions.py --game-root "D:/SteamLibrary/steamapps/common/Victoria 3/game"`.
-- 초기 로딩 확인: 설치본 1.13.11을 임시 사용자 폴더에서 120초 실행 후 종료했다. 해당 error.log에서 조계 파일·식별자 관련 오류는 0건이었다. 다른 콘텐츠의 번역 중복·GUI 함수·텍스처 오류는 관찰되었으며 이번 범위에서 변경하지 않았다. 초기 로그 확인은 로딩 완료 또는 캠페인 기능 시험을 의미하지 않는다.
-- 정적 검증은 인코딩·괄호·식별자·지역·urban 그룹 상속·자산·번역 참조·예약 진입점의 일관성을 확인한다. Jomini 엔진 실행을 대신하지 않는다.
-- 실제 게임에서 남은 주요 검증: 국가 수입 modifier의 통화 단위/음수 적용, 기존 무역소 +5 소유권, 반환 조약의 target-owned state 선택, 사건용 목표 state 보존과 관철, 저장/재로드 후 주간 체인, 분할·병합 hook 순서와 GUI 표시. 14절 T01–T48은 실행 시험 명세이며 통과 기록이 아니다.
+- 국제 저널 전환의 정적 검증은 `--source-only`로 실행한다. 인코딩·괄호·정의·China Proper·urban 그룹 상속·세 언어 토큰·국제 저널 pulse와 별도 타이머 제거를 검사하며, 바닐라 소스 저장소에 없는 자산의 존재 검사는 명시적으로 제외한다.
+- 정적 검증 명령: `python tools/validate_china_concessions.py --game-root "C:/Users/user/Documents/GitHub/Vic3-vanilla" --source-only`. 실제 설치본에서는 `--source-only`를 빼고 자산까지 검사한다.
+- 이전 버전의 초기 로딩 확인 기록: 설치본 1.13.11을 임시 사용자 폴더에서 120초 실행 후 종료했다. 해당 error.log에서 조계 파일·식별자 관련 오류는 0건이었다. 다른 콘텐츠의 번역 중복·GUI 함수·텍스처 오류는 관찰되었으며 이번 범위에서 변경하지 않았다. 이 기록은 이번 국제 저널 전환의 검증 결과가 아니며 로딩 완료 또는 캠페인 기능 시험도 의미하지 않는다.
+- 정적 검증은 인코딩·괄호·식별자·지역·urban 그룹 상속·자산·번역 참조·국제 저널 정기 진입점의 일관성을 확인한다. Jomini 엔진 실행을 대신하지 않는다.
+- 실제 게임에서 남은 주요 검증: 국가 지출·수입 modifier의 통화 단위/예산 반영, 기존 무역소 +5 소유권, 반환 조약의 target-owned state 선택, 사건용 목표 state 보존과 관철, 국제 저널 활성화·저장/재로드·참가국 표시, 분할·병합 hook 순서와 GUI 표시. 14절 T01–T48은 실행 시험 명세이며 통과 기록이 아니다.

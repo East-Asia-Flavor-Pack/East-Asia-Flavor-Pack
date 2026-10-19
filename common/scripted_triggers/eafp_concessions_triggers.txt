@@ -29,9 +29,24 @@ eafp_concession_is_chinese_country = {
 }
 
 eafp_concession_eligible_state = {
-	is_in_geographic_region = geographic_region_han_homelands
+	is_in_geographic_region = geographic_region_china_proper
 	is_treaty_port = no
 	owner = { eafp_concession_is_chinese_country = yes }
+}
+
+# Country scope; involvement follows rights, even while prestige suspends their income.
+eafp_concession_involved_country = {
+	is_country_alive = yes
+	OR = {
+		any_scope_state = {
+			is_in_geographic_region = geographic_region_china_proper
+			any_in_list = { variable = concession_owner_varlist always = yes }
+		}
+		any_state = {
+			is_in_geographic_region = geographic_region_china_proper
+			is_target_in_variable_list = { name = concession_owner_varlist target = prev }
+		}
+	}
 }
 
 # State scope; HOLDER is a country scope token.
