@@ -1296,15 +1296,12 @@ je_formosa_expedition = {
 
 	scripted_progress_bar = formosa_survey_progress_bar
 
-	immediate = {
-		
-	}
-
 	complete = {
 		owns_entire_state_region = STATE_FORMOSA
 	}
 
 	on_complete = {
+		remove_modifier = formosa_survey_modifier
 		trigger_event = formosa_expedition_events.1
 	}
 
@@ -1312,14 +1309,14 @@ je_formosa_expedition = {
 		effect = {
 			if = {
 				limit = {
+					NOT = { has_claim = s:STATE_FORMOSA }
+					NOT = { has_variable = eafp_formosa_claim_event_sent }
 					scope:journal_entry = {
-						"scripted_bar_progress(formosa_survey_progress_bar)" > 24
+						"scripted_bar_progress(formosa_survey_progress_bar)" >= 24
 					}
 				}
-				trigger_event = formosa_expedition_events.2
-				s:STATE_FORMOSA = {
-					add_claim = ROOT
-				}
+				set_variable = eafp_formosa_claim_event_sent
+				trigger_event = { id = formosa_expedition_events.2 popup = yes }
 			}
 			if = {
 				limit = {
