@@ -1,0 +1,56 @@
+﻿types eafp_concession_widgets {
+	type eafp_concession_state_rows = flowcontainer {
+		direction = vertical
+		layoutpolicy_horizontal = expanding
+		datamodel = "[GetGlobalList('concession_candidate_states_gvarlist')]"
+		item = {
+			flowcontainer = {
+				datacontext = "[Scope.GetState]"
+				direction = vertical
+				visible = "[GetScriptedGui('eafp_concession_state_row').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('viewer', JournalEntry.GetCountry.MakeScope).End)]"
+				button = {
+					using = clean_button
+					size = { 470 36 }
+					onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
+					textbox = {
+						raw_text = "[State.GetOwner.GetFlagTextIcon] [State.GetName]"
+						autoresize = yes
+					}
+				}
+				textbox = {
+					text = "eafp_concession_state_income"
+					tooltip = "eafp_concession_economy_tt"
+					size = { 470 35 }
+					autoresize = yes
+					multiline = yes
+				}
+				flowcontainer = {
+					direction = vertical
+					datamodel = "[State.MakeScope.GetList('concession_owner_varlist')]"
+					item = {
+						textbox = {
+							datacontext = "[Scope.GetCountry]"
+							text = "eafp_concession_holder_row"
+							size = { 470 28 }
+							autoresize = yes
+							multiline = yes
+							tooltip = "eafp_concession_prestige_tt"
+						}
+					}
+				}
+			}
+		}
+	}
+}
+flowcontainer = {
+	name = "widget_eafp_concessions"
+	direction = vertical
+	layoutpolicy_horizontal = expanding
+	textbox = {
+		text = "eafp_concession_treaty_instructions"
+		size = { 470 65 }
+		autoresize = yes
+		multiline = yes
+	}
+	eafp_concession_state_rows = {}
+}

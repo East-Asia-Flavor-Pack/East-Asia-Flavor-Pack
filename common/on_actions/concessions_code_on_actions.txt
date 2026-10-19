@@ -1,0 +1,119 @@
+﻿# A single rootless chain: neither acquisition nor load starts a second timer.
+eafp_concessions_start = {
+	effect = {
+		eafp_concession_refresh_effect = yes
+		trigger_event = { on_action = eafp_concessions_weekly days = 7 }
+	}
+}
+eafp_concessions_weekly = {
+	effect = {
+		eafp_concession_refresh_effect = yes
+		trigger_event = { on_action = eafp_concessions_weekly days = 7 }
+	}
+}
+eafp_concessions_state_changed = {
+	trigger = {
+		OR = {
+			has_variable_list = concession_owner_varlist
+			is_in_geographic_region = geographic_region_han_homelands
+		}
+	}
+	effect = {
+		# At ownership transfer, union only pieces now owned by the same country.
+		# Both possible surviving states receive the union before an engine merge.
+		# Other countries' split states and treaty ports are never copied here.
+		if = {
+			limit = { exists = owner is_treaty_port = no }
+			owner = { save_temporary_scope_as = eafp_merge_owner }
+			state_region = {
+				every_scope_state = {
+					limit = { owner = scope:eafp_merge_owner is_treaty_port = no }
+					save_temporary_scope_as = eafp_merge_destination
+					state_region = {
+						every_scope_state = {
+							limit = {
+								owner = scope:eafp_merge_owner
+								is_treaty_port = no
+								NOT = { this = scope:eafp_merge_destination }
+							}
+							eafp_concession_inherit_state_rights = { TARGET = scope:eafp_merge_destination }
+						}
+					}
+				}
+			}
+		}
+		eafp_concession_refresh_effect = yes
+	}
+}
+
+# ROOT is the old country and target the newly formed revolt.
+# Only copy a split state's rights to this specific revolt in the same region.
+eafp_concessions_civil_war_start = {
+	effect = {
+		every_scope_state = {
+			limit = { has_variable_list = concession_owner_varlist }
+			save_temporary_scope_as = eafp_split_source
+			state_region = {
+				every_scope_state = {
+					limit = { owner = scope:target is_treaty_port = no }
+					save_temporary_scope_as = eafp_split_target
+					scope:eafp_split_source = {
+							eafp_concession_inherit_state_rights = { TARGET = scope:eafp_split_target }
+					}
+				}
+			}
+		}
+		eafp_concession_refresh_effect = yes
+	}
+}
+eafp_concessions_monthly = {
+	effect = {
+		every_state = {
+			limit = { eafp_concession_active_holder_count > 0 }
+			save_scope_as = concession_state
+			owner = { save_scope_as = concession_host }
+			random = {
+				chance = 5
+				random_in_list = {
+					variable = concession_owner_varlist
+					limit = {
+						is_country_alive = yes
+						NOT = { this = scope:concession_host }
+						prestige >= scope:concession_host.prestige
+					}
+					save_scope_as = concession_holder
+					random_list = {
+						20 = { trigger_event = { id = concessions_in_china.200 } }
+						20 = { scope:concession_host = { trigger_event = { id = concessions_in_china.201 } } }
+						20 = { trigger_event = { id = concessions_in_china.202 } }
+						15 = { trigger_event = { id = concessions_in_china.203 } }
+						2 = {
+							trigger = { relations:scope:concession_host <= -50 }
+							scope:concession_state = { eafp_concession_return_effect = yes }
+							scope:concession_host = { trigger_event = { id = concessions_in_china.204 } }
+						}
+						1 = {
+							trigger = {
+								relations:scope:concession_host <= -50
+								scope:concession_host = { eafp_concession_can_start_return_war = yes }
+							}
+							eafp_concession_start_return_war = yes
+						}
+						10 = {
+							trigger = {
+								scope:concession_host = {
+									OR = { has_revolution = yes has_any_secessionists_broken_out = yes }
+								}
+							}
+							trigger_event = { id = concessions_in_china.206 }
+						}
+						10 = {
+							trigger = { any_state = { eafp_concession_can_grant = { HOLDER = prev } } }
+							trigger_event = { id = concessions_in_china.207 }
+						}
+					}
+				}
+			}
+		}
+	}
+}

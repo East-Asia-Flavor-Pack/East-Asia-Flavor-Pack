@@ -1,0 +1,107 @@
+﻿# State rights are the only persistent concession data.
+# Final urban groups from the installed 1.13 building-group inheritance tree.
+# A single OR avoids counting a building again through its parent group.
+eafp_concession_is_urban_building = {
+	OR = {
+		is_building_group = bg_manufacturing
+		is_building_group = bg_light_industry
+		is_building_group = bg_heavy_industry
+		is_building_group = bg_military_industry
+		is_building_group = bg_ship_construction
+		is_building_group = bg_service
+		is_building_group = bg_urban_facilities
+		is_building_group = bg_arts
+		is_building_group = bg_owner_buildings
+		is_building_group = bg_financial_districts
+		is_building_group = bg_manor_houses
+		is_building_group = bg_company_headquarter
+		is_building_group = bg_company_regional_headquarter
+	}
+}
+
+eafp_concession_is_chinese_country = {
+	is_country_alive = yes
+	OR = {
+		c:CHI ?= this
+		eafp_is_chinese_central_government = yes
+		eafp_is_chinese_fragment = yes
+	}
+}
+
+eafp_concession_eligible_state = {
+	is_in_geographic_region = geographic_region_han_homelands
+	is_treaty_port = no
+	owner = { eafp_concession_is_chinese_country = yes }
+}
+
+# State scope; HOLDER is a country scope token.
+eafp_concession_can_grant = {
+	eafp_concession_eligible_state = yes
+	exists = $HOLDER$
+	NOT = { owner = $HOLDER$ }
+	NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = $HOLDER$ } }
+	$HOLDER$ = {
+		is_country_alive = yes
+		country_rank >= rank_value:great_power
+		has_interest_marker_in_region = prev.region
+	}
+}
+
+eafp_concession_has_holder = {
+	exists = $HOLDER$
+	is_target_in_variable_list = { name = concession_owner_varlist target = $HOLDER$ }
+	$HOLDER$ = { is_country_alive = yes }
+	NOT = { owner = $HOLDER$ }
+}
+
+eafp_concession_active = {
+	eafp_concession_eligible_state = yes
+	eafp_concession_has_holder = { HOLDER = $HOLDER$ }
+	owner.prestige <= $HOLDER$.prestige
+}
+
+# Called by delayed event options: never act on a different owner or right.
+eafp_concession_event_valid = {
+	exists = scope:concession_state
+	exists = scope:concession_host
+	exists = scope:concession_holder
+	scope:concession_state = {
+		owner = scope:concession_host
+		eafp_concession_active = { HOLDER = scope:concession_holder }
+	}
+}
+
+# An already executed, locked article must not be rejected by its preconditions.
+eafp_concession_unchanged_article = {
+	exists = scope:treaty.amended_treaty
+	exists = scope:article.input_state
+	scope:treaty.amended_treaty = {
+		any_scope_article = {
+			has_type = $ARTICLE$
+			source_country = scope:source_country
+			target_country = scope:target_country
+			input_state = scope:article.input_state
+		}
+	}
+}
+
+# Country scope: only the war's initiator is evaluated here.
+eafp_concession_can_start_return_war = {
+	eafp_concession_event_valid = yes
+	aggressive_diplomatic_plays_permitted = yes
+	NOT = { has_war_with = scope:concession_holder }
+	NOT = { is_diplomatic_play_enemy_of = scope:concession_holder }
+	NOT = { has_truce_with = scope:concession_holder }
+	NOT = { is_subject_of = scope:concession_holder }
+	NOT = { is_diplomatic_play_participant_with = scope:concession_holder }
+	NOT = { is_in_war_together = scope:concession_holder }
+	NOT = {
+		any_scope_treaty = {
+			OR = { first_country = scope:concession_holder second_country = scope:concession_holder }
+			any_scope_article = { OR = { has_type = alliance has_type = defensive_pact } }
+		}
+	}
+	scope:concession_holder = {
+		NOT = { is_subject_of = scope:concession_host }
+	}
+}
