@@ -95,7 +95,12 @@ def main():
         assert not re.search(r"\b" + obsolete + r"\b", clean + unquoted(entries)), ("Obsolete timer", obsolete)
     assert not re.search(r"\badd_journal_entry\s*=", clean), "Use automatic international JE activation"
     assert "can_be_renegotiated" not in unquoted(treaties)
-    assert len(re.findall(r"on_enforced\s*=\s*\{\s*\}", treaties)) == 2
+    assert len(re.findall(r"on_enforced\s*=\s*\{\s*\}", treaties)) == 1
+    assert definitions["eafp_return_concession"] == 0, "Return is handled by treaty withdrawal"
+    assert "eafp_return_concession" not in clean, "Removed return article must not be referenced"
+    assert re.search(r"on_withdrawal\s*=\s*\{\s*scope:article\s*=", treaties)
+    assert treaties.count("eafp_concession_return_effect = yes") == 1
+    assert re.search(r"on_break\s*=\s*\{\s*\}", treaties), "Break already runs withdrawal cleanup"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
     assert "add_treasury" not in effects
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
@@ -155,7 +160,7 @@ def main():
     keys = {k for k in keys if k not in definitions and k != "eafp_concession_compensation"}
     for key in ("je_concessions_in_china",):
         keys.update((key, key + "_reason"))
-    for key in ("eafp_grant_concession", "eafp_return_concession"):
+    for key in ("eafp_grant_concession",):
         keys.update(key + suffix for suffix in ("", "_desc", "_effects_desc", "_article_short_desc"))
     keys.update(("concept_concession_desc", "concession_payment", "concession_paid",
                  "eafp_concession_active_label", "eafp_concession_inactive_label"))
@@ -168,9 +173,9 @@ def main():
         for path in (ROOT / "localization" / lang).glob("*.yml"):
             for key, value in re.findall(r'^\s*([\w.]+):(?:\d+)?\s*"((?:\\.|[^"\\])*)"\s*$', read(path), re.M):
                 catalog.setdefault(key, []).append(value)
-        for path in (ROOT / "localization" / lang).glob("eafp_concessions*.yml"):
-            structural_check(path)
-            assert read(path).splitlines()[0] == "l_" + lang + ":"
+        path = ROOT / "localization" / lang / f"eafp_china_l_{lang}.yml"
+        structural_check(path)
+        assert read(path).splitlines()[0] == "l_" + lang + ":"
         for key in keys:
             assert len(catalog.get(key, [])) == 1, ("Missing/duplicate localization", lang, key)
         localizations[lang] = catalog

@@ -4,8 +4,8 @@
 
 ## 1. 확정 규칙
 
-1. 국가 간 조약 협상의 조계 양도·조계 반환 항목에서 원하는 실제 state를 선택한다. 바닐라 무역항처럼 조약 비준·발효 또는 조약 항목 강제로 처리하며, 특약 보유·소비를 조건으로 하는 저널 버튼은 제거한다.
-2. 획득·반환은 해당 조약 항목의 강제 관철 전쟁 목표로도 작동한다. 월간 사건의 자동 전쟁·강제 반환은 유지한다.
+1. 국가 간 조약 협상에서는 조계 양도 항목 하나로 원하는 실제 state를 선택한다. 별도 반환 항목은 두지 않으며 조약 탈퇴·파기 시 해당 조계권을 제거한다. 바닐라 무역항처럼 조약 비준·발효 또는 조약 항목 강제로 처리하며, 특약 보유·소비를 조건으로 하는 저널 버튼은 제거한다.
+2. 획득은 조계 양도 항목의 강제 관철 전쟁 목표로도 작동한다. 월간 사건의 자동 전쟁·강제 반환은 유지한다.
 3. 대상 지리는 모드의 `geographic_region_china_proper`를 사용한다. 조계 시스템에 별도의 주 ID 목록이나 프로빈스 거점을 만들지 않는다.
 4. 권리의 원본은 실제 state의 `concession_owner_varlist`다. state와 외국 보유국의 조합은 하나뿐이며 규모·확대·상한·주권 침해량을 계산하지 않는다.
 5. 현재 주 소유국 위신이 보유국보다 높으면 해당 조계의 경제 효과와 신규 사건을 중단한다. 동률이면 작동하며, 중단된 권리도 반환할 수 있다.
@@ -19,9 +19,9 @@
 
 ```mermaid
 flowchart TD
-    A["국가 간 조약 협상에서 상대국·조계 항목·state 선택"] --> B{"획득 또는 반환"}
+    A["국가 간 조약 협상에서 상대국·조계 항목·state 선택"] --> B{"발효 또는 탈퇴·파기"}
     B -->|획득| C["조계 양도 조약 발효 또는 해당 항목 강제 관철"]
-    B -->|반환| D["조계 반환 조약 발효 또는 해당 항목 강제 관철"]
+    B -->|종료| D["조계 조약 on_withdrawal"]
     C --> E["state의 보유국 목록에 한 번 등록"]
     D --> F["선택한 state의 해당 보유국만 제거"]
     E --> T["같은 state에 신규 보유국 소유 무역소 5단계 추가"]
@@ -42,7 +42,7 @@ flowchart TD
 
 ### 2.1. 기존 geographic region 사용
 
-설치·반환 화면·경제 처리·사건의 공통 지리 조건은 관내18성을 정의한 모드의 `geographic_region_china_proper`로 통일한다. 주 소유권 변경 hook도 같은 지역을 검사하되 기존 조계 권리가 있는 주의 갱신 경로는 유지한다.
+설치 화면·경제 처리·사건의 공통 지리 조건은 관내18성을 정의한 모드의 `geographic_region_china_proper`로 통일한다. 주 소유권 변경 hook도 같은 지역을 검사하되 기존 조계 권리가 있는 주의 갱신 경로는 유지한다.
 
 ```paradox
 # 현재 스코프: 실제 state
@@ -51,7 +51,7 @@ is_in_geographic_region = geographic_region_china_proper
 
 정의는 모드의 `common/geographic_regions/eafp_geographic_regions.txt`에 있다. 바닐라 한족 본토에서 `STATE_SHENGJING`과 `STATE_FORMOSA`를 제외한 26개 주 지역을 포함한다. 성경·대만은 조계 대상에서 제외한다.
 
-주 지역 수를 상수로 고정하지 않는다. 양도·반환 조약 항목의 state 입력 필터에서 기존 geographic region을 직접 검사한다. 지역별 반환 전쟁 목표를 별도로 생성하지 않는다.
+주 지역 수를 상수로 고정하지 않는다. 양도 조약 항목의 state 입력 필터에서 기존 geographic region을 직접 검사한다. 지역별 반환 전쟁 목표를 별도로 생성하지 않는다.
 
 권리와 계산은 실제 state 단위다. 같은 state_region이 여러 국가로 나뉘어 있으면 각 state의 건물과 권리 목록을 독립 처리한다. 신규 설치에서 조약항 state를 제외하는 기존 자격 조건은 유지한다.
 
@@ -65,7 +65,7 @@ is_in_geographic_region = geographic_region_china_proper
 | `article_options` | treaty_article_options | 발효 시 조약 항목의 실제 source/target 국가와 input_state를 제공 |
 | `concession_region` | state_region | 지리 판정용 파생값. 권리 저장소가 아님 |
 
-반환 조약의 수취국은 중국 국가이면서 현재 해당 state 소유자여야 한다. 중국 국가 판정은 청 태그와 기존 중국 중앙정부·분열국 판정을 재사용한다. `eafp_is_chinese_fragment`는 한족 주류문화 조건이므로 청과 다른 지원 대상 후계 정부가 누락되지 않는지 확인한다.
+조약 탈퇴·파기 시 기존 항목의 target_country와 input_state로 제거 대상을 정하고, 공용 반환 효과에 전달할 host는 해당 주의 현재 owner를 사용한다. 발효 뒤 주인이 바뀌거나 위신이 낮아져도 철회 처리를 막지 않는다. 중국 국가 판정은 청 태그와 기존 중국 중앙정부·분열국 판정을 재사용한다. `eafp_is_chinese_fragment`는 한족 주류문화 조건이므로 청과 다른 지원 대상 후계 정부가 누락되지 않는지 확인한다.
 
 신규 획득은 기존 열강·전략지역 이해관계 조건을 사용한다. 이미 보유한 권리는 순위 하락만으로 삭제하지 않는다. 위신이 낮아 즉시 작동 중단될 수 있는 경우는 선택 화면에서 설명한다.
 
@@ -73,7 +73,7 @@ is_in_geographic_region = geographic_region_china_proper
 
 ### 3.1. 조약 협상으로 진입
 
-기본 국가 간 조약 협상 화면에 `eafp_grant_concession`(조계 양도)과 `eafp_return_concession`(조계 반환)을 추가한다. 정의 파일은 `common/treaty_articles/eafp_concessions_treaty_articles.txt`다. 바닐라 `treaty_port`와 같은 조약 항목·state 입력·비준·강제 관철 시스템을 사용한다.
+기본 국가 간 조약 협상 화면에는 `eafp_grant_concession`(조계 양도)만 둔다. `eafp_return_concession` 정의와 전용 번역은 제거한다. 정의 파일은 `common/treaty_articles/eafp_concessions_treaty_articles.txt`다. 바닐라 `treaty_port`와 같은 조약 항목·state 입력·비준·강제 관철 시스템을 사용한다.
 
 기존 `establish_concession_button`, `return_concession_button`의 JE 연결과 특약 기반 실행 경로는 제거한다. 특약 방향·보유·생성·소비를 조계 항목의 조건이나 효과에 넣지 않는다. 사용자가 별도로 구성하는 바닐라 조약의 다른 교환 항목과 조계의 필수 조건은 구별한다.
 
@@ -83,72 +83,34 @@ is_in_geographic_region = geographic_region_china_proper
 
 조약 항목은 저널 참가 여부나 기존 조계 보유 여부와 무관하게 자격이 맞으면 사용할 수 있다. 저널에는 조계 획득·반환 버튼을 두지 않으며 협상은 기본 조약 화면에서 진행한다.
 
-### 3.2. 두 조약 항목의 방향과 입력
+### 3.2. 조약 항목의 방향과 입력
 
-두 항목 모두 `kind = directed`, `required_inputs = { state }`로 정의한다. source는 권리를 내주는 국가, target은 권리를 받는 국가다. 조약을 제안한 국가와 source가 항상 같다고 가정하지 않는다.
-
-| 항목 | source_country | target_country | input_state | 발효 결과 |
-| --- | --- | --- | --- | --- |
-| `eafp_grant_concession` | 현재 중국 주 소유국 host | 외국 획득국 holder | host가 소유한 적격 실제 state | holder 권리 추가, 같은 무역소에 holder 소유 +5단계 |
-| `eafp_return_concession` | 기존 외국 보유국 holder | 현재 중국 주 소유국 host | host가 소유하고 source의 조계가 있는 실제 state | 그 state의 source 권리만 제거 |
-
-국가·주를 무작위로 선택하지 않는다. 조약 협상 화면에서 실제 state를 선택하며, 같은 region이 분할되어 있으면 현재 소유국을 함께 표시한다. 반환 항목의 state는 source 소유지가 아니라 **target 소유지**다. 엔진의 state 선택 목록과 `state_valid_trigger`가 이 방향을 지원하는지 반드시 실행 검증한다. 미확인 상태에서 region별 대체 목표나 임의 선택을 완성된 구현으로 넣지 않는다.
-
-양도는 기존 지리·중국 소유국·외국 획득국·열강·이해관계·미보유·무역소 부여 가능 조건을 검사한다. 반환은 지리·target의 현재 소유권·source의 현재 권리를 검사한다. 위신 때문에 중단된 권리도 반환할 수 있다. 양도 직후 위신으로 경제 효과가 중단될 경우 조약 툴팁에 표시한다.
+`eafp_grant_concession`은 directed 항목이다. source_country는 중국 주 소유국(host), target_country는 조계 보유국(holder), input_state는 host가 소유한 실제 state다. 지리·중국 소유국·열강·전략지역 이해관계·미보유 조건을 검사한다. 위신은 권리 부여 자격이 아닌 경제 효과의 작동 조건이다.
 
 ### 3.3. 조약 정의와 검증 단계
 
-바닐라 파일에서 확인한 구조를 다음과 같이 사용한다.
-
-| 필드 | 조계 항목에 적용할 계약 |
+| 필드 | 처리 |
 | --- | --- |
-| `kind` | `directed` |
-| `required_inputs` | `state` |
-| `usage_limit` | `once_per_side_with_same_inputs`, 초안 내 충돌 검사는 별도 보강 |
-| `flags` | `can_be_enforced`. 즉시 권리 변경 효과이므로 `can_be_renegotiated`는 넣지 않음 |
-| `cost` | 0 초안. 기존 설계에 없던 조약 유지 비용을 추가하지 않음 |
-| `maintenance_paid_by` | 양도는 `target_country`, 반환은 `source_country`. 비용 0이어도 directed 필드 지정 |
-| `visible` / `possible` | 항목 표시와 두 국가 사이 후보 존재 여부. 입력이 아직 없을 수 있음을 고려 |
-| `state_valid_trigger` | `scope:input`의 실제 state·지리·owner·조계 여부 검사 |
-| `can_ratify` | `scope:article.input_state`와 source/target에서 최종 자격·충돌 검사 |
-| `on_entry_into_force` | 양도/반환 공용 효과를 실행하는 유일한 조약 callback |
-| `on_enforced` | 권리와 무역소를 추가로 변경하지 않음. 강제 관철 시 앞 callback도 실행되기 때문 |
-| `wargoal` | 해당 조약 항목 강제 관철의 기동·악명·전쟁 점수 조건 |
-| `source_modifier` / `target_modifier` | 정기 조계 수입을 중복 적용하지 않음. 5절의 국가별 합산 방식 유지 |
+| `flags` | `can_be_enforced`; 기존 일회성 무역소 보상의 재실행을 막기 위해 재협상 허용 flag는 추가하지 않음 |
+| `usage_limit` | `once_per_side_with_same_inputs`, 동일 초안의 중복 양도도 명시적으로 거부 |
+| `maintenance_paid_by` | `target_country`; cost는 0 |
+| `state_valid_trigger` / `can_ratify` | 신규 입력·비준 검증; 기존 잠긴 항목은 원 조약의 동일 항목 검사로 재협상 유지 허용 |
+| `on_entry_into_force` | `scope:article_options`의 source/target/input_state에서 신규 양도 공용 효과 호출 |
+| `on_enforced` | 비움. 강제 관철도 발효 효과를 실행하므로 중복 부여 방지 |
+| `on_withdrawal` | `scope:article`의 target_country와 input_state에서 공용 반환 효과 호출 |
+| `on_break` | 비움. 중도 파기도 on_withdrawal을 함께 실행하므로 반환을 반복하지 않음 |
 
-무역항의 `is_treaty_port`, `causes_state_transfer`, `cede_treaty_port` 및 영토 변경 효과는 사용하지 않는다. 해안·무역항 가능 province 같은 바닐라 조건도 조계 대상 규칙에 덧붙이지 않는다. 조계권은 실제 state의 목록에 기록하며 영토를 이전하지 않는다.
+무역항의 영토 이전·해안 조건은 적용하지 않는다. 별도 조계 반환 협상 항목과 그 전쟁 목표는 제공하지 않는다. 다른 조약 조항의 처리와 조약 전체의 탈퇴 규칙은 바닐라에 맡긴다.
 
-같은 초안의 동일 state·source·target 중복 항목은 명시적으로 거부한다. 신규 양도와 반환은 현재 권리의 미보유/보유 조건이 서로 배타적이므로 동시에 비준할 수 없다. 이미 발효한 잠긴 양도 항목은 새 반환 항목의 충돌로 취급하지 않는다. 반환 후 재획득은 새 조약의 양도로 처리할 수 있으며, 같은 기존 조약에 동일 항목을 다시 넣는 것은 바닐라 usage_limit을 따른다.
+### 3.4. 발효·파기와 권리 수명
 
-각 단계의 스코프가 다르다. 입력 필터에서는 `root`가 source, `scope:other_country`가 반대편 국가이며, 발효 효과에서는 바닐라와 같이 `scope:article_options.source_country`, `target_country`, `input_state`로부터 공용 효과의 스코프를 구성한다. 입력 미지정 상태에서 무조건 역참조하지 않는다.
+조계 양도 항목이 발효되면 해당 실제 state에 holder를 등록하고, 최초 성공한 부여에서만 holder 직접 소유 무역소 5단계를 추가한다. 조약에서 탈퇴하거나 구속 기간 중 파기하면 `on_withdrawal`에서 해당 holder의 권리를 제거하고 경제 modifier와 현황 목록을 즉시 갱신한다. 기존 무역소는 철거하거나 국유화하지 않는다.
 
-### 3.4. 발효·강제 관철과 권리 수명
+탈퇴 callback에서는 발효 이후의 소유권 변화를 고려해 input_state.owner를 현재 host로 저장한다. 다른 주의 조계와 같은 주의 다른 holder는 건드리지 않는다. 이미 사건으로 반환된 권리에 대한 철회는 무동작이다. callback 안에서 조약이나 조약항목 자체를 추가·삭제하지 않는다.
 
-```mermaid
-flowchart TD
-    A["국가 간 조약 협상"] --> B["조계 양도 또는 반환 항목·실제 state 선택"]
-    B --> C["방향·소유권·자격·현재 권리·초안 충돌 검사"]
-    C --> D{"합의 비준 또는 항목 강제 관철?"}
-    D -->|미성립·거절| E["권리·무역소 변경 없음"]
-    D -->|성립| F["on_entry_into_force에서 현재 대상 재검증"]
-    F --> G{"검증 성공?"}
-    G -->|아니오| H["변경 없이 종료·원인 표시"]
-    G -->|예| I{"항목"}
-    I -->|양도| J["새 권리 추가·기존 무역소에 holder 소유 5단계 추가"]
-    I -->|반환| K["선택 state의 holder 권리만 제거"]
-    J --> L["양국 경제 modifier·현황 갱신"]
-    K --> L
-```
+재협상에서 기존 항목의 입력·삭제는 잠긴 상태를 유지하며 일회성 발효 효과가 재실행되지 않는다. 조계 반환은 해당 조약의 탈퇴·파기로 처리한다. 구속 기간이 지났다는 사실만으로 권리를 지우지 않는다. 합의 해체 등 별도 엔진 경로의 callback 실행 여부는 실제 게임에서 확인해야 한다.
 
-합의와 강제 관철 모두 `on_entry_into_force`에서만 신규 권리 및 무역소 부여 또는 반환을 수행한다. 제안·미리보기·초안 작성·거절 시에는 실행하지 않는다. 실제 발효 직전에 state 생존·owner·양국·현재 권리·건물 부여 조건을 다시 확인한다. 범용 롤백을 가정하지 말고 실패 가능 조건을 변경 전에 검사한다.
-
-바닐라 무역항의 즉시 이전 효과처럼 **발효 때 권리를 변경하는 조항**으로 설계한다. 조약 탈퇴·기간 변화·해체 자체가 이미 부여한 조계권이나 무역소를 자동으로 되돌리지 않는다. 반환은 별도 반환 조항의 발효·강제 관철 또는 기존 월간 강제 반환 사건으로 처리한다. `on_withdrawal`·`on_break`에서 권리·무역소를 재변경하지 않는다. 조약 전체의 일반 탈퇴 규칙과 불이익은 바닐라 처리에 맡긴다.
-
-`can_be_renegotiated`가 없는 즉시 효과 조항은 재협상에서 입력 변경이 제한되고 발효 효과가 재실행되지 않는다는 로컬 문서 설명을 따른다. 변경되지 않은 기존 항목을 재협상할 때 신규 획득용 “미보유” 검사를 잘못 적용해 조약 전체를 막지 않도록 검증 단계와 활성/초안 스코프를 구분한다. 반대로 새 항목은 반드시 신규 자격을 검사한다. 재협상·저장 후 로드·강제 관철의 중복 callback에서도 현재 목록 검사로 무역소 추가 지급을 막는다.
-
-`requirement_to_maintain`에는 양도의 “현재 미보유”나 반환의 “현재 보유” 같은 실행 전 조건을 넣지 않는다. 발효 직후 자기 효과 때문에 조건이 뒤집혀 조약이 자동 파기될 수 있기 때문이다. 신규 실행 자격은 입력·비준·발효 직전 검사에 두고, 위신 조건 역시 조약 유지 조건으로 넣지 않는다.
-
-조약은 권리 변경의 외교적 기록이며, 현재 경제·사건의 원본은 state의 `concession_owner_varlist`다. 월간 사건으로 반환되었거나 주가 양도되어도 과거 양도 항목을 읽어 권리를 다시 생성하지 않는다. 위신 우위는 경제·신규 사건만 중단시키며 조약 위반이나 권리 자동 반환으로 바꾸지 않는다.
+`requirement_to_maintain`에 “현재 미보유” 같은 신규 부여 조건이나 위신 조건을 넣지 않는다. 월간 사건과 내부 전쟁 목표가 반환한 권리를 과거 조약에서 다시 생성하지 않는다. 권리의 원본은 실제 state의 `concession_owner_varlist`이며, 별도 조약 이력 변수나 예약 루프를 추가하지 않는다.
 
 ### 3.5. 신규 획득 시 무역소 5단계
 
@@ -362,7 +324,7 @@ concession_paid = {
 | `eafp_concession_refresh_effect` | 현재 조계 및 이전 modifier가 남은 대상 전체 | 권리 정리와 중국 측 지출·보유국 수입 modifier 재계산. 현금 지급·사건 추첨 없음 |
 | `eafp_concession_is_urban_building` | building | 최종 urban category 필터. 실제 API 또는 정의로부터 도출한 그룹 조건 사용 |
 
-특약 관련 생성·소비 효과는 설치/반환 경로에서 제거한다. 조약 발효와 월간 사건은 같은 공용 효과를 사용한다. 이미 없는 조계의 반환은 무동작으로 끝내며, 강제 관철의 추가 callback에서 공용 효과를 다시 호출하지 않는다.
+특약 관련 생성·소비 효과는 설치/반환 경로에서 제거한다. 조약 철회와 월간 사건은 같은 반환 공용 효과를 사용한다. 이미 없는 조계의 반환은 무동작으로 끝내며, 강제 관철의 추가 callback에서 공용 효과를 다시 호출하지 않는다.
 
 마지막 조계를 잃은 보유국과 주를 양도한 이전 중국 소유국도 기존 국가 modifier가 있는지 확인하고 재계산한다. 현재 권리 목록에 있는 국가만 조회하면 반환 뒤 수입이나 양도 뒤 부담이 남으므로 두 국가 modifier의 `has_modifier` 조건도 탐색에 포함한다. 합계가 0인 역할의 modifier는 제거한다.
 
@@ -429,39 +391,17 @@ refresh all concession modifiers:
 
 ### 9.1. 바닐라 강제 조약 경로 재사용
 
-두 조약 항목에 `flags = { can_be_enforced }`와 `wargoal`을 정의한다. 바닐라 `enforce_treaty_article` 전쟁 목표와 `dp_default_treaty_article` 외교전 경로를 재사용한다. 조약 협상과 전쟁 결과가 같은 항목 정의·입력·발효 효과를 사용해야 한다.
+조계 획득 요구는 바닐라 `enforce_treaty_article` / `dp_default_treaty_article` 경로로 양도 항목을 강제한다. 양도 방향은 host → holder이며 입력은 host가 소유한 실제 state다. 별도 반환 조약항목과 그 강제 목표는 제거한다.
 
-기존 계획의 별도 `eafp_acquire_concession` custom 전쟁 목표와 region별 반환 목표·외교전 생성은 제거한다. 기본 `target_type = state` 적국 주 목록에 반환을 억지로 맞추지 않고, 반환 조약의 `input_state`로 요구국 자기 주를 전달한다.
+### 9.2. 양도 항목의 전쟁 설정
 
-| 강제할 항목 | 전쟁 목표 요구국 | 상대국 | 조약 source → target | 대상 |
-| --- | --- | --- | --- | --- |
-| 조계 양도 | 외국 획득국 holder | 중국 host | host → holder | host 소유 실제 state |
-| 조계 반환 | 중국 host | 외국 holder | holder → host | host 소유 실제 state |
-
-조약 방향과 전쟁 공격 방향을 혼동하지 않는다. 두 경우 모두 권리를 내줄 국가가 article source이고, 요구국이 article target이다.
-
-### 9.2. 항목별 전쟁 설정
-
-기동·악명은 앞선 초안을 항목의 `wargoal`에 옮긴다. 양도 기동 10·악명 5, 반환 기동 10·악명 0이며 밸런스 초안이다. 양도 `contestion_type = control_target_state`, 반환 `contestion_type = control_own_capital`을 출발점으로 삼고 실제 전쟁에서 요구국 기준 판정인지 확인한다.
-
-바닐라 항목에서 확인한 필드 형식은 다음과 같다. 이 블록은 양도 항목 내부의 설정 예이며 전체 조약 정의가 아니다.
-
-```paradox
-flags = { can_be_enforced }
-wargoal = {
-    contestion_type = control_target_state
-    maneuvers = { value = 10 }
-    infamy = { value = 5 }
-}
-```
-
-기존 일반 전쟁 승리·항복 on-action에서 조계를 지급/반환하지 않는다. 엔진의 조약 발효 callback이 처리하며 `on_enforced`에 같은 설치/반환 효과를 추가하지 않는다. 무혈 비준·외교전 양보·평화 협정 관철 각각에서 권리와 신규 무역소가 한 번만 변경되는지 검사한다. 백지 평화 또는 해당 항목이 빠진 평화는 권리를 바꾸지 않는다.
+양도는 `contestion_type = control_target_state`, 기동 10·악명 5를 사용한다. 일반 전쟁 승리·항복 hook에서 조계를 별도로 지급하지 않는다. 무혈 비준·외교전 양보·평화 관철은 조약의 `on_entry_into_force`에서 한 번만 권리와 무역소를 부여한다. `on_enforced`에 부여 효과를 중복 배치하지 않는다.
 
 ### 9.3. 월간 사건의 자동 전쟁 연결
 
-일반 협상·수동 전쟁 요구는 두 조약 항목의 바닐라 강제 경로를 사용한다. 이벤트에서 새 treaty article options를 생성해 전쟁 목표에 전달하는 필드는 로컬 문서에서 확인되지 않았다. 따라서 월간 자동 전쟁과 치안 충돌의 전쟁 선택지에 한하여 내부 반환 목표 `eafp_concession_incident_return`과 외교전 `dp_eafp_concession_incident`를 사용한다. 별도 사용자 외교 행동이나 지역별 목표 목록을 만들지 않는다.
+조계 양도의 일반 협상·수동 전쟁 요구는 바닐라 조약 항목 강제 경로를 사용한다. 이벤트에서 새 treaty article options를 생성해 전쟁 목표에 전달하는 필드는 로컬 문서에서 확인되지 않았다. 따라서 월간 자동 전쟁과 치안 충돌의 전쟁 선택지에 한하여 내부 반환 목표 `eafp_concession_incident_return`과 외교전 `dp_eafp_concession_incident`를 사용한다. 별도 사용자 외교 행동이나 지역별 목표 목록을 만들지 않는다.
 
-`create_diplomatic_play`는 holder 국가 스코프에서 호출하고, initiator=host, country=holder, state=선택된 실제 state, war=yes로 지정한다. 전쟁이 개시되었다고 확인된 경우에만 알림을 띄운다. 목표 관철 전에는 권리를 제거하지 않는다. 목표의 `on_enforced`는 조약 반환과 같은 `eafp_concession_return_effect`를 호출한다.
+`create_diplomatic_play`는 holder 국가 스코프에서 호출하고, initiator=host, country=holder, state=선택된 실제 state, war=yes로 지정한다. 전쟁이 개시되었다고 확인된 경우에만 알림을 띄운다. 목표 관철 전에는 권리를 제거하지 않는다. 목표의 `on_enforced`는 조약 철회와 같은 `eafp_concession_return_effect`를 호출한다.
 
 country 대상 custom 목표에 명시한 state가 유지되는지, 요구국 소유 주를 반환 대상으로 사용할 수 있는지, 사건용 숨김 목표가 정상 추가되는지는 게임 실행 검증 대상이다. 이 검증 전에는 자동 전쟁을 실행 확인 완료로 보고하지 않는다. 발효한 반환 조약을 먼저 만들어 권리를 없애는 방식은 사용하지 않는다.
 
@@ -512,7 +452,7 @@ flowchart TD
 
 ### 10.3. 자동 전쟁
 
-전쟁 방향은 `initiator = host`, `target = holder`다. 목표는 해당 실제 state를 입력으로 가진 조계 반환 항목 강제이며, 항목 방향은 `source_country = holder`, `target_country = host`다. 전쟁 시작만으로 조계를 미리 반환하지 않는다. 즉시 강제 반환은 `.204`의 별도 결과다.
+전쟁 방향은 `initiator = host`, `target = holder`다. 목표는 해당 실제 state와 외국 holder를 대상으로 하는 사건 전용 내부 반환 목표다. 전쟁 시작만으로 조계를 미리 반환하지 않는다. 즉시 강제 반환은 `.204`의 별도 결과다.
 
 실행 전에 국가 생존·서로 다름, 현재 state 소유권, 조계 존재와 실제 위신 조건, 동일 양국 간 기존 전쟁/외교전 부재, 엔진의 외교 자격을 확인한다. 휴전·동맹·종속 관계를 임의로 해제하지 않는다. 전쟁 생성이 불가능하면 해당 자동 전쟁 후보를 제외하거나 선택지의 불가 사유를 표시한다.
 
@@ -532,7 +472,7 @@ return(state, holder):
     do not transfer cash or create a new weekly schedule
 ```
 
-조약 반환은 실행 직전 input_state의 현재 소유권과 source의 권리를 확인한다. 합의·강제 관철은 조약 발효 callback에서, 월간 강제 반환은 사건 효과에서 공용 반환 처리를 호출한다. 어느 반환 경로도 무역소의 철거·소유권 이전을 자동 실행하지 않는다.
+조약 탈퇴·파기는 `on_withdrawal`에서 기존 항목의 input_state와 target_country를 사용하며, 현재 주 소유국을 host로 전달한다. 월간 강제 반환과 사건 전쟁 목표도 같은 공용 반환 처리를 호출한다. 어느 반환 경로도 무역소의 철거·소유권 이전을 자동 실행하지 않는다.
 
 ### 11.2. 분할·통일·양도
 
@@ -555,7 +495,7 @@ return(state, holder):
 
 ### 12.1. 조약 화면과 저널 현황
 
-기본 조약 협상 화면의 항목 목록에 조계 양도·반환을 표시한다. state 입력에는 실제 주와 현재 소유국을 표시한다. 양도 툴팁은 선택 주의 권리와 “획득국 직접 소유 무역소 +5단계”, 반환 툴팁은 해당 보유국의 권리 제거와 기존 무역소 소유 유지, 양쪽은 위신에 따른 작동 여부를 설명한다.
+기본 조약 협상 화면에는 조계 양도 항목 하나만 표시한다. state 입력에는 실제 주와 현재 소유국을 표시한다. 설명에는 신규 무역소 +5단계, 위신에 따른 작동 조건, 조약 탈퇴·파기 시 권리와 경제 효과 제거 및 기존 무역소 소유 유지를 명시한다.
 
 국제 저널은 관내 18성의 조계가 있는 모든 실제 state를 같은 목록에 표시한다. 국가별 소유국 필터나 `JournalEntry.GetCountry`에 의존하지 않는다. 각 행은 실제 state 하나를 나타내며, 보유국 국기·작동 여부·실제 양국 위신을 보여 준다. 경제 툴팁에는 도시 건물 주간 순이익 합계·보유국당 비율·작동국 수·중국 측 부담·보유국별 수입을 표시한다. 건물 수입은 기준값이고, 실제 경제 효과는 중국 측 국가 지출·보유국 국가 수입 modifier임을 설명한다.
 
@@ -567,8 +507,6 @@ return(state, holder):
 
 - 양도 수취국: 예상 조계 수입·무역소 5단계·위신·전략 가치를 평가한다.
 - 양도 제공국: 국가 지출 부담과 조약의 다른 대가를 평가한다.
-- 반환 수취국: 앞으로 줄일 수 있는 국가 부담액을 평가한다.
-- 반환 제공국: 상실할 조계 수입을 평가한다. 반환 시 무역소는 유지됨을 가치 계산에 반영한다.
 - 전쟁 목표: 같은 항목의 가치를 군사력·동맹·관계와 함께 평가한다.
 - 월간 사건: 일회성 비용과 군사 위험을 판단한다. 자동 결과는 AI 선택에 의존하지 않는다.
 
@@ -578,9 +516,9 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 
 `localization/korean/eafp_china_l_korean.yml`, `localization/english/eafp_china_l_english.yml`, `localization/simp_chinese/eafp_china_l_simp_chinese.yml`을 함께 갱신한다.
 
-필수 문구는 조계 양도·반환 조약 항목명/설명, source·target·대상 state, 조건 실패·초안 충돌·AI 수락 이유, 신규 무역소 +5단계, 위신 중단·동률 작동, 도시 건물 순이익 기준과 중국 측 국가 지출·보유국 국가 수입 변화, 강제 관철 목표·자동 전쟁·강제 반환 알림이다. 특약 소비 버튼의 설명·툴팁·연결은 제거한다. `concept_concession_desc`도 조약으로 얻는 비영토적 권리임을 설명하도록 갱신한다.
+필수 문구는 조계 양도 조약 항목명/설명과 탈퇴·파기 효과, source·target·대상 state, 조건 실패·초안 충돌·AI 수락 이유, 신규 무역소 +5단계, 위신 중단·동률 작동, 도시 건물 순이익 기준과 중국 측 국가 지출·보유국 국가 수입 변화, 강제 관철 목표·자동 전쟁·강제 반환 알림이다. 특약 소비 버튼의 설명·툴팁·연결은 제거한다. `concept_concession_desc`도 조약으로 얻는 비영토적 권리임을 설명하도록 갱신한다.
 
-조약 탈퇴만으로 권리나 무역소가 자동 반환되지 않고 별도 반환 항목이 필요함을 명시한다. 이미 실행한 조약 조항은 기록, 현재 권리는 저널 현황이라는 차이를 설명한다.
+조약 탈퇴·파기 시 해당 권리와 경제 효과가 사라지며 무역소 소유권은 유지됨을 명시한다. 저널의 문학적 reason 문구는 변경하지 않는다.
 
 ## 13. 구현 근거와 파일별 변경
 
@@ -638,11 +576,11 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | `common/static_modifiers/eafp_chi_modifiers.txt` | 중국 측 `country_expenses_add`·보유국 `country_tax_income_add` 국가 modifier |
 | `common/on_actions/concessions_code_on_actions.txt` | 소유 변경·내전 분할의 권리 승계와 즉시 갱신 |
 | `common/on_actions/00_code_on_actions_definition.txt` | 조계의 별도 시작·월간 연결 제거, 소유 변경·내전 hook 유지 |
-| `common/treaty_articles/eafp_concessions_treaty_articles.txt` | 양도·반환 항목, 입력·비준 검증, 발효 효과, AI, wargoal |
+| `common/treaty_articles/eafp_concessions_treaty_articles.txt` | 양도 항목 하나, 입력·비준 검증, 발효 부여·철회 반환, AI, wargoal |
 | 바닐라 `enforce_treaty_article` / `dp_default_treaty_article` | 일반 조약 요구의 강제 경로 재사용 |
 | `common/war_goal_types/eafp_concessions_war_goals.txt`, `common/diplomatic_plays/eafp_concessions_diplomatic_plays.txt` | 사건 전용 내부 반환 목표와 전쟁 생성 연결 |
 | `events/eafp_chi_events/eafp_concessions_in_china_events.txt` | 옛 특약 선택 이벤트 제거, 월간 사건·반환 목표 자동 전쟁·결과 알림 |
-| 세 언어의 `eafp_china_l_*.yml`, `eafp_concessions_l_*.yml` | 국제 저널 공통 관점과 중국 측 국가 지출·보유국 국가 수입 설명 |
+| 세 언어의 `eafp_china_l_*.yml` | 국제 저널 공통 관점과 중국 측 국가 지출·보유국 국가 수입 설명 |
 
 조약의 state 입력 필터는 기존 geographic region 정의를 사용한다. 별도 지역별 목표·국가 목록·프로빈스 매핑을 대상의 원본으로 만들지 않는다. urban 필터 생성이 필요하면 게임/모드 building group의 최종 category 상속에서 도출한다.
 
@@ -659,9 +597,9 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 - 기본 조계 경제 효과는 중국 측 `country_expenses_add`와 보유국 `country_tax_income_add`의 양수 한 쌍이다. 건물 modifier·음수 세입 modifier·`add_treasury`를 함께 적용하지 않는다.
 - 국가별 지급/수취 역할마다 modifier 하나를 합산값으로 교체한다. 같은 국가에 두 역할이 있으면 독립 합산한다.
 - 정기 계산은 국제 저널의 주간·월간 pulse에만 둔다. 국가별 JE 생성·자기 예약·글로벌 월간 사건 연결이 남지 않았는지 검사한다.
-- JE의 특약 획득·반환 버튼과 연결된 실행 경로가 제거되어 있고 기본 조약 화면에서 두 조계 항목을 선택할 수 있다.
-- 조약 방향은 양도 host→holder, 반환 holder→host이며 두 경우 모두 선택 주의 현재 소유자는 host다.
-- `on_entry_into_force`만 권리 변경·신규 무역소 부여를 수행하고 `on_enforced`가 반복 실행하지 않는다.
+- JE의 특약 획득·반환 버튼과 연결된 실행 경로가 제거되어 있고 기본 조약 화면에서 조계 양도 항목 하나만 선택할 수 있다.
+- 양도는 host→holder이며 철회 시 기존 article의 holder·input_state와 현재 owner를 사용한다.
+- `on_entry_into_force`만 신규 부여를, `on_withdrawal`만 조약 종료에 따른 반환을 수행한다. `on_enforced`와 `on_break`는 중복 실행하지 않는다.
 - 지역별 반환 목표와 별도 custom 조계 목표 대신 바닐라 조약 항목 강제 경로를 사용한다.
 - 무역소 부여는 신규 획득 helper 한 곳에만 있고, 주간 갱신·권리 승계·일반 전쟁 승리에 중복 연결되지 않는다. 국가 소유 단계와 해당 state 총단계를 각각 5만큼 추가한다.
 
@@ -682,12 +620,12 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | T11 | 중국 host 위신 100, holder 99/100/101 | 중단/작동/작동 |
 | T12 | 여러 holder 중 하나 중단 | 중국 측 부담과 중단국 수취에서 같은 한 몫 제거 |
 | T13 | 모든 holder 중단 또는 마지막 권리 반환 | 해당 주의 부담·수취 0, 역할별 합계가 0인 국가 modifier 제거 |
-| T14 | 양도·반환 조약 각각 합의 비준 | 올바른 source/target과 선택 state의 권리만 변경, 특약 요구·소비 없음 |
-| T15 | 잘못된 조약 방향·비소유 주 반환·중복 양도 | 입력/비준 거부, 권리·건물 변경 없음. 특약이 없어도 올바른 조약은 가능 |
+| T14 | 양도 조약 비준 후 정상 탈퇴 | 선택 state의 holder 권리만 제거, 경제 효과 즉시 갱신, 무역소 유지 |
+| T15 | 잘못된 조약 방향·중복 양도 | 입력/비준 거부, 권리·건물 변경 없음. 별도 반환 항목은 표시되지 않음 |
 | T16 | 제안 반복·초안 미리보기·합의 거절 | 발효 전 권리·무역소 변화 없음 |
 | T17 | 사건 중 state 소유국/권리 소멸 | 현재 스코프 검사로 비용 없이 취소 |
 | T18 | 같은 주·국가에 반환 후 재설치하고 옛 사건 실행 | 현재 조건으로 처리, 별도 권리 이력 판정 없음 |
-| T19 | 양도/반환 항목 강제 목표의 수락·양보·평화 관철 | 기본 enforce_treaty_article 경로로 정확한 state의 해당 권리만 한 번 변경 |
+| T19 | 양도 항목 강제 목표의 수락·양보·평화 관철 | 기본 enforce_treaty_article 경로로 정확한 state의 해당 권리만 한 번 부여 |
 | T20 | 일반 승리·백지 평화 | 목표와 무관한 조계 변경 없음 |
 | T21 | 자동 강제 반환/자동 전쟁 | 알림 전에 결과 적용, 실제 전쟁과 반환 목표 확인 |
 | T22 | 분할·통일·정식 양도·holder 자기 병합 | 현재 목록과 도시 건물 순이익에서 재계산, 이전 소유국 부담 정리 |
@@ -711,12 +649,12 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | T40 | 무역소 부여 가능 조건 미충족 | 조약 양도 비준 불가 사유 표시, 권리만 생기는 부분 성공 없음 |
 | T41 | 양도 항목 강제 목표 수락·양보·평화 관철 | 정확한 state의 동일 무역소에 획득국 직접 소유 +5단계가 한 번 적용 |
 | T42 | 국제 저널 비참가국인 미보유 외국이 조약 협상 | 기본 조약 화면에서 적격 양도 항목 선택 가능, 획득 후 다음 주간 pulse에서 참가 |
-| T43 | 반환 항목에서 state 선택 | source holder의 영토가 아닌 target 중국 host의 해당 주를 선택 가능 |
-| T44 | 동일 초안의 중복 양도 또는 같은 권리의 양도+반환 | source/target 방향을 정규화해 충돌 거부, 다중 보상 없음 |
+| T43 | 발효 뒤 주 소유국 변경 후 원래 조약 철회 | 기존 input_state의 해당 holder 권리 제거, 현재 host의 부담 갱신 |
+| T44 | 동일 초안의 중복 양도 | 동일 state/source/target 중복 거부, 다중 보상 없음 |
 | T45 | 기존 항목을 포함한 조약 재협상·재로드 | 기존 권리 효과 재실행 없음, 무역소 추가 없음, 기존 항목 때문에 새 비준이 잘못 막히지 않음 |
-| T46 | 조약 탈퇴·기간 변화·해체 | 이미 발효한 권리·무역소 자동 환원 없음, 별도 반환 항목 또는 사건 필요 |
+| T46 | 양측 각각 정상 탈퇴·구속 기간 내 파기 | 해당 조계권과 경제 효과 제거, 다른 holder·다른 주 및 기존 무역소 유지. 합의 해체 callback도 별도 실행 확인 |
 | T47 | 사건 강제 반환 뒤 과거 양도 조약 조회·갱신 | 권리 자동 재생성 없음, 현재 목록 기준 유지 |
-| T48 | 조계 양도/반환 발효 직후 조약 유지 검사 | 실행 전 보유 여부 조건이 바뀌었다는 이유로 조약 자동 파기 없음 |
+| T48 | 조계 양도 발효 직후 조약 유지 검사 | 실행 전 보유 여부 조건이 바뀌었다는 이유로 조약 자동 파기 없음 |
 
 ### 14.3. 구현 전 필수 확인
 
@@ -730,7 +668,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | 국가별 modifier 교체와 제거 | 반환·중단·소유권 이전 후 잔여 부담·수입 없음 |
 | 국가 직접 소유 무역소 신규 생성·기존 건물 확장 | 같은 실제 state의 총단계와 holder 소유 단계가 각각 +5, 기존 타국 단계·생산 방식 보존 |
 | 건물 부여와 권리 등록의 실행 조건 | 외국 국가 소유 가능 여부·생성 제한 확인, 지연 없는 효과 체인에서 부분 성공 방지 |
-| 반환 조약 state 입력 후보 | target 중국 소유국의 실제 state가 UI·AI·강제 목표에서 선택 가능 |
+| 조약 철회 callback 스코프 | 양측 탈퇴·중도 파기에서 scope:article 및 input_state가 유효하고 정리가 한 번 실행됨 |
 | 조약 발효·강제·재협상 callback | 신규 항목만 1회 권리 변경, 추가 on_enforced·재협상에서 무역소 중복 없음 |
 | 사건용 반환 목표의 대상 전달 | host/holder/실제 state가 정확한 목표로 전쟁 시작; 관철 시 해당 권리만 제거 |
 
@@ -749,14 +687,14 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 
 ## 16. 코드 반영 상태와 검증 경계
 
-- 조약 2개, 월간 사건 8개, 국가 지출·수입 modifier, 국제 JE 하나와 주별 GUI, 세 언어 문구를 구현했다. 국제 JE가 주간 정산과 월간 사건을 실행한다.
+- 양도 조약항목 1개와 철회 시 반환, 월간 사건 8개, 국가 지출·수입 modifier, 국제 JE 하나와 주별 GUI, 세 언어 문구를 구현했다. 국제 JE가 주간 정산과 월간 사건을 실행한다.
 - 계산 기준은 사용자 승인에 따라 `weekly_profit`이며 비율은 계획의 임시값 5%다. 기준액을 저장하는 영속 변수는 없다. 국가별 modifier는 주간 전체 갱신에서 교체한다.
 - 권리의 원본은 실제 state의 `concession_owner_varlist` 하나다. `concession_candidate_states_gvarlist`는 매번 권리 목록에서 재작성하는 GUI/조회용 state 색인이다. 사건 저장 스코프와 분할·병합 임시 스코프는 새 영속 장부가 아니다.
 - 무역소 보상은 신규 획득 helper에서만 실행한다. `add_ownership`으로 국가 소유 5단계를 요청하고 기존 건물에는 생산 방식을 지정하지 않는다. 실제 기존 총단계와 외국 소유 단계의 +5 동작은 실행 시험 대상이다.
 - 소유권 변경 hook에서는 같은 region에서 **현재 소유국이 같은** 비무역항 state 조각만 합집합 처리한다. 내전 시작에서는 원국과 지정된 반란국의 같은 region 조각 사이에서만 복사한다. 권리 승계는 무역소를 추가하지 않는다. 엔진이 hook 전에 state를 삭제·병합하는 경로의 보존 여부는 실행 검증이 필요하다.
-- 조약 AI는 권리의 기본 가치, 현재 위신 조건에서의 주간 수취액, 신규 양도의 무역소 보상 가치를 고려한다. 반환 시 유지되는 무역소를 반환 가치에서 빼지 않는다. 나머지 조약 대가와 전쟁 여건은 바닐라 평가를 사용한다.
+- 조약 AI는 권리의 기본 가치, 현재 위신 조건에서의 주간 수취액, 신규 양도의 무역소 보상 가치를 고려한다. 나머지 조약 대가와 전쟁 여건은 바닐라 평가를 사용한다.
 - 국제 저널 전환의 정적 검증은 `--source-only`로 실행한다. 인코딩·괄호·정의·China Proper·urban 그룹 상속·세 언어 토큰·국제 저널 pulse와 별도 타이머 제거를 검사하며, 바닐라 소스 저장소에 없는 자산의 존재 검사는 명시적으로 제외한다.
 - 정적 검증 명령: `python tools/validate_china_concessions.py --game-root "C:/Users/user/Documents/GitHub/Vic3-vanilla" --source-only`. 실제 설치본에서는 `--source-only`를 빼고 자산까지 검사한다.
 - 이전 버전의 초기 로딩 확인 기록: 설치본 1.13.11을 임시 사용자 폴더에서 120초 실행 후 종료했다. 해당 error.log에서 조계 파일·식별자 관련 오류는 0건이었다. 다른 콘텐츠의 번역 중복·GUI 함수·텍스처 오류는 관찰되었으며 이번 범위에서 변경하지 않았다. 이 기록은 이번 국제 저널 전환의 검증 결과가 아니며 로딩 완료 또는 캠페인 기능 시험도 의미하지 않는다.
 - 정적 검증은 인코딩·괄호·식별자·지역·urban 그룹 상속·자산·번역 참조·국제 저널 정기 진입점의 일관성을 확인한다. Jomini 엔진 실행을 대신하지 않는다.
-- 실제 게임에서 남은 주요 검증: 국가 지출·수입 modifier의 통화 단위/예산 반영, 기존 무역소 +5 소유권, 반환 조약의 target-owned state 선택, 사건용 목표 state 보존과 관철, 국제 저널 활성화·저장/재로드·참가국 표시, 분할·병합 hook 순서와 GUI 표시. 14절 T01–T48은 실행 시험 명세이며 통과 기록이 아니다.
+- 실제 게임에서 남은 주요 검증: 국가 지출·수입 modifier의 통화 단위/예산 반영, 기존 무역소 +5 소유권, 조약 탈퇴·파기 callback과 합의 해체 시 동작, 사건용 목표 state 보존과 관철, 국제 저널 활성화·저장/재로드·참가국 표시, 분할·병합 hook 순서와 GUI 표시. 14절 T01–T48은 실행 시험 명세이며 통과 기록이 아니다.
