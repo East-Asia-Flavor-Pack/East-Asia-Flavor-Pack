@@ -25,6 +25,7 @@ flowchart TD
     C --> E["state의 보유국 목록에 한 번 등록"]
     D --> F["선택한 state의 해당 보유국만 제거"]
     E --> T["같은 state에 신규 보유국 소유 무역소 5단계 추가"]
+    T --> JE["조약 발효 처리에서 add_contextless_journal_entry로 국제 저널 활성화"]
     T --> G["현재 소유국·목록·위신 재검증"]
     F --> G
     G --> H["state별 urban 건물 weekly_profit 합산"]
@@ -95,7 +96,7 @@ is_in_geographic_region = geographic_region_china_proper
 | `usage_limit` | `once_per_side_with_same_inputs`, 동일 초안의 중복 양도도 명시적으로 거부 |
 | `maintenance_paid_by` | `target_country`; cost는 0 |
 | `state_valid_trigger` / `can_ratify` | 신규 입력·비준 검증; 기존 잠긴 항목은 원 조약의 동일 항목 검사로 재협상 유지 허용 |
-| `on_entry_into_force` | `scope:article_options`의 source/target/input_state에서 신규 양도 공용 효과 호출 |
+| `on_entry_into_force` | `scope:article_options`의 source/target/input_state에서 신규 양도 공용 효과 호출 후 `add_contextless_journal_entry = je_concessions_in_china` 실행 |
 | `on_enforced` | 비움. 강제 관철도 발효 효과를 실행하므로 중복 부여 방지 |
 | `on_withdrawal` | `scope:article`의 target_country와 input_state에서 공용 반환 효과 호출 |
 | `on_break` | 비움. 중도 파기도 on_withdrawal을 함께 실행하므로 반환을 반복하지 않음 |
@@ -338,9 +339,9 @@ concession_paid = {
 
 ### 8.1. 국제 저널의 단일 정기 진입점
 
-국제 저널은 `is_shown_when_inactive = { always = yes }`와 `possible = { always = yes }`로 자동 활성화된다. `immediate`에서 한 번 전체 갱신하고, 이후 저널 자체의 `on_weekly_pulse`가 공용 `eafp_concession_refresh_effect`를 호출한다. `on_monthly_pulse`에는 기존 state별 사건 추첨을 직접 둔다. 참가국별 callback에서 전체 계산을 실행하지 않는다.
+국제 저널의 `possible` 조건을 제거한다. `possible`의 기본값은 참이므로 자동 활성화를 막기 위해 `is_shown_when_inactive`도 생략하여 기본값 거짓을 사용한다. 조계 양도 조약의 `on_entry_into_force`에서 조계권·무역소 부여를 마친 뒤 `add_contextless_journal_entry = je_concessions_in_china`로 저널을 활성화한다. `should_be_involved`는 활성화 시 참여국 판정에 사용하고, 활성화된 저널은 `should_show_when_not_involved`에 따라 비참여국에도 표시한다. `immediate`에서 한 번 전체 갱신하고, 이후 저널 자체의 `on_weekly_pulse`가 공용 `eafp_concession_refresh_effect`를 호출한다. `on_monthly_pulse`에는 기존 state별 사건 추첨을 직접 둔다. 참가국별 callback에서 전체 계산을 실행하지 않는다.
 
-완료·실패·무효화 조건을 두지 않아 조계가 없을 때도 국제 저널을 유지한다. 마지막 조계 반환 후 새 조계가 생겨도 같은 저널의 정기 갱신이 계속된다. 기존 `eafp_concessions_start`, `eafp_concessions_weekly`, `eafp_concessions_monthly` on-action과 신규 게임 시작·글로벌 월간 hook의 연결은 제거한다. 자체 지연 예약이나 시작 flag는 없다.
+활성화된 뒤에는 완료·실패·무효화 조건을 두지 않아 조계가 없을 때도 국제 저널을 유지한다. 마지막 조계 반환 후 새 조계가 생겨도 같은 저널의 정기 갱신이 계속된다. 기존 `eafp_concessions_start`, `eafp_concessions_weekly`, `eafp_concessions_monthly` on-action과 신규 게임 시작·글로벌 월간 hook의 연결은 제거한다. 자체 지연 예약이나 시작 flag는 없다.
 
 획득·반환·소유권 변화는 공용 refresh를 즉시 호출해 양국 modifier와 현황을 함께 반영한다. 참가국 추가·제거는 다음 주간 pulse에서 반영되며, 그 사이에도 모든 국가가 동일한 현황을 볼 수 있다. 저장·재로드 및 기존 국가별 저널이 남은 저장 파일의 전환은 게임 실행 검증 대상이다.
 
@@ -664,7 +665,7 @@ AI도 같은 국가·지리·소유권·현재 권리 조건을 검사한다. AI
 | 국가 지출·수입 modifier 금액 단위 | 같은 주간 통화 금액의 지출·수입 효과가 같은 경제 기간에 반영 |
 | 지출 적용과 엔진 제한 | 중국 측 실제 비용과 외국 실제 증가액 일치, 적자·부채 상황에서도 검증 |
 | urban category 직접 검사 또는 상속 필터 | 최종 게임 분류와 모든 건물의 포함 여부 일치 |
-| 국제 저널 활성화·pulse·참가국 | 신규 게임 자동 활성화, 주간 정산·월간 사건 단일 실행, 저장·재로드 및 옛 국가별 저널 저장 파일 전환 |
+| 국제 저널 활성화·pulse·참가국 | 조약 발효 전 비활성 유지, 합의·강제 발효 시 활성화, 후속 조약에서 중복 저널·pulse가 생기지 않는지 확인, 주간 정산·월간 사건 단일 실행, 저장·재로드 및 옛 국가별 저널 저장 파일 전환 |
 | 국가별 modifier 교체와 제거 | 반환·중단·소유권 이전 후 잔여 부담·수입 없음 |
 | 국가 직접 소유 무역소 신규 생성·기존 건물 확장 | 같은 실제 state의 총단계와 holder 소유 단계가 각각 +5, 기존 타국 단계·생산 방식 보존 |
 | 건물 부여와 권리 등록의 실행 조건 | 외국 국가 소유 가능 여부·생성 제한 확인, 지연 없는 효과 체인에서 부분 성공 방지 |

@@ -1811,7 +1811,7 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 scramble_for_korea_change_influence = {
     if = {
         limit = {
-            scramble_for_korea_participant = yes
+            is_involved_in_journal_entry = je_scramble_for_korea
             NOT = { has_global_variable = scramble_for_korea_finished }
         }
         if = {
@@ -1825,7 +1825,10 @@ scramble_for_korea_change_influence = {
 # Called on departure and at both terminal paths; button cooldowns deliberately survive departure.
 scramble_for_korea_clear_country = {
     remove_variable = scramble_for_korea_participants_influence
-    remove_modifier = modifier_korea_scramble_advisers
+    if = {
+        limit = { has_modifier = modifier_korea_scramble_advisers }
+        remove_modifier = modifier_korea_scramble_advisers
+    }
 }
 # Shared weekly/monthly JE synchronization. Membership is always changed first.
 scramble_for_korea_sync = {
@@ -1865,8 +1868,7 @@ scramble_for_korea_sync = {
                 NOT = { var:scramble_for_korea_pending_offer = flag:scramble_for_korea_cancelled }
                 OR = {
                     NOT = { exists = var:scramble_for_korea_pending_offer }
-                    var:scramble_for_korea_pending_offer ?= { NOT = { scramble_for_korea_participant = yes } }
-                    scramble_for_korea_war = yes
+                    var:scramble_for_korea_pending_offer ?= { NOT = { is_involved_in_journal_entry = je_scramble_for_korea } }
                 }
             }
             set_variable = { name = scramble_for_korea_pending_offer value = flag:scramble_for_korea_cancelled days = 365 }
@@ -1876,27 +1878,54 @@ scramble_for_korea_sync = {
 scramble_for_korea_cleanup = {
     every_country = {
         scramble_for_korea_clear_country = yes
-        remove_modifier = modifier_korea_scramble_diplomatic_cost
-        remove_modifier = modifier_korea_scramble_administration_cost
+        if = {
+            limit = { has_modifier = modifier_korea_scramble_diplomatic_cost }
+            remove_modifier = modifier_korea_scramble_diplomatic_cost
+        }
+        if = {
+            limit = { has_modifier = modifier_korea_scramble_administration_cost }
+            remove_modifier = modifier_korea_scramble_administration_cost
+        }
         every_interest_group = {
-            remove_modifier = modifier_korea_enlightenment_support
-            remove_modifier = modifier_reject_korea_enlightenment_support
-            remove_modifier = modifier_curtailed_kor_labor_abuses
-            remove_modifier = modifier_struggling_kor_colonists
+            if = {
+                limit = { has_modifier = modifier_korea_enlightenment_support }
+                remove_modifier = modifier_korea_enlightenment_support
+            }
+            if = {
+                limit = { has_modifier = modifier_reject_korea_enlightenment_support }
+                remove_modifier = modifier_reject_korea_enlightenment_support
+            }
+            if = {
+                limit = { has_modifier = modifier_curtailed_kor_labor_abuses }
+                remove_modifier = modifier_curtailed_kor_labor_abuses
+            }
+            if = {
+                limit = { has_modifier = modifier_struggling_kor_colonists }
+                remove_modifier = modifier_struggling_kor_colonists
+            }
         }
     }
     c:KOR ?= {
-        remove_modifier = modifier_kor_foreign_influence
+        if = {
+            limit = { has_modifier = modifier_kor_foreign_influence }
+            remove_modifier = modifier_kor_foreign_influence
+        }
         remove_variable = scramble_for_korea_pending_offer
-        every_political_movement = { remove_modifier = modifier_enlightenment_support_from_foreign }
-        every_scope_building = { remove_modifier = modifier_kor_improved_labor_conditions }
+        every_political_movement = {
+			limit = { has_modifier = modifier_enlightenment_support_from_foreign }
+			remove_modifier = modifier_enlightenment_support_from_foreign
+		}
+        every_scope_building = {
+			limit = { has_modifier = modifier_kor_improved_labor_conditions }
+			remove_modifier = modifier_kor_improved_labor_conditions
+		}
     }
 }
 # Country scope. Buttons and the monthly lottery use this same offer entry point.
 scramble_for_korea_begin_offer = {
     if = {
         limit = {
-            scramble_for_korea_participant = yes
+            is_involved_in_journal_entry = je_scramble_for_korea
             scramble_for_korea_running = yes
             NOT = { any_country = { scramble_for_korea_score_winner = yes } }
             c:KOR = { NOT = { has_variable = scramble_for_korea_pending_offer } }
@@ -1930,13 +1959,13 @@ scramble_for_korea_rival_response = {
     if = {
         limit = {
             any_country = {
-                scramble_for_korea_participant = yes
+                is_involved_in_journal_entry = je_scramble_for_korea
                 NOR = { c:KOR ?= this this = scope:scramble_actor }
             }
         }
         random_country = {
             limit = {
-                scramble_for_korea_participant = yes
+                is_involved_in_journal_entry = je_scramble_for_korea
                 NOR = { c:KOR ?= this this = scope:scramble_actor }
                 var:scramble_for_korea_participants_influence = scramble_for_korea_rival_lead
             }
@@ -1953,17 +1982,4 @@ scramble_for_korea_notify_result = {
     else_if = { limit = { scope:scramble_winner = { c:JAP ?= this } } trigger_event = { id = scramble_for_korea_events.23 popup = yes } }
     else_if = { limit = { scope:scramble_winner = { c:CHI ?= this } } trigger_event = { id = scramble_for_korea_events.24 popup = yes } }
     else = { trigger_event = { id = scramble_for_korea_events.22 popup = yes } }
-}
-
-# Country scope; shared by initial participation and later entry/re-entry.
-scramble_for_korea_notify_participation = {
-    if = {
-        limit = { c:KOR ?= this }
-        trigger_event = { id = scramble_for_korea_events.1 popup = yes }
-    }
-    else_if = {
-        limit = { OR = { c:CHI ?= this c:JAP ?= this } }
-        trigger_event = { id = scramble_for_korea_events.2 popup = yes }
-    }
-    else = { trigger_event = { id = scramble_for_korea_events.3 popup = yes } }
 }

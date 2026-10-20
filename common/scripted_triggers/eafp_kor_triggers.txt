@@ -74,16 +74,11 @@ scramble_for_korea_eligible = {
         }
     }
 }
-scramble_for_korea_participant = {
-    is_involved_in_journal_entry = je_scramble_for_korea
-    scramble_for_korea_eligible = yes
-}
 # These world-state checks work with a contextless JE as well as country events.
 scramble_for_korea_overlord_wins = {
     exists = c:KOR
     c:KOR = {
         is_subject = yes
-        exists = overlord
         overlord ?= { NOT = { c:CHI ?= this } }
     }
 }
@@ -95,24 +90,12 @@ scramble_for_korea_invalid = {
 scramble_for_korea_korea_unopposed = {
     NOT = { has_global_variable = scramble_for_korea_finished }
     exists = c:KOR
-    c:KOR = { is_involved_in_journal_entry = je_scramble_for_korea }
+    c:KOR ?= { is_involved_in_journal_entry = je_scramble_for_korea }
     NOT = { scramble_for_korea_overlord_wins = yes }
-    NOT = {
-        any_country = {
-            is_involved_in_journal_entry = je_scramble_for_korea
-            NOT = { c:KOR ?= this }
-        }
-    }
-}
-scramble_for_korea_war = {
-    OR = {
-        c:KOR ?= { is_at_war = yes }
-        any_country = {
-            scramble_for_korea_participant = yes
-            any_country = {
-                scramble_for_korea_participant = yes
-                has_war_with = prev
-            }
+    je:je_scramble_for_korea ?= {
+        any_scope_je_involved = {
+            count = all
+            c:KOR ?= THIS
         }
     }
 }
@@ -126,22 +109,22 @@ scramble_for_korea_running = {
         scramble_for_korea_invalid = yes
         scramble_for_korea_overlord_wins = yes
         scramble_for_korea_korea_unopposed = yes
-        scramble_for_korea_war = yes
     }
 }
 scramble_for_korea_score_winner = {
-    scramble_for_korea_participant = yes
-    has_variable = scramble_for_korea_participants_influence
-    var:scramble_for_korea_participants_influence >= 100
-    any_country = {
-        count = 1
-        scramble_for_korea_participant = yes
+    is_involved_in_journal_entry = je_scramble_for_korea
+    custom_tooltip = {
+        text = korea_scramble_influence_100_tt
         has_variable = scramble_for_korea_participants_influence
-        var:scramble_for_korea_participants_influence >= 100
+        trigger_if = {
+            limit = { has_variable = scramble_for_korea_participants_influence }
+            var:scramble_for_korea_participants_influence >= 100
+        }
     }
-    OR = {
-        NOT = { c:KOR ?= this }
-        AND = { is_subject = no is_country_type = recognized }
+    trigger_if = {
+        limit = { c:KOR ?= this }
+        is_subject = no
+        is_country_type = recognized
     }
 }
 # A single country-valued lock serializes the complete proposal/response chain.
@@ -150,13 +133,13 @@ scramble_for_korea_offer_valid = {
     scramble_for_korea_running = yes
     NOT = { any_country = { scramble_for_korea_score_winner = yes } }
     exists = scope:scramble_actor
-    scope:scramble_actor = { scramble_for_korea_participant = yes }
+    scope:scramble_actor = { is_involved_in_journal_entry = je_scramble_for_korea }
     c:KOR = { var:scramble_for_korea_pending_offer ?= scope:scramble_actor }
 }
 
 
 scramble_for_korea_offer_available = {
-    scramble_for_korea_participant = yes
+    is_involved_in_journal_entry = je_scramble_for_korea
     scramble_for_korea_running = yes
     NOT = { any_country = { scramble_for_korea_score_winner = yes } }
     c:KOR = {

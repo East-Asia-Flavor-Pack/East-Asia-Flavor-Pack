@@ -81,8 +81,15 @@ def main():
     assert "group = je_group_global_international_situations" in je_code
     groups_code = unquoted("\n".join(read(p) for p in (game / "common/journal_entry_groups").glob("*.txt")))
     assert re.search(r"je_group_global_international_situations\s*=\s*\{\s*context\s*=\s*none", groups_code)
-    for trigger in ("is_shown_when_inactive", "possible", "should_show_when_not_involved"):
-        assert re.search(trigger + r"\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
+    assert re.search(r"should_show_when_not_involved\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
+    assert not re.search(r"\b(?:possible|is_shown_when_inactive)\s*=", je_code), \
+        "The international JE must activate through the treaty, not automatically"
+    assert re.search(
+        r"eafp_concession_grant_effect\s*=\s*yes\s*\}\s*\}\s*"
+        r"add_contextless_journal_entry\s*=\s*je_concessions_in_china\s*\}",
+        unquoted(treaties),
+    ), "Treaty entry into force must activate the international JE after granting rights"
+    assert len(re.findall(r"\badd_contextless_journal_entry\s*=", clean)) == 1
     assert not re.search(r"\b(?:complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
         "The international JE must persist and calculate only once per pulse"
     assert len(re.findall(r"\bon_weekly_pulse\s*=", je_code)) == 1
@@ -93,7 +100,7 @@ def main():
     assert "add_involved_country = prev" in je_code and "remove_involved_country = prev" in je_code
     for obsolete in ("eafp_concessions_start", "eafp_concessions_weekly", "eafp_concessions_monthly"):
         assert not re.search(r"\b" + obsolete + r"\b", clean + unquoted(entries)), ("Obsolete timer", obsolete)
-    assert not re.search(r"\badd_journal_entry\s*=", clean), "Use automatic international JE activation"
+    assert not re.search(r"\badd_journal_entry\s*=", clean), "Use contextless international JE activation"
     assert "can_be_renegotiated" not in unquoted(treaties)
     assert len(re.findall(r"on_enforced\s*=\s*\{\s*\}", treaties)) == 1
     assert definitions["eafp_return_concession"] == 0, "Return is handled by treaty withdrawal"
