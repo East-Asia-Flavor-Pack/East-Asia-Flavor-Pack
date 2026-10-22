@@ -32,10 +32,6 @@
         name = "eafp_korea_scramble_influence"
         container = "custom_widget_container_3"
     }
-    scripted_button = korea_scramble_claim_button
-    scripted_button = korea_scramble_invest_button
-    scripted_button = korea_scramble_advisers_button
-    scripted_button = korea_scramble_lobby_button
     scripted_button = korea_scramble_sovereignty_button
     immediate = {
         c:KOR = {
@@ -81,123 +77,89 @@
         }
         else = { trigger_event = { id = scramble_for_korea_events.3 popup = yes } }
     }
-    on_no_longer_involved = {
-        scramble_for_korea_clear_country = yes
-        c:KOR ?= {
-            if = {
-                limit = { has_variable = scramble_for_korea_pending_offer }
-                set_variable = { name = scramble_for_korea_pending_offer value = flag:scramble_for_korea_cancelled days = 365 }
-            }
-        }
-    }
+    on_no_longer_involved = { scramble_for_korea_clear_country = yes }
     on_weekly_pulse = { effect = { scramble_for_korea_sync = yes } }
     on_monthly_pulse = {
         effect = {
             scramble_for_korea_sync = yes
             # Korea reads all foreign scores before any foreign score changes.
-                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = scramble_for_korea_monthly_change } }
-                scope:journal_entry = {
-                    every_scope_je_involved = {
-                        limit = { NOT = { c:KOR ?= this } }
-                        scramble_for_korea_change_influence = { AMOUNT = scramble_for_korea_monthly_change }
-                    }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = scramble_for_korea_monthly_change } }
+            scope:journal_entry = {
+                every_scope_je_involved = {
+                    limit = { NOT = { c:KOR ?= this } }
+                    scramble_for_korea_change_influence = { AMOUNT = scramble_for_korea_monthly_change }
                 }
-                if = {
-                    limit = {
-                        c:KOR = { NOT = { has_variable = scramble_for_korea_pending_offer } }
-                        NOT = { any_country = { scramble_for_korea_score_winner = yes } }
-                    }
-                    # One lottery for the JE, not one per country. Candidate triggers filter hosts.
-                    random_list = {
-                        70 = { }
-                        8 = { random_country = { limit = { can_trigger_event = scramble_for_korea_events.4 } scramble_for_korea_begin_offer = { EVENT = 4 } } }
-                        6 = { random_country = { limit = { can_trigger_event = scramble_for_korea_events.5 } scramble_for_korea_begin_offer = { EVENT = 5 } } }
-                        4 = { random_country = { limit = { can_trigger_event = scramble_for_korea_events.10 } scramble_for_korea_begin_offer = { EVENT = 10 } } }
-                        4 = {
-                            if = {
-                                limit = { c:KOR = { can_trigger_event = scramble_for_korea_events.11 } }
-                                random_country = {
-                                    limit = {
-                                        is_involved_in_journal_entry = je_scramble_for_korea
-                                        NOT = { c:KOR ?= this }
-                                        has_modifier = modifier_korea_scramble_advisers
-                                    }
-                                    scramble_for_korea_begin_offer = { EVENT = 11 }
-                                }
-                            }
-                        }
-                        8 = { random_country = { limit = { can_trigger_event = scramble_for_korea_events.12 } scramble_for_korea_begin_offer = { EVENT = 12 } } }
-                    }
-                }
+            }
         }
     }
+    custom_completion_header = je_scramble_for_korea_foreign_victory_header
     complete = {
         OR = {
             scramble_for_korea_overlord_wins = yes
-            scramble_for_korea_korea_unopposed = yes
-            any_country = { scramble_for_korea_score_winner = yes }
+            any_country = {
+                scramble_for_korea_score_winner = yes
+            }
         }
     }
     on_complete = {
         if = {
-            limit = { NOT = { has_global_variable = scramble_for_korea_finished } }
-            if = {
-                limit = { scramble_for_korea_overlord_wins = yes }
-                c:KOR = { overlord = { save_scope_as = scramble_winner } }
+            limit = { scramble_for_korea_overlord_wins = yes }
+            c:KOR = { overlord = { save_scope_as = scramble_winner } }
+        }
+        else = {
+            random_country = {
+                limit = { scramble_for_korea_score_winner = yes }
+                save_scope_as = scramble_winner
             }
-            else_if = {
-                limit = { scramble_for_korea_korea_unopposed = yes }
-                c:KOR = { save_scope_as = scramble_winner }
-            }
-            else = { random_country = { limit = { scramble_for_korea_score_winner = yes } save_scope_as = scramble_winner } }
-            if = {
-                limit = { exists = scope:scramble_winner }
-                # Set this before transfer/create: those effects must not trigger a second victory.
-                set_global_variable = scramble_for_korea_finished
-                # Clear contest-only support before applying the winner's lasting rewards.
-                scramble_for_korea_cleanup = yes
-                scope:scramble_winner = {
-                    if = {
-                        limit = { c:KOR ?= this }
-                        add_modifier = { name = modifier_korea_scramble_sovereignty days = 1825 }
-                    }
-                    else = {
-                        if = {
-                            limit = { c:KOR = { is_subject_of = c:CHI } NOT = { c:CHI ?= this } }
-                            transfer_subject = c:KOR
-                        }
-                        else_if = {
-                            limit = { c:KOR = { is_subject = no } }
-                            if = {
-                                limit = { c:CHI ?= this can_create_diplomatic_pact = { target = c:KOR type = tributary } }
-                                create_diplomatic_pact = { country = c:KOR type = tributary }
-                            }
-                            else_if = {
-                                limit = { NOT = { c:CHI ?= this } can_create_diplomatic_pact = { target = c:KOR type = protectorate } }
-                                create_diplomatic_pact = { country = c:KOR type = protectorate }
-                            }
-                        }
-                        add_modifier = { name = modifier_korea_scramble_victory days = 1825 }
-                        if = { limit = { c:JAP ?= this } ig:ig_armed_forces ?= { add_modifier = { name = modifier_korea_enlightenment_support days = 730 } } }
-                        if = { limit = { c:CHI ?= this } ig:ig_intelligentsia ?= { add_modifier = { name = modifier_korea_enlightenment_support days = 730 } } }
-                    }
-                }
-                # Include a nonparticipant overlord once, without registering it or adding a score.
+        }
+        set_global_variable = scramble_for_korea_finished
+        # Clear contest-only support before applying the winner's lasting rewards.
+        scramble_for_korea_cleanup = yes
+        scope:scramble_winner = {
+            annex = c:KOR
+        }
+
+        scope:journal_entry = {
+            every_scope_je_involved = { scramble_for_korea_notify_result = yes }
+        }
+        # 저널 참여 X인 국가가 종주국이 됐을 경우
+        if = {
+        limit = {
                 scope:journal_entry = {
-                    every_scope_je_involved = { scramble_for_korea_notify_result = yes }
+                    NOT = { any_scope_je_involved = { this = scope:scramble_winner } }
                 }
-                if = {
-                    limit = {
-                        scope:journal_entry = {
-                            NOT = { any_scope_je_involved = { this = scope:scramble_winner } }
-                        }
-                    }
-                    scope:scramble_winner = { scramble_for_korea_notify_result = yes }
+            }
+            scope:scramble_winner = { scramble_for_korea_notify_result = yes }
+        }
+    }
+    custom_failure_header = je_scramble_for_korea_korean_victory_header
+    fail = {
+        c:KOR ?= { is_subject = no }
+        OR = {
+            scope:journal_entry = {
+                any_scope_je_involved = {
+                    count = all
+                    c:KOR ?= THIS
                 }
+            }
+            c:KOR ?= {
+                scramble_for_korea_score_winner = yes
+                is_country_type = recognized
             }
         }
     }
-    invalid = { scramble_for_korea_invalid = yes }
+    on_fail = {
+        c:KOR = { save_scope_as = scramble_winner }
+        set_global_variable = scramble_for_korea_finished
+        scramble_for_korea_cleanup = yes
+        c:KOR = { add_modifier = { name = modifier_korea_scramble_sovereignty days = 1825 } }
+        scope:journal_entry = {
+            every_scope_je_involved = { scramble_for_korea_notify_result = yes }
+        }
+    }
+    invalid = {
+        NOT = { exists = c:KOR }
+    }
     on_invalid = {
         set_global_variable = scramble_for_korea_finished
         scramble_for_korea_cleanup = yes

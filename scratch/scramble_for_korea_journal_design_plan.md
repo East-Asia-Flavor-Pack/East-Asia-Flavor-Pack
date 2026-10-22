@@ -4,6 +4,8 @@
 
 수정 기준: 2026-10-13. **기존 체계의 수정·재사용을 우선하고, 필요한 상태와 실제로 반복되는 로직만 추가한다.** 이 원칙은 아래 데이터 구조·이벤트 전달·파일 구성에도 적용한다.
 
+**2026-10-22 추가 계획:** 6절의 `scramble_for_korea_events.11`~`.22`는 역사 사건 12건의 **미구현 실행 명세**다. 13절에 공통 응답 `.23`과 트리거·modifier·지연 처리·정리 코드를 정의한다. 기존 구현 기록과 구분하며, 이번 수정은 설계 문서에만 적용한다. 기존 이벤트 1~7은 유지하고 8~10은 미배정으로 둔다.
+
 ### 구현 원칙
 
 - 먼저 기존 정의·호출부·변수의 설정 및 제거 지점을 확인한다. 기존 일지·이벤트·버튼·modifier·script value의 담당 부분을 고치며, 같은 역할의 새 체계를 옆에 덧붙이지 않는다. 비활성 초안을 활성화할 때도 중복 정의를 남기지 않는다.
@@ -278,21 +280,11 @@ is_in_same_power_bloc = c:KOR
 
 [기존 modifier](C:/Users/user/Documents/GitHub/East-Asia-Flavor-Pack/common/static_modifiers/eafg_scramble_for_korea_modifiers.txt:17)의 `modifier_kor_foreign_influence`를 재사용하고 `country_leverage_resistance_mult = -0.1`을 `-0.5`로 변경한다. JE 활성화 시 **조선에만** 한 번 적용하고, 활성 기간 동안 유지하며 모든 승리·중단 경로에서 제거한다. 국제 JE의 모든 관여국에 일괄 적용되는 방식은 사용하지 않는다.
 
-기존 `.4`, `.5`, `.12` 등에서 같은 modifier를 재부여·갱신하던 효과는 제거하여 이벤트와 활성 기간 효과가 충돌하지 않게 한다. 이벤트는 지정 국가의 영향력 값을 조정한다. 즉시 종주국 승리로 끝나는 시작 상태에서도 종료 정리로 modifier가 남지 않아야 한다. 새로운 저항 변수·modifier 사본은 만들지 않는다.
+조선 저항 modifier는 활성화 시 적용하고 종료 시 정리한다. 즉시 종주국 승리로 끝나는 시작 상태에서도 종료 정리로 modifier가 남지 않아야 한다. 새로운 저항 변수·modifier 사본은 만들지 않는다.
 
-### 행동과 조선의 대응
+### 행동
 
-| 버튼 / 주체 | 조건·비용 제안 | 연결 이벤트와 효과 |
-|---|---|---|
-| 종주권·권익 주장 / 모든 외국 참여국 | 자기 영향력이 외국 선두보다 낮음, 외교 비용, 36개월 대기 | `.8` → 관련 경쟁국 `.13`; 자기 +3, 대응국은 비용을 들여 해당 증가분 최대 3 상쇄 |
-| 상권 지원 / 모든 외국 참여국 | 조선 내 자국 소유 건물, 재정 비용, 24개월 대기 | `.5` → 조선 `.7`; 수락 시 행위국 +3 |
-| 군사고문 제안 / 모든 외국 참여국 | 외교 비용, 24개월 대기 | `.6` → 조선 `.7` → 관련 경쟁국 `.13`; 수락 후에만 고문 효과 |
-| 조정 인사 포섭 / 모든 외국 참여국 | 지원 가능한 조선 내 정치 집단, 재정 비용, 24개월 대기 | `.9` → `.12` → 조선 `.7`; 친해당국 로비 지원 |
-| 자주 외교 / 조선 | 행정력 비용, 24개월 대기 | 조선 +3, 외국 단독 선두 -3. 선두 동률이면 이 감소분만 생략 |
-
-모든 비용과 쿨다운은 툴팁에 표시한다. 청은 종주권, 일본은 조약상 권익, 기타 열강은 자국 권익이라는 국가별 문구를 사용한다. 경쟁국 대응은 직접 피해국 또는 행위국 외 영향력 선두 **한 국가**를 선택하며, 선두 동률은 게임 스크립트의 무작위 선택으로 정한다. 모든 참가국에 동시에 효과 있는 대응 선택지를 보내 점수가 참가국 수만큼 중복 변하지 않게 한다.
-
-세력권 레버리지는 주 진행도로 사용하지 않는다. 기존 `power_bloc.add_leverage`는 제거하거나 실제 세력권 주도국일 때만 부수 효과로 남긴다.
+조선의 자주 외교 버튼만 유지한다. 행정력 50을 730일 부담하고 조선 영향력 +3, 외국 단독 선두 영향력 -3을 적용하며 선두 동률이면 감소분을 생략한다. 이벤트를 호출하던 외국용 권익 주장·상권 지원·군사고문·조정 인사 포섭 버튼은 삭제했다.
 
 ## 5. 관련 일지와 기존 콘텐츠의 연결
 
@@ -343,37 +335,1825 @@ flowchart TD
 
 ## 6. 이벤트 전체 구성
 
-아래 **18개 ID가 이번 구현 범위의 전체 이벤트**다. 접두사는 모두 `scramble_for_korea_events`다. 번호만 표시한 후속 연결도 같은 네임스페이스다. 사용자 요구와 구현 제안을 반영한 스크립트 연결이다. 실제 게임 실행은 별도 검증이 필요하다. 일본·청 전용 결말 외에 기타 국가 공용 결말 `.22`를 추가하며, 비관여 종주국의 자동 승리도 이 결말로 전달한다.
+현재 이벤트는 다음 7개다. 접두사는 모두 `scramble_for_korea_events`다. 중간 개입·제안·응답 이벤트 10개와 월간 무작위 사건 추첨은 삭제했다.
 
-| ID | 내용 / 실행 국가 | 발생 원인 → 후속 처리 |
+| ID | 내용 | 호출 경로 |
 |---|---|---|
-| `.1` | 풍전등화 / 조선 | 시작·참가 통지. 재참가도 같은 통지를 사용하며 별도 참가 보상 없음. 이벤트는 영향력을 초기화하지 않으며 관여국 상태를 따르는 변수 처리에서 담당 |
-| `.2` | 한반도를 향한 야망 / 청·일 | 시작·참가·재참가 통지, 별도 보상 없음 |
-| `.3` | 조선 문제 / 그 밖의 열강 | 시작·참가·재참가 통지, 별도 보상 없음 |
-| `.23` | 일본 우세 확정 / 관여국 및 승자 | 일본이 영향력 승자 또는 조선의 현재 종주국 → 결과 알림; JE 종료 콜백에서 1회 처리 |
-| `.24` | 청의 종주권 재확립 / 관여국 및 승자 | 청이 영향력 승자 → 결과 알림; 종주국 자동 승리로는 발생하지 않음. JE 종료 콜백에서 1회 처리 |
-| `.4` | 조선 개화파 지원 / 외국 참여국 | 월간 후보 → 지원 선택 시 조선 `.7`, 거부 시 비용·국내 정치 효과만 |
-| `.5` | 조선 내 외국 소유 사업 / 외국 참여국 | 상권 버튼 또는 월간 후보 → 투자·노동조건 제안 → 조선 `.7` |
-| `.6` | 군사고문단 제안 / 외국 참여국 | 고문 버튼 → 조선 `.7`; 수락 후 고문 상태 설정 및 관련 경쟁국 `.13` |
-| `.7` | 외국의 제안에 대한 조선의 결정 / 조선 | 제안 종류·보낸 국가·효과를 저장해 전달 → 수락·거부·절충; 유효한 응답에서만 점수 변경 |
-| `.8` | 조선에 대한 권리 주장 / 외국 참여국 | 종주권·권익 버튼 → 비용과 행위국 영향력 변화 → 관련 경쟁국 `.13` |
-| `.9` | 조정 내 후원자 탐색 / 외국 참여국 | 포섭 버튼 → 후보가 존재할 때 `.12`; 없으면 비용 부과 없이 종료 |
-| `.10` | 거류민 분쟁 / 외국 참여국 | 관련 문화의 실제 조선 팝이 있을 때 월간 후보 → 조선 `.7`, 무시 또는 자발적 귀환 지원; 자동 인구 추방 제외 |
-| `.11` | 군사적 충돌 위기 / 먼저 조선, 이후 관련국 | 서로 다른 두 참여국 고문 공존 또는 도발 후보 → 조선 중재·철수 요구 / 관련 경쟁국 `.13`; 두 당사국 변수만 조정, 자동 선전포고 없음 |
-| `.12` | 친외국 세력 지원 / 외국 참여국 | `.9` 또는 월간 후보 → 비용 지급과 대상 로비 선택 → 조선 `.7`; 친청·친일·친영 등 국가명 동적 표시 |
-| `.13` | 경쟁국의 대응 / 선정된 외국 참여국 | `.6` 수락, `.8`, `.11` → 항의·양보·대응으로 지정 국가 영향력 조정, 원 이벤트로 재귀하지 않음 |
-| `.20` | 조선 자주권 확보 / 모든 참여국 | 조선이 독립국 AND 승인국 AND 영향력 단독 100 → 자주권 보상·결과 알림 |
-| `.22` | 새로운 패권국 / 관여국 및 승자 | 청·일 이외 국가가 영향력 승자 또는 조선의 현재 직접 종주국 → 결과 표시. 자동 승리에는 비관여 종주국도 포함 |
+| `.1` | 풍전등화 | 조선 참가 통지 |
+| `.2` | 한반도를 향한 야망 | 청·일 참가 통지 |
+| `.3` | 조선 문제 | 기타 열강 참가 통지 |
+| `.4` | 조선 자주권 확보 | 조선 승리 결과 통지 |
+| `.5` | 새로운 패권국 | 청·일 이외 국가 승리 결과 통지 |
+| `.6` | 일본 우세 확정 | 일본 승리 결과 통지 |
+| `.7` | 청의 종주권 재확립 | 청 승리 결과 통지 |
 
-`.7`은 제안 종류를 구분하는 공통 대응 이벤트다. 발신국·대응국·필요한 대상은 기존 이벤트 체인처럼 `save_scope_as`와 이벤트 전달 스코프로 넘기고, 제안 종류는 이벤트 체인 안의 값으로 전달한다. 같은 정보를 국가·전역 변수에 다시 저장하지 않는다. **조선당 미결 제안은 하나만** 허용하되 기존 이벤트 대기 상태로 제어할 수 있는지 먼저 확인하고, 불가능하면 잠금 하나만 둔다. 별도 제안 토큰·일련번호·제안 관리 목록은 기본 설계에 넣지 않는다.
+전용 제안·응답 트리거, 제안 시작·종료·경쟁국 대응 effect와 경쟁국 선택용 script value도 삭제했다. 기존 저장에 남은 미결 제안 변수는 동기화·종료 시 제거한다. 월간 영향력 계산과 참가·승리 통지는 계속 실행한다.
 
-응답 시 국가·JE·대상 존속, 실제 JE 관여국 여부, 현재 참여 유지 조건을 다시 확인한다. 전쟁 시작만으로 제안을 취소하지 않는다. 영향력 변수만 남은 비관여국의 제안은 무효다. 관여국의 변수 누락은 스크립트에서 보완한 뒤 값을 적용한다. 추가 참여국이 3에서 2로 내려간 것은 제안 취소 사유가 아니다. 이미 이탈한 국가의 제안은 효과 없이 닫으며, 이탈 후 재참가했다고 옛 제안이 되살아나지 않도록 취소된 이벤트의 수명과 잠금 해제를 함께 검증한다. 발신 이벤트만으로 고문·로비·지속 영향력을 부여하지 않는다. 사망한 인물·사라진 건물은 해당 제안만 취소한다. 필요한 취소 상태를 기존 이벤트 수명으로 표현할 수 없을 때에만 최소 상태 보완을 검토한다.
+### 추가 예정 이벤트 11~22 — 역사 사례 기반
 
-월간 랜덤 후보는 `.4`, `.5`, `.10`, `.11`, `.12`로 한정한다. 일지 전체에서 월 최대 한 후보를 뽑은 뒤 적합한 외국 참여국을 선택하여 참가 수만큼 사건 발생률이 늘어나지 않게 한다. 후보별 조건·쿨다운을 적용하고, 미결 제안·종료 대기 중이면 생성하지 않는다. 전쟁 여부로 사건 생성을 제한하지 않는다. 기존 아프리카·파타고니아·아마존 이벤트 호출은 제거한다. 류큐의 연간 전역 on_action을 덮어쓰지 않는다.
+기존 계획의 16·17번 사건을 제거하고, 18~24번을 두 칸씩 앞당겨 16~22번으로 배정한다. 현재 신규 계획은 11~22번의 총 12건이다. 접두사는 모두 `scramble_for_korea_events`이며 **본 사건 11~22와 보조 응답 23은 계획만 작성하며, 활성 이벤트·호출부·로컬 파일에는 아직 적용하지 않는다.** 8~10에는 이번 작업에서 사건을 배정하지 않는다. 아래 제목은 가제이며, 역사적 배경은 출처에 근거하고 선택지와 효과는 게임 설계 제안이다. 원문 인용이 확정되지 않았으므로 설명문을 사료의 직접 인용이나 확정 flavor text로 사용하지 않는다.
+
+| 예정 ID | 제목 | 역사적 모티브 | 주요 선택 주체 |
+|---|---|---|---|
+| `.11` | 공사관으로 향하는 가마 | 아관파천, 1896년 | 조선, 보호를 제공할 외국 관여국 |
+| `.12` | 누구의 뒤에 서야 하는가 | 박정양의 주미 공사 활동과 청의 영약삼단 요구, 1887~1889년 | 조선, 청, 사절을 접수할 관여국 |
+| `.13` | 백성의 쌀인가, 상인의 계약인가 | 방곡령과 일본의 배상 요구, 1889~1893년 | 조선, 곡물 교역에 이해가 있는 외국 관여국 |
+| `.14` | 우리 시장에 도는 남의 지폐 | 일본 제일은행권 발행과 통용 논란, 1902~1903년 | 조선, 금융 진출 외국 관여국 |
+| `.15` | 전보는 어느 길로 가는가 | 서·남로 전선과 조선의 전신망 구축, 1885~1888년 | 조선, 전신 사업에 참여할 외국 관여국 |
+| `.16` | 해관의 장부를 쥔 손 | 묄렌도르프의 고빙과 외국인 해관 운영, 1880년대 | 조선, 고문을 추천하는 외국 관여국 |
+| `.17` | 철길의 주인은 누구인가 | 경인철도 부설권 허가와 양도, 1896~1898년 | 조선, 투자국, 이권 인수를 원하는 관여국 |
+| `.18` | 산 아래 잠든 황금 | 운산 금광 채굴권 허가, 1895년 | 조선, 광산 투자를 제안하는 외국 관여국 |
+| `.19` | 섬에 내려진 낯선 깃발 | 영국의 거문도 점령, 1885~1887년 | 조선, 점령국, 경쟁·중재 관여국 |
+| `.20` | 벌목장의 포대 | 러시아의 용암포 진출과 군사기지화, 1903년 | 조선, 이권 보유국, 견제하는 관여국 |
+| `.21` | 종로에 모인 목소리 | 만민공동회의 자주권 수호 운동, 1898년 | 조선, 철수·이권 회수 요구를 받는 관여국 |
+| `.22` | 다른 나라에 허락했다면 | 최혜국 대우에 근거한 통상상 권리 균점 요구, 1880년대 | 조선, 기존 수혜국, 동등 대우를 요구하는 관여국 |
+| `.23` (보조) | 외국의 응답 | 11~22의 제안에 대한 공통 수락·거부 | 제안을 받은 실제 외국 관여국 |
+
+### 신규 사건의 확정 실행 규칙 — 2026-10-22 상세화
+
+아래는 **구현용 스크립트 명세**다. 각 사건의 전문과 13절의 공통 정의를 함께 적용하면 트리거·스코프·선택 효과를 재설계할 필요가 없도록 작성한다. 아직 활성 게임 파일에는 넣지 않았으며 게임 실행 검증을 했다는 뜻은 아니다. 기존의 ‘높은 영향력’, ‘재정 비용’, ‘구현 시 결정’ 같은 제안은 아래 수치와 코드로 대체한다. 역사적 배경과 출처는 유지한다.
+
+- **ID:** 본 사건은 11~22. 공통 외국 응답만 `.23`을 새로 예약한다. `.23`은 삭제했던 회담·철수 사건이 아니라 12개 본 사건의 동의/거부 처리용 보조 이벤트다. 독자 사업의 완공·환궁은 이름 있는 지연 on_action으로 처리하므로 추가 이벤트 ID를 만들지 않는다.
+- **월간 호출:** 기존 JE의 `on_monthly_pulse.effect`에서 동기화와 모든 영향력 갱신을 마친 뒤 조선에 `sk_monthly_events`를 한 번 호출한다. 25% 확률로 현재 트리거와 cooldown을 만족하는 사건 중 하나를 동일 가중치 100으로 선택한다. 후보가 없으면 아무 일도 없다. 본 사건은 `cooldown = { days = 100000 }`로 게임 기간 중 한 번만 발생한다. 응답 `.23`에는 cooldown이 없다.
+- **동시성:** 조선의 `sk_pending`은 선택 창/응답 대기 중인 사건 코드를 저장한다. 본 창은 11~22, 응답은 `사건 번호 × 10 + 선택 순번`이다. 예: 133은 `.13.c`. 최대 365일 후 만료하며 대기 중 새 본 사건을 추첨하지 않는다. 각 선택과 응답은 저장된 코드가 자기 사건과 일치하는지 재검사한다. 상대 이탈로 무효가 된 창은 취소/거절 선택 또는 잠금 만료 때 잠금을 해제하며, 이탈국을 즉시 재추첨하지 않는다. 기존 삭제 체인의 `scramble_for_korea_pending_offer`를 재사용하지 않으므로 현행 sync의 정리와 충돌하지 않는다.
+- **금액·시간:** `add_treasury`는 일회성 파운드 금액이다. `country_tax_income_add = 100`은 주간 고정 수입 +100이다. 비용 선택은 표시와 실행 직전에 `gold_reserves >= 비용`을 검사한다. 외국의 계약 비용은 동의 시에만 차감한다. 거절·무효 응답에는 계약금과 영향력 보상이 없다. `days`는 180·365·730·1825처럼 명시하며, 이벤트 창의 `duration = 1`은 현재 참가 이벤트와 같은 값을 사용하고 이를 1일 지연으로 해석하지 않는다.
+- **AI:** 각 본 사건 선택의 `ai_chance.base`는 코드에 고정한다. 공통 외국 응답은 수락 60, 거절 40이다. 수락 조건이 거짓이면 거절만 가능하다. 모든 창에 비용 없는 기본 선택 또는 무효 종료 선택이 있다.
+- **스코프:** `sk_actor`는 주된 외국, `sk_rival`은 두 번째 외국, `sk_state`·`sk_building`·`sk_treaty`는 실제 대상이다. 이벤트의 `immediate`에서 결정하고 응답까지 그대로 전달한다. 응답에서 재추첨하거나 `scramble_winner`로 저장하지 않는다. `.14`·`.20`은 건물에서 외국 소유자를 찾으므로 `prev`가 어느 스코프인지 코드의 중첩을 유지해야 한다.
+- **재검사:** 관여국 상태·국가별 유지 자격·영향력 변수·일지 종료 여부는 `sk_live_N`으로 다시 검사한다. 지위 상실·소멸·대상 주 상실·조약 소멸은 무효 처리한다. 최초 발생의 급진파·곡물 가격 등 일시적 조건은 창을 연 뒤 매번 재적용하지 않는다. 자금과 실제 건설/조약 권한은 사용 시 재검사한다.
+- **영향력:** 기존 `scramble_for_korea_change_influence`를 재사용하여 0~100으로 제한한다. 외교 관계와 해군력은 월간 영향력 산정에 추가하지 않는다. 사건은 별도 승자를 확정하지 않고 현행 JE가 다음 검사에서 기존 승패 효과를 실행하게 한다. 현재 소스의 외국 승리 병합 처리 등은 이번 사건 명세의 변경 대상이 아니다.
+- **장기 상태:** `sk_protector`, `sk_bank_partner`, `sk_customs_partner`, `sk_rail_partner`, `sk_mine_partner`, `sk_base_partner`는 실제 성립한 계약의 상대 국가를 저장한다. 이 상태는 점수 변수로 대체할 수 없다. `sk_job_코드`는 지연 작업의 중복 완료 방지용이다. 읽는 곳·만료·제거는 13절에 명시한다. 조청전쟁 저널과의 연결은 없다.
+- **완공:** 외국이 이미 지급한 사업 자금은 그 국가가 이탈해도 환급하지 않는다. 전신·철도·자체 정비는 조선과 대상이 유효하면 계속 완공한다. 환궁만 보호국의 유효성도 요구한다. 일지 종료·조선 소멸로 취소한 사업은 환급하지 않고 점수도 지급하지 않는다. 완공한 철도 건물은 일지 종료 때 철거하지 않는다.
+
+
+| 참고 바닐라 코드 | 이 계획에 사용하는 문법·구조 |
+|---|---|
+| [ryukyu_rivalry.1](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/japan_events/ryukyu_rivalry_events.txt:1) | 국가 스코프 저장, 외교 대응 선택, `levels_owned_by_country`, IG·국가 modifier |
+| [ryukyu_rivalry.6·.7](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/japan_events/ryukyu_rivalry_events.txt) | `change_infamy`, `every_scope_treaty`, `withdraw` |
+| [trade_route_events.2·.3](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/trade_route_events.txt:82) | 시장 간 `market_imports`, `mg:grain`의 `market_goods_pricier > 0.25` |
+| [gg_korea.4](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/soi_events/00_ep1_korea_events.txt:226) | `radical_fraction`, 비주변 IG 조건, 청원에 대한 국내 정치 효과 |
+| [trains.1](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/train_events.txt:1) | 조건과 같은 필터로 `random_scope_state`를 선택·저장 |
+| [meiji.8](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/meiji_restoration.txt:1005) | 주 스코프에서 `create_building = { building = building_railway level = 1 }` |
+| [production_tech_events.601](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/tech_events/production_tech_events.txt:980) | 기술·광산 유형·레벨 조건 |
+| [통상특권 조약 판정](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/soi_events/00_lobbies_events_04.txt:444), [persia_events.4](C:/Users/user/Documents/GitHub/Vic3-vanilla/events/soi_events/00_ep1_persia_events.txt:477) | 같은 인수의 `can_create_treaty` → 수락 후 `create_treaty` |
+| [바닐라 on_action 문서](C:/Users/user/Documents/GitHub/Vic3-vanilla/common/on_actions/_on_actions.md:33) | `trigger_event = { on_action = ... }`, `chance_to_happen`, 적격 이벤트 가중 추첨, 지연 호출 |
+| [로컬 트리거 문서](C:/Users/user/Documents/GitHub/East-Asia-Flavor-Pack/documentation/triggers.log), [효과 문서](C:/Users/user/Documents/GitHub/East-Asia-Flavor-Pack/documentation/effects.log) | `can_construct_building`, `naval_power_projection`, `gold_reserves`, `save_scope_value_as`, 보관 스코프·modifier·조약 효과 |
+
+위 바닐라는 문법과 처리 패턴의 근거다. 수치·발생 빈도·AI 가중치는 이 콘텐츠에 맞춰 아래처럼 확정한 설계값이며 바닐라의 동일 역사 사건을 복사했다는 뜻은 아니다.
+
+### `.11` 공사관으로 향하는 가마
+
+**역사적 배경:** 1896년 2월 11일 고종과 왕세자가 러시아 공사관으로 거처를 옮긴 아관파천을 모티브로 한다. 신변 보호를 얻는 선택이 외국의 정치적 영향력 확대와 연결되는 사건이다. 출처: [한국민족문화대백과사전 — 아관파천](https://encykorea.aks.ac.kr/Article/E0034214).
+
+**확정 동작:** 급진파 20% 이상을 왕실 안전 위기의 판정으로 사용한다. 혁명 발생 자체는 필수 조건이 아니다. 피신 수락 후 365일에 환궁 효과를 한 번 적용한다. 거처 이전은 무료이며 정통성 +2/180일이다. 실제 수도·군주 위치·종속관계는 바꾸지 않는다.
+
+**바닐라 참고:** ryukyu_rivalry.1; gg_korea.4.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.11.a` 공사관에 보호를 요청한다 | 40 | 외국 응답 .23 수락 후 실행 |
+| `.11.b` 궁성 경비를 강화한다 | 40 | 조선 선택 시 실행 |
+| `.11.c` 다른 궁으로 거처를 옮긴다 | 20 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.11 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.11.t
+    desc = scramble_for_korea_events.11.d
+    flavor = scramble_for_korea_events.11.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        has_law = law_type:law_monarchy
+        radical_fraction = { value >= 0.20 }
+        any_country = {
+            sk_foreign_valid = yes
+            var:scramble_for_korea_participants_influence >= 30
+        }
+        any_country = {
+            sk_foreign_valid = yes
+            var:scramble_for_korea_participants_influence >= 10
+            count >= 2
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 11 days = 365 }
+        random_country = {
+            limit = { sk_foreign_valid = yes
+        var:scramble_for_korea_participants_influence >= 30 }
+            save_scope_as = sk_rival
+        }
+        random_country = {
+            limit = { sk_foreign_valid = yes
+        var:scramble_for_korea_participants_influence >= 10
+        this != scope:sk_rival }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 공사관에 보호를 요청한다
+    option = {
+        name = scramble_for_korea_events.11.a
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_11 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+        }
+        if = {
+            limit = {
+                sk_live_11 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 111 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 111 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 궁성 경비를 강화한다
+    option = {
+        name = scramble_for_korea_events.11.b
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_11 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+            c:KOR = { gold_reserves >= 25000 }
+        }
+        if = {
+            limit = {
+                sk_live_11 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+                c:KOR = { gold_reserves >= 25000 }
+            }
+            c:KOR = { add_treasury = -25000 }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            c:KOR = { add_modifier = { name = sk_guard days = 365 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 다른 궁으로 거처를 옮긴다
+    option = {
+        name = scramble_for_korea_events.11.c
+        default_option = yes
+        ai_chance = { base = 20 }
+        trigger = {
+            sk_live_11 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+        }
+        if = {
+            limit = {
+                sk_live_11 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+            }
+            c:KOR = { add_modifier = { name = sk_relocation days = 180 } }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_11 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 11 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 11 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.12` 누구의 뒤에 서야 하는가
+
+**역사적 배경:** 청은 박정양의 미국 공사 활동에 영약삼단을 요구했다. 청 공사관 선행 방문과 청 공사의 안내, 외교 석상에서의 서열, 중요 교섭의 사전 협의를 통해 조선의 독자 외교를 제한하려 한 사례다. 출처: [우리역사넷 — 박정양의 주미 외교와 청의 간섭](https://contents.history.go.kr/front/nh/view.do?levelId=nh_039_0030_0030).
+
+**확정 동작:** 접수국은 청을 제외한 국제관계 기술 보유 관여국 중 균등 추첨한다. 독자 국서 제출의 비용은 외교력 -25/365일이다. 해외 사절단 일지·개혁 완료 변수를 사용하지 않는다.
+
+**바닐라 참고:** ryukyu_rivalry.1.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.12.a` 청의 의전 요구를 따른다 | 40 | 조선 선택 시 실행 |
+| `.12.b` 독자적으로 국서를 제출한다 | 35 | 조선 선택 시 실행 |
+| `.12.c` 접수국에 독자 접견을 요청한다 | 25 | 외국 응답 .23 수락 후 실행 |
+
+```txt
+scramble_for_korea_events.12 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.12.t
+    desc = scramble_for_korea_events.12.d
+    flavor = scramble_for_korea_events.12.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        exists = c:CHI
+        c:CHI = { sk_foreign_valid = yes OR = { c:KOR = { is_subject_of = c:CHI } var:scramble_for_korea_participants_influence >= 20 } }
+        has_technology_researched = international_relations
+        any_country = {
+            sk_foreign_valid = yes
+            NOT = { c:CHI ?= this }
+            has_technology_researched = international_relations
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 12 days = 365 }
+        c:CHI = { save_scope_as = sk_rival }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                NOT = { c:CHI ?= this }
+                has_technology_researched = international_relations
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 청의 의전 요구를 따른다
+    option = {
+        name = scramble_for_korea_events.12.a
+        default_option = yes
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_12 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+        }
+        if = {
+            limit = {
+                sk_live_12 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+            }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+            scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 독자적으로 국서를 제출한다
+    option = {
+        name = scramble_for_korea_events.12.b
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_12 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+        }
+        if = {
+            limit = {
+                sk_live_12 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+            }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+            c:KOR = { add_modifier = { name = sk_diplomatic_cost days = 365 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 접수국에 독자 접견을 요청한다
+    option = {
+        name = scramble_for_korea_events.12.c
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_12 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+        }
+        if = {
+            limit = {
+                sk_live_12 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 123 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 123 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_12 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 12 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 12 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.13` 백성의 쌀인가, 상인의 계약인가
+
+**역사적 배경:** 함경도·황해도의 방곡령과 일본 상인의 손해배상 요구를 모티브로 한다. 식량 확보를 위한 수출 제한과 통상 조약·상인의 권익이 충돌한 사건이다. 출처: [우리역사넷 — 방곡령](https://contents.history.go.kr/mobile/kc/view.do?levelId=kc_i402320), [한국민족문화대백과사전 — 방곡령](https://encykorea.aks.ac.kr/Article/E0021663).
+
+**확정 동작:** 조선이 자기 시장의 소유국일 때만 발생한다. 상대국도 자기 시장을 소유하고 조선 시장에서 곡물을 10단위 이상 수입해야 한다. 수출 금지 기능을 가정하지 않고 구휼 비용·농민 지지·외교 부담으로 방곡 분쟁의 결과를 표현한다. 선택으로 무역량이나 곡물 가격을 직접 고정하지 않는다.
+
+**바닐라 참고:** trade_route_events.2 / .3; ep2_japan_events_03의 곡물 고가 사건.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.13.a` 구휼 비용을 부담하고 방곡 방침을 유지한다 | 35 | 조선 선택 시 실행 |
+| `.13.b` 통상 요구를 받아들인다 | 40 | 조선 선택 시 실행 |
+| `.13.c` 배상금 20,000을 제시한다 | 25 | 외국 응답 .23 수락 후 실행 |
+
+```txt
+scramble_for_korea_events.13 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.13.t
+    desc = scramble_for_korea_events.13.d
+    flavor = scramble_for_korea_events.13.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        capital.market = { owner = c:KOR mg:grain = { market_goods_pricier > 0.25 } }
+        any_country = {
+            sk_foreign_valid = yes
+            capital.market = {
+                owner = prev
+                NOT = { this = c:KOR.capital.market }
+                market_imports = { target = c:KOR.capital.market goods = grain value >= 10 }
+            }
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 13 days = 365 }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                capital.market = {
+                    owner = prev
+                    NOT = { this = c:KOR.capital.market }
+                    market_imports = { target = c:KOR.capital.market goods = grain value >= 10 }
+                }
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 구휼 비용을 부담하고 방곡 방침을 유지한다
+    option = {
+        name = scramble_for_korea_events.13.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_13 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+            c:KOR = { gold_reserves >= 15000 }
+        }
+        if = {
+            limit = {
+                sk_live_13 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+                c:KOR = { gold_reserves >= 15000 }
+            }
+            c:KOR = { add_treasury = -15000 }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            add_loyalists = { value = 0.02 pop_type = peasants }
+            c:KOR = { add_modifier = { name = sk_diplomatic_cost days = 365 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 통상 요구를 받아들인다
+    option = {
+        name = scramble_for_korea_events.13.b
+        default_option = yes
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_13 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+        }
+        if = {
+            limit = {
+                sk_live_13 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+            }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            add_radicals = { value = 0.02 pop_type = peasants }
+            remove_variable = sk_pending
+        }
+    }
+    # 배상금 20,000을 제시한다
+    option = {
+        name = scramble_for_korea_events.13.c
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_13 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+            c:KOR = { gold_reserves >= 20000 }
+        }
+        if = {
+            limit = {
+                sk_live_13 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+                c:KOR = { gold_reserves >= 20000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 133 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 133 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_13 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 13 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 13 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.14` 우리 시장에 도는 남의 지폐
+
+**역사적 배경:** 일본 제일은행이 1902년 은행권을 발행한 뒤 대한제국 정부와 상인들의 반발, 통용 금지와 1903년 금지 철회를 둘러싼 논란을 모티브로 한다. 출처: [우리역사넷 — 제일은행권과 화폐 정리](https://contents.history.go.kr/mobile/km/view.do?levelId=km_008_0050_0020_0030).
+
+**확정 동작:** 금 보유고 100,000 미만과 조선 내 한 건물의 외국 소유 3레벨 이상을 함께 요구한다. 은행권 통용은 £25,000 지원과 주간 고정 수입 +100/730일로 구현하며 통화 종류를 새로 만들지 않는다. 자체 정비는 365일 뒤 영향력 +5와 주간 수입 +100/730일이다.
+
+**바닐라 참고:** ryukyu_rivalry.1의 levels_owned_by_country; agitator_law_events_2의 add_treasury.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.14.a` 외국 은행권의 통용을 인정한다 | 40 | 외국 응답 .23 수락 후 실행 |
+| `.14.b` 외국 은행권을 금지한다 | 35 | 조선 선택 시 실행 |
+| `.14.c` 독자 화폐 정비에 40,000을 투입한다 | 25 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.14 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.14.t
+    desc = scramble_for_korea_events.14.d
+    flavor = scramble_for_korea_events.14.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        gold_reserves < 100000
+        any_scope_building = {
+            any_country = {
+                sk_foreign_valid = yes
+                prev = { levels_owned_by_country = { target = prev value >= 3 } }
+            }
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 14 days = 365 }
+        random_scope_building = {
+            limit = {
+                any_country = {
+                    sk_foreign_valid = yes
+                    prev = { levels_owned_by_country = { target = prev value >= 3 } }
+                }
+            }
+            save_scope_as = sk_building
+            random_country = {
+                limit = {
+                    sk_foreign_valid = yes
+                    prev = { levels_owned_by_country = { target = prev value >= 3 } }
+                }
+                save_scope_as = sk_actor
+            }
+        }
+
+    }
+    # 외국 은행권의 통용을 인정한다
+    option = {
+        name = scramble_for_korea_events.14.a
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_14 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+        }
+        if = {
+            limit = {
+                sk_live_14 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 141 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 141 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 외국 은행권을 금지한다
+    option = {
+        name = scramble_for_korea_events.14.b
+        default_option = yes
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_14 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+        }
+        if = {
+            limit = {
+                sk_live_14 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+            }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            add_radicals = { value = 0.01 }
+            remove_variable = sk_pending
+        }
+    }
+    # 독자 화폐 정비에 40,000을 투입한다
+    option = {
+        name = scramble_for_korea_events.14.c
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_14 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+            c:KOR = { gold_reserves >= 40000 }
+        }
+        if = {
+            limit = {
+                sk_live_14 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+                c:KOR = { gold_reserves >= 40000 }
+            }
+            c:KOR = { add_treasury = -40000 }
+            c:KOR = {
+                set_variable = sk_job_143
+                trigger_event = { on_action = sk_finish_143 days = 365 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_14 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 14 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 14 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.15` 전보는 어느 길로 가는가
+
+**역사적 배경:** 청과 연결된 서쪽 전신망과 조선의 남쪽 전신망 건설을 바탕으로, 통신망의 경로와 운영권이 외교적 의존에 미치는 영향을 다룬다. 출처: [국가기록원 — 전신 관련 기록](https://archives.go.kr/next/newsearch/listSubjectDescription.do?id=010910&pageFlag=A&sitePage=1-2-1), [한국민족문화대백과사전 — 전보총국](https://encykorea.aks.ac.kr/Article/E0049512).
+
+**확정 동작:** 실제 기술 키는 electric_telegraph다. 대상은 조선의 편입주 한 곳이다. 모든 완공 효과는 해당 주의 기반시설 +5/1,825일로 고정한다. 전신 건물을 생성하지 않는다. 기존 대체국 선택은 국가 선택 창이 없는 일반 이벤트에서 확정적으로 처리하도록 공동 건설 선택으로 구체화한다.
+
+**바닐라 참고:** trains.1의 주 선택; production_tech_events.601의 기술 조건.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.15.a` 외국망 연결을 제안한다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.15.b` 공동 건설과 조선 측 관리를 제안한다 | 25 | 외국 응답 .23 수락 후 실행 |
+| `.15.c` 국비 50,000으로 건설한다 | 30 | 조선 선택 시 실행 |
+| `.15.d` 이번에는 보류한다 | 10 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.15 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.15.t
+    desc = scramble_for_korea_events.15.d
+    flavor = scramble_for_korea_events.15.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        has_technology_researched = electric_telegraph
+        any_scope_state = {
+            is_incorporated = yes
+            NOT = { has_modifier = sk_telegraph }
+        }
+        any_country = {
+            sk_foreign_valid = yes
+            has_technology_researched = electric_telegraph
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 15 days = 365 }
+        random_scope_state = {
+            limit = {
+                is_incorporated = yes
+                NOT = { has_modifier = sk_telegraph }
+            }
+            save_scope_as = sk_state
+        }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                has_technology_researched = electric_telegraph
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 외국망 연결을 제안한다
+    option = {
+        name = scramble_for_korea_events.15.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_15 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+            c:KOR = { gold_reserves >= 10000 }
+        }
+        if = {
+            limit = {
+                sk_live_15 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+                c:KOR = { gold_reserves >= 10000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 151 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 151 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 공동 건설과 조선 측 관리를 제안한다
+    option = {
+        name = scramble_for_korea_events.15.b
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_15 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+            c:KOR = { gold_reserves >= 25000 }
+        }
+        if = {
+            limit = {
+                sk_live_15 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+                c:KOR = { gold_reserves >= 25000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 152 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 152 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 국비 50,000으로 건설한다
+    option = {
+        name = scramble_for_korea_events.15.c
+
+        ai_chance = { base = 30 }
+        trigger = {
+            sk_live_15 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+            c:KOR = { gold_reserves >= 50000 }
+        }
+        if = {
+            limit = {
+                sk_live_15 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+                c:KOR = { gold_reserves >= 50000 }
+            }
+            c:KOR = { add_treasury = -50000 }
+            c:KOR = {
+                set_variable = sk_job_153
+                trigger_event = { on_action = sk_finish_153 days = 365 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    # 이번에는 보류한다
+    option = {
+        name = scramble_for_korea_events.15.d
+        default_option = yes
+        ai_chance = { base = 10 }
+        trigger = {
+            sk_live_15 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+        }
+        if = {
+            limit = {
+                sk_live_15 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_15 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 15 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 15 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.16` 해관의 장부를 쥔 손
+
+**역사적 배경:** 청의 이홍장이 추천한 독일인 묄렌도르프가 조선의 외교·통상 업무와 해관 운영에 관여한 사례를 모티브로 한다. 고문의 국적과 그를 추천한 국가의 이해관계는 구분한다. 출처: [한국학중앙연구원 한국외교사전 — 묄렌도르프](https://waks.aks.ac.kr/dir/achieveView.aspx?dataID=AKS-2007-HZ-2002_DIC%40FND_DIC_OKY_GOKS_0065).
+
+**확정 동작:** 조선 소유 시장의 총 수출 100단위 이상을 해관 정비 수요로 삼는다. 전권 고문은 행정력 +25와 주간 수입 +100, 자문은 행정력 +25, 자체 정비는 180일 뒤 행정력 +50이다. 모두 730일 지속한다. 추천국을 sk_actor로 저장하며 고문의 국적에 점수를 주지 않는다.
+
+**바닐라 참고:** 00_lobbies_events_04의 market_exports; ryukyu_rivalry.1.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.16.a` 고문에게 해관 운영을 맡긴다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.16.b` 10,000에 기술 자문만 요청한다 | 25 | 외국 응답 .23 수락 후 실행 |
+| `.16.c` 25,000으로 조선인 해관을 정비한다 | 30 | 조선 선택 시 실행 |
+| `.16.d` 인사를 보류한다 | 10 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.16 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.16.t
+    desc = scramble_for_korea_events.16.d
+    flavor = scramble_for_korea_events.16.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        capital.market = { owner = c:KOR market_exports = { value >= 100 } }
+        NOT = { has_variable = sk_customs_partner }
+        any_country = {
+            sk_foreign_valid = yes
+            has_technology_researched = international_relations
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 16 days = 365 }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                has_technology_researched = international_relations
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 고문에게 해관 운영을 맡긴다
+    option = {
+        name = scramble_for_korea_events.16.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_16 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+        }
+        if = {
+            limit = {
+                sk_live_16 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 161 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 161 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 10,000에 기술 자문만 요청한다
+    option = {
+        name = scramble_for_korea_events.16.b
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_16 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+            c:KOR = { gold_reserves >= 10000 }
+        }
+        if = {
+            limit = {
+                sk_live_16 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+                c:KOR = { gold_reserves >= 10000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 162 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 162 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 25,000으로 조선인 해관을 정비한다
+    option = {
+        name = scramble_for_korea_events.16.c
+
+        ai_chance = { base = 30 }
+        trigger = {
+            sk_live_16 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+            c:KOR = { gold_reserves >= 25000 }
+        }
+        if = {
+            limit = {
+                sk_live_16 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+                c:KOR = { gold_reserves >= 25000 }
+            }
+            c:KOR = { add_treasury = -25000 }
+            c:KOR = {
+                set_variable = sk_job_163
+                trigger_event = { on_action = sk_finish_163 days = 180 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    # 인사를 보류한다
+    option = {
+        name = scramble_for_korea_events.16.d
+        default_option = yes
+        ai_chance = { base = 10 }
+        trigger = {
+            sk_live_16 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+        }
+        if = {
+            limit = {
+                sk_live_16 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_16 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 16 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 16 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.17` 철길의 주인은 누구인가
+
+**역사적 배경:** 1896년 미국인 모스가 경인철도 부설권을 얻었으나 자금 조달에 어려움을 겪었고, 이후 일본 측으로 부설권이 넘어간 사례를 모티브로 한다. 출처: [한국민족문화대백과사전 — 경인선](https://encykorea.aks.ac.kr/Article/E0002748).
+
+**확정 동작:** 철도 없는 건설 가능 주 한 곳을 고른다. 365일 뒤에도 조선 소유·철도 없음·건설 가능이면 바닐라 meiji.8처럼 1레벨 철도를 생성한다. 이미 철도가 생겼거나 주를 잃었으면 추가 생성·완공 점수 없이 종료하며 계약금은 환급하지 않는다. 이 판본은 국가 간 자금 부담과 정치적 이권만 표현한다. 건물 지분의 강제 이전·제3국 매각 후속 사건은 포함하지 않는다.
+
+**바닐라 참고:** meiji.8; documentation/effects.log의 create_building.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.17.a` 외자 부설 계약을 제안한다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.17.b` 공동 출자 계약을 제안한다 | 25 | 외국 응답 .23 수락 후 실행 |
+| `.17.c` 국비 75,000으로 건설한다 | 30 | 조선 선택 시 실행 |
+| `.17.d` 건설을 보류한다 | 10 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.17 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.17.t
+    desc = scramble_for_korea_events.17.d
+    flavor = scramble_for_korea_events.17.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        has_technology_researched = railways
+        any_scope_state = {
+            NOT = { has_building = building_railway }
+            can_construct_building = building_railway
+        }
+        any_country = {
+            sk_foreign_valid = yes
+            has_technology_researched = railways
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 17 days = 365 }
+        random_scope_state = {
+            limit = {
+                NOT = { has_building = building_railway }
+                can_construct_building = building_railway
+            }
+            save_scope_as = sk_state
+        }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                has_technology_researched = railways
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 외자 부설 계약을 제안한다
+    option = {
+        name = scramble_for_korea_events.17.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_17 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+            c:KOR = { gold_reserves >= 25000 }
+        }
+        if = {
+            limit = {
+                sk_live_17 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+                c:KOR = { gold_reserves >= 25000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 171 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 171 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 공동 출자 계약을 제안한다
+    option = {
+        name = scramble_for_korea_events.17.b
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_17 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+            c:KOR = { gold_reserves >= 35000 }
+        }
+        if = {
+            limit = {
+                sk_live_17 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+                c:KOR = { gold_reserves >= 35000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 172 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 172 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 국비 75,000으로 건설한다
+    option = {
+        name = scramble_for_korea_events.17.c
+
+        ai_chance = { base = 30 }
+        trigger = {
+            sk_live_17 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+            c:KOR = { gold_reserves >= 75000 }
+            exists = scope:sk_state
+            scope:sk_state = { owner = c:KOR }
+            scope:sk_state = {
+                NOT = { has_building = building_railway }
+                can_construct_building = building_railway
+            }
+        }
+        if = {
+            limit = {
+                sk_live_17 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+                c:KOR = { gold_reserves >= 75000 }
+                exists = scope:sk_state
+                scope:sk_state = { owner = c:KOR }
+                scope:sk_state = {
+                    NOT = { has_building = building_railway }
+                    can_construct_building = building_railway
+                }
+            }
+            c:KOR = { add_treasury = -75000 }
+            c:KOR = {
+                set_variable = sk_job_173
+                trigger_event = { on_action = sk_finish_173 days = 365 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    # 건설을 보류한다
+    option = {
+        name = scramble_for_korea_events.17.d
+        default_option = yes
+        ai_chance = { base = 10 }
+        trigger = {
+            sk_live_17 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+        }
+        if = {
+            limit = {
+                sk_live_17 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_17 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 17 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 17 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.18` 산 아래 잠든 황금
+
+**역사적 배경:** 1895년 조선이 미국 측에 운산 금광 채굴권을 허가한 사건을 모티브로 한다. 기술·자본 도입과 장기적인 광산 이권 양여가 함께 이루어지는 선택이다. 출처: [한국학중앙연구원 한국외교사전 — 운산금광채굴권](https://waks.aks.ac.kr/dir/achieveView.aspx?dataID=AKS-2007-HZ-2002_DIC%40FND_DIC_OKY_GOKS_0138).
+
+**확정 동작:** 실제 금광 1레벨 이상을 요구한다. 미발견 자원·금광 미보유 조선에는 발생하지 않는다. 장기 계약은 처리율 +10%, 공동 계약은 +5%, 직접 정비는 180일 뒤 +10%이며 1,825일 지속한다. 건물 소유권·지분별 배당률을 바꾸는 효과는 없다. 운산은 모티브이며 선택한 실제 금광의 지역명을 표시한다.
+
+**바닐라 참고:** production_tech_events.601의 광산 선택; 02_event_modifiers의 building_throughput_add.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.18.a` 장기 채굴·설비 계약을 제안한다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.18.b` 수익 배분 계약을 제안한다 | 25 | 외국 응답 .23 수락 후 실행 |
+| `.18.c` 40,000으로 직접 설비를 정비한다 | 30 | 조선 선택 시 실행 |
+| `.18.d` 채굴 계약을 보류한다 | 10 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.18 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.18.t
+    desc = scramble_for_korea_events.18.d
+    flavor = scramble_for_korea_events.18.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        any_scope_building = { is_building_type = building_gold_mine
+        level >= 1 }
+        NOT = { has_variable = sk_mine_partner }
+        any_country = {
+            sk_foreign_valid = yes
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 18 days = 365 }
+        random_scope_building = { limit = { is_building_type = building_gold_mine
+        level >= 1 } save_scope_as = sk_building }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+            }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 장기 채굴·설비 계약을 제안한다
+    option = {
+        name = scramble_for_korea_events.18.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_18 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+            c:KOR = { gold_reserves >= 10000 }
+        }
+        if = {
+            limit = {
+                sk_live_18 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+                c:KOR = { gold_reserves >= 10000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 181 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 181 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 수익 배분 계약을 제안한다
+    option = {
+        name = scramble_for_korea_events.18.b
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_18 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+            c:KOR = { gold_reserves >= 20000 }
+        }
+        if = {
+            limit = {
+                sk_live_18 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+                c:KOR = { gold_reserves >= 20000 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 182 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 182 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 40,000으로 직접 설비를 정비한다
+    option = {
+        name = scramble_for_korea_events.18.c
+
+        ai_chance = { base = 30 }
+        trigger = {
+            sk_live_18 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+            c:KOR = { gold_reserves >= 40000 }
+        }
+        if = {
+            limit = {
+                sk_live_18 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+                c:KOR = { gold_reserves >= 40000 }
+            }
+            c:KOR = { add_treasury = -40000 }
+            c:KOR = {
+                set_variable = sk_job_183
+                trigger_event = { on_action = sk_finish_183 days = 180 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    # 채굴 계약을 보류한다
+    option = {
+        name = scramble_for_korea_events.18.d
+        default_option = yes
+        ai_chance = { base = 10 }
+        trigger = {
+            sk_live_18 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+        }
+        if = {
+            limit = {
+                sk_live_18 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+            }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_18 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 18 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 18 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.19` 섬에 내려진 낯선 깃발
+
+**역사적 배경:** 영국이 러시아의 진출을 견제한다는 명분으로 1885~1887년 거문도를 점령한 사건을 모티브로 한다. 조선의 동의 없이 이루어진 점령과 그 철수를 둘러싼 외교 교섭을 다룬다. 출처: [한국민족문화대백과사전 — 거문도사건](https://encykorea.aks.ac.kr/Article/E0001825).
+
+**확정 동작:** 조선 해안주·해군 투사력 양수인 영향력 20 이상 관여국·다른 관여국 한 나라가 필요하다. 발생 시 점령국에 위신 +5/730일의 거점 효과와 악명 +5, 조선 영향력 -5를 적용한다. 이는 사건으로 발생한 임시 군사 거점이며 지도상 점령·주 소유권·전선을 변경하지 않는다. 공동 항의의 수락은 중재국 +3, 조선 외교력 +25/365일까지만 주며 철수를 보장하지 않는다.
+
+**바닐라 참고:** ryukyu_rivalry.6의 change_infamy; ryukyu_rivalry.1의 외교 대응.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.19.a` 점령국에 철수를 요구한다 | 40 | 외국 응답 .23 수락 후 실행 |
+| `.19.b` 제3국에 공동 항의를 요청한다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.19.c` 한시적인 주둔을 묵인한다 | 25 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.19 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.19.t
+    desc = scramble_for_korea_events.19.d
+    flavor = scramble_for_korea_events.19.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        any_scope_state = {
+            is_coastal = yes
+        }
+        NOT = { has_variable = sk_base_partner }
+        any_country = {
+            sk_foreign_valid = yes
+            naval_power_projection > 0
+            var:scramble_for_korea_participants_influence >= 20
+        }
+        any_country = { sk_foreign_valid = yes count >= 2 }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 19 days = 365 }
+        random_scope_state = {
+            limit = {
+                is_coastal = yes
+            }
+            save_scope_as = sk_state
+        }
+        random_country = {
+            limit = {
+                sk_foreign_valid = yes
+                naval_power_projection > 0
+                var:scramble_for_korea_participants_influence >= 20
+            }
+            save_scope_as = sk_actor
+        }
+        random_country = {
+            limit = { sk_foreign_valid = yes this != scope:sk_actor }
+            save_scope_as = sk_rival
+        }
+        scope:sk_actor = { add_modifier = { name = sk_base days = 730 } }
+        c:KOR = { set_variable = { name = sk_base_partner value = scope:sk_actor days = 730 } }
+        scope:sk_actor = { change_infamy = 5 }
+        c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+    }
+    # 점령국에 철수를 요구한다
+    option = {
+        name = scramble_for_korea_events.19.a
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_19 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+        }
+        if = {
+            limit = {
+                sk_live_19 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 191 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 191 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 제3국에 공동 항의를 요청한다
+    option = {
+        name = scramble_for_korea_events.19.b
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_19 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+        }
+        if = {
+            limit = {
+                sk_live_19 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 192 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 192 }
+            scope:sk_rival = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 한시적인 주둔을 묵인한다
+    option = {
+        name = scramble_for_korea_events.19.c
+        default_option = yes
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_19 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+        }
+        if = {
+            limit = {
+                sk_live_19 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+            }
+            scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_19 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 19 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 19 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.20` 벌목장의 포대
+
+**역사적 배경:** 1903년 러시아의 용암포 진출 과정에서 목재 사업과 토지 대여 문제가 군사 거점 구축으로 확대된 사례를 모티브로 한다. 출처: [한국민족문화대백과사전 — 용암포사건](https://encykorea.aks.ac.kr/Article/E0039596).
+
+**확정 동작:** 해안주 벌목장 중 외국이 실제로 1레벨 이상 소유한 곳을 고른다. 양허를 새로 가정하지 않는다. 군사화 수락은 .19와 같은 거점 효과를 730일 적용한다. 개방 협상은 한 나라의 독점적 정치 영향력을 낮추는 처리이며 무역항 건물·조약항을 자동 생성하지 않는다. 행정 비용은 -25/365일이다.
+
+**바닐라 참고:** ryukyu_rivalry.1의 소유 레벨; trains.1의 주 스코프.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.20.a` 군사 시설 확장 금지를 요구한다 | 40 | 외국 응답 .23 수락 후 실행 |
+| `.20.b` 군사 거점 설치를 허용한다 | 25 | 조선 선택 시 실행 |
+| `.20.c` 다른 관여국에도 상업 접근을 허용하도록 협상한다 | 35 | 외국 응답 .23 수락 후 실행 |
+
+```txt
+scramble_for_korea_events.20 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.20.t
+    desc = scramble_for_korea_events.20.d
+    flavor = scramble_for_korea_events.20.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        any_scope_building = {
+            is_building_type = building_logging_camp
+            state = { is_coastal = yes }
+            any_country = {
+                sk_foreign_valid = yes
+                prev = { levels_owned_by_country = { target = prev value >= 1 } }
+            }
+        }
+        NOT = { has_variable = sk_base_partner }
+        any_country = { sk_foreign_valid = yes count >= 2 }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 20 days = 365 }
+        random_scope_building = {
+            limit = {
+                is_building_type = building_logging_camp
+                state = { is_coastal = yes }
+                any_country = {
+                    sk_foreign_valid = yes
+                    prev = { levels_owned_by_country = { target = prev value >= 1 } }
+                }
+            }
+            save_scope_as = sk_building
+            random_country = {
+                limit = {
+                    sk_foreign_valid = yes
+                    prev = { levels_owned_by_country = { target = prev value >= 1 } }
+                }
+                save_scope_as = sk_actor
+            }
+        }
+        scope:sk_building.state = { save_scope_as = sk_state }
+        random_country = {
+            limit = { sk_foreign_valid = yes this != scope:sk_actor }
+            save_scope_as = sk_rival
+        }
+
+    }
+    # 군사 시설 확장 금지를 요구한다
+    option = {
+        name = scramble_for_korea_events.20.a
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_20 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+        }
+        if = {
+            limit = {
+                sk_live_20 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 201 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 201 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 군사 거점 설치를 허용한다
+    option = {
+        name = scramble_for_korea_events.20.b
+        default_option = yes
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_20 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+        }
+        if = {
+            limit = {
+                sk_live_20 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+            }
+            scope:sk_actor = { add_modifier = { name = sk_base days = 730 } }
+            c:KOR = { set_variable = { name = sk_base_partner value = scope:sk_actor days = 730 } }
+            scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 10 } }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 다른 관여국에도 상업 접근을 허용하도록 협상한다
+    option = {
+        name = scramble_for_korea_events.20.c
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_20 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+        }
+        if = {
+            limit = {
+                sk_live_20 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 203 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 203 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_20 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 20 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 20 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.21` 종로에 모인 목소리
+
+**역사적 배경:** 1898년 만민공동회가 러시아 군사교관·재정고문의 철수와 절영도 조차 반대 등 자주권 수호를 요구한 사례를 모티브로 한다. 출처: [우리역사넷 — 만민공동회](https://contents.history.go.kr/front/kc/printViewPopup.do?levelId=kc_i401700).
+
+**확정 동작:** 급진파 15% 이상, 비주변 지식인, 실제 진행 중인 거점·해관·은행 계약 중 하나가 필요하다. 대상 우선순위는 군사 거점 → 해관 고문 → 은행이다. 한 번의 청원은 한 계약만 해제한다. 국내 개편은 권익을 회수하지 않으며 £10,000, 권위 -25/365일, 충성파 전환 1%, 조선 +2로 고정한다.
+
+**바닐라 참고:** gg_korea.4의 급진파·IG 조건과 청원 선택.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.21.a` 고문·거점의 철수 협상을 요청한다 | 40 | 외국 응답 .23 수락 후 실행 |
+| `.21.b` 민회 대표들과 국내 개편을 협의한다 | 40 | 조선 선택 시 실행 |
+| `.21.c` 집회를 해산한다 | 20 | 조선 선택 시 실행 |
+
+```txt
+scramble_for_korea_events.21 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.21.t
+    desc = scramble_for_korea_events.21.d
+    flavor = scramble_for_korea_events.21.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        radical_fraction = { value >= 0.15 }
+        ig:ig_intelligentsia = { ig_counts_as_marginal = no }
+        OR = {
+            AND = { exists = var:sk_base_partner var:sk_base_partner = { sk_foreign_valid = yes } }
+            AND = { exists = var:sk_customs_partner var:sk_customs_partner = { sk_foreign_valid = yes } }
+            AND = { exists = var:sk_bank_partner var:sk_bank_partner = { sk_foreign_valid = yes } }
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 21 days = 365 }
+        if = {
+            limit = { exists = var:sk_base_partner var:sk_base_partner = { sk_foreign_valid = yes } }
+            var:sk_base_partner = { save_scope_as = sk_actor }
+            save_scope_value_as = { name = sk_petition_kind value = 1 }
+        }
+        else_if = {
+            limit = { exists = var:sk_customs_partner var:sk_customs_partner = { sk_foreign_valid = yes } }
+            var:sk_customs_partner = { save_scope_as = sk_actor }
+            save_scope_value_as = { name = sk_petition_kind value = 2 }
+        }
+        else_if = {
+            limit = { exists = var:sk_bank_partner var:sk_bank_partner = { sk_foreign_valid = yes } }
+            var:sk_bank_partner = { save_scope_as = sk_actor }
+            save_scope_value_as = { name = sk_petition_kind value = 3 }
+        }
+
+
+    }
+    # 고문·거점의 철수 협상을 요청한다
+    option = {
+        name = scramble_for_korea_events.21.a
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_21 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+        }
+        if = {
+            limit = {
+                sk_live_21 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 211 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 211 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 민회 대표들과 국내 개편을 협의한다
+    option = {
+        name = scramble_for_korea_events.21.b
+
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_21 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+            c:KOR = { gold_reserves >= 10000 }
+        }
+        if = {
+            limit = {
+                sk_live_21 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+                c:KOR = { gold_reserves >= 10000 }
+            }
+            c:KOR = { add_treasury = -10000 }
+            c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+            add_loyalists = { value = 0.01 }
+            c:KOR = { add_modifier = { name = sk_assembly_compromise days = 365 } }
+            remove_variable = sk_pending
+        }
+    }
+    # 집회를 해산한다
+    option = {
+        name = scramble_for_korea_events.21.c
+        default_option = yes
+        ai_chance = { base = 20 }
+        trigger = {
+            sk_live_21 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+        }
+        if = {
+            limit = {
+                sk_live_21 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+            }
+            add_radicals = { value = 0.03 }
+            c:KOR = { add_modifier = { name = sk_guard days = 365 } }
+            remove_variable = sk_pending
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_21 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 21 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 21 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
+
+### `.22` 다른 나라에 허락했다면
+
+**역사적 배경:** 미국이 최혜국 대우 조항을 근거로 1883년 제2차 조영수호통상조약의 상업상 권리를 균점하려 한 사례를 모티브로 한다. 출처: [우리역사넷 — 조미 수호 통상 조약](https://contents.history.go.kr/front/hm/view.do?levelId=hm_115_0060).
+
+**확정 동작:** 별도의 최혜국 법률 상태를 발명하지 않고 실제 trade_privilege 조약을 기준으로 동등 대우 요구를 구현한다. 기존 수혜국과 신규 요구국은 서로 다르다. 원조약은 통상특권 조항 하나뿐인 조약으로 한정하므로 철회 시 방위·투자 조항을 함께 없애지 않는다. 수락한 신규 조약의 구속 기간은 2년이며 2년 뒤 자동 해지는 아니다. 조선이 종속국이라 체결 권한이 없으면 can_create_treaty가 신규 체결 선택을 막는다.
+
+**바닐라 참고:** 00_lobbies_events_04의 can_create_treaty; persia_events.4의 create_treaty; ryukyu_rivalry.7의 withdraw.
+
+| 선택 | AI 가중치 | 처리 |
+|---|---:|---|
+| `.22.a` 동등한 통상 특권을 제안한다 | 35 | 외국 응답 .23 수락 후 실행 |
+| `.22.b` 동등 대우 요구를 거절한다 | 40 | 조선 선택 시 실행 |
+| `.22.c` 기존 수혜국에 특권 철회를 제안한다 | 25 | 외국 응답 .23 수락 후 실행 |
+
+```txt
+scramble_for_korea_events.22 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.22.t
+    desc = scramble_for_korea_events.22.d
+    flavor = scramble_for_korea_events.22.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    cooldown = { days = 100000 }
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+        has_technology_researched = international_relations
+        any_scope_treaty = {
+            any_scope_article = { count = 1 }
+            any_scope_article = { has_type = trade_privilege source_country = c:KOR target_country = { sk_foreign_valid = yes } }
+        }
+        any_country = {
+            sk_foreign_valid = yes
+            NOT = { has_treaty_trade_privilege_with = { TARGET = c:KOR } }
+            has_technology_researched = international_relations
+        }
+    }
+    immediate = {
+        set_variable = { name = sk_pending value = 22 days = 365 }
+        random_scope_treaty = {
+            limit = { any_scope_article = { count = 1 }
+        any_scope_article = { has_type = trade_privilege source_country = c:KOR target_country = { sk_foreign_valid = yes } } }
+            save_scope_as = sk_treaty
+            every_scope_article = { target_country = { save_scope_as = sk_rival } }
+        }
+        random_country = {
+            limit = { sk_foreign_valid = yes
+        NOT = { has_treaty_trade_privilege_with = { TARGET = c:KOR } }
+        has_technology_researched = international_relations this != scope:sk_rival }
+            save_scope_as = sk_actor
+        }
+
+    }
+    # 동등한 통상 특권을 제안한다
+    option = {
+        name = scramble_for_korea_events.22.a
+
+        ai_chance = { base = 35 }
+        trigger = {
+            sk_live_22 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+            can_create_treaty = {
+                first_country = c:KOR
+                second_country = scope:sk_actor
+                is_draft = no
+                binding_period = { years = 2 }
+                articles_to_create = {
+                    { article = trade_privilege source_country = c:KOR target_country = scope:sk_actor }
+                }
+            }
+        }
+        if = {
+            limit = {
+                sk_live_22 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+                can_create_treaty = {
+                    first_country = c:KOR
+                    second_country = scope:sk_actor
+                    is_draft = no
+                    binding_period = { years = 2 }
+                    articles_to_create = {
+                        { article = trade_privilege source_country = c:KOR target_country = scope:sk_actor }
+                    }
+                }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 221 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 221 }
+            scope:sk_actor = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    # 동등 대우 요구를 거절한다
+    option = {
+        name = scramble_for_korea_events.22.b
+        default_option = yes
+        ai_chance = { base = 40 }
+        trigger = {
+            sk_live_22 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+        }
+        if = {
+            limit = {
+                sk_live_22 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+            }
+            change_relations = { country = scope:sk_actor value = -10 }
+            remove_variable = sk_pending
+        }
+    }
+    # 기존 수혜국에 특권 철회를 제안한다
+    option = {
+        name = scramble_for_korea_events.22.c
+
+        ai_chance = { base = 25 }
+        trigger = {
+            sk_live_22 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+        }
+        if = {
+            limit = {
+                sk_live_22 = yes
+                c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+            }
+            c:KOR = { set_variable = { name = sk_pending value = 223 days = 365 } }
+            save_scope_value_as = { name = sk_case value = 223 }
+            scope:sk_rival = {
+                save_scope_as = sk_respondent
+                trigger_event = { id = scramble_for_korea_events.23 popup = yes }
+            }
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.cancel
+        default_option = yes
+        ai_chance = { base = 100 }
+        trigger = { NOT = { AND = {
+            sk_live_22 = yes
+            c:KOR = { has_variable = sk_pending var:sk_pending = 22 }
+        } } }
+        if = {
+            limit = { has_variable = sk_pending var:sk_pending = 22 }
+            remove_variable = sk_pending
+        }
+    }
+}
+```
 
 ## 7. 전체 진행·이벤트 흐름도
 
-실선은 이번 일지의 실행 흐름이다. 점선은 외부 상태 변화다. 종료를 일으키지 않는 이벤트 선택은 공통 갱신 단계로 돌아간다.
+실선은 기존 일지의 설계 흐름이다. 점선은 외부 상태 변화 또는 ‘추가 계획’으로 표시한 미구현 사건 경로다. 11~22번은 아래 점선 경로에만 추가하며, 종료를 일으키지 않는 사건 선택은 공통 갱신 단계로 돌아간다.
 
 ### 참여국 목록과 GUI 동기화
 
@@ -396,13 +2176,13 @@ flowchart TD
     KEEP -->|아니오| EXIT["JE 관여국에서 제거"]
     KEEP -->|예| RETAIN["관여국 유지 / 기존 영향력 유지<br/>변수 누락 시에만 보완"]
     JOIN --> INIT["등록된 국가에 영향력 변수 추가<br/>기존 값은 유지"]
-    EXIT --> CLEAR["탈락국의 영향력 변수 제거<br/>제안 취소"]
+    EXIT --> CLEAR["탈락국의 영향력 변수 제거"]
     WAIT --> CLEAR
     INIT --> GUI["custom_gui JE 관여국 반복<br/>관여국당 한 행·한 막대"]
     CLEAR --> GUI
     RETAIN --> GUI
     GUI --> VALUE["국가 변수 값으로 0~100 채움 표시<br/>0인 참가국도 표시"]
-    SCORE["월간 계산·사건<br/>국가별 영향력 갱신"] --> VALUE
+    SCORE["월간 계산·개혁 보상<br/>국가별 영향력 갱신"] --> VALUE
     EXIT -->|다음 주기에 국가별 재검사| TAG
 ```
 
@@ -428,54 +2208,64 @@ flowchart TD
     EXISTS -->|아니오| ABORT
     EXISTS -->|예| SUBJECT{"조선이 종속국이고<br/>현재 직접 종주국이 청 이외 국가인가?"}
     SUBJECT -->|예| OVERLORD{"청 이외 직접 종주국 자동 승리<br/>관여 여부·점수·전쟁 무관"}
-    OVERLORD -->|일본| E23
-    OVERLORD -->|청·일 이외 국가| E22
+    OVERLORD -->|일본| E6
+    OVERLORD -->|청·일 이외 국가| E5
     SUBJECT -->|독립 또는 청 종속| SOLO{"실제 관여국에 조선만 남음?"}
-    SOLO -->|예| E20
+    SOLO -->|예| E4
     SOLO -->|아니오| WIN{"승패 조건 판정"}
     ABORT["조선 소멸로 경쟁 중단<br/>이벤트 없이 정리"]
-    WIN -->|조선 독립 AND 승인 AND 영향력 단독 100| E20[".20 조선 자주권 확보"]
-    WIN -->|일본 영향력 단독 100| E23[".23 일본 승리"]
-    WIN -->|청 영향력 단독 100| E24[".24 청 승리"]
-    WIN -->|다른 열강 영향력 단독 100| E22[".22 기타 국가 승리"]
-    WIN -->|미충족 또는 100 동률| PLAY["국가별 월간 영향력 · 버튼 · 사건"]
+    WIN -->|조선 독립 AND 승인 AND 영향력 단독 100| E4[".4 조선 자주권 확보"]
+    WIN -->|일본 영향력 단독 100| E6[".6 일본 승리"]
+    WIN -->|청 영향력 단독 100| E7[".7 청 승리"]
+    WIN -->|다른 열강 영향력 단독 100| E5[".5 기타 국가 승리"]
+    WIN -->|미충족 또는 100 동률| PLAY["국가별 월간 영향력 · 자주 외교 버튼"]
     PLAY --> MONTH["조선 국가 등급 반영<br/>조선 소속 블록 지도자 월 +1 · 청 포함<br/>갱신 전 상태 계산 후 일괄 적용"]
     MONTH --> LOOP
-    PLAY --> E4[".4 개화파 지원"]
-    PLAY --> E5[".5 조선 내 사업"]
-    PLAY --> E6[".6 군사고문 제안"]
-    PLAY --> E8[".8 종주권·권익 주장"]
-    PLAY --> E9[".9 후원자 탐색"]
-    PLAY --> E10[".10 거류민 분쟁"]
-    PLAY --> E11[".11 군사 충돌 위기"]
-    PLAY --> E12[".12 친외국 세력 지원"]
     PLAY --> SELF["조선 자주 외교 버튼"]
-    E9 -->|후보 존재| E12
-    E9 -->|후보 없음| LOOP
-    E4 -->|지원 제안| E7[".7 조선의 대응<br/>수락 · 거부 · 절충"]
-    E5 --> E7
-    E6 --> E7
-    E10 -->|대응 요청| E7
-    E12 --> E7
-    E4 -->|지원 안 함| LOOP
-    E10 -->|무시·귀환 지원| LOOP
-    E7 --> APPLY["제안·참여 자격 확인<br/>지정 국가의 변수에 효과 반영"]
-    APPLY -->|고문 수락| E13[".13 선정된 경쟁국 대응"]
-    APPLY -->|그 외| LOOP
-    E8 --> E13
-    E11 -->|관련국 대응 필요| E13
-    E11 -->|중재로 해소| LOOP
-    E13 --> LOOP
     SELF --> LOOP
-    E23 --> FOREIGN["외국 승리 확정·종료 플래그 설정"]
-    E22 --> FOREIGN
+    PLAY -.->|추가 계획: 월간 갱신·종료 판정 후| CANDIDATES{"진행 중이며 사건 조건 충족?<br/>월 25% · 적격 후보 균등 추첨<br/>최대 1건 · 대기 중 추첨 없음"}
+    CANDIDATES -.-> E11[".11 공사관으로 향하는 가마<br/>보호 요청 / 경비 강화 / 거처 이전"]
+    CANDIDATES -.-> E12[".12 누구의 뒤에 서야 하는가<br/>청 의전 수용 / 독자 국서 / 접수국 지원"]
+    CANDIDATES -.-> E13[".13 백성의 쌀인가, 상인의 계약인가<br/>방곡 유지 / 철회 / 배상 협상"]
+    CANDIDATES -.-> E14[".14 우리 시장에 도는 남의 지폐<br/>통용 인정 / 금지 / 독자 정비"]
+    CANDIDATES -.-> E15[".15 전보는 어느 길로 가는가<br/>기존망 / 공동 건설 / 자력 건설"]
+    CANDIDATES -.-> E16[".16 해관의 장부를 쥔 손<br/>운영 위임 / 자문 한정 / 자체 정비"]
+    CANDIDATES -.-> E17[".17 철길의 주인은 누구인가<br/>외자 부설 / 공동 출자 / 국영 건설"]
+    CANDIDATES -.-> E18[".18 산 아래 잠든 황금<br/>채굴권 허가 / 조건 협상 / 직접 개발"]
+    CANDIDATES -.-> E19[".19 섬에 내려진 낯선 깃발<br/>철수 요구 / 공동 항의 / 기한부 묵인"]
+    CANDIDATES -.-> E20[".20 벌목장의 포대<br/>확장 금지 / 군사화 묵인 / 개방 협상"]
+    CANDIDATES -.-> E21[".21 종로에 모인 목소리<br/>철수 협상 / 국내 개편 / 집회 해산"]
+    CANDIDATES -.-> E22[".22 다른 나라에 허락했다면<br/>동등 대우 / 거부 / 특혜 재협상"]
+    E11 -.-> RESPONSE
+    E12 -.-> RESPONSE
+    E13 -.-> RESPONSE
+    E14 -.-> RESPONSE
+    E15 -.-> RESPONSE
+    E16 -.-> RESPONSE
+    E17 -.-> RESPONSE
+    E18 -.-> RESPONSE
+    E19 -.-> RESPONSE
+    E20 -.-> RESPONSE
+    E21 -.-> RESPONSE
+    E22 -.-> RESPONSE
+    RESPONSE{"선택 결과"} -.->|일방 선택| APPLY["조건·비용 재검사 후 즉시 효과"]
+    RESPONSE -.->|합의 필요| E23[".23 외국 응답<br/>수락 60 / 거절 40 · 코드 일치 검사"]
+    E23 -.->|수락| APPLY
+    E23 -.->|거절·무효| LOOP
+    APPLY -.-> LOOP
+    APPLY -.->|사업·환궁| JOBS["180일 또는 365일 뒤 명시된 on_action<br/>대상·중복 완료 재검사 · 완료 효과"]
+    JOBS -.-> LOOP
+    E6 --> FOREIGN["외국 승리 확정·종료 플래그 설정"]
+    E5 --> FOREIGN
     FOREIGN --> TRANSFER{"청 종속 조선에 대한<br/>다른 관여국의 영향력 승리?"}
     TRANSFER -->|예| MOVE["청에서 승자에게 조선 종속관계 이전<br/>이전으로 인한 자동 승리 재호출 방지"]
     TRANSFER -->|아니오| OTHER["기존 종속 등급 유지 또는<br/>독립 조선의 종속관계 생성"]
-    MOVE --> END["기존 JE 종료 콜백에서 1회 처리<br/>조선 저항 modifier·영향력 변수 정리"]
-    OTHER --> END
-    E24 --> END
-    E20 --> END
+    MOVE --> FCOMPLETE["complete / on_complete<br/>외국 승리 처리"]
+    FCOMPLETE --> END["기존 JE 종료 콜백에서 1회 처리<br/>조선 저항 modifier·영향력 변수 정리"]
+    OTHER --> FCOMPLETE
+    E7 --> FCOMPLETE
+    E4 --> KFAIL["fail / on_fail<br/>조선 승리 보상·결과 통지"]
+    KFAIL --> END
     ABORT --> END
 ```
 
@@ -485,9 +2275,9 @@ flowchart TD
 
 1. **관여국·변수 정리:** 기존 국가별 등록·유지 조건을 반영한다. 이는 영향력 경쟁의 참가 자격이며, 종주국 자동 승리의 자격 제한으로 사용하지 않는다.
 2. **조선 소멸:** 조선이 존재하지 않으면 이벤트 없이 중단하고 종료 플래그와 임시 상태 정리만 처리한다. 소멸한 조선의 종주국을 추정하지 않는다.
-3. **청 이외 종주국 자동 승리:** 조선이 존재하고 `is_subject = yes`이며 **현재 직접 종주국이 청이 아니면** 그 종주국을 승자로 확정한다. 영향력·관여국 여부·승인 여부·전쟁 여부와 무관하며 나머지 중단·점수 승리보다 우선한다. 유효한 종주국 스코프가 아직 확인되지 않는 과도 상태는 다음 판정까지 보류한다. 일본이면 `.23`, 청·일 이외 국가면 `.22`다. 청이 직접 종주국이면 이 분기를 건너뛰고 아래 단독 잔류·영향력 판정을 계속한다. 새로 청의 종속국이 된 경우도 같은 예외를 적용한다.
-4. **외국 이탈과 조선 단독 잔류:** 청·일 소멸 또는 `china_shatters`로 전체 경쟁을 중단하지 않는다. 해당 국가를 제외하고 나머지 관여국끼리 계속한다. 종주국 자동 승리가 없고 실제 JE 관여국에 조선만 남으면 영향력·승인·독립·전쟁 여부와 무관하게 조선 승리(`.20`)로 처리한다. 탈락 예정 국가가 실제 관여국에서 제거되기 전에는 단독 잔류로 판정하지 않는다.
-5. **조선 자주권 확보:** `is_subject = no` AND `is_country_type = recognized` AND 조선 영향력 100을 모두 충족하고, 기존 동률 규칙에 따라 조선만 단독 100이면 `.20`이다. 외국 관여국이 남아 있다면 승인 전환만으로는 종료하지 않는다.
+3. **청 이외 종주국 자동 승리:** 조선이 존재하고 `is_subject = yes`이며 **현재 직접 종주국이 청이 아니면** 그 종주국을 승자로 확정한다. 영향력·관여국 여부·승인 여부·전쟁 여부와 무관하며 나머지 중단·점수 승리보다 우선한다. 유효한 종주국 스코프가 아직 확인되지 않는 과도 상태는 다음 판정까지 보류한다. 일본이면 `.6`, 청·일 이외 국가면 `.5`다. 청이 직접 종주국이면 이 분기를 건너뛰고 아래 단독 잔류·영향력 판정을 계속한다. 새로 청의 종속국이 된 경우도 같은 예외를 적용한다.
+4. **외국 이탈과 조선 단독 잔류:** 청·일 소멸 또는 `china_shatters`로 전체 경쟁을 중단하지 않는다. 해당 국가를 제외하고 나머지 관여국끼리 계속한다. 종주국 자동 승리가 없고 실제 JE 관여국에 조선만 남으면 영향력·승인·독립·전쟁 여부와 무관하게 조선 승리(`.4`)로 처리한다. 탈락 예정 국가가 실제 관여국에서 제거되기 전에는 단독 잔류로 판정하지 않는다.
+5. **조선 자주권 확보:** `is_subject = no` AND `is_country_type = recognized` AND 조선 영향력 100을 모두 충족하고, 기존 동률 규칙에 따라 조선만 단독 100이면 `.4`이다. 외국 관여국이 남아 있다면 승인 전환만으로는 종료하지 않는다.
 6. **외국 영향력 승리:** 실제 유효 관여국 중 정확히 한 국가만 100이고 그 국가가 외국이면 해당 국가가 승리한다. 청·일이 전용 참여 조건을 잃으면 점수로는 승리할 수 없다. 일본이 실제 직접 종주국이면 3번이 적용되지만 청에는 이 예외가 없다. 조선의 독립·승인 요건이 미충족일 때 단독 100만으로 조선 승리를 처리하는 우회 분기를 두지 않는다.
 7. **동률:** 같은 갱신에서 둘 이상이 100이면 경합을 계속한다. 상대 점수 감소·이탈로 단독 100이 되면 승리를 확정한다. 동률 중에도 대응 행동은 가능하며, 청 이외 직접 종주국이 생기면 3번으로 결론을 낸다. 청의 종주권만으로는 동률을 해소하지 않는다.
 
@@ -509,7 +2299,7 @@ flowchart TD
 
 자주권 승리 시 모든 조약을 일괄 탈퇴시키지 않는다. 경쟁에서 새로 생성하고 추적한 임시 지원·고문 효과만 정리한다. 외부 시스템이 만든 조약·관계·정치 로비는 유지한다.
 
-JE의 기술적 종료는 종주국 자동 승리·외국 영향력 승리·조선 자주권 확보를 `complete`, 경쟁 중단을 `invalid`로 처리한다. 특정 국가 승리를 `fail`에 고정하지 않는다. 기존 JE의 `on_complete`에서 승자를 저장 스코프로 확정하고 결과 이벤트에 전달한다. `on_invalid`는 이벤트 없이 종료 플래그 설정과 임시 상태 정리만 실행한다. 이를 위한 영구 전역 변수나 일회성 scripted effect는 만들지 않는다. 각국 결과 이벤트는 플레이 국가에 맞는 승리·패배·관전 문구를 보여 주며 외교 효과를 다시 실행하지 않는다. 자동 승자가 비관여 종주국이면 해당 국가에도 결과를 한 번 전달한다.
+JE의 기술적 종료는 외국의 종주국 자동 승리·영향력 승리를 `complete` / `on_complete`, 조선의 영향력 승리·단독 잔류 승리를 `fail` / `on_fail`로 처리한다. 각 콜백에서 승자를 저장 스코프로 확정하고 보상·정리·결과 이벤트 전달을 실행한다. `custom_completion_header`는 외세 승리 조건, `custom_failure_header`는 조선 승리 조건을 표시한다. 청 이외 직접 종주국 자동 승리가 최우선이며, 그 외 조선 영향력 승리 조건과 외국 영향력 승리 조건이 동시에 성립하면 조선 승리를 우선하여 완료·실패의 중복 성립을 방지한다. `on_invalid`는 이벤트 없이 종료 플래그 설정과 임시 상태 정리만 실행한다. 이를 위한 영구 전역 변수나 일회성 scripted effect는 만들지 않는다. 각국 결과 이벤트는 플레이 국가에 맞는 승리·패배·관전 문구를 보여 주며 외교 효과를 다시 실행하지 않는다. 자동 승자가 비관여 종주국이면 해당 국가에도 결과를 한 번 전달한다.
 
 ## 9. 기존 초안에서 고칠 부분
 
@@ -517,10 +2307,7 @@ JE의 기술적 종료는 종주국 자동 승리·외국 영향력 승리·조�
 
 - `is_subject = no`, 세력권 주도국 2개, 구 만주 관심 선언 조건을 제거한다. 조선은 기본 참여, 청·일은 전용 조건을 만족할 때만 참여, 나머지 열강은 동북아 이해관계 3 이상에서 참가·2 이상에서 유지하도록 대체한다. 일반 열강 분기에서 청·일 태그를 명시적으로 제외한다.
 - 조선 승인국 전환이 `complete`와 `fail`에 동시에 걸리는 구조를 없앤다. 승인만으로 종료하지 않고 독립·승인·영향력 100과 동률 규칙을 함께 검사한다.
-- 참가 통지는 조선 `.1`, 청·일 `.2`, 기타 열강 `.3`으로 분리한다. 기존 일본·청 승리 통지는 `.23`·`.24`로 옮기며, 참가 현지화와 주석은 사용자 제공 원문을 그대로 사용한다.
-- 실제 연결되지 않은 `.4`, `.5`, `.10`, `.11`, `.12`를 월간 후보·버튼·조선 대응 체인에 배치한다.
-- `.4`의 선교 제목과 개화 지원 효과를 일치시킨다.
-- `.12`의 `relevant_country`, `primary_culture_scope` 등 대상 스코프와 국고 증감 방향을 고친다. 로비 지원이라는 이름에 맞는 실제 로비 처리를 넣는다.
+- 참가 통지는 조선 `.1`, 청·일 `.2`, 기타 열강 `.3`으로 분리한다. 기존 일본·청 승리 통지는 `.6`·`.7`로 옮기며, 참가 현지화와 주석은 사용자 제공 원문을 그대로 사용한다.
 - 기존 `scramble_for_korea_participants` 전역 목록을 없애고 참여 관리는 JE 관여국 상태로 처리한다. 국가별 숫자 변수 `scramble_for_korea_participants_influence`는 관여국이 된 후 추가, 탈락한 후 제거한다. 변수로 관여국을 결정하는 역방향 로직·별도 영향력 사본은 두지 않는다. `scramble_for_korea_finished`는 재사용하고 수동 참가 카운터 `je_scramble_for_korea_participants_globalvar`는 제거한다.
 - 이전 안의 S·A 변수, ±40 판정, `scripted_progress_bar` 원본 구조를 사용하지 않는다. 모든 사건은 지정된 국가 스코프의 `scramble_for_korea_participants_influence`에 증분을 적용한다.
 - 청·일의 전용 관여 조건과 역사적 문구를 제외한 라이벌 선택, 영향력 승자, 고문·로비 대상은 실제 관여국을 대상으로 동적으로 처리한다. 종주국 자동 승자는 실제 종속관계에서 찾으며, 종료 통지는 관여국과 비관여 자동 승자에게 중복 없이 전달한다.
@@ -546,7 +2333,7 @@ JE의 기술적 종료는 종주국 자동 승리·외국 영향력 승리·조�
 
 국가별 `scripted_progress_bars` 파일은 만들지 않는다. 실제 게임 상태인 국가 영향력 변수와 표시용 GUI를 구분한다. GUI 연결부터 작은 시제품으로 검증하여 조선·조건을 충족한 청일·그 밖의 관여국·0점 국가가 동일한 위젯에 나타나는지 확인한 뒤 이벤트를 연결한다.
 
-종료 처리는 기존 국제 JE의 전체 `on_complete` / `on_invalid`와 국가별 `*_all_involved` 콜백 구분을 따른다. 전체 콜백에서 승자를 이벤트 전달 스코프로 확정하고 기존 `scramble_for_korea_finished`를 설정하며 외교 효과는 한 번만 적용한다. 결과 통지는 JE 관여국 순회 또는 국가별 콜백 중 스코프 전달이 검증된 한 경로를 사용하며, 자동 승자가 비관여 종주국일 때만 별도로 한 번 통지한다. 승자를 강제 참가시키거나 영향력 변수를 만들지 않는다. 통지 대상과 승자 스코프를 전달한 뒤 생존 국가 중 영향력 변수를 가진 국가의 값과 경쟁 전용 임시 효과를 정리하고, 조선의 `modifier_kor_foreign_influence`도 제거한다. 시작 직후 종주국 승리로 끝날 때도 같은 정리를 수행한다. 순회용 영구 이력 목록이나 영구 결과 변수는 남기지 않는다. 완료·중단 양쪽에 같은 정리가 실제로 반복되면 그 부분만 scripted effect 추출 후보로 삼는다. 흐름도의 결말 이벤트 노드는 이 판정·통지 처리를 뜻한다.
+종료 처리는 기존 국제 JE의 전체 `on_complete` / `on_fail` / `on_invalid`와 국가별 `*_all_involved` 콜백 구분을 따른다. 전체 콜백에서 승자를 이벤트 전달 스코프로 확정하고 기존 `scramble_for_korea_finished`를 설정하며 외교 효과는 한 번만 적용한다. 결과 통지는 JE 관여국 순회 또는 국가별 콜백 중 스코프 전달이 검증된 한 경로를 사용하며, 자동 승자가 비관여 종주국일 때만 별도로 한 번 통지한다. 승자를 강제 참가시키거나 영향력 변수를 만들지 않는다. 통지 대상과 승자 스코프를 전달한 뒤 생존 국가 중 영향력 변수를 가진 국가의 값과 경쟁 전용 임시 효과를 정리하고, 조선의 `modifier_kor_foreign_influence`도 제거한다. 시작 직후 종주국 승리로 끝날 때도 같은 정리를 수행한다. 순회용 영구 이력 목록이나 영구 결과 변수는 남기지 않는다. 완료·중단 양쪽에 같은 정리가 실제로 반복되면 그 부분만 scripted effect 추출 후보로 삼는다. 흐름도의 결말 이벤트 노드는 이 판정·통지 처리를 뜻한다.
 
 월간 계산은 국제 JE의 전체 `on_monthly_pulse` 한 곳에 둔다. 로컬 `common/journal_entries/journal_entries.md`에 명시된 전체 콜백과 국가별 콜백의 역할을 따르고, 실행 횟수를 확인하기 전에 월별 처리 마커를 추가하지 않는다. 현재 참여국을 대상으로 갱신 전 값을 읽도록 계산 순서를 정한 뒤 모든 적용을 마치고 승패를 판정한다. 국가 변수는 게임 스크립트만 변경하며 UI 프레임·창 개폐·관전 전환에 따라 변하지 않는다. 지연 이벤트는 기존 종료 플래그, JE 진행 여부, 현재 자격과 이벤트 대상의 유효성을 검사한다.
 
@@ -596,8 +2383,6 @@ JE의 기술적 종료는 종주국 자동 승리·외국 영향력 승리·조�
 | 블록 보너스 +1과 다른 월간 증감 동시 발생 | 모든 항목 합산 후 기존 월간 -1~+1 제한 적용 |
 | 일지 활성화·반복 갱신·기존 제안 이벤트 응답 | 조선에만 지렛대 저항 -50% 한 번 적용, 갱신·제안으로 중첩하거나 만료 기간을 덮어쓰지 않음 |
 | 여러 국가 버튼 연속 클릭 / 저장 후 불러오기 | 쿨다운·목록·변수·미결 제안 유지, 중복 초기화·보상 없음 |
-| `.7` 응답 전에 발신국 이탈·소멸 | 제안 무효화, 이탈국의 점수 조작·중복 비용 없음 |
-| 제안 취소 후 새 제안 / 발신국 이탈 후 재참가 | 옛 응답은 무효, 새 제안의 대상·잠금을 덮어쓰거나 해제하지 않음 |
 | 독립·승인 조선 / 청 / 일 / 기타 관여 열강 각각 단독 100 | 종주국 자동 승리·중단이 없으면 올바른 승자·결말 이벤트, 외교 효과 한 번 |
 | 같은 월에 둘 이상 100 / 이미 100 동률 상태 | 목록 순서에 따른 승리 없음, 경합 표시·대응 가능, 단독 100이 되면 확정. 청 이외 직접 종주국이 생기면 자동 승리 우선, 청의 종주권은 동률을 해소하지 않음 |
 | 독립 조선의 승인 전환과 외국 영향력 100 동시 | 조선이 100 미만이면 단독 100 외국의 승리, 조선도 100이면 동률 보류. 승인만으로 우선 승리 없음 |
@@ -622,7 +2407,34 @@ JE의 기술적 종료는 종주국 자동 승리·외국 영향력 승리·조�
 GUI 실행 검증은 국제 일지 위젯 컨테이너·JE 관여국 직접 바인딩·국가별 행 스코프·영향력 값 읽기·동적 행 제거·스크롤을 우선한다. 변수 누락·잔존이 관여국 상태나 행 수를 결정하지 않는지 확인한다. 새 성공 변수, 옛 참가 전역 목록, 별도 영향력 사본이 추가되지 않았는지도 확인한다. 실행 검증은 게임 로그와 위 시나리오로 진행한다. **스크립트 구현과 정적·조건 검증을 완료했으며, 게임 내 GUI·콜백 순서·DLC 호환성·밸런스는 아직 검증하지 않았다.**
 
 
-## 12. 구현 기록과 실행 확인 범위
+### 신규 계획 11~22 및 보조 응답 23의 검증 기준
+
+정적 점검은 문서 코드의 중괄호·12개 본 이벤트·응답 23·modifier·지연 on_action·참조 연결을 검사한다. 아래 게임 실행 검증은 구현 후 수행하며, 현재 통과했다고 표시하지 않는다.
+
+| 상황 | 기대 결과 |
+|---|---|
+| 관여국 3·6·12개 / 후보 여러 건 | 월 25% 추첨 한 번, 적격 사건 가중치 각 100, 본 사건 반복 없음 |
+| 본 창·외국 응답 대기 / 365일 잠금 만료 | 새 본 사건 없음 / 만료 후 재개, 옛 창은 코드 불일치로 효과 없음 |
+| 외국 이탈·소멸·청 붕괴·자격 상실 | 응답 무효, 점수 변수 생성·계약비 차감 없음, 해당 계약·거점 정리 |
+| 수락 직전 어느 한쪽 보유금이 비용 미만 | 수락 불가, 거절 가능; 양국 자금·점수 변경 없음 |
+| 대상 건물 철거·주 양도·조약 철회 | 오래된 창/완공 콜백의 대상 효과 없음 |
+| `.11` 보호 수락 → 365일 / 군주제 폐지 전 선택 | 유효 보호 관계에만 환궁 +3/-3 / 주 선택 무효 |
+| `.12` 청 영향력 19·20, 청 종속 여부 | 독립 상태 19는 후보 불가, 20은 가능; 청 종속이면 점수 문턱 없이 가능 |
+| `.13` 곡물 가격 정확히 +25%, 수입량 9·10 | 가격 +25%는 미발생, 초과여야 함; 수입량은 10부터 가능 |
+| `.14` 외국 소유 2·3레벨 / 보유금 99,999·100,000 | 각각 3레벨·100,000 미만일 때만 후보 |
+| `.15`·`.16` 비용·180/365일 완료·730/1825일 만료 | 정의된 스코프에만 modifier, 즉시 완공 보상 없음 |
+| `.17` 완공 전 다른 경로로 철도 생성 | 건물 추가·국내 완공 영향력 보상 없음, 계약금 환급 없음 |
+| `.18` 금광 없음·1레벨 / 건물 제거 | 금광 없는 조선 미발생 / 소멸 건물에 정비 효과 없음 |
+| `.19` 점령 뒤 중재국 동의 | 공동 항의만 성립, 점령국 철수·영토 이전 없음 |
+| `.20` 벌목장 외국 소유 0·1레벨 | 1부터 후보, 상업 투자 없이 군사화 상황을 만들지 않음 |
+| `.21` 여러 종류의 계약 동시 보유 | 거점 → 해관 → 은행 중 하나만 선택·해제; 다른 계약 유지 |
+| `.22` 다조항 조약 / 단일 통상특권 조약 | 전자는 철회 대상 후보 제외, 후자만 협상 가능; 신규 조약은 권한 검사 통과 필요 |
+| 전체 종료 / 조선 소멸 | pending·job·계약 국가 스코프와 경쟁 modifier 정리; 이미 완성된 철도 유지 |
+| 조청전쟁 일지 상태만 변경 | 본 사건·응답·완공 조건 불변 |
+
+## 12. 이전 구현 기록과 실행 확인 범위
+
+아래 기록 중 개입 이벤트·제안 잠금·외국 버튼 관련 내용은 2026-10-22 삭제 전 구현에 해당한다. 현재 이벤트 구성은 6절과 아래 삭제 기록을 따른다.
 
 - 국제 JE의 초기 관여 콜백에서 최초 점수(외국 10, 조선 기존 개혁 최대 30)를 적용한다. 이후 참가 콜백은 0부터 시작하며, 주간·월간에 공유하는 동기화 처리로 자격을 갱신한다.
 - 실제로 반복되는 자격·승리 검사와 점수 증감·동기화·종료 정리·제안 시작/닫기·결과 통지만 기존 `eafp_kor_triggers.txt`와 `eafp_korea_effects.txt`에 추가했다. 전용 scripted GUI나 진행도 정의는 추가하지 않았다.
@@ -637,9 +2449,1050 @@ GUI 실행 검증은 국제 일지 위젯 컨테이너·JE 관여국 직접 바�
 
 - 청·일 소멸과 중국 붕괴는 전체 중단 사유에서 제외했다. 최초 활성화 조건은 유지한다.
 - 실제 JE 관여국에 조선만 남으면 청 이외 직접 종주국 자동 승리 다음 우선순위로 조선 승리를 처리한다. 영향력·승인·독립·전쟁 여부는 요구하지 않는다.
-- 조선 소멸 시 중단 이벤트는 삭제하고 조용히 종료한다. `.20` 설명과 한·영·중 저널 안내를 두 조선 승리 경로에 맞췄다.
+- 조선 소멸 시 중단 이벤트는 삭제하고 조용히 종료한다. `.4` 설명과 한·영·중 저널 안내를 두 조선 승리 경로에 맞췄다.
 
 ### 2026-10-21 전쟁 제한 제거
 
 - 현재 전쟁 여부로 영향력 갱신·행동·사건·제안 응답·점수 승리를 중단하지 않는다.
 - 전쟁 시작에 따른 미결 제안 취소와 전쟁 중단 상태 안내를 제거했다. 이탈·소멸·종료에 따른 기존 처리는 유지한다.
+
+### 2026-10-22 중간 이벤트 삭제
+
+- 재번호 부여 전 이벤트 4~13, 한·영·중 해당 로컬, 월간 사건 추첨과 외국용 이벤트 버튼 4개를 삭제했다.
+- 이벤트 전용 제안·응답 트리거와 effect, 경쟁국 선택용 script value를 삭제했다.
+- 월간 영향력, 조선 자주 외교 버튼, 참가·승리 이벤트 7개는 유지한다.
+- 미결 제안 변수는 더 이상 생성하지 않으며 기존 저장에 남은 값은 동기화·종료 시 제거한다.
+
+### 2026-10-22 이벤트 번호 정리
+
+남은 이벤트를 기존 번호 순으로 1~7로 재번호 부여했다. 참가 통지 1~3은 유지하며, 조선 승리는 4, 기타 국가 승리는 5, 일본 승리는 6, 청 승리는 7이다. 이벤트 정의와 로컬 키도 번호순으로 정렬했다.
+
+### 2026-10-22 역사 사건 추가 계획
+
+아래 두 추가 기록의 번호·건수는 당시 기준이다. 현재 계획은 마지막 삭제·재번호 기록과 6절을 따른다.
+
+직전 추천한 역사 사례 7건을 `scramble_for_korea_events.11`~`.17`로 배정했다. 6절에 출처·발생 조건·선택지·효과 제안, 7절에 사건별 흐름, 11절에 향후 검증 항목을 추가했다. 런타임 이벤트·로컬·호출부는 수정하지 않았으며, 이 기록은 구현 완료를 뜻하지 않는다.
+
+### 2026-10-22 앞선 추천 사건 추가 반영
+
+앞서 추천한 해관 고문, 철도 부설권, 운산 금광, 거문도 점령, 용암포 사건, 만민공동회, 최혜국 대우 요구를 18~24로 추가했다. 기존 계획 11~17은 유지하며 신규 계획은 총 14건이다. 각 사건의 출처·조건·선택지·효과와 흐름도·향후 검증 항목을 보완했으며, 이번에도 게임 스크립트와 로컬은 수정하지 않았다.
+
+### 2026-10-22 계획 사건 16·17 삭제 및 재번호
+
+기존 계획 16·17번 사건을 삭제하고 기존 18~24번을 16~22번으로 앞당겼다. 현재 신규 사건은 11~22번의 총 12건이다. 목록·상세 설명·상호 참조·흐름도·검증 항목을 함께 수정했으며, 게임 이벤트와 로컬 파일은 변경하지 않았다.
+
+## 13. 사건 11~22의 공통 정의와 연결 코드
+
+이 절은 6절 이벤트 전문이 참조하는 정의를 전부 제공한다. `sk_` 이름은 이번 계획에 추가할 실제 식별자다. 런타임 반영 때 생략하거나 번역하지 않는다. 현지화는 `.N.t/.d/.f`, 선택지 `.N.a`~`.d`, `scramble_for_korea_events.cancel`, 응답 `.23.t/.d/.d_응답코드/.f/.a/.b`, 아래 16개 modifier 이름·설명 키를 한·영·중 파일에 추가한다. 취소 문구는 ‘상황이 달라졌다.’, 응답 선택은 ‘수락한다.’와 ‘거절한다.’이다. `.23.d`는 `scope:sk_case`별 triggered_desc로 본 사건과 요구 조건을 보여주며, 아래 표의 코드·금액을 그대로 사용한다. 역사 원문 flavor 인용은 이 실행 명세에서 새로 창작하지 않는다.
+
+### 13.1 트리거 — 기존 `eafp_kor_triggers.txt`에 추가
+
+`sk_foreign_valid`는 현재 JE 관여 여부를 먼저 본다. 영향력 변수만 가진 비관여국을 다시 등록하지 않는다. `sk_world_valid`는 현재 소스의 종주국 승리·점수 종료가 예정되어 있으면 사건을 막는 용도이며 승리 규칙을 재정의하지 않는다.
+
+```txt
+sk_foreign_valid = {
+    NOT = { c:KOR ?= this }
+    is_involved_in_journal_entry = je_scramble_for_korea
+    scramble_for_korea_eligible = yes
+    has_variable = scramble_for_korea_participants_influence
+}
+
+sk_world_valid = {
+    exists = c:KOR
+    NOT = { has_global_variable = scramble_for_korea_finished }
+    NOT = { scramble_for_korea_overlord_wins = yes }
+    c:KOR = {
+        is_involved_in_journal_entry = je_scramble_for_korea
+        has_variable = scramble_for_korea_participants_influence
+    }
+    # Current runtime complete checks score_winner on any country.
+    NOT = { any_country = { scramble_for_korea_score_winner = yes } }
+    any_country = { sk_foreign_valid = yes }
+}
+
+sk_context_valid = {
+    sk_world_valid = yes
+    exists = scope:sk_actor
+    scope:sk_actor = { sk_foreign_valid = yes }
+    trigger_if = {
+        limit = { exists = scope:sk_rival }
+        scope:sk_rival = { sk_foreign_valid = yes }
+    }
+    trigger_if = {
+        limit = { exists = scope:sk_state }
+        scope:sk_state = { owner = c:KOR }
+    }
+}
+
+sk_offer_valid = {
+    sk_context_valid = yes
+    exists = scope:sk_respondent
+    scope:sk_respondent = { sk_foreign_valid = yes }
+    exists = scope:sk_case
+    c:KOR = {
+        has_variable = sk_pending
+        var:sk_pending = scope:sk_case
+    }
+    this = scope:sk_respondent
+    OR = {
+        AND = { c:KOR = { var:sk_pending = 111 } sk_live_11 = yes }
+        AND = { c:KOR = { var:sk_pending = 123 } sk_live_12 = yes }
+        AND = { c:KOR = { var:sk_pending = 133 } sk_live_13 = yes }
+        AND = { c:KOR = { var:sk_pending = 141 } sk_live_14 = yes }
+        AND = { c:KOR = { var:sk_pending = 151 } sk_live_15 = yes }
+        AND = { c:KOR = { var:sk_pending = 152 } sk_live_15 = yes }
+        AND = { c:KOR = { var:sk_pending = 161 } sk_live_16 = yes }
+        AND = { c:KOR = { var:sk_pending = 162 } sk_live_16 = yes }
+        AND = { c:KOR = { var:sk_pending = 171 } sk_live_17 = yes }
+        AND = { c:KOR = { var:sk_pending = 172 } sk_live_17 = yes }
+        AND = { c:KOR = { var:sk_pending = 181 } sk_live_18 = yes }
+        AND = { c:KOR = { var:sk_pending = 182 } sk_live_18 = yes }
+        AND = { c:KOR = { var:sk_pending = 191 } sk_live_19 = yes }
+        AND = { c:KOR = { var:sk_pending = 192 } sk_live_19 = yes }
+        AND = { c:KOR = { var:sk_pending = 201 } sk_live_20 = yes }
+        AND = { c:KOR = { var:sk_pending = 203 } sk_live_20 = yes }
+        AND = { c:KOR = { var:sk_pending = 211 } sk_live_21 = yes }
+        AND = { c:KOR = { var:sk_pending = 221 } sk_live_22 = yes }
+        AND = { c:KOR = { var:sk_pending = 223 } sk_live_22 = yes }
+    }
+}
+
+sk_live_11 = {
+    sk_context_valid = yes
+    exists = scope:sk_rival
+    c:KOR = { has_law = law_type:law_monarchy }
+}
+
+sk_live_12 = {
+    sk_context_valid = yes
+    exists = scope:sk_rival
+    c:CHI = { sk_foreign_valid = yes }
+}
+
+sk_live_13 = {
+    sk_context_valid = yes
+}
+
+sk_live_14 = {
+    sk_context_valid = yes
+    exists = scope:sk_building
+    scope:sk_building = {
+        owner = c:KOR
+        levels_owned_by_country = { target = scope:sk_actor value >= 3 }
+    }
+}
+
+sk_live_15 = {
+    sk_context_valid = yes
+    exists = scope:sk_state
+    scope:sk_state = { owner = c:KOR }
+}
+
+sk_live_16 = {
+    sk_context_valid = yes
+}
+
+sk_live_17 = {
+    sk_context_valid = yes
+    exists = scope:sk_state
+    scope:sk_state = { owner = c:KOR }
+}
+
+sk_live_18 = {
+    sk_context_valid = yes
+    exists = scope:sk_building
+    scope:sk_building = { owner = c:KOR }
+}
+
+sk_live_19 = {
+    sk_context_valid = yes
+    exists = scope:sk_state
+    scope:sk_state = { owner = c:KOR }
+    exists = scope:sk_rival
+}
+
+sk_live_20 = {
+    sk_context_valid = yes
+    exists = scope:sk_building
+    scope:sk_building = {
+        owner = c:KOR
+        levels_owned_by_country = { target = scope:sk_actor value >= 1 }
+    }
+    exists = scope:sk_state
+    scope:sk_state = { owner = c:KOR }
+    exists = scope:sk_rival
+}
+
+sk_live_21 = {
+    sk_context_valid = yes
+    OR = {
+        AND = { scope:sk_petition_kind = 1 c:KOR = { has_variable = sk_base_partner var:sk_base_partner = scope:sk_actor } }
+        AND = { scope:sk_petition_kind = 2 c:KOR = { has_variable = sk_customs_partner var:sk_customs_partner = scope:sk_actor } }
+        AND = { scope:sk_petition_kind = 3 c:KOR = { has_variable = sk_bank_partner var:sk_bank_partner = scope:sk_actor } }
+    }
+}
+
+sk_live_22 = {
+    sk_context_valid = yes
+    exists = scope:sk_rival
+    exists = scope:sk_treaty
+    scope:sk_treaty = { binds = c:KOR binds = scope:sk_rival
+        any_scope_article = { count = 1 }
+        any_scope_article = { has_type = trade_privilege source_country = c:KOR target_country = { sk_foreign_valid = yes } }
+    }
+}
+
+sk_offer_acceptable = {
+    sk_offer_valid = yes
+    OR = {
+        AND = {
+            c:KOR = { var:sk_pending = 111 }
+            sk_live_11 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 123 }
+            sk_live_12 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 133 }
+            sk_live_13 = yes
+            c:KOR = { gold_reserves >= 20000 }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 141 }
+            sk_live_14 = yes
+            scope:sk_actor = { gold_reserves >= 25000 }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 151 }
+            sk_live_15 = yes
+            c:KOR = { gold_reserves >= 10000 }
+            scope:sk_actor = { gold_reserves >= 30000 }
+            exists = scope:sk_state
+            scope:sk_state = { owner = c:KOR }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 152 }
+            sk_live_15 = yes
+            c:KOR = { gold_reserves >= 25000 }
+            scope:sk_actor = { gold_reserves >= 15000 }
+            exists = scope:sk_state
+            scope:sk_state = { owner = c:KOR }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 161 }
+            sk_live_16 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 162 }
+            sk_live_16 = yes
+            c:KOR = { gold_reserves >= 10000 }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 171 }
+            sk_live_17 = yes
+            c:KOR = { gold_reserves >= 25000 }
+            scope:sk_actor = { gold_reserves >= 50000 }
+            exists = scope:sk_state
+            scope:sk_state = { owner = c:KOR }
+            scope:sk_state = {
+                NOT = { has_building = building_railway }
+                can_construct_building = building_railway
+            }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 172 }
+            sk_live_17 = yes
+            c:KOR = { gold_reserves >= 35000 }
+            scope:sk_actor = { gold_reserves >= 35000 }
+            exists = scope:sk_state
+            scope:sk_state = { owner = c:KOR }
+            scope:sk_state = {
+                NOT = { has_building = building_railway }
+                can_construct_building = building_railway
+            }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 181 }
+            sk_live_18 = yes
+            c:KOR = { gold_reserves >= 10000 }
+            scope:sk_actor = { gold_reserves >= 30000 }
+            exists = scope:sk_building
+            scope:sk_building = { owner = c:KOR }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 182 }
+            sk_live_18 = yes
+            c:KOR = { gold_reserves >= 20000 }
+            scope:sk_actor = { gold_reserves >= 20000 }
+            exists = scope:sk_building
+            scope:sk_building = { owner = c:KOR }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 191 }
+            sk_live_19 = yes
+            c:KOR = { has_variable = sk_base_partner var:sk_base_partner = scope:sk_actor }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 192 }
+            sk_live_19 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 201 }
+            sk_live_20 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 203 }
+            sk_live_20 = yes
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 211 }
+            sk_live_21 = yes
+            OR = {
+                AND = { scope:sk_petition_kind = 1 c:KOR = { has_variable = sk_base_partner var:sk_base_partner = scope:sk_actor } }
+                AND = { scope:sk_petition_kind = 2 c:KOR = { has_variable = sk_customs_partner var:sk_customs_partner = scope:sk_actor } }
+                AND = { scope:sk_petition_kind = 3 c:KOR = { has_variable = sk_bank_partner var:sk_bank_partner = scope:sk_actor } }
+            }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 221 }
+            sk_live_22 = yes
+            can_create_treaty = {
+                first_country = c:KOR
+                second_country = scope:sk_actor
+                is_draft = no
+                binding_period = { years = 2 }
+                articles_to_create = {
+                    { article = trade_privilege source_country = c:KOR target_country = scope:sk_actor }
+                }
+            }
+        }
+        AND = {
+            c:KOR = { var:sk_pending = 223 }
+            sk_live_22 = yes
+            exists = scope:sk_treaty
+            scope:sk_treaty = { binds = c:KOR binds = scope:sk_rival
+                any_scope_article = { count = 1 }
+                any_scope_article = { has_type = trade_privilege source_country = c:KOR target_country = { sk_foreign_valid = yes } }
+            }
+        }
+    }
+}
+```
+
+### 13.2 공통 외국 응답 — 기존 이벤트 파일에 추가
+
+기존 `namespace = scramble_for_korea_events` 아래에 넣는다. 모든 합의 효과는 상대국 수락 옵션 안에서 한 번만 적용한다. `sk_case`는 이벤트 체인의 임시 수치이며 전역 변수로 저장하지 않는다.
+| 응답 코드 | 원래 선택 | 수락 시 추가 검사 |
+|---|---|---|
+| `111` | `.11.a` | `sk_live_11` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `123` | `.12.c` | `sk_live_12` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `133` | `.13.c` | `sk_live_13` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `141` | `.14.a` | `sk_live_14` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `151` | `.15.a` | `sk_live_15` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `152` | `.15.b` | `sk_live_15` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `161` | `.16.a` | `sk_live_16` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `162` | `.16.b` | `sk_live_16` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `171` | `.17.a` | `sk_live_17` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `172` | `.17.b` | `sk_live_17` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `181` | `.18.a` | `sk_live_18` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `182` | `.18.b` | `sk_live_18` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `191` | `.19.a` | `sk_live_19` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `192` | `.19.b` | `sk_live_19` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `201` | `.20.a` | `sk_live_20` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `203` | `.20.c` | `sk_live_20` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `211` | `.21.a` | `sk_live_21` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `221` | `.22.a` | `sk_live_22` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+| `223` | `.22.c` | `sk_live_22` 및 아래 `sk_offer_acceptable`에 적힌 보유금·대상·조약 권한 |
+
+```txt
+scramble_for_korea_events.23 = {
+    type = country_event
+    placement = ROOT
+    title = scramble_for_korea_events.23.t
+    desc = {
+        first_valid = {
+            triggered_desc = { trigger = { scope:sk_case = 111 } desc = scramble_for_korea_events.23.d_111 }
+            triggered_desc = { trigger = { scope:sk_case = 123 } desc = scramble_for_korea_events.23.d_123 }
+            triggered_desc = { trigger = { scope:sk_case = 133 } desc = scramble_for_korea_events.23.d_133 }
+            triggered_desc = { trigger = { scope:sk_case = 141 } desc = scramble_for_korea_events.23.d_141 }
+            triggered_desc = { trigger = { scope:sk_case = 151 } desc = scramble_for_korea_events.23.d_151 }
+            triggered_desc = { trigger = { scope:sk_case = 152 } desc = scramble_for_korea_events.23.d_152 }
+            triggered_desc = { trigger = { scope:sk_case = 161 } desc = scramble_for_korea_events.23.d_161 }
+            triggered_desc = { trigger = { scope:sk_case = 162 } desc = scramble_for_korea_events.23.d_162 }
+            triggered_desc = { trigger = { scope:sk_case = 171 } desc = scramble_for_korea_events.23.d_171 }
+            triggered_desc = { trigger = { scope:sk_case = 172 } desc = scramble_for_korea_events.23.d_172 }
+            triggered_desc = { trigger = { scope:sk_case = 181 } desc = scramble_for_korea_events.23.d_181 }
+            triggered_desc = { trigger = { scope:sk_case = 182 } desc = scramble_for_korea_events.23.d_182 }
+            triggered_desc = { trigger = { scope:sk_case = 191 } desc = scramble_for_korea_events.23.d_191 }
+            triggered_desc = { trigger = { scope:sk_case = 192 } desc = scramble_for_korea_events.23.d_192 }
+            triggered_desc = { trigger = { scope:sk_case = 201 } desc = scramble_for_korea_events.23.d_201 }
+            triggered_desc = { trigger = { scope:sk_case = 203 } desc = scramble_for_korea_events.23.d_203 }
+            triggered_desc = { trigger = { scope:sk_case = 211 } desc = scramble_for_korea_events.23.d_211 }
+            triggered_desc = { trigger = { scope:sk_case = 221 } desc = scramble_for_korea_events.23.d_221 }
+            triggered_desc = { trigger = { scope:sk_case = 223 } desc = scramble_for_korea_events.23.d_223 }
+            desc = scramble_for_korea_events.23.d
+        }
+    }
+    flavor = scramble_for_korea_events.23.f
+    icon = "gfx/interface/icons/event_icons/event_map.dds"
+    duration = 1
+    trigger = { sk_offer_valid = yes this = scope:sk_respondent }
+    option = {
+        name = scramble_for_korea_events.23.a
+        ai_chance = { base = 60 }
+        trigger = { sk_offer_acceptable = yes }
+        if = {
+            limit = { sk_offer_acceptable = yes }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 111 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 10 } }
+                scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                c:KOR = { add_modifier = { name = sk_refuge days = 366 } }
+                c:KOR = { set_variable = { name = sk_protector value = scope:sk_actor days = 366 } }
+                c:KOR = {
+                    set_variable = sk_job_111
+                    trigger_event = { on_action = sk_finish_111 days = 365 }
+                }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 123 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 133 } }
+                c:KOR = { add_treasury = -20000 }
+                scope:sk_actor = { add_treasury = 20000 }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                c:KOR = { add_loyalists = { value = 0.01 pop_type = peasants } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 141 } }
+                scope:sk_actor = { add_treasury = -25000 }
+                c:KOR = { add_treasury = 25000 }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                c:KOR = { add_modifier = { name = sk_bank days = 730 } }
+                c:KOR = { set_variable = { name = sk_bank_partner value = scope:sk_actor days = 730 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 151 } }
+                c:KOR = { add_treasury = -10000 }
+                scope:sk_actor = { add_treasury = -30000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                c:KOR = {
+                    set_variable = sk_job_151
+                    trigger_event = { on_action = sk_finish_151 days = 180 }
+                }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 152 } }
+                c:KOR = { add_treasury = -25000 }
+                scope:sk_actor = { add_treasury = -15000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                c:KOR = {
+                    set_variable = sk_job_152
+                    trigger_event = { on_action = sk_finish_152 days = 180 }
+                }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 161 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                c:KOR = { add_modifier = { name = sk_customs days = 730 } }
+                c:KOR = { set_variable = { name = sk_customs_partner value = scope:sk_actor days = 730 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 162 } }
+                c:KOR = { add_treasury = -10000 }
+                scope:sk_actor = { add_treasury = 10000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                c:KOR = { add_modifier = { name = sk_customs_advice days = 730 } }
+                c:KOR = { set_variable = { name = sk_customs_partner value = scope:sk_actor days = 730 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 171 } }
+                c:KOR = { add_treasury = -25000 }
+                scope:sk_actor = { add_treasury = -50000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                c:KOR = { set_variable = { name = sk_rail_partner value = scope:sk_actor days = 1825 } }
+                c:KOR = {
+                    set_variable = sk_job_171
+                    trigger_event = { on_action = sk_finish_171 days = 365 }
+                }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 172 } }
+                c:KOR = { add_treasury = -35000 }
+                scope:sk_actor = { add_treasury = -35000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                c:KOR = { set_variable = { name = sk_rail_partner value = scope:sk_actor days = 1825 } }
+                c:KOR = {
+                    set_variable = sk_job_172
+                    trigger_event = { on_action = sk_finish_172 days = 365 }
+                }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 181 } }
+                c:KOR = { add_treasury = -10000 }
+                scope:sk_actor = { add_treasury = -30000 }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                scope:sk_building = { add_modifier = { name = sk_mine days = 1825 } }
+                c:KOR = { set_variable = { name = sk_mine_partner value = scope:sk_actor days = 1825 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 182 } }
+                c:KOR = { add_treasury = -20000 }
+                scope:sk_actor = { add_treasury = -20000 }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                scope:sk_building = { add_modifier = { name = sk_mine_joint days = 1825 } }
+                c:KOR = { set_variable = { name = sk_mine_partner value = scope:sk_actor days = 1825 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 191 } }
+                scope:sk_actor = { remove_modifier = sk_base }
+                c:KOR = { remove_variable = sk_base_partner }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 192 } }
+                scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                c:KOR = { add_modifier = { name = sk_diplomatic_support days = 365 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 201 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 203 } }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                c:KOR = { add_modifier = { name = sk_administration_cost days = 365 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 211 } }
+                if = {
+                    limit = { scope:sk_petition_kind = 1 }
+                    scope:sk_actor = { remove_modifier = sk_base }
+                    c:KOR = { remove_variable = sk_base_partner }
+
+                }
+                if = {
+                    limit = { scope:sk_petition_kind = 2 }
+                    c:KOR = { remove_modifier = sk_customs }
+                    c:KOR = { remove_variable = sk_customs_partner }
+                    c:KOR = { remove_modifier = sk_customs_advice }
+                }
+                if = {
+                    limit = { scope:sk_petition_kind = 3 }
+                    c:KOR = { remove_modifier = sk_bank }
+                    c:KOR = { remove_variable = sk_bank_partner }
+
+                }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -5 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                c:KOR = { add_loyalists = { value = 0.02 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 221 } }
+                create_treaty = {
+                    first_country = c:KOR
+                    second_country = scope:sk_actor
+                    is_draft = no
+                    binding_period = { years = 2 }
+                    articles_to_create = {
+                        { article = trade_privilege source_country = c:KOR target_country = scope:sk_actor }
+                    }
+                }
+                scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+            }
+            if = {
+                limit = { c:KOR = { var:sk_pending = 223 } }
+                scope:sk_treaty = { withdraw = { country = c:KOR apply_break_penalties = no } }
+                scope:sk_rival = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+                c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+            }
+            c:KOR = { remove_variable = sk_pending }
+        }
+    }
+    option = {
+        name = scramble_for_korea_events.23.b
+        default_option = yes
+        ai_chance = { base = 40 }
+        if = {
+            limit = { sk_offer_valid = yes }
+            change_relations = { country = c:KOR value = -5 }
+        }
+        if = {
+            limit = {
+                exists = c:KOR
+                c:KOR = { has_variable = sk_pending var:sk_pending = scope:sk_case }
+            }
+            c:KOR = { remove_variable = sk_pending }
+        }
+    }
+}
+```
+
+### 13.3 월간 추첨·사업 완료 — 기존 `common/on_actions/korea_code_on_actions.txt`에 추가
+
+기존 조선 on_action 파일에 아래 이름 있는 정의를 추가한다. 기존 `korea_on_monthly_pulse_country`에 다시 연결하지 않으며, JE의 월간 콜백 한 곳에서만 호출한다. 이벤트 자체를 바닐라 전역 월간 목록에 추가하지 않는다. `on_action.effect`에서 만든 스코프는 같은 on_action의 `events` 목록에 전달되지 않으므로, 대상 선택은 반드시 6절 각 이벤트의 `immediate`에서 한다.
+
+```txt
+sk_monthly_events = {
+    trigger = {
+        c:KOR ?= this
+        sk_world_valid = yes
+        NOT = { has_variable = sk_pending }
+    }
+    random_events = {
+        chance_to_happen = 25
+        100 = scramble_for_korea_events.11
+        100 = scramble_for_korea_events.12
+        100 = scramble_for_korea_events.13
+        100 = scramble_for_korea_events.14
+        100 = scramble_for_korea_events.15
+        100 = scramble_for_korea_events.16
+        100 = scramble_for_korea_events.17
+        100 = scramble_for_korea_events.18
+        100 = scramble_for_korea_events.19
+        100 = scramble_for_korea_events.20
+        100 = scramble_for_korea_events.21
+        100 = scramble_for_korea_events.22
+    }
+}
+
+sk_finish_111 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_111 }
+                remove_variable = sk_job_111
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_actor
+                        scope:sk_actor = { sk_foreign_valid = yes }
+                        c:KOR = { has_variable = sk_protector var:sk_protector = scope:sk_actor }
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 3 } }
+                    scope:sk_actor = { scramble_for_korea_change_influence = { AMOUNT = -3 } }
+                    c:KOR = { remove_modifier = sk_refuge remove_variable = sk_protector }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_143 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_143 }
+                remove_variable = sk_job_143
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                    c:KOR = { add_modifier = { name = sk_currency days = 730 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_151 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_151 }
+                remove_variable = sk_job_151
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                    }
+                    scope:sk_state = { add_modifier = { name = sk_telegraph days = 1825 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_152 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_152 }
+                remove_variable = sk_job_152
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 2 } }
+                    scope:sk_state = { add_modifier = { name = sk_telegraph days = 1825 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_153 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_153 }
+                remove_variable = sk_job_153
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                    scope:sk_state = { add_modifier = { name = sk_telegraph days = 1825 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_163 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_163 }
+                remove_variable = sk_job_163
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                    c:KOR = { add_modifier = { name = sk_customs_domestic days = 730 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_171 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_171 }
+                remove_variable = sk_job_171
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                        scope:sk_state = {
+                            NOT = { has_building = building_railway }
+                            can_construct_building = building_railway
+                        }
+                    }
+                    scope:sk_state = { create_building = { building = building_railway level = 1 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_172 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_172 }
+                remove_variable = sk_job_172
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                        scope:sk_state = {
+                            NOT = { has_building = building_railway }
+                            can_construct_building = building_railway
+                        }
+                    }
+                    scope:sk_state = { create_building = { building = building_railway level = 1 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_173 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_173 }
+                remove_variable = sk_job_173
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_state
+                        scope:sk_state = { owner = c:KOR }
+                        scope:sk_state = {
+                            NOT = { has_building = building_railway }
+                            can_construct_building = building_railway
+                        }
+                    }
+                    scope:sk_state = { create_building = { building = building_railway level = 1 } }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                }
+            }
+        }
+    }
+}
+
+sk_finish_183 = {
+    effect = {
+        c:KOR ?= {
+            if = {
+                limit = { has_variable = sk_job_183 }
+                remove_variable = sk_job_183
+                if = {
+                    limit = {
+                        sk_world_valid = yes
+                        exists = scope:sk_building
+                        scope:sk_building = { owner = c:KOR }
+                    }
+                    c:KOR = { scramble_for_korea_change_influence = { AMOUNT = 5 } }
+                    scope:sk_building = { add_modifier = { name = sk_mine days = 1825 } }
+                }
+            }
+        }
+    }
+}
+```
+
+기존 JE의 `on_monthly_pulse.effect`에서 마지막 영향력 순회 **뒤**에 아래 한 줄을 넣는다. 승패 조건을 만족하면 위 on_action 트리거가 호출을 무효화한다.
+
+```txt
+c:KOR ?= { trigger_event = { on_action = sk_monthly_events } }
+```
+
+### 13.4 modifier 전문 — 기존 `eafg_scramble_for_korea_modifiers.txt`에 추가
+
+기간은 각 `add_modifier` 호출에 명시되어 있다. 같은 이름을 중복 합산하지 않는다. 외국 거점의 위신 +5는 정치적 압력의 표현이고 실제 전투 능력 보너스가 아니다.
+
+```txt
+sk_refuge = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_legitimacy_base_add = 10
+}
+
+sk_guard = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_authority_add = 50
+}
+
+sk_relocation = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_legitimacy_base_add = 2
+}
+
+sk_diplomatic_cost = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_influence_add = -25
+}
+
+sk_diplomatic_support = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_influence_add = 25
+}
+
+sk_administration_cost = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_bureaucracy_add = -25
+}
+
+sk_assembly_compromise = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_authority_add = -25
+}
+
+sk_bank = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_tax_income_add = 100
+}
+
+sk_currency = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_tax_income_add = 100
+}
+
+sk_telegraph = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    state_infrastructure_add = 5
+}
+
+sk_customs = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_bureaucracy_add = 25
+    country_tax_income_add = 100
+}
+
+sk_customs_advice = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_bureaucracy_add = 25
+}
+
+sk_customs_domestic = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_bureaucracy_add = 50
+}
+
+sk_mine = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    building_throughput_add = 0.10
+}
+
+sk_mine_joint = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    building_throughput_add = 0.05
+}
+
+sk_base = {
+    icon = gfx/interface/icons/timed_modifier_icons/modifier_documents_positive.dds
+    country_prestige_add = 5
+}
+```
+
+### 13.5 저장 상태·이탈·종료 정리
+
+| 상태 | 저장 위치·용도 | 제거 시점 |
+|---|---|---|
+| `sk_pending` | 조선, 본 사건/응답 코드. 선택 동시 실행과 오래된 응답 방지 | 선택 종결·거절·무효 취소·365일 만료·전체 종료 |
+| `sk_protector` | 조선, 상대 국가 스코프; .11 환궁 | 366일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_bank_partner` | 조선, 상대 국가 스코프; .14 은행 계약·.21 청원 | 730일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_customs_partner` | 조선, 상대 국가 스코프; .16 해관 계약·.21 청원 | 730일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_rail_partner` | 조선, 상대 국가 스코프; .17 부설 참여 | 1825일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_mine_partner` | 조선, 상대 국가 스코프; .18 광산 참여 | 1825일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_base_partner` | 조선, 상대 국가 스코프; .19/.20 거점·.21 청원 | 730일 만료·상대 이탈·계약 해제·전체 종료 |
+| `sk_job_111` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_143` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_151` | 조선, 180일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_152` | 조선, 180일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_153` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_163` | 조선, 180일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_171` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_172` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_173` | 조선, 365일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+| `sk_job_183` | 조선, 180일 뒤 예약 콜백의 일회 실행 표시 | 콜백 진입 시 즉시 제거·전체 종료 |
+
+국가 이탈 처리의 `scramble_for_korea_clear_country` 끝에 다음을 추가한다. `root`나 `prev`에 의존하지 않고 이탈국을 임시 스코프에 저장한다. 조선 소멸 시 조선 측 변수는 엔진과 전체 종료 정리에 맡긴다. 이미 납부한 건설비·완성된 철도는 되돌리지 않는다.
+
+```txt
+save_scope_as = sk_departing
+if = { limit = { has_modifier = sk_base } remove_modifier = sk_base }
+c:KOR ?= {
+    if = {
+        limit = { has_variable = sk_protector var:sk_protector = scope:sk_departing }
+        remove_variable = sk_protector
+        remove_modifier = sk_refuge
+        remove_variable = sk_job_111
+    }
+    if = {
+        limit = { has_variable = sk_bank_partner var:sk_bank_partner = scope:sk_departing }
+        remove_variable = sk_bank_partner
+        remove_modifier = sk_bank
+    }
+    if = {
+        limit = { has_variable = sk_customs_partner var:sk_customs_partner = scope:sk_departing }
+        remove_variable = sk_customs_partner
+        remove_modifier = sk_customs
+        remove_modifier = sk_customs_advice
+    }
+    if = {
+        limit = { has_variable = sk_rail_partner var:sk_rail_partner = scope:sk_departing }
+        remove_variable = sk_rail_partner
+    }
+    if = {
+        limit = { has_variable = sk_mine_partner var:sk_mine_partner = scope:sk_departing }
+        remove_variable = sk_mine_partner
+        every_scope_building = { remove_modifier = sk_mine remove_modifier = sk_mine_joint }
+    }
+    if = {
+        limit = { has_variable = sk_base_partner var:sk_base_partner = scope:sk_departing }
+        remove_variable = sk_base_partner
+    }
+}
+```
+
+전체 `scramble_for_korea_cleanup` 끝에는 다음을 추가한다. 모든 국가를 훑어 이미 양도된 주·건물에 남은 이번 사건 modifier도 제거한다. 신규 modifier는 모두 경쟁 전용 기간 효과로 정의하며, 종료 뒤 유지하는 별도 보상은 만들지 않는다.
+
+```txt
+c:KOR ?= {
+    remove_variable = sk_pending
+    remove_variable = sk_job_111
+    remove_variable = sk_job_143
+    remove_variable = sk_job_151
+    remove_variable = sk_job_152
+    remove_variable = sk_job_153
+    remove_variable = sk_job_163
+    remove_variable = sk_job_171
+    remove_variable = sk_job_172
+    remove_variable = sk_job_173
+    remove_variable = sk_job_183
+    remove_variable = sk_protector
+    remove_variable = sk_bank_partner
+    remove_variable = sk_customs_partner
+    remove_variable = sk_rail_partner
+    remove_variable = sk_mine_partner
+    remove_variable = sk_base_partner
+    if = { limit = { has_modifier = sk_refuge } remove_modifier = sk_refuge }
+    if = { limit = { has_modifier = sk_guard } remove_modifier = sk_guard }
+    if = { limit = { has_modifier = sk_relocation } remove_modifier = sk_relocation }
+    if = { limit = { has_modifier = sk_diplomatic_cost } remove_modifier = sk_diplomatic_cost }
+    if = { limit = { has_modifier = sk_diplomatic_support } remove_modifier = sk_diplomatic_support }
+    if = { limit = { has_modifier = sk_administration_cost } remove_modifier = sk_administration_cost }
+    if = { limit = { has_modifier = sk_assembly_compromise } remove_modifier = sk_assembly_compromise }
+    if = { limit = { has_modifier = sk_bank } remove_modifier = sk_bank }
+    if = { limit = { has_modifier = sk_currency } remove_modifier = sk_currency }
+    if = { limit = { has_modifier = sk_customs } remove_modifier = sk_customs }
+    if = { limit = { has_modifier = sk_customs_advice } remove_modifier = sk_customs_advice }
+    if = { limit = { has_modifier = sk_customs_domestic } remove_modifier = sk_customs_domestic }
+}
+every_country = {
+    if = { limit = { has_modifier = sk_base } remove_modifier = sk_base }
+    every_scope_state = { if = { limit = { has_modifier = sk_telegraph } remove_modifier = sk_telegraph } }
+    every_scope_building = {
+        if = { limit = { has_modifier = sk_mine } remove_modifier = sk_mine }
+        if = { limit = { has_modifier = sk_mine_joint } remove_modifier = sk_mine_joint }
+    }
+}
+```
+
+### 13.6 스코프·상태 판정의 세부 의미
+
+- `.14`·`.20`의 `any_scope_building → any_country → prev → levels_owned_by_country.target = prev`에서 바깥 `prev`는 검사 중인 조선 건물, 가장 안쪽 `prev`는 검사 중인 외국이다. `immediate`에서도 같은 순서로 건물과 실제 투자국을 고른다. 창을 연 뒤 지분이 줄면 `sk_live_14/20`에서 다시 차단한다.
+- 영향력 숫자는 조선과 해당 관여국만 변경한다. 관여국 이탈 후 같은 국가가 재참가한 경우 현재 자격을 충족하면 기존에 열린 유효 창에 응답할 수 있다. 본 사건의 100,000일 cooldown과 계약 변수는 재참가로 초기화하지 않으므로 동일 사건을 재추첨해 보상받을 수 없다.
+- 구휼·은행권·군사 거점의 서술은 위 코드의 제한을 따른다. 실제 수출 금지, 통화 교체, 지도상 군사 점령이 일어났다는 게임 UI 안내를 붙이지 않는다. 철도 생성과 통상특권 조약 생성은 실제 엔진 효과다.
+- 모든 지연 작업은 `sk_job_코드`를 먼저 지우고 유효성을 검사한다. 같은 콜백이 중복 호출되어도 두 번째는 보상을 주지 않는다. 완공 창을 추가로 띄우지 않으며 영향력·modifier 툴팁으로 결과를 표시한다.
+
+### 13.7 구현 적용 순서와 확인 범위
+
+1. 공통 트리거와 modifier를 등록하고, 6절의 12개 본 이벤트와 13.2의 응답 이벤트를 기존 이벤트 파일에 추가한다.
+2. 기존 조선 on_action 파일에 정의를 추가하고 JE 월간 effect 마지막에 호출을 추가한다. 기존 주간·월간 sync, 참가·종료 콜백은 그대로 사용한다.
+3. 국가 이탈·전체 종료 정리를 추가하고 한·영·중 현지화 키를 채운다. 이 문서의 선택지 표는 현지화 텍스트의 기준이다.
+4. 이벤트 호출과 정의, modifier, 기술·건물·법률·조약 타입을 검사한다. 게임에서 12개 본 사건 및 응답·거절·이탈·완공·종료 시나리오를 확인한다.
+
+코드는 로컬 바닐라와 엔진 문서를 근거로 작성한 구현 초안이다. 문서의 정적 일관성 확인과 게임 내 파서·GUI·예약 스코프 검증은 구분한다. 게임 실행 검증 전에는 ‘그대로 복사해 실행 검증 완료’라고 표시하지 않는다.
+
+### 2026-10-22 바닐라 기반 상세 명세 갱신
+
+6절의 사건 11~22를 실제 트리거·국가/대상 선정·선택지 효과·비용·AI 가중치가 있는 코드로 교체했다. 13절에는 보조 응답 23, 월간 추첨, 지연 콜백, 공통 조건, modifier 및 종료 정리 전문을 추가했다. 계획 문서만 변경했으며 활성 스크립트·로컬은 아직 적용하지 않았다.

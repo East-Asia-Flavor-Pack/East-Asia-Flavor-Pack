@@ -1860,20 +1860,8 @@ scramble_for_korea_sync = {
             scramble_for_korea_clear_country = yes
         }
     }
-    # Keep the lock until the old event closes, including after departure/re-entry.
-    c:KOR ?= {
-        if = {
-            limit = {
-                has_variable = scramble_for_korea_pending_offer
-                NOT = { var:scramble_for_korea_pending_offer = flag:scramble_for_korea_cancelled }
-                OR = {
-                    NOT = { exists = var:scramble_for_korea_pending_offer }
-                    var:scramble_for_korea_pending_offer ?= { NOT = { is_involved_in_journal_entry = je_scramble_for_korea } }
-                }
-            }
-            set_variable = { name = scramble_for_korea_pending_offer value = flag:scramble_for_korea_cancelled days = 365 }
-        }
-    }
+    # Clear pending offers left by the removed intervention event chain.
+    c:KOR ?= { remove_variable = scramble_for_korea_pending_offer }
 }
 scramble_for_korea_cleanup = {
     every_country = {
@@ -1921,64 +1909,11 @@ scramble_for_korea_cleanup = {
 		}
     }
 }
-# Country scope. Buttons and the monthly lottery use this same offer entry point.
-scramble_for_korea_begin_offer = {
-    if = {
-        limit = {
-            is_involved_in_journal_entry = je_scramble_for_korea
-            NOT = { any_country = { scramble_for_korea_score_winner = yes } }
-            c:KOR = { NOT = { has_variable = scramble_for_korea_pending_offer } }
-        }
-        save_scope_as = scramble_actor
-        c:KOR = { set_variable = { name = scramble_for_korea_pending_offer value = scope:scramble_actor days = 365 } }
-        save_scope_value_as = { name = scramble_kind value = $EVENT$ }
-        if = {
-            limit = { scope:scramble_kind = 11 }
-            c:KOR = { trigger_event = { id = scramble_for_korea_events.11 popup = yes } }
-        }
-        else = { trigger_event = { id = scramble_for_korea_events.$EVENT$ popup = yes } }
-    }
-}
-# Only the current chain can release its lock. Cancelled locks block newer offers.
-scramble_for_korea_close_offer = {
-    c:KOR ?= {
-        if = {
-            limit = {
-                OR = {
-                    var:scramble_for_korea_pending_offer ?= scope:scramble_actor
-                    var:scramble_for_korea_pending_offer ?= flag:scramble_for_korea_cancelled
-                }
-            }
-            remove_variable = scramble_for_korea_pending_offer
-        }
-    }
-}
-# Shared by adviser acceptance and rights claims. Exactly one strongest rival responds.
-scramble_for_korea_rival_response = {
-    if = {
-        limit = {
-            any_country = {
-                is_involved_in_journal_entry = je_scramble_for_korea
-                NOR = { c:KOR ?= this this = scope:scramble_actor }
-            }
-        }
-        random_country = {
-            limit = {
-                is_involved_in_journal_entry = je_scramble_for_korea
-                NOR = { c:KOR ?= this this = scope:scramble_actor }
-                var:scramble_for_korea_participants_influence = scramble_for_korea_rival_lead
-            }
-            save_scope_as = scramble_rival
-            trigger_event = { id = scramble_for_korea_events.13 popup = yes }
-        }
-    }
-    else = { scramble_for_korea_close_offer = yes }
-}
 
 # Country-scoped notification shared by JE members and a nonmember overlord winner.
 scramble_for_korea_notify_result = {
-    if = { limit = { scope:scramble_winner = { c:KOR ?= this } } trigger_event = { id = scramble_for_korea_events.20 popup = yes } }
-    else_if = { limit = { scope:scramble_winner = { c:JAP ?= this } } trigger_event = { id = scramble_for_korea_events.23 popup = yes } }
-    else_if = { limit = { scope:scramble_winner = { c:CHI ?= this } } trigger_event = { id = scramble_for_korea_events.24 popup = yes } }
-    else = { trigger_event = { id = scramble_for_korea_events.22 popup = yes } }
+    if = { limit = { scope:scramble_winner = { c:KOR ?= this } } trigger_event = { id = scramble_for_korea_events.4 popup = yes } }
+    else_if = { limit = { scope:scramble_winner = { c:JAP ?= this } } trigger_event = { id = scramble_for_korea_events.6 popup = yes } }
+    else_if = { limit = { scope:scramble_winner = { c:CHI ?= this } } trigger_event = { id = scramble_for_korea_events.7 popup = yes } }
+    else = { trigger_event = { id = scramble_for_korea_events.5 popup = yes } }
 }

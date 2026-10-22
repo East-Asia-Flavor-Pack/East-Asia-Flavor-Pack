@@ -77,30 +77,12 @@ scramble_for_korea_eligible = {
 # These world-state checks work with a contextless JE as well as country events.
 scramble_for_korea_overlord_wins = {
     exists = c:KOR
-    c:KOR = {
+    c:KOR ?= {
         is_subject = yes
         overlord ?= { NOT = { c:CHI ?= this } }
     }
 }
-scramble_for_korea_invalid = {
-    NOT = { exists = c:KOR }
-}
-# Actual JE membership decides an uncontested Korean victory after departures.
-# A non-Qing direct overlord still takes precedence, even if it is not involved.
-scramble_for_korea_korea_unopposed = {
-    NOT = { has_global_variable = scramble_for_korea_finished }
-    exists = c:KOR
-    c:KOR ?= { is_involved_in_journal_entry = je_scramble_for_korea }
-    NOT = { scramble_for_korea_overlord_wins = yes }
-    je:je_scramble_for_korea ?= {
-        any_scope_je_involved = {
-            count = all
-            c:KOR ?= THIS
-        }
-    }
-}
 scramble_for_korea_score_winner = {
-    is_involved_in_journal_entry = je_scramble_for_korea
     custom_tooltip = {
         text = korea_scramble_influence_100_tt
         has_variable = scramble_for_korea_participants_influence
@@ -108,52 +90,5 @@ scramble_for_korea_score_winner = {
             limit = { has_variable = scramble_for_korea_participants_influence }
             var:scramble_for_korea_participants_influence >= 100
         }
-    }
-    trigger_if = {
-        limit = { c:KOR ?= this }
-        is_subject = no
-        is_country_type = recognized
-    }
-}
-# A single country-valued lock serializes the complete proposal/response chain.
-# Cancellation changes its value to a flag; it is not released until that event closes.
-scramble_for_korea_offer_valid = {
-    NOT = { any_country = { scramble_for_korea_score_winner = yes } }
-    exists = scope:scramble_actor
-    scope:scramble_actor = { is_involved_in_journal_entry = je_scramble_for_korea }
-    c:KOR = { var:scramble_for_korea_pending_offer ?= scope:scramble_actor }
-}
-
-
-scramble_for_korea_offer_available = {
-    is_involved_in_journal_entry = je_scramble_for_korea
-    NOT = { any_country = { scramble_for_korea_score_winner = yes } }
-    c:KOR = {
-        OR = {
-            NOT = { has_variable = scramble_for_korea_pending_offer }
-            var:scramble_for_korea_pending_offer ?= prev
-        }
-    }
-}
-# Saved building/IG/pop must still exist when Korea answers, not merely when offered.
-scramble_for_korea_response_valid = {
-    scramble_for_korea_offer_valid = yes
-    trigger_if = {
-        limit = { scope:scramble_kind = 5 }
-        exists = scope:scramble_building
-        scope:scramble_building = {
-            owner = c:KOR
-            levels_owned_by_country = { target = scope:scramble_actor value > 0 }
-        }
-    }
-    trigger_if = {
-        limit = { scope:scramble_kind = 12 }
-        exists = scope:scramble_ig
-        scope:scramble_ig = { owner = c:KOR }
-    }
-    trigger_if = {
-        limit = { scope:scramble_kind = 10 }
-        exists = scope:scramble_pop
-        scope:scramble_pop = { owner = c:KOR culture = { is_primary_culture_of = scope:scramble_actor } }
     }
 }
