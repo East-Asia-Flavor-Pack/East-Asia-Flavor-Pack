@@ -284,7 +284,7 @@ is_in_same_power_bloc = c:KOR
 
 ### 행동
 
-조선의 자주 외교 버튼만 유지한다. 행정력 50을 730일 부담하고 조선 영향력 +3, 외국 단독 선두 영향력 -3을 적용하며 선두 동률이면 감소분을 생략한다. 이벤트를 호출하던 외국용 권익 주장·상권 지원·군사고문·조정 인사 포섭 버튼은 삭제했다.
+조선 쟁탈 일지의 행동 버튼은 사용하지 않는다. 자주 외교 버튼과 버튼 전용 외국 선두 계산을 제거했으며, 외국용 권익 주장·상권 지원·군사고문·조정 인사 포섭 버튼도 삭제된 상태다. 기존 저장의 자주 외교 행정 비용은 원래 기간과 종료 정리 처리를 유지한다.
 
 ## 5. 관련 일지와 기존 콘텐츠의 연결
 
@@ -2218,11 +2218,9 @@ flowchart TD
     WIN -->|일본 영향력 단독 100| E6[".6 일본 승리"]
     WIN -->|청 영향력 단독 100| E7[".7 청 승리"]
     WIN -->|다른 열강 영향력 단독 100| E5[".5 기타 국가 승리"]
-    WIN -->|미충족 또는 100 동률| PLAY["국가별 월간 영향력 · 자주 외교 버튼"]
+    WIN -->|미충족 또는 100 동률| PLAY["국가별 월간 영향력"]
     PLAY --> MONTH["조선 국가 등급 반영<br/>조선 소속 블록 지도자 월 +1 · 청 포함<br/>갱신 전 상태 계산 후 일괄 적용"]
     MONTH --> LOOP
-    PLAY --> SELF["조선 자주 외교 버튼"]
-    SELF --> LOOP
     PLAY -.->|추가 계획: 월간 갱신·종료 판정 후| CANDIDATES{"진행 중이며 사건 조건 충족?<br/>월 25% · 적격 후보 균등 추첨<br/>최대 1건 · 대기 중 추첨 없음"}
     CANDIDATES -.-> E11[".11 공사관으로 향하는 가마<br/>보호 요청 / 경비 강화 / 거처 이전"]
     CANDIDATES -.-> E12[".12 누구의 뒤에 서야 하는가<br/>청 의전 수용 / 독자 국서 / 접수국 지원"]
@@ -2322,7 +2320,7 @@ JE의 기술적 종료는 외국의 종주국 자동 승리·영향력 승리를
 | 2 | `common/journal_entries/eafp_scramble_for_korea.txt` | 기존 JE를 수정·활성화. 초기 개혁 보상·조선 저항 modifier·주간 참가 갱신·월간 계산·종료 처리를 각 콜백에 직접 배치. 시작과 갱신 시 실제 종주국 자동 승리를 우선 판정 |
 | 2 | `common/journal_entries/eafp_korean_reformation.txt` | 기존 하위 네 완료 콜백에 각각 +5, 상위 완료 콜백에 +10 연결. 기존 완료 변수·일지 생성 구조 재사용, 초기 보상과 중복 방지 |
 | 3 | `gui/journal_entry_widgets/eafp_je_scramble_for_korea.gui` | 기존 위젯 문법으로 국가별 행 표시. JE 참여국 직접 바인딩을 먼저 검증 |
-| 3 | `common/scripted_buttons/eafp_korea_buttons.txt` | 기존 조선 버튼 정의와 충돌하지 않게 필요한 5개 행동 추가. 단발성 효과는 버튼에 직접 작성 |
+| 3 | `common/scripted_buttons/eafp_korea_buttons.txt` | 쟁탈 일지 전용 행동 버튼은 모두 제거 |
 | 3 | `events/eafp_scramble_for_korea_events.txt` | 기존 이벤트 수정·연결 후 부족한 ID만 추가. 이벤트 체인 스코프 전달 방식 재사용 |
 | 3 | `common/script_values/earp_scramble_for_korea_values.txt` | 월간 계산과 툴팁이 공유하는 계산식 등 실제 공용 값만 배치. 해군력·대조선 관계 보너스 제외. 단 한 곳의 상수까지 모두 옮기지 않음 |
 | 3 | `common/static_modifiers/eafg_scramble_for_korea_modifiers.txt` | 기존 `modifier_kor_foreign_influence`의 지렛대 저항을 -0.5로 변경. 일지 활성 중 조선에만 적용하고 모든 종료에서 제거. 기존 효과로 표현할 수 없는 고문·자주권·승패 효과만 추가 |

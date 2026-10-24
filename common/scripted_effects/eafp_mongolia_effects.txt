@@ -1,4 +1,26 @@
-﻿generate_eafp_mgl_steppe_league_member_list = {
+﻿# Character scope. Reused for registration, restoration and weekly save recovery.
+eafp_mgl_restore_jebtsundamba_ig_leader = {
+	if = {
+		limit = {
+			is_character_alive = yes
+			exists = owner.ig:ig_devout
+		}
+		if = {
+			limit = { NOT = { exists = interest_group } }
+			set_interest_group = owner.ig:ig_devout
+		}
+		else_if = {
+			limit = { interest_group != owner.ig:ig_devout }
+			set_interest_group = owner.ig:ig_devout
+		}
+		if = {
+			limit = { is_interest_group_leader = no }
+			set_as_interest_group_leader = yes
+		}
+	}
+}
+
+generate_eafp_mgl_steppe_league_member_list = {
 	clear_global_variable_list = eafp_mgl_steppe_league_member_list
 	every_country = {
 		limit = {
@@ -63,7 +85,7 @@ eafp_mgl_register_jebtsundamba = {
 		limit = { owner = { has_variable = eafp_mgl_bogd_enthroned } }
 		owner = { eafp_mgl_install_bogd_ruler = yes }
 	}
-	else = { set_as_interest_group_leader = yes }
+	else = { eafp_mgl_restore_jebtsundamba_ig_leader = yes }
 }
 
 # Country scope. Reuse the living historical character before creating a new one.
@@ -129,7 +151,7 @@ eafp_mgl_update_jebtsundamba = {
 		}
 		remove_variable = eafp_mgl_bogd_enthroned
 		remove_variable = no_heirs
-		var:eafp_mgl_jebtsundamba_var ?= { set_as_interest_group_leader = yes }
+		var:eafp_mgl_jebtsundamba_var ?= { eafp_mgl_restore_jebtsundamba_ig_leader = yes }
 	}
 	if = {
 		limit = { game_date >= 1924.5.20 }
@@ -176,7 +198,7 @@ eafp_mgl_update_jebtsundamba = {
 			NOT = { has_variable = eafp_mgl_bogd_enthroned }
 			exists = var:eafp_mgl_jebtsundamba_var
 		}
-		var:eafp_mgl_jebtsundamba_var = { set_as_interest_group_leader = yes }
+		var:eafp_mgl_jebtsundamba_var = { eafp_mgl_restore_jebtsundamba_ig_leader = yes }
 	}
 }
 

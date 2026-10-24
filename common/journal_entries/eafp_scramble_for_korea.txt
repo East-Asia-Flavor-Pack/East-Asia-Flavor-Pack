@@ -32,7 +32,6 @@
         name = "eafp_korea_scramble_influence"
         container = "custom_widget_container_3"
     }
-    scripted_button = korea_scramble_sovereignty_button
     immediate = {
         c:KOR = {
             save_scope_as = korea_scope
@@ -102,34 +101,42 @@
         }
     }
     on_complete = {
-        if = {
-            limit = { scramble_for_korea_overlord_wins = yes }
-            c:KOR = { overlord = { save_scope_as = scramble_winner } }
-        }
-        else = {
-            random_country = {
-                limit = { scramble_for_korea_score_winner = yes }
-                save_scope_as = scramble_winner
+        custom_tooltip = korea_scramble_foreign_victory_effect_tt
+        show_as_tooltip = {
+            scope:journal_entry = {
+                random_scope_je_involved = { annex = c:KOR }
             }
         }
-        set_global_variable = scramble_for_korea_finished
-        # Clear contest-only support before applying the winner's lasting rewards.
-        scramble_for_korea_cleanup = yes
-        scope:scramble_winner = {
-            annex = c:KOR
-        }
-
-        scope:journal_entry = {
-            every_scope_je_involved = { scramble_for_korea_notify_result = yes }
-        }
-        # 저널 참여 X인 국가가 종주국이 됐을 경우
-        if = {
-        limit = {
-                scope:journal_entry = {
-                    NOT = { any_scope_je_involved = { this = scope:scramble_winner } }
+        hidden_effect = {
+            if = {
+                limit = { scramble_for_korea_overlord_wins = yes }
+                c:KOR ?= { overlord = { save_scope_as = scramble_winner } }
+            }
+            else = {
+                random_country = {
+                    limit = { scramble_for_korea_score_winner = yes }
+                    save_scope_as = scramble_winner
                 }
             }
-            scope:scramble_winner = { scramble_for_korea_notify_result = yes }
+            set_global_variable = scramble_for_korea_finished
+            # Clear contest-only support before applying the winner's lasting rewards.
+            scramble_for_korea_cleanup = yes
+            scope:scramble_winner ?= {
+                annex = c:KOR
+            }
+
+            scope:journal_entry = {
+                every_scope_je_involved = { scramble_for_korea_notify_result = yes }
+            }
+            # 저널 참여 X인 국가가 종주국이 됐을 경우
+            if = {
+                limit = {
+                    scope:journal_entry = {
+                        NOT = { any_scope_je_involved = { scope:scramble_winner ?= THIS } }
+                    }
+                }
+                scope:scramble_winner ?= { scramble_for_korea_notify_result = yes }
+            }
         }
     }
     custom_failure_header = je_scramble_for_korea_korean_victory_header
@@ -139,7 +146,7 @@
             scope:journal_entry = {
                 any_scope_je_involved = {
                     count = all
-                    c:KOR ?= THIS
+                    THIS = c:KOR
                 }
             }
             c:KOR ?= {

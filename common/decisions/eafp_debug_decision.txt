@@ -23,6 +23,136 @@
 # 	}
 # }
 
+kor_scramble_for_korea_setup = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		exists = c:JAP
+		NOT = { is_involved_in_journal_entry = je_scramble_for_korea }
+		NOT = { has_global_variable = scramble_for_korea_finished }
+		c:JAP = {
+			OR = {
+				NOT = { has_variable = japan_restoration_complete }
+				is_country_type = unrecognized
+			}
+		}
+	}
+
+	possible = {
+		is_player = yes
+		# Preserve the starting Korean/Qing situation instead of rebuilding it.
+		exists = c:CHI
+		NOT = { has_global_variable = china_shatters }
+		is_country_type = unrecognized
+		OR = {
+			is_subject_of = c:CHI
+			c:CHI ?= { is_country_type = recognized }
+		}
+		c:JAP = {
+			trigger_if = {
+				limit = { NOT = { has_variable = japan_restoration_complete } }
+				has_law = law_type:law_monarchy
+				OR = {
+					has_journal_entry = je_meiji_restoration
+					has_law = law_type:law_bakufu
+				}
+				NOT = { any_civil_war = { civil_war_progress > 0 } }
+				any_scope_character = {
+					is_interest_group_type = ig_landowners
+					is_character_alive = yes
+					NOT = { has_variable = house_tokugawa }
+					NOT = { is_ruler_of_own_country = yes }
+				}
+			}
+			trigger_if = {
+				limit = { is_country_type = unrecognized }
+				# Japan starts with colonization; recognition still uses its real JE prerequisites.
+				has_technology_researched = colonization
+				country_rank >= rank_value:unrecognized_major_power
+				any_country = { country_rank >= rank_value:great_power }
+			}
+		}
+	}
+
+	when_taken = {
+		c:JAP = {
+			if = {
+				limit = { has_law_or_variant = law_type:law_isolationism }
+				# Mercantilism is unlocked by Japan's starting international_trade technology.
+				activate_law = law_type:law_mercantilism
+			}
+			if = {
+				limit = { NOT = { has_variable = japan_restoration_complete } }
+				# Initialize the real restoration JE while the shogunate law is still active.
+				if = {
+					limit = { NOT = { has_journal_entry = je_meiji_restoration } }
+					add_journal_entry = { type = je_meiji_restoration }
+				}
+				if = {
+					limit = { NOT = { ruler ?= { has_trait = special_character_japanese_emperor } } }
+					# Vanilla restoration handles the former shogun, regency and imperial heirs.
+					country_restore_japanese_emperor = yes
+				}
+				je_meiji_restoration_update_japanese_emperor = yes
+				if = {
+					limit = { has_law = law_type:law_bakufu }
+					activate_law = law_type:law_hanbatsu_oligarchy
+				}
+				if = {
+					limit = { ig:ig_landowners = { leader ?= { has_variable = house_tokugawa } } }
+					# Use the existing non-Tokugawa leadership selection from ep2_meiji.6.
+					ordered_scope_character = {
+						limit = {
+							is_interest_group_type = ig_landowners
+							is_character_alive = yes
+							NOT = { has_variable = house_tokugawa }
+							NOT = { is_ruler_of_own_country = yes }
+						}
+						order_by = prominence
+						position = 0
+						if = {
+							limit = { NOT = { has_role = character_role_politician } }
+							add_character_role = character_role_politician
+						}
+						set_as_interest_group_leader = yes
+					}
+				}
+				# Skip only the six-month wait. The JE owns success flags and meiji.1 aftermath.
+				set_variable = { name = restoration_timer_var value = 6 }
+			}
+			if = {
+				limit = { is_country_type = unrecognized }
+				if = {
+					limit = {
+						NOT = {
+							any_country = {
+								country_rank >= rank_value:great_power
+								"relations(c:JAP)" >= relations_threshold:amicable
+							}
+						}
+					}
+					random_country = {
+						limit = { country_rank >= rank_value:great_power }
+						set_relations = { country = c:JAP value = 50 }
+					}
+				}
+				if = {
+					limit = { NOT = { has_journal_entry = je_earn_recognition } }
+					add_journal_entry = { type = je_earn_recognition }
+				}
+				je:je_earn_recognition = {
+					set_bar_progress = { name = earn_recognition_progress_bar value = 200 }
+				}
+				set_country_type = recognized
+			}
+			# Japan is recognized immediately; restoration completes through its normal callback.
+			# Do not set restoration flags or directly add the international JE.
+		}
+	}
+
+	ai_chance = { value = 0 }
+}
+
 kor_samjeong = {	
 	is_shown = {
 		has_global_variable = eafp_debug_mode
