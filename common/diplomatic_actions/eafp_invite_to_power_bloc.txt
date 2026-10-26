@@ -1,0 +1,49 @@
+INJECT:invite_to_power_bloc = {
+	ai = {
+		evaluation_chance = {
+			# 추가: 중화민국 세력 지도국은 초대 검토 확률을 기본 1%에서 10%로 높인다.
+			# evaluation_chance에는 대상 국가 스코프가 없으므로 지도국만 확인한다.
+			if = {
+				limit = {
+					is_power_bloc_leader = yes
+					power_bloc ?= {
+						has_identity = identity:identity_eafp_chinese_interregnum
+					}
+				}
+				add = 9
+			}
+		}
+
+		will_propose = {
+			# 추가: 중화민국 세력은 어느 세력에도 속하지 않은 중국 국가만 초대한다.
+			trigger_if = {
+				limit = {
+					power_bloc ?= {
+						has_identity = identity:identity_eafp_chinese_interregnum
+					}
+				}
+				scope:target_country = {
+					eafp_is_chinese_fragment = yes
+					is_in_power_bloc = no
+				}
+			}
+		}
+
+		propose_score = {
+			# 추가: 초대 가능한 중국 국가에 대한 가입 제안을 우선한다.
+			if = {
+				limit = {
+					is_power_bloc_leader = yes
+					power_bloc ?= {
+						has_identity = identity:identity_eafp_chinese_interregnum
+					}
+					scope:target_country = {
+						eafp_is_chinese_fragment = yes
+						is_in_power_bloc = no
+					}
+				}
+				add = 200
+			}
+		}
+	}
+}
