@@ -139,74 +139,67 @@ pause_formosa_survey_button = {
 	}
 }
 
-
-#수정: 바닐라 행동을 막부 개혁에 배치하고 사전 노선 조건 제거.
-REPLACE:je_meiji_restoration_imperial_marriage = {
-	name = je_meiji_restoration_imperial_marriage
-	desc = je_meiji_restoration_imperial_marriage_desc
-
-	visible = {
-		has_journal_entry = je_bakufu_kaikaku
-		has_journal_entry = je_meiji_restoration
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = ruler_is_japanese_shogun_tt
-			has_law = law_type:law_bakufu
-		}
-		legitimacy > 50
-		NOT = {
-			has_gov_regency = yes
-		}
-		is_not_in_civil_war = yes
-		custom_tooltip = {
-			text = not_already_used_this_interaction_tt
-			NOT = {
-				has_variable = je_meiji_restoration_imperial_marriage_var
-			}
-		}
-	}
-
-	selected = {
-		has_variable = je_meiji_restoration_imperial_marriage_var
-	}
-
-	effect = {
-		set_variable = je_meiji_restoration_imperial_marriage_var
-		trigger_event = {
-			id = ep2_meiji.3
-		}
-		custom_tooltip = je_meiji_restoration_imperial_marriage_conditions_tt
-	}
-
-	ai_chance = {
-		value = 10 # If available, the AI should do this
-	}
-}
-
 REPLACE:je_meiji_restoration_proclaim_imperial_restoration = {
 	name = je_meiji_restoration_proclaim_imperial_restoration
 	desc = je_meiji_restoration_proclaim_imperial_restoration_desc
 
 	visible = {
-		has_journal_entry = je_bakufu_kaikaku
 		has_journal_entry = je_meiji_restoration
 	}
 
 	possible = {
-		# 준비 조건 미달로도 탄원할 수 있지만, 그 경우 강경한 정국 전개를 감수한다.
-		c:JAP ?= THIS
-		has_law = law_type:law_monarchy
-		NOT = { has_gov_regency = yes }
 		OR = {
-			has_law = law_type:law_bakufu
-			ruler = { has_variable = house_yamato }
+			custom_tooltip = {
+				text = sufficient_pressure_from_sonno_joi_tt
+				any_political_movement = {
+					is_political_movement_type = movement_meiji_restorationist
+					political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+				}
+			}
+			custom_tooltip = {
+				text = ruler_is_modernizer_or_mitogaku_tt
+				ruler = {
+					OR = {
+						has_ideology = ideology:ideology_modernizer_leader
+						has_ideology = ideology:ideology_mitogaku
+					}
+				}
+			}
+			#AND = {
+			#	custom_tooltip = {
+			#		text = kobu_gattai_trigger_tt
+			#		has_variable = kobu_gattai
+			#	}
+			#	custom_tooltip = {
+			#		text = shogun_imperial_marriage_tt
+			#		has_variable = japan_completed_imperial_marriage
+			#	}
+			#}
+			custom_tooltip = {
+				text = shogun_imperial_marriage_tt
+				has_variable = japan_completed_imperial_marriage
+			}
 		}
+		NOT = {
+			has_gov_regency = yes
+		}
+		custom_tooltip = {
+			text = ruler_is_japanese_shogun_tt
+			has_law = law_type:law_bakufu
+		}
+		#custom_tooltip = {
+		#	text = shogunate_has_a_vision_tt
+		#	OR = {
+		#		has_variable = kobu_gattai
+		#		has_variable = kogi_yoron
+		#	}
+		#}
 		is_not_in_civil_war = yes
 		custom_tooltip = {
 			text = not_already_used_this_interaction_tt
-			NOT = { has_variable = je_meiji_restoration_proclaim_imperial_restoration_var }
+			NOT = {
+				has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
+			}
 		}
 	}
 
@@ -224,11 +217,13 @@ REPLACE:je_meiji_restoration_proclaim_imperial_restoration = {
 			limit = { eafp_japan_kogi_yoron_petition_ready = yes }
 			save_scope_value_as = { name = eafp_japan_petition_kogi_ready value = 1 }
 		}
-		# 과거 성과만으로 탄원 답변 전에 완료되는 것을 방지한다.
-		remove_variable = japan_renewed_bakufu
-		remove_variable = japan_taikunate_var
+		trigger_event = {
+			id = ep2_meiji.5
+		}
+		custom_tooltip = {
+			text = meiji_restoration_restore_emperor_warning_tt
+		}
 		set_variable = je_meiji_restoration_proclaim_imperial_restoration_var
-		trigger_event = { id = ep2_meiji.5 }
 		custom_tooltip = eafp_japan_negotiate_government_desc
 	}
 
@@ -278,6 +273,7 @@ REPLACE:je_meiji_restoration_proclaim_imperial_restoration = {
 		}
 	}
 }
+
 REPLACE:je_meiji_restoration_decide_shogunate_strategy = {
 	name = je_meiji_restoration_decide_shogunate_strategy
 	desc = je_meiji_restoration_decide_shogunate_strategy_desc
@@ -285,4 +281,52 @@ REPLACE:je_meiji_restoration_decide_shogunate_strategy = {
 	possible = { always = no }
 	effect = { }
 	ai_chance = { value = 0 }
+}
+
+#수정: 바닐라 행동을 막부 개혁에 배치하고 사전 노선 조건 제거.
+REPLACE:je_meiji_restoration_imperial_marriage = {
+	name = je_meiji_restoration_imperial_marriage
+	desc = je_meiji_restoration_imperial_marriage_desc
+
+	visible = {
+		has_journal_entry = je_meiji_restoration
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = ruler_is_japanese_shogun_tt
+			has_law = law_type:law_bakufu
+		}
+		legitimacy > 50
+		#custom_tooltip = {
+		#	text = kobu_gattai_trigger_tt
+		#	has_variable = kobu_gattai
+		#}
+		NOT = {
+			has_gov_regency = yes
+		}
+		is_not_in_civil_war = yes
+		custom_tooltip = {
+			text = not_already_used_this_interaction_tt
+			NOT = {
+				has_variable = je_meiji_restoration_imperial_marriage_var
+			}
+		}
+	}
+
+	selected = {
+		has_variable = je_meiji_restoration_imperial_marriage_var
+	}
+
+	effect = {
+		set_variable = je_meiji_restoration_imperial_marriage_var
+		trigger_event = {
+			id = ep2_meiji.3
+		}
+		custom_tooltip = je_meiji_restoration_imperial_marriage_conditions_tt
+	}
+
+	ai_chance = {
+		value = 10 # If available, the AI should do this
+	}
 }
