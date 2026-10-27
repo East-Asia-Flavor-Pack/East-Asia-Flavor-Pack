@@ -1,4 +1,197 @@
-﻿# Active Japanese controls after stage 4 policy-journal removal.
+﻿REPLACE:je_meiji_restoration_proclaim_imperial_restoration = {
+	name = je_meiji_restoration_proclaim_imperial_restoration
+	desc = je_meiji_restoration_proclaim_imperial_restoration_desc
+
+	visible = {
+		has_journal_entry = je_meiji_restoration
+	}
+
+	possible = {
+		OR = {
+			custom_tooltip = {
+				text = sufficient_pressure_from_sonno_joi_tt
+				any_political_movement = {
+					is_political_movement_type = movement_meiji_restorationist
+					political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+				}
+			}
+			custom_tooltip = {
+				text = ruler_is_modernizer_or_mitogaku_tt
+				ruler = {
+					OR = {
+						has_ideology = ideology:ideology_modernizer_leader
+						has_ideology = ideology:ideology_mitogaku
+					}
+				}
+			}
+			#AND = {
+			#	custom_tooltip = {
+			#		text = kobu_gattai_trigger_tt
+			#		has_variable = kobu_gattai
+			#	}
+			#	custom_tooltip = {
+			#		text = shogun_imperial_marriage_tt
+			#		has_variable = japan_completed_imperial_marriage
+			#	}
+			#}
+			custom_tooltip = {
+				text = shogun_imperial_marriage_tt
+				has_variable = japan_completed_imperial_marriage
+			}
+		}
+		NOT = {
+			has_gov_regency = yes
+		}
+		custom_tooltip = {
+			text = ruler_is_japanese_shogun_tt
+			has_law = law_type:law_bakufu
+		}
+		#custom_tooltip = {
+		#	text = shogunate_has_a_vision_tt
+		#	OR = {
+		#		has_variable = kobu_gattai
+		#		has_variable = kogi_yoron
+		#	}
+		#}
+		is_not_in_civil_war = yes
+		custom_tooltip = {
+			text = not_already_used_this_interaction_tt
+			NOT = {
+				has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
+			}
+		}
+	}
+
+	selected = {
+		has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
+	}
+
+	effect = {
+		# 수정, 조건 없이 툴팁 보여줌.
+		custom_tooltip = meiji_restoration_restore_emperor_1_tt
+		custom_tooltip = meiji_restoration_restore_emperor_2_tt
+
+		if = { # 추가, 이벤트로 값 넘기는 용도.
+			limit = { eafp_japan_kobu_gattai_petition_ready = yes }
+			save_scope_value_as = { name = eafp_japan_petition_kobu_ready value = 1 }
+		}
+		else_if = {
+			limit = { eafp_japan_kogi_yoron_petition_ready = yes }
+			save_scope_value_as = { name = eafp_japan_petition_kogi_ready value = 1 }
+		}
+		trigger_event = {
+			id = ep2_meiji.5
+		}
+		custom_tooltip = {
+			text = meiji_restoration_restore_emperor_warning_tt
+		}
+		set_variable = je_meiji_restoration_proclaim_imperial_restoration_var
+	}
+
+	ai_chance = {
+		value = 1
+		if = {
+			limit = {
+				any_political_movement = {
+					is_political_movement_type = movement_meiji_restorationist
+					political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+				}
+			}
+			add = 5
+		}
+		else_if = {
+			limit = {
+				any_political_movement = {
+					is_political_movement_type = movement_meiji_restorationist
+					political_movement_radicalism > define:NPolitics|RADICALISM_MILITANT_THRESHOLD
+				}
+			}
+			add = 25
+		}
+		add = { # -15 to 5
+			value = government_legitimacy
+			subtract = 75
+			divide = 5
+		}
+		if = {
+			limit = {
+				#has_variable = kogi_yoron
+				ruler ?= {
+					OR = {
+						has_ideology = ideology:ideology_modernizer_leader
+						has_ideology = ideology:ideology_mitogaku
+					}
+				}
+			}
+			add = 10
+		}
+		if = {
+			limit = {
+				#has_variable = kobu_gattai
+				NOT = {
+					has_variable = japan_completed_imperial_marriage
+				}
+			}
+			add = -6
+		}
+	}
+}
+
+REPLACE:je_meiji_restoration_decide_shogunate_strategy = { # 혹시 모르니까 절대 안 뜨게 설정.
+	name = je_meiji_restoration_decide_shogunate_strategy
+	desc = je_meiji_restoration_decide_shogunate_strategy_desc
+	visible = { always = no }
+	possible = { always = no }
+	effect = { }
+	ai_chance = { value = 0 }
+}
+
+REPLACE:je_meiji_restoration_imperial_marriage = {
+	name = je_meiji_restoration_imperial_marriage
+	desc = je_meiji_restoration_imperial_marriage_desc
+
+	visible = {
+		has_journal_entry = je_meiji_restoration
+	}
+
+	possible = {
+		custom_tooltip = {
+			text = ruler_is_japanese_shogun_tt
+			has_law = law_type:law_bakufu
+		}
+		legitimacy > 50
+		#custom_tooltip = {
+		#	text = kobu_gattai_trigger_tt
+		#	has_variable = kobu_gattai
+		#}
+		NOT = {
+			has_gov_regency = yes
+		}
+		is_not_in_civil_war = yes
+		custom_tooltip = {
+			text = not_already_used_this_interaction_tt
+			NOT = {
+				has_variable = je_meiji_restoration_imperial_marriage_var
+			}
+		}
+	}
+
+	selected = {
+		has_variable = je_meiji_restoration_imperial_marriage_var
+	}
+
+	effect = {
+		set_variable = je_meiji_restoration_imperial_marriage_var
+		trigger_event = {
+			id = ep2_meiji.3
+		}
+		custom_tooltip = je_meiji_restoration_imperial_marriage_conditions_tt
+	}
+
+	ai_chance = {
+		value = 10 # If available, the AI should do this
+	}
+}
 
 japan_kaikakuha_button = {
 	name = "japan_kaikakuha_button"
@@ -136,197 +329,5 @@ pause_formosa_survey_button = {
 
 	ai_chance = {
 		value = 0
-	}
-}
-
-REPLACE:je_meiji_restoration_proclaim_imperial_restoration = {
-	name = je_meiji_restoration_proclaim_imperial_restoration
-	desc = je_meiji_restoration_proclaim_imperial_restoration_desc
-
-	visible = {
-		has_journal_entry = je_meiji_restoration
-	}
-
-	possible = {
-		OR = {
-			custom_tooltip = {
-				text = sufficient_pressure_from_sonno_joi_tt
-				any_political_movement = {
-					is_political_movement_type = movement_meiji_restorationist
-					political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
-				}
-			}
-			custom_tooltip = {
-				text = ruler_is_modernizer_or_mitogaku_tt
-				ruler = {
-					OR = {
-						has_ideology = ideology:ideology_modernizer_leader
-						has_ideology = ideology:ideology_mitogaku
-					}
-				}
-			}
-			#AND = {
-			#	custom_tooltip = {
-			#		text = kobu_gattai_trigger_tt
-			#		has_variable = kobu_gattai
-			#	}
-			#	custom_tooltip = {
-			#		text = shogun_imperial_marriage_tt
-			#		has_variable = japan_completed_imperial_marriage
-			#	}
-			#}
-			custom_tooltip = {
-				text = shogun_imperial_marriage_tt
-				has_variable = japan_completed_imperial_marriage
-			}
-		}
-		NOT = {
-			has_gov_regency = yes
-		}
-		custom_tooltip = {
-			text = ruler_is_japanese_shogun_tt
-			has_law = law_type:law_bakufu
-		}
-		#custom_tooltip = {
-		#	text = shogunate_has_a_vision_tt
-		#	OR = {
-		#		has_variable = kobu_gattai
-		#		has_variable = kogi_yoron
-		#	}
-		#}
-		is_not_in_civil_war = yes
-		custom_tooltip = {
-			text = not_already_used_this_interaction_tt
-			NOT = {
-				has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
-			}
-		}
-	}
-
-	selected = {
-		has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
-	}
-
-	effect = {
-		# 클릭 시점의 조건을 사건 체인에 전달한다. 사전 노선 선택 변수는 사용하지 않는다.
-		if = {
-			limit = { eafp_japan_kobu_gattai_petition_ready = yes }
-			save_scope_value_as = { name = eafp_japan_petition_kobu_ready value = 1 }
-		}
-		else_if = {
-			limit = { eafp_japan_kogi_yoron_petition_ready = yes }
-			save_scope_value_as = { name = eafp_japan_petition_kogi_ready value = 1 }
-		}
-		trigger_event = {
-			id = ep2_meiji.5
-		}
-		custom_tooltip = {
-			text = meiji_restoration_restore_emperor_warning_tt
-		}
-		set_variable = je_meiji_restoration_proclaim_imperial_restoration_var
-		custom_tooltip = eafp_japan_negotiate_government_desc
-	}
-
-	ai_chance = {
-		value = 1
-		if = {
-			limit = {
-				any_political_movement = {
-					is_political_movement_type = movement_meiji_restorationist
-					political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
-				}
-			}
-			add = 5
-		}
-		else_if = {
-			limit = {
-				any_political_movement = {
-					is_political_movement_type = movement_meiji_restorationist
-					political_movement_radicalism > define:NPolitics|RADICALISM_MILITANT_THRESHOLD
-				}
-			}
-			add = 25
-		}
-		add = { # -15 to 5
-			value = government_legitimacy
-			subtract = 75
-			divide = 5
-		}
-		if = {
-			limit = {
-				ruler ?= {
-					OR = {
-						has_ideology = ideology:ideology_modernizer_leader
-						has_ideology = ideology:ideology_mitogaku
-					}
-				}
-			}
-			add = 10
-		}
-		if = {
-			limit = {
-				NOT = {
-					has_variable = japan_completed_imperial_marriage
-				}
-			}
-			add = -6
-		}
-	}
-}
-
-REPLACE:je_meiji_restoration_decide_shogunate_strategy = {
-	name = je_meiji_restoration_decide_shogunate_strategy
-	desc = je_meiji_restoration_decide_shogunate_strategy_desc
-	visible = { always = no }
-	possible = { always = no }
-	effect = { }
-	ai_chance = { value = 0 }
-}
-
-#수정: 바닐라 행동을 막부 개혁에 배치하고 사전 노선 조건 제거.
-REPLACE:je_meiji_restoration_imperial_marriage = {
-	name = je_meiji_restoration_imperial_marriage
-	desc = je_meiji_restoration_imperial_marriage_desc
-
-	visible = {
-		has_journal_entry = je_meiji_restoration
-	}
-
-	possible = {
-		custom_tooltip = {
-			text = ruler_is_japanese_shogun_tt
-			has_law = law_type:law_bakufu
-		}
-		legitimacy > 50
-		#custom_tooltip = {
-		#	text = kobu_gattai_trigger_tt
-		#	has_variable = kobu_gattai
-		#}
-		NOT = {
-			has_gov_regency = yes
-		}
-		is_not_in_civil_war = yes
-		custom_tooltip = {
-			text = not_already_used_this_interaction_tt
-			NOT = {
-				has_variable = je_meiji_restoration_imperial_marriage_var
-			}
-		}
-	}
-
-	selected = {
-		has_variable = je_meiji_restoration_imperial_marriage_var
-	}
-
-	effect = {
-		set_variable = je_meiji_restoration_imperial_marriage_var
-		trigger_event = {
-			id = ep2_meiji.3
-		}
-		custom_tooltip = je_meiji_restoration_imperial_marriage_conditions_tt
-	}
-
-	ai_chance = {
-		value = 10 # If available, the AI should do this
 	}
 }
