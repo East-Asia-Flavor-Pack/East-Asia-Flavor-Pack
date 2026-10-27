@@ -171,7 +171,8 @@ ep2_meiji.3 = { # Imperial Marriage
 	cooldown = { days = long_modifier_time }
 
 	cancellation_trigger = {
-
+		#추가: 정치적 결말 뒤의 지연 사건 실행 방지.
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
 	}
 
 	immediate = {
@@ -575,7 +576,8 @@ ep2_meiji.6 = { # Restoration - Meeting at Kogosho
 	cooldown = { days = long_modifier_time }
 
 	cancellation_trigger = {
-
+		#추가: 정치적 결말 뒤의 지연 사건 실행 방지.
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
 	}
 
 	immediate = {
@@ -665,6 +667,8 @@ ep2_meiji_pulse.1 = { # Namamugi Incident
 	}
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		any_state_in_home_islands = {
 			is_treaty_port = yes
 			any_neighbouring_state = {
@@ -962,6 +966,8 @@ ep2_meiji_pulse.9 = { # Order to Expel Barbarians
 	}
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		has_law = law_type:law_bakufu
 		any_political_movement = {
 			is_political_movement_type = movement_meiji_restorationist
@@ -1062,6 +1068,8 @@ ep2_meiji_pulse.3 = { # Shimonoseki Straits Battles
 	cooldown = { days = never_fire_again_modifier_time }
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		has_variable = order_to_expel_barbarians_var
 		any_political_movement = {
 			is_political_movement_type = movement_meiji_restorationist
@@ -1252,6 +1260,8 @@ ep2_meiji_pulse.4 = { # Burning of the British Legation
 	cooldown = { days = never_fire_again_modifier_time }
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		has_variable = order_to_expel_barbarians_var
 		any_political_movement = {
 			is_political_movement_type = movement_meiji_restorationist
@@ -1377,6 +1387,8 @@ ep2_meiji_pulse.5 = { # Assassination of Ii Naosuke
 	cooldown = { days = never_fire_again_modifier_time }
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		any_political_movement = {
 			is_political_movement_type = movement_meiji_restorationist
 			political_movement_radicalism >= 0.35
@@ -1534,6 +1546,8 @@ ep2_meiji_pulse.7 = { # Kinmon Incident
 	cooldown = { days = never_fire_again_modifier_time }
 
 	trigger = {
+		#추가: 유신 정국 중에만 최초 사건을 허용.
+		has_journal_entry = je_meiji_restoration
 		has_law = law_type:law_bakufu
 		has_variable = order_to_expel_barbarians_var
 		any_political_movement = {
@@ -1789,7 +1803,8 @@ ep2_meiji.52 = { # Restoration - Resignation denied
 	cooldown = { days = long_modifier_time }
 
 	cancellation_trigger = {
-
+		#추가: 정치적 결말 뒤의 지연 사건 실행 방지.
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
 	}
 
 	immediate = {
@@ -3724,6 +3739,322 @@ ep2_sakoku.2 = {
 				has_variable = ended_sakoku_with_uchiharairei
 			}
 			remove_variable = ended_sakoku_with_uchiharairei
+		}
+	}
+}
+
+#수정: 탄원 클릭 시점의 준비 조건으로 유임·공의여론 합의·강경한 정국 전개를 판정.
+
+ep2_meiji.5 = { # Restoration - the doomsday button
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.5.t
+	desc = ep2_meiji.5.d
+	flavor = ep2_meiji.5.f
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = scope:shogun_scope
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = shogun_scope
+		}
+		if = {
+			limit = { NOT = { has_law = law_type:law_bakufu } }
+			random_scope_character = {
+				limit = { has_variable = former_shogun_var }
+				save_scope_as = shogun_scope
+			}
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji.5.a
+		default_option = yes
+		if = {
+			limit = { exists = scope:eafp_japan_petition_kobu_ready }
+			trigger_event = { id = ep2_meiji.52 days = 7 popup = yes }
+		}
+		else_if = {
+			limit = { exists = scope:eafp_japan_petition_kogi_ready }
+			# 천황 통치와 선거권은 이미 준비 조건이므로 정권 반환으로 법률을 되돌리지 않는다.
+			trigger_event = { id = ep2_meiji.7 days = 7 popup = yes }
+		}
+		else = {
+			trigger_event = { id = ep2_meiji.51 days = 7 popup = yes }
+		}
+	}
+}
+
+ep2_meiji.51 = { # Restoration - Resignation accepted
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.51.t
+	desc = ep2_meiji.51.d
+	flavor = ep2_meiji.51.f
+
+	event_image = {
+		video = "ep2_important_japanese_men_negotiating"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	immediate = {
+		ruler = {
+			save_scope_as = shogun_scope
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = loyalty
+			position = 0
+			set_character_immortal = yes
+			set_variable = eafp_japan_negotiation_protected
+			save_scope_as = loyal_daimyo_scope
+		}
+		ordered_scope_character = {
+			limit = {
+				has_variable = daimyo_var
+			}
+			order_by = {
+				value = loyalty
+				multiply = -1
+			}
+			position = 0
+			set_character_immortal = yes
+			set_variable = eafp_japan_negotiation_protected
+			save_scope_as = disloyal_daimyo_scope
+		}
+		activate_law = law_type:law_oligarchy
+	}
+
+	option = {
+		name = ep2_meiji.51.a
+		default_option = yes
+		show_as_tooltip = {
+			scope:shogun_scope ?= {
+				set_as_interest_group_leader = yes
+			}
+			heir ?= {
+				retire_character = yes
+			}
+			activate_law = law_type:law_oligarchy
+		}
+		je:je_bakufu_kaikaku ?= {
+			add_modifier = modifier_meiji_interregnum
+		}
+		# 어느 준비 조건도 갖추지 못한 탄원은 정통성 수치와 무관하게 강경 경로로 이어진다.
+		trigger_event = { id = ep2_meiji.6 days = 7 popup = yes }
+		hidden_effect = {
+			scope:loyal_daimyo_scope ?= {
+				set_character_immortal = no
+				remove_variable = eafp_japan_negotiation_protected
+			}
+			scope:disloyal_daimyo_scope ?= {
+				set_character_immortal = no
+				remove_variable = eafp_japan_negotiation_protected
+			}
+		}
+	}
+}
+
+ep2_meiji.7 = { # Restoration - The Taikunate
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji.7.t
+	desc = ep2_meiji.7.d
+	flavor = ep2_meiji.7.f
+
+	event_image = {
+		video = "ep2_japanese_cityscape"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_portrait.dds"
+
+	cooldown = { days = long_modifier_time }
+
+	cancellation_trigger = {
+		NOT = { has_journal_entry = je_bakufu_kaikaku }
+	}
+
+	immediate = {
+		random_scope_character = {
+			limit = {
+				has_variable = former_shogun_var # designates Taikun
+			}
+			save_scope_as = shogun_scope
+		}
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+	}
+
+	option = {
+		name = ep2_meiji.7.a
+		default_option = yes
+		set_variable = japan_taikunate_var
+		# 이미 갖춘 선거권을 지주 선거제로 되돌리지 않는다.
+		if = {
+			limit = { has_law = law_type:law_landed_voting }
+			random_law = {
+				limit = { type = law_type:law_landed_voting }
+				add_amendment = {
+					type = amendment_taikunate
+					sponsor = PREV.ig:ig_landowners
+				}
+			}
+		}
+		scope:restorationist_movement_scope ?= {
+			add_modifier = {
+				name = modifier_taikun_proposal
+				days = short_modifier_time
+			}
+		}
+		scope:shogun_scope ?= {
+			add_career_length = {
+				role = character_role_politician
+				years = 20
+				random_range = { 1.0 1.5 } # 20-30 years
+			}
+		}
+	}
+}
+
+#수정: 개혁의 조기 생성으로 정국 사건이 앞당겨지지 않게 한다.
+ep2_meiji_pulse.6 = { # Ikedaya Incident
+	type = country_event
+	placement = root
+
+	duration = 3
+
+	title = ep2_meiji_pulse.6.t
+	desc = ep2_meiji_pulse.6.d
+	flavor = ep2_meiji_pulse.6.f
+
+	event_image = {
+		video = "votp_conspiring"
+	}
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+
+	icon = "gfx/interface/icons/event_icons/event_fire.dds"
+
+	cooldown = { days = never_fire_again_modifier_time }
+
+	trigger = {
+		has_journal_entry = je_meiji_restoration
+		has_law = law_type:law_shinsengumi
+		any_political_movement = {
+			is_political_movement_type = movement_meiji_restorationist
+			political_movement_radicalism > define:NPolitics|RADICALISM_PROTESTING_THRESHOLD
+		}
+		has_state_in_state_region = STATE_KYOTO
+	}
+
+	cancellation_trigger = {
+		has_revolution = yes
+	}
+
+	immediate = {
+		random_political_movement = {
+			limit = {
+				is_political_movement_type = movement_meiji_restorationist
+			}
+			save_scope_as = restorationist_movement_scope
+		}
+		s:STATE_KYOTO = {
+			random_scope_state = {
+				limit = {
+					owner = ROOT
+				}
+				save_scope_as = kyoto_state
+			}
+		}
+	}
+
+	option = {
+		name = ep2_meiji_pulse.6.a
+		default_option = yes
+		scope:restorationist_movement_scope ?= {
+			add_modifier = {
+				name = modifier_shinsengumi_crackdown
+				days = normal_modifier_time
+			}
+		}
+		random_scope_character = {
+			limit = {
+				var:daimyo_var ?= s:STATE_KYOTO
+			}
+			add_modifier = {
+				name = modifier_shinsengumi_meddling
+				days = normal_modifier_time
+			}
+		}
+		scope:kyoto_state ?= {
+			add_loyalists_in_state = {
+				value = large_radicals
+				pop_type = soldiers
+			}
+			add_loyalists_in_state = {
+				value = large_radicals
+				pop_type = officers
+			}
+		}
+	}
+	option = {
+		name = ep2_meiji_pulse.6.b
+		scope:restorationist_movement_scope ?= {
+			add_modifier = {
+				name = modifier_refrained_from_crackdowns
+				days = normal_modifier_time
+			}
 		}
 	}
 }

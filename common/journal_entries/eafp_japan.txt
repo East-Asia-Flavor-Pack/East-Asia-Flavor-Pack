@@ -237,184 +237,143 @@ je_bakufu_kaikaku = {
 
 	scripted_button = japan_kaikakuha_button
 	scripted_button = japan_hoshuha_button
-	scripted_button = japan_bakufu_kaikaku_button
-	
-
-
-
-
-	status_desc = {
-		
-	}
-
-	progress_desc = {
-		first_valid = {
-			
-		}
-	}
+	#수정: 정치적 행동은 병행 가능하며 네 분야 일지는 공무합체 성공 후 생성.
+	scripted_button = je_meiji_restoration_imperial_marriage
+	scripted_button = je_meiji_restoration_proclaim_imperial_restoration
 
 	immediate = {
 		# hitotsubashiha_influence_var와 nankiha_influence_var는 history에서 설정
 
 		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
+
+		set_variable = eafp_japan_reform_journal_started
 	}
 
-	
+	custom_completion_header = je_bakufu_kaikaku_kobu_gattai_header
+	complete = { eafp_japan_kobu_gattai_conditions = yes }
 
-	complete = { 
-		custom_tooltip = {
-			text = bakufu_kaikaku_kaikoku_clear
-			has_variable = bakufu_kaikaku_kaikoku_complete_var
-		}
-		custom_tooltip = {
-			text = bakufu_kaikaku_zaisei_clear
-			has_variable = bakufu_kaikaku_zaisei_complete_var
-		}
-		custom_tooltip = {
-			text = bakufu_kaikaku_guntai_clear
-			has_variable = bakufu_kaikaku_guntai_complete_var
-		}
-		custom_tooltip = {
-			text = bakufu_kaikaku_naibu_clear
-			has_variable = bakufu_kaikaku_naibu_complete_var
-		}
-	}
-
+	custom_on_completion_header = je_bakufu_kaikaku_on_kobu_gattai_header
 	on_complete = {
-		hidden_effect = {
-			# 파벌에 따른 다이묘 approval
-			remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
-			remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
-			set_local_variable = {
-				name = modifier_multiplier
-				value = {
-					je:je_bakufu_kaikaku = {
-						value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
-						subtract = 50
-						multiply = ROOT.bakufu_hitotsubashiha_hiritsu
-						add = {
-							value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
-							subtract = 50
-							multiply = ROOT.bakufu_nankiha_hiritsu
-						}
-						divide = 50
-					}
-				}
-			}
+		if = {
+			limit = { eafp_japan_kobu_gattai_conditions = yes }
+			set_variable = kobu_gattai
+			remove_variable = kogi_yoron
+			set_variable = bakufu_kaikaku_complete_var
+			set_variable = japan_restoration_complete
+			trigger_event = { id = ep2_meiji.8 popup = yes }
+			eafp_japan_start_kobu_reforms = yes
+			eafp_japan_end_reform_factions = yes
+		}
+	}
+	custom_failure_header = je_bakufu_kaikaku_kogi_yoron_header
+	fail = { eafp_japan_kogi_yoron_conditions = yes }
+	custom_on_failure_header = je_bakufu_kaikaku_on_kogi_yoron_header
+	on_fail = {
+		if = {
+			limit = { eafp_japan_kogi_yoron_conditions = yes }
+			set_variable = kogi_yoron
+			remove_variable = kobu_gattai
+			set_variable = bakufu_kaikaku_complete_var
+			set_variable = japan_restoration_complete
+			set_variable = japan_emperor_restored
+			trigger_event = { id = ep2_meiji.9 popup = yes }
 			if = {
-				limit = { local_var:modifier_multiplier >= 0 }
-				add_modifier = {
-					name = bakufu_kaikaku_daimyo_approval_positive_modifier
-					multiplier = local_var:modifier_multiplier
-					months = 24
-					is_decaying = yes
-				}
-			}
-			else = {
-				add_modifier = {
-					name = bakufu_kaikaku_daimyo_approval_negative_modifier
-					multiplier = {
-						value = local_var:modifier_multiplier
-						multiply = -1
+				limit = {
+					is_player = no
+					c:EZO ?= {
+						is_player = no
+						is_subject_of = ROOT
+						NOT = { has_social_hierarchy = edo_system }
 					}
-					months = 24
-					is_decaying = yes
 				}
+				annex = c:EZO
 			}
-			# 파벌의 영향력 차이에 대한 변화 요인
-			remove_modifier = bakufu_kaikaku_daimyo_influence_modifier
+			eafp_japan_end_reform_factions = yes
+		}
+	}
+
+	event_outcome_completed_effect_desc = {
+		effect = {
+
+			custom_tooltip_no_bullet = ep2_meiji.8.a
 			add_modifier = {
-				name = bakufu_kaikaku_daimyo_influence_modifier
-				multiplier = {
-					value = 0.25
-					subtract = {
-						value = bakufu_hitotsubashiha_hiritsu
-						multiply = bakufu_nankiha_hiritsu
-					}
-					multiply = 4
+				name = modifier_court_and_shogunate
+				days = very_long_modifier_time
+				is_decaying = yes
+			}
+			random_scope_character = {
+				limit = {
+					has_trait = special_character_japanese_emperor
 				}
-				months = 24
+				add_trait = literary
+				add_modifier = {
+					name = modifier_veiled_by_awe
+					days = stupidly_long_modifier_time
+				}
+			}
+
+			custom_tooltip = eafp_japan_start_kobu_reforms_tt
+
+		}
+	}
+
+	event_outcome_failed_effect_desc = {
+		effect = {
+
+			if = {
+				limit = {
+					NOT = {
+						any_political_movement = {
+							is_political_movement_type = movement_modernizer
+						}
+					}
+				}
+				create_political_movement = { type = movement_modernizer }
+			}
+			japan_display_add_meiji_reforms = yes
+
+		}
+	}
+
+	event_outcome_failed_effect_desc = {
+		effect = {
+
+			custom_tooltip_no_bullet = ep2_meiji.9.a
+			add_modifier = {
+				name = modifier_continuity_and_enlightenment
+				days = very_long_modifier_time
 				is_decaying = yes
 			}
 
-			remove_variable = hitotsubashiha_influence_var_monthly_add
-			remove_variable = nankiha_influence_var_monthly_add
-			set_variable = bakufu_kaikaku_complete_var
-		}
-
-		trigger_event = { id = eafp_japan.2999 }
-	}
-
-	invalid = {
-		OR = {
-			NOT = { c:JAP ?= THIS }
-			NOT = { has_law = law_type:law_bakufu }
-			NOT = { has_journal_entry = je_bakuhantaisei }
 		}
 	}
 
-	on_invalid = {
-		hidden_effect = {
-			# 파벌에 따른 다이묘 approval
-			remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
-			remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
-			set_local_variable = {
-				name = modifier_multiplier
-				value = {
-					je:je_bakufu_kaikaku = {
-						value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
-						subtract = 50
-						multiply = ROOT.bakufu_hitotsubashiha_hiritsu
-						add = {
-							value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
-							subtract = 50
-							multiply = ROOT.bakufu_nankiha_hiritsu
-						}
-						divide = 50
-					}
-				}
-			}
-			if = {
-				limit = { local_var:modifier_multiplier >= 0 }
-				add_modifier = {
-					name = bakufu_kaikaku_daimyo_approval_positive_modifier
-					multiplier = local_var:modifier_multiplier
-					months = 24
-					is_decaying = yes
-				}
-			}
-			else = {
-				add_modifier = {
-					name = bakufu_kaikaku_daimyo_approval_negative_modifier
-					multiplier = {
-						value = local_var:modifier_multiplier
-						multiply = -1
-					}
-					months = 24
-					is_decaying = yes
-				}
-			}
-			# 파벌의 영향력 차이에 대한 변화 요인
-			remove_modifier = bakufu_kaikaku_daimyo_influence_modifier
+	event_outcome_failed_effect_desc = {
+		effect = {
+
+			custom_tooltip_no_bullet = ep2_meiji.9.b
 			add_modifier = {
-				name = bakufu_kaikaku_daimyo_influence_modifier
-				multiplier = {
-					value = 0.25
-					subtract = {
-						value = bakufu_hitotsubashiha_hiritsu
-						multiply = bakufu_nankiha_hiritsu
-					}
-					multiply = 4
-				}
-				months = 24
+				name = modifier_taikun_monarchy
+				days = very_long_modifier_time
 				is_decaying = yes
 			}
+			every_scope_character = {
+				limit = {
+					has_variable = house_tokugawa
+					NOT = { has_variable = former_shogun_var }
+				}
+				add_modifier = {
+					name = modifier_taikun_monarchy_character
+					days = stupidly_long_modifier_time
+				}
+			}
 
-			remove_variable = hitotsubashiha_influence_var_monthly_add
-			remove_variable = nankiha_influence_var_monthly_add
-			set_variable = bakufu_kaikaku_complete_var
 		}
 	}
+
+	invalid = { eafp_japan_reform_invalid = yes }
+
+	on_invalid = { eafp_japan_reform_failure_cleanup = yes }
 
 	on_monthly_pulse = {
 		effect = {
@@ -434,11 +393,11 @@ je_bakufu_kaikaku = {
 							add = 200
 						}
 						if = { # 막번체제 저널 진행도
-							limit = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 }  }
+							limit = { has_journal_entry = je_bakuhantaisei je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 2000 }  }
 							add = 100
 						}
 						if = { # 막번체제 저널 진행도
-							limit = { je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
+							limit = { has_journal_entry = je_bakuhantaisei je:je_bakuhantaisei = { "scripted_bar_progress(bakuhantaisei_bakufu_authority_progress_bar)" <= 1000 } }
 							add = 100
 						}
 						if = { # 히토츠바시파의 approval
@@ -567,6 +526,19 @@ je_bakufu_kaikaku = {
 
 			weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
 		}
+
+		random_events = {
+			120 = 0
+			5 = ep2_meiji_pulse.1
+			5 = ep2_meiji_pulse.3
+			5 = ep2_meiji_pulse.4
+			5 = ep2_meiji_pulse.5
+			5 = ep2_meiji_pulse.6
+			5 = ep2_meiji_pulse.7
+			25 = ep2_meiji_pulse.9
+			10 = eafp_japan.4004 # 추가
+			10 = eafp_japan.4008 # 추가
+		}
 	}
 
 	on_weekly_pulse = {
@@ -626,6 +598,8 @@ je_bakufu_kaikaku = {
 	weight = 12000
 
 	should_be_pinned_by_default_uninvolved_or_context = yes
+	transferable = no
+	can_revolution_inherit = no
 }
 
 je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
@@ -648,13 +622,15 @@ je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
 			name = modifier_bakufu_kaikoku_complete
 			months = 60
 		}
+
+		eafp_japan_check_kobu_reforms_complete = yes
 	}
 
 	invalid = {
 		OR = {
 			NOT = { c:JAP ?= THIS }
 			NOT = { has_law = law_type:law_bakufu }
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { eafp_japan_kobu_gattai_completed = yes }
 		}
 	}
 
@@ -700,6 +676,8 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 			name = modifier_bakufu_guntai_complete
 			months = 60
 		}
+
+		eafp_japan_check_kobu_reforms_complete = yes
 	}
 
 	on_monthly_pulse = {
@@ -713,7 +691,7 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 		OR = {
 			NOT = { c:JAP ?= THIS }
 			NOT = { has_law = law_type:law_bakufu }
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { eafp_japan_kobu_gattai_completed = yes }
 		}
 	}
 
@@ -735,7 +713,7 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 		}
 	}
 
-	complete = { 
+	complete = {
 		scope:journal_entry = { is_goal_complete = yes }
 
 		has_law_or_variant = law_type:law_monarchy
@@ -754,7 +732,7 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 		literacy_rate >= 0.25
 	}
 
-	on_complete = { 
+	on_complete = {
 		custom_tooltip = {
 			text = complete_kaikaku
 			set_variable = bakufu_kaikaku_naibu_complete_var
@@ -764,6 +742,8 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 			name = modifier_bakufu_naibu_complete
 			months = 60
 		}
+
+		eafp_japan_check_kobu_reforms_complete = yes
 	}
 
 	is_progressing = {
@@ -818,7 +798,7 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 		OR = {
 			NOT = { c:JAP ?= THIS }
 			NOT = { has_law = law_type:law_bakufu }
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { eafp_japan_kobu_gattai_completed = yes }
 		}
 	}
 
@@ -868,13 +848,15 @@ je_bakufu_zaisei = { # je_meiji_economy에 대응
 			name = modifier_bakufu_zaisei_complete
 			months = 60
 		}
+
+		eafp_japan_check_kobu_reforms_complete = yes
 	}
 
 	invalid = {
 		OR = {
 			NOT = { c:JAP ?= THIS }
 			NOT = { has_law = law_type:law_bakufu }
-			NOT = { has_journal_entry = je_bakufu_kaikaku }
+			NOT = { eafp_japan_kobu_gattai_completed = yes }
 		}
 	}
 

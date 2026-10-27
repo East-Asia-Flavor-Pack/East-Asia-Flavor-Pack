@@ -1,0 +1,142 @@
+﻿# 국가 범위. 바닐라의 개별 변수로 결과를 기록한다.
+eafp_japan_end_reform_factions = {
+	# 파벌에 따른 다이묘 approval
+	remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
+	remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
+	set_local_variable = {
+		name = modifier_multiplier
+		value = {
+			je:je_bakufu_kaikaku = {
+				value = "scripted_bar_progress(bakufu_kaikaku_hitotsubashiha_approval_progress_bar)"
+				subtract = 50
+				multiply = ROOT.bakufu_hitotsubashiha_hiritsu
+				add = {
+					value = "scripted_bar_progress(bakufu_kaikaku_nankiha_approval_progress_bar)"
+					subtract = 50
+					multiply = ROOT.bakufu_nankiha_hiritsu
+				}
+				divide = 50
+			}
+		}
+	}
+	if = {
+		limit = { local_var:modifier_multiplier >= 0 }
+		add_modifier = {
+			name = bakufu_kaikaku_daimyo_approval_positive_modifier
+			multiplier = local_var:modifier_multiplier
+			months = 24
+			is_decaying = yes
+		}
+	}
+	else = {
+		add_modifier = {
+			name = bakufu_kaikaku_daimyo_approval_negative_modifier
+			multiplier = {
+				value = local_var:modifier_multiplier
+				multiply = -1
+			}
+			months = 24
+			is_decaying = yes
+		}
+	}
+	# 파벌의 영향력 차이에 대한 변화 요인
+	remove_modifier = bakufu_kaikaku_daimyo_influence_modifier
+	add_modifier = {
+		name = bakufu_kaikaku_daimyo_influence_modifier
+		multiplier = {
+			value = 0.25
+			subtract = {
+				value = bakufu_hitotsubashiha_hiritsu
+				multiply = bakufu_nankiha_hiritsu
+			}
+			multiply = 4
+		}
+		months = 24
+		is_decaying = yes
+	}
+
+	remove_variable = hitotsubashiha_influence_var_monthly_add
+	remove_variable = nankiha_influence_var_monthly_add
+
+	#추가: 정국 종료로 협상 사건이 취소되어도 임시 불멸 상태가 남지 않게 한다.
+	every_scope_character = {
+		limit = { has_variable = eafp_japan_negotiation_protected }
+		set_character_immortal = no
+		remove_variable = eafp_japan_negotiation_protected
+	}
+}
+
+eafp_japan_start_kobu_reforms = {
+	if = {
+		limit = {
+			eafp_japan_kobu_gattai_completed = yes
+			NOT = { has_variable = kaikaku_start }
+		}
+		set_variable = kaikaku_start
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_bakufu_kaikoku }
+				NOT = { has_variable = bakufu_kaikaku_kaikoku_complete_var }
+			}
+			add_journal_entry = { type = je_bakufu_kaikoku }
+		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_bakufu_guntai }
+				NOT = { has_variable = bakufu_kaikaku_guntai_complete_var }
+			}
+			add_journal_entry = { type = je_bakufu_guntai }
+		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_bakufu_naibu }
+				NOT = { has_variable = bakufu_kaikaku_naibu_complete_var }
+			}
+			add_journal_entry = { type = je_bakufu_naibu }
+		}
+		if = {
+			limit = {
+				NOT = { has_journal_entry = je_bakufu_zaisei }
+				NOT = { has_variable = bakufu_kaikaku_zaisei_complete_var }
+			}
+			add_journal_entry = { type = je_bakufu_zaisei }
+		}
+	}
+}
+
+eafp_japan_check_kobu_reforms_complete = {
+	if = {
+		limit = {
+			eafp_japan_kobu_gattai_completed = yes
+			has_variable = bakufu_kaikaku_kaikoku_complete_var
+			has_variable = bakufu_kaikaku_guntai_complete_var
+			has_variable = bakufu_kaikaku_naibu_complete_var
+			has_variable = bakufu_kaikaku_zaisei_complete_var
+			NOT = { has_variable = eafp_japan_kobu_reforms_rewarded }
+		}
+		set_variable = eafp_japan_kobu_reforms_rewarded
+		trigger_event = { id = eafp_japan.2999 }
+	}
+}
+eafp_japan_clear_imperial_marriage = {
+	every_scope_character = {
+		limit = { has_variable = japan_imperial_marriage }
+		remove_variable = japan_imperial_marriage
+	}
+}
+eafp_japan_reform_failure_cleanup = {
+	# JE가 끝난 뒤에는 재생성하지 않는다. 성공 변수는 설정하지 않는다.
+	set_variable = eafp_japan_reform_journal_started
+	if = {
+		limit = { c:JAP ?= THIS }
+		eafp_japan_end_reform_factions = yes
+	}
+	else = {
+		# 잘못 전달된 일지는 일본의 파벌 수치를 읽지 않고 임시 효과만 정리한다.
+		remove_modifier = bakufu_kaikaku_daimyo_approval_positive_modifier
+		remove_modifier = bakufu_kaikaku_daimyo_approval_negative_modifier
+		remove_modifier = bakufu_kaikaku_daimyo_influence_modifier
+		remove_variable = hitotsubashiha_influence_var_monthly_add
+		remove_variable = nankiha_influence_var_monthly_add
+	}
+}

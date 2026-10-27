@@ -1,4 +1,4 @@
-﻿# 일본 콘텐츠 안내
+# 일본 콘텐츠 안내
 
 바닐라와 EAFP의 일본 콘텐츠를 기능별로 정리한다. 각 절에서 저널의 역할, 이벤트 연결, EAFP가 바꾸거나 추가한 동작을 함께 설명한다. 구현 설명과 흐름도는 활성 스크립트를 기준으로 하며, 별도 계획서는 구현된 기능과 구분한다.
 
@@ -45,7 +45,7 @@ flowchart TD
     S["[M] 쇄국<br/>je_sakoku / 타불령 철회 버튼"]:::M
     R["[M] 명예로운 유신<br/>je_meiji_restoration"]:::M
     K["[A] 막부 개혁<br/>je_bakufu_kaikaku"]:::A
-    KEND["[A] 네 분야 개혁 완료<br/>eafp_japan.2999 / 막번체제 관리 종료"]:::A
+    KEND["[A] 공무합체 후 네 분야 개혁 완료<br/>eafp_japan.2999"]:::A
     BW["[A] 보신전쟁 양측 저널<br/>je_boshin_war_sabaku / tobaku"]:::A
     MEND["[V] 천황 승리 meiji.1<br/>공의여론 ep2_meiji.9"]:::V
     COURT["[V] 공무합체 ep2_meiji.8"]:::V
@@ -58,12 +58,15 @@ flowchart TD
     START -. "군주제·막부법 유지 + 고립주의 해제" .-> R
     START -. "이에나리 은퇴 등 별도 진입 조건" .-> K
     R -->|immediate에서 중복 방지 생성| K
-    K -. "네 개 하위 저널 달성" .-> KEND
-    KEND -->|완료 변수로 종료| B
+    COURT --> FOLLOW["[A] 개국·군제·내정·재정 후속 일지"]:::A
+    FOLLOW -. "네 분야 모두 완료" .-> KEND
+    K -->|정치적 성공 변수로 종료| B
     B -. "권위에 따른 운동 지지·급진성 변화" .-> BW
     R -. "바닐라 보신전쟁 이벤트 .4 또는 .41" .-> BW
-    R -->|천황 승리 또는 공의여론 결말| MEND
-    R -->|공무합체 결말| COURT
+    R -->|천황 승리| MEND
+    K -->|fail: 공의여론| MEND
+    K -->|complete: 공무합체| COURT
+    K -. "성공 결과 수신: 유신 fail" .-> R
     MEND --> MOD
     R -. "japan_restoration_complete 및 개별 조건" .-> POST
     START -. "각 콘텐츠의 개별 조건" .-> SIDE
@@ -75,7 +78,7 @@ flowchart TD
 
 ```
 
-막부 개혁은 명예로운 유신과 **병행하는 별도 경로**다. 현재 `eafp_japan.2999`는 공무합체·공의여론을 자동 선택하거나 메이지 근대화 저널을 생성하지 않는다. 개혁 완료는 `bakufu_kaikaku_complete_var`를 설정하고, 막번체제 저널의 지역·보직 관리 종료로 이어진다. 공무합체 결말 `ep2_meiji.8`에도 근대화 저널군 생성 호출은 없다.
+막부 개혁은 공무합체(`complete`)와 공의여론(`fail`)을 사전 선택 없이 병행하는 정치적 개혁 일지다. 진짜 실패는 천황 측 최종 승리·군주제 상실 등에 따른 `invalid`로 처리한다. 명예로운 유신은 천황 승리와 두 막부 성공 결과의 수신을 담당한다. 공무합체 성공 후에는 네 EAFP 개혁 일지가 시작되고, 공의여론은 바닐라 `.9`를 거쳐 `je_meiji_main`과 후속 근대화 일지로 이어진다. `.2999`는 공무합체 이후 네 분야를 모두 완료한 보상이다.
 
 ---
 
@@ -538,7 +541,7 @@ flowchart TD
     ENTRY["[A] eafp_japan_ensure_reform_journal<br/>미시작·미완료·저널 부재 검사"]:::A
     SOURCES["[M/A] 유신 저널 immediate<br/>.2002 은퇴 / 승계 논쟁·월간 보정"]:::M
     J["[A] je_bakufu_kaikaku<br/>영향력: 인물 명망 등<br/>지지도: 평균 인물 충성도 등"]:::A
-    BTN["[A] 개혁 착수 버튼<br/>개혁파 비율 50% 초과·고립주의 해제"]:::A
+    BTN["[A] 공무합체 성공<br/>네 후속 일지 시작"]:::A
     OPEN["[A] je_bakufu_kaikoku<br/>개항·경제법·주권·승인 조건"]:::A
     ARMY["[A] je_bakufu_guntai<br/>징병·농노·군부·군사기술·병영 개혁"]:::A
     INNER["[A] je_bakufu_naibu<br/>내부 안정·행정·교육 / 누적 120개월"]:::A
@@ -548,7 +551,7 @@ flowchart TD
     DRILL["[A] eafp_japan.2401"]:::A
     SOURCES --> ENTRY
     ENTRY --> J
-    J -->|버튼 선택| BTN
+    J -->|complete| BTN
     BTN --> OPEN
     BTN --> ARMY
     BTN --> INNER
@@ -567,7 +570,9 @@ flowchart TD
 
 ```
 
-`je_bakufu_kaikaku.on_invalid`에도 파벌 modifier 정리와 `bakufu_kaikaku_complete_var` 설정이 있다. 따라서 그 변수만 보고 성공 이벤트 `.2999`가 발생했다고 판단하면 안 된다. `.2999`는 네 분야를 완료한 `on_complete`에서 호출된다.
+`bakufu_kaikaku_complete_var`는 공무합체·공의여론의 정치적 성공에서만 설정한다. `on_invalid`는 성공 변수를 설정하지 않고 별도 실패 알림 없이 파벌 효과를 정리한다. 네 후속 일지는 부모 JE의 활성 여부 대신 공무합체 확정 변수 조합을 검사하므로 부모가 종료되어도 유지된다. 막부법 유지 등 기존 실질 조건과 보상은 보존한다. 각 일지의 완료 콜백이 네 완료 변수를 점검하고, 모두 달성하면 `.2999`를 한 번 호출한다.
+
+사전 개혁 착수 버튼과 전략 선택·전환 버튼은 제거했다. 공무합체는 황실 혼인·막부법·정통성 75 이상 등 준비 조건을 갖춘 뒤 **황실 복원을 위한 탄원**을 실행하고 `.5 → .52`에서 유임을 받아야 완료된다. 준비 조건만 충족하거나 답변을 기다리는 중에는 종료되지 않는다. 별도 쇄신 승인 버튼은 없으며, 네 후속 일지를 선행 조건으로 삼지 않는다. 공의여론도 선거권·천황 통치·도쿠가와의 정부 참여·정통성 75 이상 등 준비 조건을 갖춰 탄원하고 `.5 → .7`의 합의를 수락해야 완료된다. 공의여론을 위한 탄원은 막부법을 요구하지 않으며 이미 달성한 선거권을 유지한다. 두 조건 모두 미충족한 탄원은 정통성이 높아도 `.51 → .6`의 강경한 정국 전개로 이어진다. 분기는 클릭 시점에 정하고, 실제 저널 완료에는 응답 수락과 국가 상태 조건을 모두 요구한다. 기존 `kaikaku_start`는 후속 일지 재생성을 막는다. 공통 제목·본문을 유지하며 두 성공 조건과 효과는 서로 다른 header 아래 항상 함께 표시한다.
 
 ---
 
@@ -672,53 +677,32 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    J["[M] je_meiji_restoration"]:::M
-    INTRO["[M] ep2_meiji.1<br/>막번체제 활성 시 막부 권위 -100"]:::M
-    INTRO -->|"류큐 존재 · 일본에 후속 표시"| RYU_OPEN["[A] eafp_japan.4002<br/>류큐에 자유무역 적용"]:::A
-    STRAT["[V] ep2_meiji.2<br/>공무합체 / 공의여론 방침"]:::V
-    MARR["[M] ep2_meiji.3 황실 혼인<br/>EAFP 파벌 효과 병합"]:::M
-    MJ["[V] je_meiji_imperial_marriage<br/>조약·쇄국·조약항 조건 / 1825일"]:::V
-    MPASS["[V] japan_completed_imperial_marriage 설정"]:::V
-    MFAIL["[V] 실패·만료 시 공의여론으로 전환"]:::V
-    PRO["[V] ep2_meiji.5 왕정복고 선포"]:::V
-    P52["[M] ep2_meiji.52<br/>조슈번 다이묘를 번 식별자로 선택"]:::M
-    P51["[V] ep2_meiji.51 사직 수락"]:::V
-    P6["[M] ep2_meiji.6<br/>번벌 과두정 활성화"]:::M
-    P7["[V] ep2_meiji.7"]:::V
-    IMP["[V] meiji.1 천황 승리<br/>천황 통치·막부법 폐지·안정 6개월 등"]:::V
-    COURT["[V] ep2_meiji.8 공무합체<br/>혼인·막부 쇄신·안정 조건"]:::V
-    PARL["[V] ep2_meiji.9 공의여론<br/>천황·선거권·도쿠가와 IG 지도자 등"]:::V
-    J --> INTRO
-    J -->|방침 버튼| STRAT
-    J -->|혼인 버튼| MARR
-    MARR --> MJ
-    MJ -->|완료| MPASS
-    MJ -->|실패 또는 만료| MFAIL
-    J -->|왕정복고 버튼| PRO
-    PRO -->|공무합체 + 정통성 50 초과| P52
-    PRO -->|그 외| P51
-    P51 -->|낮은 정통성 또는 특정 전통주의 조건| P6
-    P51 -->|그 외| P7
-    P52 -. "쇄신 변수 등 결말 조건" .-> COURT
-    MPASS -. "공무합체 필요 조건의 하나" .-> COURT
-    J -->|complete| IMP
-    J -->|fail / 공무합체 조건 달성| COURT
-    J -->|fail / 공의여론 조건 달성| PARL
-    classDef V fill:#e7f0fc,stroke:#35689a,color:#172b45;
-    classDef M fill:#fff0d9,stroke:#b76a16,color:#4d2b05;
-    classDef A fill:#e5f4e7,stroke:#347c45,color:#173d22;
-    classDef U fill:#eeeeee,stroke:#777777,color:#333333,stroke-dasharray:5 5;
-    classDef N fill:#f4f4f4,stroke:#777777,color:#333333;
-
+    M["명예로운 유신"] --> INTRO["ep2_meiji.1: 존황양이"]
+    M -->|생성 보장| R["막부 개혁: 두 목표 병행"]
+    R -->|황실 혼인| E3["ep2_meiji.3 → 혼인 과제"]
+    E3 -->|완료| MARR["혼인 성과"]
+    E3 -->|실패·만료| MEND["혼인 과제만 종료"]
+    R -->|황실 복원을 위한 탄원| E5["ep2_meiji.5"]
+    MARR -. "공무합체 준비 조건의 일부" .-> E5
+    E5 -->|준비 조건 충족·정통성 75 이상| E52["ep2_meiji.52 → 쇼군 유임"]
+    E5 -->|공의여론 준비 조건 충족·정통성 75 이상| E7["ep2_meiji.7: 정치적 합의 수락"]
+    E5 -->|두 준비 조건 모두 미충족| E51["ep2_meiji.51: 정권 반환"]
+    E51 -->|정통성 무관| E6["ep2_meiji.6: 강경한 협상 결과"]
+    R -->|complete| KOBU["공무합체 .8 → 네 EAFP 후속 개혁"]
+    R -->|fail| KOGI["공의여론 .9 → 바닐라 근대화"]
+    KOBU -. "성공 결과 수신" .-> MF["명예로운 유신 fail"]
+    KOGI -. "성공 결과 수신" .-> MF
+    M -->|complete| EMP["meiji.1: 천황 승리"]
+    EMP -.-> INV["막부 개혁 invalid"]
 ```
 
-`fail`은 이 저널에서 **막부 측 승리**를 표현하는 엔진 분기 이름이다. 일반적인 패배로 읽으면 안 된다. 천황 승리와 두 막부 결말은 `japan_restoration_complete`를 설정하지만, 근대화 저널군 호출 여부는 서로 다르다. 군주제 상실에 따른 `on_invalid`도 이 변수를 설정하므로, 후속 저널은 각자의 추가 조건까지 확인해야 한다.
+막부 개혁의 `fail`은 공의여론이라는 대체 성공이며, 명예로운 유신의 `fail`은 두 막부 성공 결과를 받아 종료하는 역할이다. `.8`·`.9`는 개혁 JE에서만 호출한다. 두 노선 변수 `kobu_gattai`·`kogi_yoron`은 해당 성공 시에만 설정한다. `japan_restoration_complete`는 모든 정치적 종료에서 쓰이므로, 단독으로 성공을 판정하지 않는다. 공의여론과 천황 승리에 모두 쓰이는 `japan_emperor_restored`도 EAFP 개혁 완료 표식과 함께 구분한다.
 
 ### 정국 사건과 EAFP 효과
 
 ```mermaid
 flowchart TD
-    J["[M] 명예로운 유신의 월간 무작위 사건"]:::M
+    J["[M] 막부 개혁의 월간 정국 사건<br/>명예로운 유신 활성 중에만 발생"]:::M
     N["[M] ep2_meiji_pulse.1 나마무기 사건"]:::M
     GP["[M] ep2_meiji_pulse.11 외국 측 대응"]:::M
     REPLY["[A] eafp_japan.4006 일본 측 회답"]:::A
@@ -726,7 +710,7 @@ flowchart TD
     REFUSE["[A] 배상 거부<br/>해당 주 독립성 +10 / 충성도 -10"]:::A
     BOMB["[M] ep2_meiji_pulse.2<br/>거부 뒤 60일 후 사건"]:::M
     PULSE["[M] ep2_meiji_pulse.3 / .4 / .5 / .9<br/>막부 권위·지역·파벌 효과 반영"]:::M
-    IKEDA["[V] ep2_meiji_pulse.6<br/>[M] 공용 modifier를 통한 간접 효과"]:::M
+    IKEDA["[M] ep2_meiji_pulse.6<br/>유신 활성 조건 및 공용 modifier 효과"]:::M
     CHO["[M] ep2_meiji_pulse.7 → .8<br/>조슈 관련 사건과 후속 처리"]:::M
     OPEN["[A] eafp_japan.4001<br/>외교전·외교 행동에 따른 개항 요구"]:::A
     VISIT["[A] 상경 버튼 → eafp_japan.2009"]:::A
@@ -747,6 +731,8 @@ flowchart TD
     classDef N fill:#f4f4f4,stroke:#777777,color:#333333;
 
 ```
+
+정국 사건 풀은 유신 JE에서 개혁 JE로 옮겼다. 무사건 120과 사건 가중치 합 75를 그대로 유지했으며, 개혁의 파벌 사건 풀은 별도로 유지한다. 최초 사건은 모두 유신 JE 활성 조건을 검사하므로 개항 전 조기 생성으로 발생 시점이 앞당겨지지 않는다. 후속 사건은 월간 풀에 추가하지 않았다.
 
 나마무기 사건의 일본 측 후속 회답은 `eafp_japan.4006`에서 처리한다. `ep2_meiji_pulse.9`에는 EAFP의 파벌·권위 효과가 함께 들어 있다. 바닐라 사건이 사용하는 modifier에 월간 막부 권위·지역 변화량을 추가한 경우에는 이벤트 본문 교체와 구분한다.
 
@@ -852,7 +838,7 @@ flowchart TD
 
 ```
 
-현재 EAFP는 `je_meiji_restoration`만 교체한다. 같은 바닐라 파일의 `je_meiji_imperial_marriage`, `je_meiji_main`, `je_meiji_economy`, `je_meiji_army`, `je_meiji_diplomacy`는 바닐라 정의를 사용한다. `meiji.*`와 이와쿠라 사건도 바닐라 정의를 사용한다. 경제·외교 하위 저널은 완료 변수와 `meiji_var`를 갱신하고, 군제 하위 저널만 `meiji.3`을 직접 호출한다. 이와쿠라 `.6`의 두 선택지는 유럽 체류 기간을 정하며, 이후 `.8` 경유 여부는 실론의 식민 상태 조건으로 갈린다. 근대화 저널의 지위체계 변경 버튼은 바닐라 공용 `set_hierarchy_event.3`으로 연결된다.
+현재 EAFP는 `je_meiji_restoration`과 `je_meiji_imperial_marriage`를 교체한다. 혼인 과제의 실패·만료는 강제 노선 전환 없이 혼인만 정리한다. `je_meiji_main`, `je_meiji_economy`, `je_meiji_army`, `je_meiji_diplomacy`는 바닐라 정의를 유지하며 공의여론과 천황 승리에서 이어진다. 공무합체에서는 별도의 네 EAFP 후속 개혁을 진행한다. `meiji.*`와 이와쿠라 사건도 바닐라 정의를 사용한다. 경제·외교 하위 저널은 완료 변수와 `meiji_var`를 갱신하고, 군제 하위 저널만 `meiji.3`을 직접 호출한다. 이와쿠라 `.6`의 두 선택지는 유럽 체류 기간을 정하며, 이후 `.8` 경유 여부는 실론의 식민 상태 조건으로 갈린다. 근대화 저널의 지위체계 변경 버튼은 바닐라 공용 `set_hierarchy_event.3`으로 연결된다.
 
 ---
 
@@ -1035,8 +1021,8 @@ flowchart TD
 | --- | --- | --- | --- |
 | `boshin_war` | — | — | .9, .10, .11 |
 | `eafp_japan` | — | — | .1, .2, .3, .4, .5, .6, .7, .9, .11, .12, .1001, .1002, .1003, .1004, .1005, .1006, .1007, .1009, .1012, .1014, .1015, .1018, .1019, .1020, .2002, .2004, .2009, .2106, .2107, .2181, .2182, .2183, .2184, .2401, .2999, .4001, .4002, .4004, .4006, .4008 |
-| `ep2_meiji` | .2, .5, .7, .8, .9, .51, .1000 | .1, .3, .4, .6, .41, .52 | — |
-| `ep2_meiji_pulse` | .6 | .1, .2, .3, .4, .5, .7, .8, .9, .11 | — |
+| `ep2_meiji` | .2(일반 진행에서 미호출), .8, .9, .1000 | .1, .3, .4, .5, .6, .7, .41, .51, .52 | — |
+| `ep2_meiji_pulse` | — | .1, .2, .3, .4, .5, .6, .7, .8, .9, .11 | — |
 | `ep2_sakoku` | .3, .4, .5 | .2 | — |
 | `ezo_republic` | .1 | .2 | — |
 | `formosa_expedition_events` | — | — | .1, .2 |
@@ -1086,3 +1072,9 @@ flowchart TD
 바닐라 조사 경로는 `D:/SteamLibrary/steamapps/common/Victoria 3/game`이다. 특히 북방 원본 저널 파일명은 `common/journal_entries/07_hokkaido.txt`이며, 모드 교체 파일명과 다르다.
 
 이 문서의 흐름도는 활성 정의, 명시적 호출, 저널의 생성·완료·실패·무효화와 정기 이벤트 후보를 기준으로 한다. `show_as_tooltip`·`event_outcome_*_effect_desc`의 표시용 효과는 실행 경로로 세지 않는다. 무작위 사건의 발생 빈도와 실제 게임 화면·스코프 동작은 별도의 게임 실행 검증이 필요하다.
+
+### 막부 개혁 리워크 검증
+
+`tools/validate_japan_reform.py`는 실제 스크립트의 조건을 읽어 두 JE의 평가 순서를 바꾼 공무합체·공의여론·천황 승리·군주제 상실 시나리오, 네 후속 일지의 독립 유지, 보상 중복 방지와 병행 추진을 검사한다. 두 결말의 탄원 전·응답 대기 중 조기 완료 방지, 과거 성과 표식 초기화, 정통성 74/75 경계, 클릭 시점의 조건 전달, 조건 미충족 시 강경 경로, 공의여론의 비막부법 버튼 사용과 선거권 유지도 검사한다. 파일 구조·인코딩·정국 사건 가중치·세 언어의 header 키도 확인한다. 이 검사는 게임 엔진을 대체하지 않으며, 게임 내 알림 표현·이벤트 창·초상화·법률 변경 후 인물 전환은 플레이 검증이 필요하다.
+
+추가 다이묘·번 식별 검사도 통과했다. 기존 `validate_japan_regional_content.py`의 옛 캐시 함수 기대값과 `validate_japan_office_roles.py`의 옛 초기 인물 템플릿 기대값은 현재 코드와 맞지 않아 실패하며, 동일 실패를 수정 전 HEAD의 파일 내용으로도 재현했다. 이번 리워크에서는 이 별도 검사와 인물·지역 구현을 변경하지 않았다.
