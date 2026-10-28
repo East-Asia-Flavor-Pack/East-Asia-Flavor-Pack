@@ -305,7 +305,6 @@ je_bakufu_kaikaku_invalid_header: "#bold 막부 개혁 실패 조건:#!\n"
 | `japan_restoration_complete` | 정치적 유신 정국의 종료. 개혁의 두 성공 콜백, 유신의 천황 승리·군주제 상실 콜백에서 설정 |
 | `japan_emperor_restored` | 바닐라대로 천황 승리와 공의여론에서 설정. 공무합체는 설정하지 않음 |
 | `bakufu_kaikaku_complete_var` | 기존 EAFP 연동용 개혁 성공 표식. 공무합체·공의여론에서만 설정하고 `on_invalid`에서는 설정하지 않음 |
-| `eafp_japan_reform_journal_started` | 기존 부모 JE 생성 방지 표식. 성공·실패 후에도 유지 |
 | `kaikaku_start` | 기존 네 분야 일지 시작 표식. 공무합체 성공 후 시작 effect에서 설정 |
 
 공무합체 확정은 아래 조합으로 검사한다. 공의여론은 두 노선 변수의 위치를 바꾸고 `japan_emperor_restored`의 존재도 확인한다. 공용 scripted trigger로 묶어 재사용하되, 판정 결과를 별도 변수로 다시 저장하지 않는다.

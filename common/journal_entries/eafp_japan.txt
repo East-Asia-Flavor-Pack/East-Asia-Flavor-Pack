@@ -237,16 +237,14 @@ je_bakufu_kaikaku = {
 
 	scripted_button = japan_kaikakuha_button
 	scripted_button = japan_hoshuha_button
-	#수정: 정치적 행동은 병행 가능하며 네 분야 일지는 공무합체 성공 후 생성.
+
+
 	scripted_button = je_meiji_restoration_imperial_marriage
 	scripted_button = je_meiji_restoration_proclaim_imperial_restoration
 
 	immediate = {
 		# hitotsubashiha_influence_var와 nankiha_influence_var는 history에서 설정
-
 		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
-
-		set_variable = eafp_japan_reform_journal_started
 	}
 
 	custom_completion_header = je_bakufu_kaikaku_kobu_gattai_header
@@ -254,42 +252,36 @@ je_bakufu_kaikaku = {
 
 	custom_on_completion_header = je_bakufu_kaikaku_on_kobu_gattai_header
 	on_complete = {
-		if = {
-			limit = { eafp_japan_kobu_gattai_conditions = yes }
-			set_variable = kobu_gattai
-			remove_variable = kogi_yoron
-			set_variable = bakufu_kaikaku_complete_var
-			set_variable = japan_restoration_complete
-			trigger_event = { id = ep2_meiji.8 popup = yes }
-			eafp_japan_start_kobu_reforms = yes
-			eafp_japan_end_reform_factions = yes
-		}
+		set_variable = kobu_gattai
+		remove_variable = kogi_yoron
+		set_variable = bakufu_kaikaku_complete_var
+		set_variable = japan_restoration_complete
+		trigger_event = { id = ep2_meiji.8 popup = yes }
+		eafp_japan_start_kobu_reforms = yes
+		eafp_japan_end_reform_factions = yes
 	}
 	custom_failure_header = je_bakufu_kaikaku_kogi_yoron_header
 	fail = { eafp_japan_kogi_yoron_conditions = yes }
 	custom_on_failure_header = je_bakufu_kaikaku_on_kogi_yoron_header
 	on_fail = {
+		set_variable = kogi_yoron
+		remove_variable = kobu_gattai
+		set_variable = bakufu_kaikaku_complete_var
+		set_variable = japan_restoration_complete
+		set_variable = japan_emperor_restored
+		trigger_event = { id = ep2_meiji.9 popup = yes }
 		if = {
-			limit = { eafp_japan_kogi_yoron_conditions = yes }
-			set_variable = kogi_yoron
-			remove_variable = kobu_gattai
-			set_variable = bakufu_kaikaku_complete_var
-			set_variable = japan_restoration_complete
-			set_variable = japan_emperor_restored
-			trigger_event = { id = ep2_meiji.9 popup = yes }
-			if = {
-				limit = {
+			limit = {
+				is_player = no
+				c:EZO ?= {
 					is_player = no
-					c:EZO ?= {
-						is_player = no
-						is_subject_of = ROOT
-						NOT = { has_social_hierarchy = edo_system }
-					}
+					is_subject_of = ROOT
+					NOT = { has_social_hierarchy = edo_system }
 				}
-				annex = c:EZO
 			}
-			eafp_japan_end_reform_factions = yes
+			annex = c:EZO
 		}
+		eafp_japan_end_reform_factions = yes
 	}
 
 	event_outcome_completed_effect_desc = {
