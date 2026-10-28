@@ -11,9 +11,12 @@ eafp_japan_imperial_victory = {
 			has_trait = special_character_japanese_emperor
 		}
 	}
-	NOT = {
-		any_civil_war = {
-			civil_war_progress > 0
+	custom_tooltip = {
+		text = is_not_in_civil_war_tt
+		NOT = {
+			any_civil_war = {
+				civil_war_progress > 0
+			}
 		}
 	}
 	NOT = {
@@ -32,31 +35,54 @@ eafp_japan_imperial_victory = {
 }
 
 eafp_japan_kobu_gattai_completed = {
-	has_variable = bakufu_kaikaku_complete_var
-	has_variable = japan_restoration_complete
-	has_variable = kobu_gattai
-	NOT = { has_variable = kogi_yoron }
+	custom_tooltip = {
+		text = kobu_gattai_trigger_conditions_tt
+		has_variable = bakufu_kaikaku_complete_var
+		has_variable = japan_restoration_complete
+		has_variable = kobu_gattai
+		NOT = { has_variable = kogi_yoron }
+	}
+	custom_tooltip = {
+		text = bakufu_kaikaku_complete_tt
+		has_variable = bakufu_kaikaku_complete_var
+	}
 }
 eafp_japan_kogi_yoron_completed = {
-	has_variable = bakufu_kaikaku_complete_var
-	has_variable = japan_restoration_complete
-	has_variable = kogi_yoron
-	has_variable = japan_emperor_restored
-	NOT = { has_variable = kobu_gattai }
+	custom_tooltip = {
+		text = kogi_yoron_trigger_conditions_tt
+		has_variable = bakufu_kaikaku_complete_var
+		has_variable = japan_restoration_complete
+		has_variable = kogi_yoron
+		has_variable = japan_emperor_restored
+		NOT = { has_variable = kobu_gattai }
+	}
+	custom_tooltip = {
+		text = bakufu_kaikaku_complete_tt
+		has_variable = bakufu_kaikaku_complete_var
+	}
 }
 eafp_japan_shogunate_victory_completed = {
-	OR = {
-		eafp_japan_kobu_gattai_completed = yes
-		eafp_japan_kogi_yoron_completed = yes
+	custom_tooltip = {
+		text = completed_meiji_restoration_with_shogunate_victory_tt
+		OR = {
+			eafp_japan_kobu_gattai_completed = yes
+			eafp_japan_kogi_yoron_completed = yes
+		}
 	}
 }
 eafp_japan_reform_common_conditions = {
 	c:JAP ?= THIS
 	has_journal_entry = je_meiji_restoration
-	NOT = { has_variable = japan_restoration_complete }
-	NOT = { has_variable = bakufu_kaikaku_complete_var }
+	custom_tooltip = {
+		text = eafp_japan_reform_not_completed_tt
+		NOT = { has_variable = japan_restoration_complete }
+		NOT = { has_variable = bakufu_kaikaku_complete_var }
+	}
 	has_law = law_type:law_monarchy
-	NOT = { any_civil_war = { civil_war_progress > 0 } }
+	custom_tooltip = {
+		text = is_not_in_civil_war_tt
+		NOT = { any_civil_war = { civil_war_progress > 0 } }
+	}
 	NOT = { eafp_japan_imperial_victory = yes }
 	trigger_if = {
 		limit = {
@@ -94,16 +120,22 @@ eafp_japan_kobu_gattai_conditions = {
 eafp_japan_kogi_yoron_petition_ready = {
 	eafp_japan_reform_common_conditions = yes
 	legitimacy >= 75
-	country_has_voting_franchise = yes
+	custom_tooltip = {
+		text = is_democratic_tt
+		country_has_voting_franchise = yes
+	}
 	ig:ig_landowners = {
-		is_in_government = yes
+		custom_tooltip = {
+			text = landowners_in_government_tt
+			is_in_government = yes
+		}
 		custom_tooltip = {
 			text = landowners_leader_is_tokugawa_tt
 			leader = { has_variable = house_tokugawa }
 		}
 	}
 	custom_tooltip = {
-		text = shogun_restored_emperor_tt
+		text = ruler_is_japanese_emperor_tt
 		ruler = { has_variable = house_yamato }
 	}
 }
@@ -114,7 +146,7 @@ eafp_japan_kogi_yoron_conditions = {
 		has_variable = je_meiji_restoration_proclaim_imperial_restoration_var
 		has_variable = japan_taikunate_var
 	}
-	# 두 조건이 동시에 충족될 경우 공무합체만 확정한다.
+	# 두 조건이 동시에 충족될 경우 공무합체 우선
 	hidden_trigger = { NOT = { eafp_japan_kobu_gattai_conditions = yes } }
 }
 eafp_japan_reform_invalid = {
