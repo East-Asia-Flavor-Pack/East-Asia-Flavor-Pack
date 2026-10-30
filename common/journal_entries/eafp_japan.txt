@@ -120,6 +120,7 @@ je_bakuhantaisei = {
 
 	invalid = {
 		NOT = { has_law = law_type:law_bakufu }
+		
 	}
 
 	on_invalid = {
@@ -245,10 +246,19 @@ je_bakufu_kaikaku = {
 	immediate = {
 		# hitotsubashiha_influence_var와 nankiha_influence_var는 history에서 설정
 		weekly_pulse_bakufu_kaikaku_progress_bar_faction = yes
+		set_variable = { name = eafp_japan_kobu_gattai_timer_var value = 0 }
+		set_variable = { name = eafp_japan_kogi_yoron_timer_var value = 0 }
 	}
 
 	custom_completion_header = je_bakufu_kaikaku_kobu_gattai_header
-	complete = { eafp_japan_kobu_gattai_conditions = yes }
+	complete = {
+		custom_tooltip = {
+			text = eafp_japan_kobu_gattai_six_months_tt
+			has_variable = eafp_japan_kobu_gattai_timer_var
+			var:eafp_japan_kobu_gattai_timer_var >= 6
+		}
+		eafp_japan_kobu_gattai_conditions = yes
+	}
 
 	custom_on_completion_header = je_bakufu_kaikaku_on_kobu_gattai_header
 	on_complete = {
@@ -263,7 +273,14 @@ je_bakufu_kaikaku = {
 		eafp_japan_end_reform_factions = yes
 	}
 	custom_failure_header = je_bakufu_kaikaku_kogi_yoron_header
-	fail = { eafp_japan_kogi_yoron_conditions = yes }
+	fail = {
+		custom_tooltip = {
+			text = eafp_japan_kogi_yoron_six_months_tt
+			has_variable = eafp_japan_kogi_yoron_timer_var
+			var:eafp_japan_kogi_yoron_timer_var >= 6
+		}
+		eafp_japan_kogi_yoron_conditions = yes
+	}
 	custom_on_failure_header = je_bakufu_kaikaku_on_kogi_yoron_header
 	on_fail = {
 		custom_tooltip = {
@@ -376,6 +393,31 @@ je_bakufu_kaikaku = {
 
 	on_monthly_pulse = {
 		effect = {
+			# 바닐라 유신 타이머처럼 응답 수락을 포함한 성공 조건을 월마다 검사한다.
+			# 두 타이머는 독립적으로 누적하며, 조건이 깨진 분기만 초기화한다.
+			if = {
+				limit = { eafp_japan_kobu_gattai_conditions = yes }
+				if = {
+					# 이미 진행 중인 저장에서도 첫 월간 검사부터 집계한다.
+					limit = { NOT = { has_variable = eafp_japan_kobu_gattai_timer_var } }
+					set_variable = { name = eafp_japan_kobu_gattai_timer_var value = 0 }
+				}
+				change_variable = { name = eafp_japan_kobu_gattai_timer_var add = 1 }
+			}
+			else = {
+				set_variable = { name = eafp_japan_kobu_gattai_timer_var value = 0 }
+			}
+			if = {
+				limit = { eafp_japan_kogi_yoron_conditions = yes }
+				if = {
+					limit = { NOT = { has_variable = eafp_japan_kogi_yoron_timer_var } }
+					set_variable = { name = eafp_japan_kogi_yoron_timer_var value = 0 }
+				}
+				change_variable = { name = eafp_japan_kogi_yoron_timer_var add = 1 }
+			}
+			else = {
+				set_variable = { name = eafp_japan_kogi_yoron_timer_var value = 0 }
+			}
 			bakufu_kaikaku_progress_bar_monthly_calc = yes
 
 			# 히토츠바시 vs 난키 대립 이벤트
