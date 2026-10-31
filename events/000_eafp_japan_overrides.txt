@@ -2,6 +2,7 @@
 # Keep in events/ so these definitions load before vanilla events/japan_events/.
 # Events use plain IDs; REPLACE: is not supported by the event loader.
 
+namespace = meiji
 namespace = ep2_meiji
 namespace = ep2_meiji_pulse
 namespace = ezo_republic
@@ -11,6 +12,224 @@ namespace = ep2_sakoku
 
 
 # --- Meiji restoration and pulse events ---
+
+#수정: 다이묘 폐지는 폐번치현 버튼 사건이 담당한다.
+meiji.1 = {
+	type = country_event
+	placement = root
+	title = meiji.1.t
+	desc = meiji.1.d
+	flavor = meiji.1.f
+
+	duration = 3
+
+	icon = "gfx/interface/icons/faction_icons/faction_japan_imperial_house.dds"
+
+	gui_window = event_window_1char_tabloid
+
+	left_icon = ROOT.var:emperor_var
+
+	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
+	on_opened_soundeffect = "event:/SFX/Events/misc/1Character_Banner"
+
+	trigger = {
+		# triggered by meiji restoration JE
+	}
+
+	immediate = {
+		set_variable = {
+			name = meiji_var
+			value = 0
+		}
+		ig:ig_landowners ?= {
+			save_scope_as = shogunate_ig
+		}
+		if = {
+			limit = {
+				has_gov_regency = yes
+			}
+			remove_regency_modifier = yes
+		}
+		var:emperor_var ?= { # Silence the error log
+			save_scope_as = meiji_ruler
+		}
+		add_journal_entry = {
+			type = je_meiji_main
+		}
+		random_law = {
+			limit = {
+				type = law_type:law_strict_edo_system
+			}
+			currently_active_law_in_group = {
+				save_scope_as = edo_caste_system_law
+			}
+		}
+	}
+
+	option = { # favor the industrialists
+		name = meiji.1.a
+		default_option = yes
+		ig:ig_industrialists ?= {
+			add_modifier = {
+				name = meiji_favored_ig
+				days = very_long_modifier_time
+			}
+		}
+	}
+	option = { # favor the intellectuals
+		name = meiji.1.b
+		ig:ig_intelligentsia ?= {
+			add_modifier = {
+				name = meiji_favored_ig
+				days = very_long_modifier_time
+			}
+		}
+	}
+	after = {
+		if = {
+			limit = {
+				any_scope_state = {
+					state_region = s:STATE_KANTO
+				}
+			}
+			set_capital = STATE_KANTO
+
+			s:STATE_KANTO = {
+				random_scope_state = {
+			        set_hub_name = {
+			            type = city
+			            name = HUB_NAME_STATE_KANTO_city_meiji
+			        }
+		        }
+			}
+        }
+		scope:shogunate_ig = {
+			hidden_effect = {
+				if = {
+					limit = {
+						has_ideology = ideology:ideology_japan_hierarchic
+					}
+					remove_ideology = ideology_japan_hierarchic
+				}
+				if = {
+					limit = {
+						has_ideology = ideology:ideology_japan_hierarchic_2
+					}
+					remove_ideology = ideology_japan_hierarchic_2
+				}
+				if = {
+					limit = {
+						has_ideology = ideology:ideology_japan_paternalistic
+					}
+					remove_ideology = ideology_japan_paternalistic
+				}
+				add_ideology = ideology_paternalistic
+				add_ideology = ideology_hierarchic
+			}
+			show_as_tooltip = {
+				remove_ideology = ideology_japan_hierarchic_2
+				add_ideology = ideology_hierarchic
+			}
+			set_interest_group_name = ig_kazoku
+		}
+		# 폐번치현은 유신 일지의 버튼으로 이미 시행된다.
+		if = {
+			limit = {
+				NOT = {
+					any_political_movement = {
+						is_political_movement_type = movement_modernizer
+					}
+				}
+			}
+			create_political_movement = { type = movement_modernizer }
+		}
+		if = {
+			limit = {
+				NOT = { has_variable = completed_je_meiji_economy }
+				in_default = no
+				any_scope_state = {
+					filter = {
+						is_incorporated = yes
+					}
+					any_scope_building = {
+						is_building_type = building_urban_center
+						level >= 5
+					}
+					has_building = building_railway
+					percent > 0.7
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_economy # If the player manages to skip je_meiji_economy we still need to set the variable
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_economy
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_law_or_variant = law_type:law_serfdom }
+				ig:ig_armed_forces ?= {
+					is_powerful = no
+					is_in_government = no
+				}
+				has_technology_researched = napoleonic_warfare
+				NOT = {
+					any_scope_building = {
+						is_building_type = building_barrack
+						OR = {
+							has_active_production_method = pm_no_organization
+							# has_active_production_method = pm_no_artillery
+							# has_active_production_method = pm_cannon_artillery
+						}
+					}
+				}
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			trigger_event = {
+				id = meiji.3
+			}
+		}
+		else = {
+			add_journal_entry = {
+				type = je_meiji_army
+			}
+		}
+		if = {
+			limit = {
+				NOT = { has_dlc_feature = ep2_content }
+				NOT = { has_law_or_variant = law_type:law_traditionalism }
+				is_subject = no
+				is_country_type = recognized
+			}
+			change_variable = {
+				name = meiji_var
+				add = 1
+			}
+			set_variable = completed_je_meiji_diplomacy # If the player manages to skip je_meiji_diplomacy we still need to set the variable
+		}
+		else_if = {
+			limit = {
+				NOT = { has_dlc_feature = ep2_content }
+				OR = {
+					has_law_or_variant = law_type:law_traditionalism
+					is_subject = yes
+					is_country_type = unrecognized
+				}
+			}
+			add_journal_entry = {
+				type = je_meiji_diplomacy
+			}
+		}
+	}
+}
 
 #수정: 바닐라 존황양이 사건에 막부 권위 감소를 추가.
 ep2_meiji.1 = { # Sonnō Jōi

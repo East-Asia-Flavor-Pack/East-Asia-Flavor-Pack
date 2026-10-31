@@ -47,9 +47,11 @@ eafp_japan_release_region_state = {
 
 # Country scope. Remove the previous regional influence before measuring base loyalty.
 eafp_japan_clear_daimyo_regional_loyalty = {
-    every_scope_character = {
-        limit = { has_modifier = eafp_japan_regional_daimyo_loyalty_modifier }
-        remove_modifier = eafp_japan_regional_daimyo_loyalty_modifier
+    hidden_effect = {
+        every_scope_character = {
+            limit = { has_modifier = eafp_japan_regional_daimyo_loyalty_modifier }
+            remove_modifier = eafp_japan_regional_daimyo_loyalty_modifier
+        }
     }
 }
 
@@ -112,6 +114,15 @@ eafp_japan_update_region_daimyo_loyalty = {
 # Only called in JAP scope. Foreign portions are released, never assigned JAP L.
 eafp_japan_refresh_region = {
     remove_variable = eafp_japan_region_active_$STATE$
+    # State links remain usable after regional administration ends.
+    remove_variable = eafp_japan_region_state_$STATE$
+    if = {
+        limit = {
+            NOT = { has_global_variable = japan_daimyo_abolished }
+            exists = s:STATE_$STATE$.region_state:JAP
+        }
+        set_variable = { name = eafp_japan_region_state_$STATE$ value = s:STATE_$STATE$.region_state:JAP }
+    }
     s:STATE_$STATE$ = {
         every_scope_state = {
             if = {
@@ -130,8 +141,6 @@ eafp_japan_refresh_region = {
             set_variable = eafp_japan_region_initialized_$STATE$
         }
         set_variable = eafp_japan_region_active_$STATE$
-        # Keep the UI linked to JAP's actual state, including split regions.
-        set_variable = { name = eafp_japan_region_state_$STATE$ value = s:STATE_$STATE$.region_state:JAP }
         # Synchronize mission modifiers before evaluating the state's monthly totals.
         s:STATE_$STATE$.region_state:JAP = {
             if = {
@@ -170,7 +179,6 @@ eafp_japan_refresh_region = {
     }
     else = {
         remove_variable = eafp_japan_daimyo_average_loyalty_$STATE$
-        remove_variable = eafp_japan_region_state_$STATE$
         s:STATE_$STATE$ = { every_scope_state = { eafp_japan_release_region_state = yes } }
         # A mission may still point at the lost state object. Clear its country cost
         # explicitly instead of relying on region_state:JAP resolving after loss.
@@ -263,7 +271,7 @@ eafp_japan_refresh_region_daimyos = {
         clear_variable_list = eafp_japan_region_daimyos_$STATE$
     }
     if = {
-        limit = { eafp_japan_regional_active = yes }
+        limit = { NOT = { has_global_variable = japan_daimyo_abolished } }
         every_scope_character = {
             limit = {
                 is_character_alive = yes
@@ -326,25 +334,15 @@ eafp_japan_monthly_regions = {
 }
 
 eafp_japan_end_regions = {
-    if = {
-        limit = { c:JAP ?= THIS }
+        set_variable = eafp_japan_regional_ended
         eafp_japan_refresh_regions = yes
         eafp_japan_clear_daimyo_regional_loyalty = yes
-        every_scope_state = {
-            limit = { has_modifier = eafp_japan_regional_loyalty }
-            remove_modifier = eafp_japan_regional_loyalty
+        hidden_effect = {
+            every_scope_state = {
+                limit = { has_modifier = eafp_japan_regional_loyalty }
+                remove_modifier = eafp_japan_regional_loyalty
+            }
         }
-        remove_variable = eafp_japan_region_state_HOKKAIDO
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKKAIDO } clear_variable_list = eafp_japan_region_daimyos_HOKKAIDO }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOHOKU } clear_variable_list = eafp_japan_region_daimyos_TOHOKU }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KANTO } clear_variable_list = eafp_japan_region_daimyos_KANTO }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_HOKUSHINETSU } clear_variable_list = eafp_japan_region_daimyos_HOKUSHINETSU }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_TOKAI } clear_variable_list = eafp_japan_region_daimyos_TOKAI }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KYOTO } clear_variable_list = eafp_japan_region_daimyos_KYOTO }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KANSAI } clear_variable_list = eafp_japan_region_daimyos_KANSAI }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_CHUGOKU } clear_variable_list = eafp_japan_region_daimyos_CHUGOKU }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_SHIKOKU } clear_variable_list = eafp_japan_region_daimyos_SHIKOKU }
-        if = { limit = { has_variable_list = eafp_japan_region_daimyos_KYUSHU } clear_variable_list = eafp_japan_region_daimyos_KYUSHU }
         remove_variable = eafp_japan_daimyo_average_loyalty_HOKKAIDO
         remove_variable = eafp_japan_loyalty_HOKKAIDO
         remove_variable = eafp_japan_independency_HOKKAIDO
@@ -415,7 +413,6 @@ eafp_japan_end_regions = {
         remove_variable = eafp_japan_region_active_KYUSHU
         remove_variable = eafp_japan_loyalty_delta_KYUSHU
         remove_variable = eafp_japan_independency_delta_KYUSHU
-    }
 }
 
 add_bakuhantaisei_state_loyalty = {
