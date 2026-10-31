@@ -135,11 +135,17 @@ def main():
     assert "remove_character_role = politician" not in effects
 
     journal = block(read(paths[6]), "je_bakuhantaisei")
+    abolition = block(effects, "country_clear_bakufu_politicians")
+    assert abolition.index("set_global_variable = japan_bakufu_politicians_abolished") < abolition.index("every_character")
+    assert "remove_bakufu_politician_role_without_appointment" in abolition
+    for pos in POSITIONS:
+        assert f"remove_variable = eafp_bakufu_recruitment_pending_{pos}" in abolition
+    for key in ("eafp_japan_assign_bakufu_office", "eafp_japan_process_pending_office_recruitment", "eafp_japan_sync_daimyo_ig_leader"):
+        assert "NOT = { has_global_variable = japan_bakufu_politicians_abolished }" in block(effects, key)
     for key in ("on_complete", "on_invalid"):
         part = block(journal, key)
-        assert "remove_bakufu_politician_role_without_appointment" in part
-        for pos in POSITIONS:
-            assert f"remove_variable = eafp_bakufu_recruitment_pending_{pos}" in part
+        assert "country_clear_bakufu_politicians = yes" in part
+        assert "eafp_japan_end_regions = yes" in part
     weekly = block(journal, "on_weekly_pulse")
     assert "set_career_length" not in weekly and "set_bakufu_politician_career_length" not in weekly
     assert "eafp_japan_assign_bakufu_office" not in weekly  # No save migration/role recreation.

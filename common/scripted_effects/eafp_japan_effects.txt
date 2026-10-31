@@ -304,6 +304,7 @@ eafp_japan_sync_daimyo_ig_leader = {
 		limit = {
 			c:JAP ?= THIS
 			has_journal_entry = je_bakuhantaisei
+			NOT = { has_global_variable = japan_bakufu_politicians_abolished }
 		}
 		clear_saved_scope = eafp_bakufu_ig_leader
 		if = {
@@ -373,6 +374,7 @@ eafp_japan_assign_bakufu_office = {
 	if = {
 		limit = {
 			c:JAP ?= owner
+			NOT = { has_global_variable = japan_bakufu_politicians_abolished }
 		}
 		switch = {
 			trigger = $POSITION$
@@ -536,6 +538,7 @@ eafp_japan_process_pending_office_recruitment = {
 	if = {
 		limit = {
 			eafp_japan_regional_active = yes
+			NOT = { has_global_variable = japan_bakufu_politicians_abolished }
 			NOT = { has_variable = recruiting_bakufu_politicians }
 		}
 		if = {
@@ -718,14 +721,12 @@ create_bakufu_politician_character = {
 	eafp_japan_sync_daimyo_ig_leader = yes
 }
 
-
 remove_bakufu_politician_role = { # scope = character
 	if = {
 		limit = { has_variable = eafp_bakufu_office_position }
 		eafp_japan_end_bakufu_office = { POSITION = var:eafp_bakufu_office_position SAVE_MISSION = yes }
 	}
 }
-
 
 remove_bakufu_politician_role_without_appointment = { # scope = character
 	if = {
@@ -1143,6 +1144,28 @@ apply_saved_bakufu_politician_mission = { # scope = character
 			}
 		}
 	}
+}
+
+# 막부 정치인 체제를 종료, 인물 삭제
+country_clear_bakufu_politicians = {
+	set_global_variable = japan_bakufu_politicians_abolished
+	every_character = {
+		limit = { has_variable = eafp_bakufu_office_position }
+		remove_bakufu_politician_role_without_appointment = yes
+	}
+	remove_variable = tairo_var
+	remove_variable = rojushuza_var
+	if = {
+		limit = { has_variable_list = roju_varlist }
+		clear_variable_list = roju_varlist
+	}
+	remove_variable = eafp_bakuhantaisei_politician_current_mission_temp
+	remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp
+	remove_variable = eafp_bakuhantaisei_politician_current_mission_temp_rs
+	remove_variable = eafp_bakuhantaisei_politician_current_mission_location_temp_rs
+	remove_variable = eafp_bakufu_recruitment_pending_roju
+	remove_variable = eafp_bakufu_recruitment_pending_rojushuza
+	remove_variable = eafp_bakufu_recruitment_pending_tairo
 }
 
 add_bakuhantaisei_politician_influence = {
