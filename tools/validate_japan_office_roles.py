@@ -39,7 +39,7 @@ def main():
         "events/eafp_jap_events/eafp_japan.txt",
     ]
     for lang in ("korean", "english", "simp_chinese"):
-        paths.append(f"localization/{lang}/eafp_japan_character_roles_l_{lang}.yml")
+        paths.append(f"localization/{lang}/eafp_japan_l_{lang}.yml")
     for path in paths:
         structural_check(ROOT / path)
 
@@ -65,9 +65,9 @@ def main():
         assert f"has_role = {role}" in public
         assert f"role = {role}" in career
         for lang in ("korean", "english", "simp_chinese"):
-            loc = read(f"localization/{lang}/eafp_japan_character_roles_l_{lang}.yml")
+            loc = read(f"localization/{lang}/eafp_japan_l_{lang}.yml")
             assert loc.startswith(f"l_{lang}:")
-            assert len(re.findall(rf'^ {role}:\s*".+"$', loc, re.M)) == 1
+            assert len(re.findall(rf'^[ \t]*{role}:\s*".+"$', loc, re.M)) == 1
     assert "role = character_role_politician" not in career
     assert "add_career_length" not in career
 

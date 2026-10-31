@@ -115,8 +115,11 @@ EAFP_ADD_BAKUHANTAISEI_STATE_INDEPENDENCY_EFFECT_POSITIVE: "#bold [TARGET_STATE.
 EAFP_ADD_BAKUHANTAISEI_STATE_INDEPENDENCY_EFFECT_NEGATIVE: "#bold [TARGET_STATE.GetName]의 독립성#!이 #v $VALUE|1b$%#!만큼 #bold 감소#!함"
 
 TAIRO: "#v 대로#!"
+character_role_eafp_tairo: "대로"
 ROJUSHUZA: "#v 노중 수좌#!"
+character_role_eafp_rojushuza: "노중수좌"
 ROJU: "#v 노중#!"
+character_role_eafp_roju: "노중"
 CHARACTER_eafp_bakuhantaisei_politician_influence: "정치적 영향력: #V [Character.MakeScope.Var('eafp_bakuhantaisei_politician_influence').GetValue|1]/[Character.MakeScope.Var('eafp_bakuhantaisei_politician_influence_max').GetValue|0]#! (#tooltippable;tooltip:[Character.GetTooltipTag],eafp_bakufu_politician_influence_monthly_tooltip [Character.MakeScope.ScriptValue('eafp_bakuhantaisei_politician_influence_monthly_add')|1v=]#!)"
 eafp_bakufu_politician_influence_monthly_tooltip: "#tooltip_header 다음 사유로 매월 변경됨:#!\n$TOOLTIP_DELIMITER$\n[Character.MakeScope.GetScriptValueDesc('eafp_bakuhantaisei_politician_influence_monthly_add')]\n$TOOLTIP_DELIMITER$\n월간 변화량: [Character.MakeScope.ScriptValue('eafp_bakuhantaisei_politician_influence_monthly_add')|1v=]"
 eafp_bakufu_influence_from_prominence: "[concept_prominence]"
@@ -331,6 +334,19 @@ oshio_aftermath_modifier: "오시오의 여파"
 je_bakufu_kaikaku: "막부 개혁"
 je_bakufu_kaikaku_reason: "수백년의 정체 끝에, 이제 막부의 체제는 너무 낡았다. 몇번이고 노력을 거듭해서 개혁을 이루어내야 한다.\n\n@information! #bold 공무합체#! 또는 #bold 공의여론#!을 성립시키려면, #v $je_meiji_restoration_proclaim_imperial_restoration$#!을 통해 충족하는 조건을 제외한 해당 노선의 모든 성립 조건을 먼저 갖춘 상태에서 탄원해야 합니다.\n\n[ROOT.GetCountry.GetRuler.GetPrimaryRoleTitle] 사망 시에는 우세한 파벌에서 후계자를 내세울 것입니다. 어느 한쪽이 과도한 권력을 잡을 경우 [ROOT.GetCountry.GetRuler.GetPrimaryRoleTitle]의 권위마저 위협할지도 모를 일입니다.\n\n각 파벌의 영향력과 지지도에 따라 다음과 같은 효과가 적용됩니다:\n\n#variable $bakufu_kaikaku_daimyo_approval_positive_modifier$#!\n#variable [Multiply_CFixedPoint(Add_CFixedPoint(Multiply_CFixedPoint(Subtract_CFixedPoint(ROOT.GetCountry.MakeScope.ScriptValue('bakufu_kaikaku_hitotsubashiha_approval_progress_bar_value'),'(CFixedPoint)50'),ROOT.GetCountry.MakeScope.ScriptValue('bakufu_hitotsubashiha_hiritsu')),Multiply_CFixedPoint(Subtract_CFixedPoint(ROOT.GetCountry.MakeScope.ScriptValue('bakufu_kaikaku_nankiha_approval_progress_bar_value'),'(CFixedPoint)50'),ROOT.GetCountry.MakeScope.ScriptValue('bakufu_nankiha_hiritsu'))),'(CFixedPoint)0.2')|1+=]#! $interest_group_ig_landowners_approval_add$\n#variable [Multiply_CFixedPoint(Add_CFixedPoint(Multiply_CFixedPoint(Subtract_CFixedPoint(ROOT.GetCountry.MakeScope.ScriptValue('bakufu_kaikaku_hitotsubashiha_approval_progress_bar_value'),'(CFixedPoint)50'),ROOT.GetCountry.MakeScope.ScriptValue('bakufu_hitotsubashiha_hiritsu')),Multiply_CFixedPoint(Subtract_CFixedPoint(ROOT.GetCountry.MakeScope.ScriptValue('bakufu_kaikaku_nankiha_approval_progress_bar_value'),'(CFixedPoint)50'),ROOT.GetCountry.MakeScope.ScriptValue('bakufu_nankiha_hiritsu'))),'(CFixedPoint)-0.01')|%0-=]#! $state_radicals_from_political_movements_mult$\n\n또한 각 파벌의 영향력 차이에 따라 다음과 같은 효과가 적용됩니다:\n\n#variable $bakufu_kaikaku_daimyo_influence_modifier$#!\n#variable [Multiply_CFixedPoint(Subtract_CFixedPoint('(CFixedPoint)0.25',Multiply_CFixedPoint(ROOT.GetCountry.MakeScope.ScriptValue('bakufu_hitotsubashiha_hiritsu'),ROOT.GetCountry.MakeScope.ScriptValue('bakufu_nankiha_hiritsu'))),'(CFixedPoint)-6000')|1+=]#! $country_authority_add$"
 
+je_bakufu_kaikaku_kobu_gattai_header: "#bold 공무합체#! 성립 조건:\n"
+eafp_japan_kobu_gattai_six_months_tt: "다음 상황이 최소 #v 6#!개월 이상 지속되고 있음 (현재 [ROOT.GetCountry.MakeScope.Var('eafp_japan_kobu_gattai_timer_var').GetValue|v0]) #indent_newline:3 "
+je_bakufu_kaikaku_on_kobu_gattai_header: "#bold 공무합체#! 성립 시:\n$EFFECT$"
+
+je_bakufu_kaikaku_kogi_yoron_header: "#bold 공의여론#! 성립 조건:\n"
+eafp_japan_kogi_yoron_six_months_tt: "다음 상황이 최소 #v 6#!개월 이상 지속되고 있음 (현재 [ROOT.GetCountry.MakeScope.Var('eafp_japan_kogi_yoron_timer_var').GetValue|v0]) #indent_newline:3 "
+eafp_japan_kogi_petition_accepted_tt: "#b 천황#!이 #v $je_meiji_restoration_proclaim_imperial_restoration$#! 상호작용을 통해 공의여론의 정치적 합의를 승인함"
+je_bakufu_kaikaku_on_kogi_yoron_header: "#bold 공의여론#! 성립 시:\n$EFFECT$"
+
+je_bakufu_kaikaku_invalid_header: "#bold 막부 개혁 실패 조건:#!"
+
+eafp_japan_marriage_ended_tt: "황실 혼인 과제가 종료됩니다. 다른 개혁 목표의 진행은 유지됩니다."
+
 bakufu_kaikaku_daimyo_approval_positive_modifier: "막부 파벌의 지지"
 bakufu_kaikaku_daimyo_approval_negative_modifier: "막부 파벌의 지지"
 bakufu_kaikaku_daimyo_influence_modifier: "막부 파벌 간 불균형"
@@ -422,6 +438,7 @@ japan_bakufu_kaikaku_button_desc: "개혁을 진행하기 위한 밑작업은 �
 hiritsu_over_tt: "막부 내 [ROOT.GetCountry.GetCustom('hitotsubashiha_loc')] 비율이 50%를 넘음"
 
 complete_kaikaku: "개혁 과제 완료"
+eafp_japan_start_kobu_reforms_tt: "공무합체 성립 후 개국·군제·내정·재정의 네 후속 개혁 일지를 시작합니다."
 
 je_bakufu_kaikoku:0 "막부 개혁 : 개국"
 je_bakufu_kaikoku_reason: "일본은 오랫동안 소수의 국가들에 한정하여 문호를 개방하였습니다. 하지만 시대는 변하고 있습니다. 더 많은 국가와 교류를 하여 무역을 하거나 기술을 받아들여야 더욱 건실한 미래를 그려나갈 수 있습니다."
