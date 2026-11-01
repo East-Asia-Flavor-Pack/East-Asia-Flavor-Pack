@@ -484,7 +484,7 @@ ep2_meiji.3 = { # Imperial Marriage
 	}
 }
 
-#수정: 바닐라 보신전쟁 개시 이벤트에 EAFP 진영별 저널·지원 처리를 병합.
+#수정: 바닐라 보신전쟁 개시 이벤트에 국제 일지·진영별 지원 처리를 병합.
 ep2_meiji.4 = { # Boshin War - Historical
 	type = country_event
 	placement = root
@@ -530,26 +530,19 @@ ep2_meiji.4 = { # Boshin War - Historical
 			}
 		}
 
-		#추가: 양 진영의 보신전쟁 저널과 지원을 이벤트에서 설정한다. 군주 지정은 바닐라 처리를 따른다.
+		#추가: 진영별 지원 뒤 하나의 국제 보신전쟁 일지를 생성한다. 군주 지정은 바닐라 처리를 따른다.
 		if = {
 			limit = { exists = scope:tokugawa_scope }
 			scope:tokugawa_scope = {
 				if = {
-					limit = { NOT = { has_journal_entry = je_boshin_war_sabaku } }
-					add_journal_entry = {
-						type = je_boshin_war_sabaku
-						target = ROOT
-					}
+					limit = { NOT = { has_global_variable = eafp_boshin_active } }
 					set_variable = boshin_war_happened
 				}
 			}
 			ROOT = {
 				if = {
-					limit = { NOT = { has_journal_entry = je_boshin_war_tobaku } }
-					add_journal_entry = {
-						type = je_boshin_war_tobaku
-						target = scope:tokugawa_scope
-					}
+					limit = { NOT = { has_variable = eafp_boshin_imperial_support_received } }
+					set_variable = eafp_boshin_imperial_support_received
 					set_state_religion = rel:confucian
 					every_scope_state = {
 						create_building = {
@@ -588,6 +581,7 @@ ep2_meiji.4 = { # Boshin War - Historical
 				}
 			}
 		}
+		eafp_boshin_start = { SABAKU = scope:tokugawa_scope TOBAKU = ROOT }
 	}
 
 	option = { # Play as the Emperor
@@ -604,7 +598,7 @@ ep2_meiji.4 = { # Boshin War - Historical
 	}
 }
 
-#수정: 바닐라 보신전쟁 개시 이벤트에 EAFP 진영별 저널·지원 처리를 병합.
+#수정: 바닐라 보신전쟁 개시 이벤트에 국제 일지·진영별 지원 처리를 병합.
 ep2_meiji.41 = { # Boshin War - Ahistorical
 	type = country_event
 	placement = root
@@ -695,26 +689,19 @@ ep2_meiji.41 = { # Boshin War - Ahistorical
 			save_scope_as = shogun_scope
 		}
 
-		#추가: 양 진영의 보신전쟁 저널과 지원을 이벤트에서 설정한다. 군주 지정은 바닐라 처리를 따른다.
+		#추가: 진영별 지원 뒤 하나의 국제 보신전쟁 일지를 생성한다. 군주 지정은 바닐라 처리를 따른다.
 		if = {
 			limit = { exists = scope:imperial_court_scope }
 			ROOT = {
 				if = {
-					limit = { NOT = { has_journal_entry = je_boshin_war_sabaku } }
-					add_journal_entry = {
-						type = je_boshin_war_sabaku
-						target = scope:imperial_court_scope
-					}
+					limit = { NOT = { has_global_variable = eafp_boshin_active } }
 					set_variable = boshin_war_happened
 				}
 			}
 			scope:imperial_court_scope = {
 				if = {
-					limit = { NOT = { has_journal_entry = je_boshin_war_tobaku } }
-					add_journal_entry = {
-						type = je_boshin_war_tobaku
-						target = ROOT
-					}
+					limit = { NOT = { has_variable = eafp_boshin_imperial_support_received } }
+					set_variable = eafp_boshin_imperial_support_received
 					set_state_religion = rel:confucian
 					every_scope_state = {
 						create_building = {
@@ -753,6 +740,7 @@ ep2_meiji.41 = { # Boshin War - Ahistorical
 				}
 			}
 		}
+		eafp_boshin_start = { SABAKU = ROOT TOBAKU = scope:imperial_court_scope }
 	}
 	option = { # Play as the Tokugawa
 		name = ep2_meiji.41.a

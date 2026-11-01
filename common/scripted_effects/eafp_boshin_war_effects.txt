@@ -1,0 +1,46 @@
+﻿# Called by either civil-war opening event, after its country support is prepared.
+eafp_boshin_start = {
+	if = {
+		limit = {
+			NOT = { has_global_variable = eafp_boshin_active }
+			exists = $SABAKU$
+			exists = $TOBAKU$
+		}
+		set_global_variable = { name = eafp_boshin_sabaku value = $SABAKU$ }
+		set_global_variable = { name = eafp_boshin_tobaku value = $TOBAKU$ }
+		set_global_variable = eafp_boshin_active
+		remove_global_variable = eafp_boshin_checked
+		add_contextless_journal_entry = je_boshin_war
+	}
+}
+eafp_boshin_sync_participants = {
+	every_country = {
+		if = {
+			limit = {
+				eafp_boshin_country_involved = yes
+				NOT = { is_involved_in_journal_entry = je_boshin_war }
+			}
+			scope:journal_entry = { add_involved_country = prev }
+		}
+		else_if = {
+			limit = {
+				is_involved_in_journal_entry = je_boshin_war
+				eafp_boshin_country_involved = no
+			}
+			scope:journal_entry = { remove_involved_country = prev }
+		}
+	}
+}
+eafp_boshin_cleanup = {
+	global_var:eafp_boshin_tobaku ?= {
+		if = {
+			limit = { has_modifier = modifier_japan_hiring_bonus }
+			remove_modifier = modifier_japan_hiring_bonus
+		}
+		remove_variable = eafp_boshin_imperial_support_received
+	}
+	remove_global_variable = eafp_boshin_active
+	remove_global_variable = eafp_boshin_checked
+	remove_global_variable = eafp_boshin_sabaku
+	remove_global_variable = eafp_boshin_tobaku
+}

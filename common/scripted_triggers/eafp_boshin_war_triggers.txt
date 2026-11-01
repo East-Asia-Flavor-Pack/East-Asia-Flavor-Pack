@@ -1,0 +1,45 @@
+﻿# Contextless triggers. Saved country objects remain stable through tag changes.
+eafp_boshin_sabaku_alive = {
+	exists = global_var:eafp_boshin_sabaku
+	global_var:eafp_boshin_sabaku ?= { is_country_alive = yes }
+}
+eafp_boshin_tobaku_alive = {
+	exists = global_var:eafp_boshin_tobaku
+	global_var:eafp_boshin_tobaku ?= { is_country_alive = yes }
+}
+eafp_boshin_conflict_ongoing = {
+	eafp_boshin_sabaku_alive = yes
+	eafp_boshin_tobaku_alive = yes
+	global_var:eafp_boshin_sabaku ?= {
+		OR = {
+			is_diplomatic_play_enemy_of = global_var:eafp_boshin_tobaku
+			any_scope_war = {
+				is_warleader = global_var:eafp_boshin_sabaku
+				is_warleader = global_var:eafp_boshin_tobaku
+			}
+		}
+	}
+}
+# Country scope. Foreign participants qualify only through this particular war.
+eafp_boshin_country_involved = {
+	is_country_alive = yes
+	has_global_variable = eafp_boshin_active
+	OR = {
+		AND = {
+			eafp_boshin_sabaku_alive = yes
+			global_var:eafp_boshin_sabaku ?= THIS
+		}
+		AND = {
+			eafp_boshin_tobaku_alive = yes
+			global_var:eafp_boshin_tobaku ?= THIS
+		}
+		AND = {
+			eafp_boshin_sabaku_alive = yes
+			eafp_boshin_tobaku_alive = yes
+			any_scope_war = {
+				is_warleader = global_var:eafp_boshin_sabaku
+				is_warleader = global_var:eafp_boshin_tobaku
+			}
+		}
+	}
+}
