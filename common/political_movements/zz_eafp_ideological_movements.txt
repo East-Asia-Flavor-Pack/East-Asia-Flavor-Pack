@@ -417,6 +417,9 @@ eafp_movement_liberty_civil_right = {
 	}
 
 	pop_support_factors = {
+		movement_support_high_urbanization
+		movement_support_radicalization
+		movement_support_country_is_autocratic
 		movement_support_high_literacy
 		movement_support_below_expected_sol
 		movement_support_aristocrats
@@ -435,6 +438,18 @@ eafp_movement_liberty_civil_right = {
 			desc = "POP_BASE_SUPPORT"
 		}
 
+		# Liberal/radical movements use urbanization; retain a smaller rural-friendly bonus.
+		add = {
+			desc = "URBAN_STATE"
+			value = 5
+			multiply = state.state_urbanization_rate
+		}
+		add = {
+			desc = "POP_RADICALS"
+			value = 5
+			multiply = pop_radical_fraction
+		}
+
 		if = {
 			limit = {
 				strata = upper
@@ -444,13 +459,13 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = aristocrats
 				}
 				add = {
-					value = 9
+					value = 5
 					desc = "POP_ARISTOCRATS"
 				}
 			}
 			else = {
 				add = {
-					value = 6
+					value = 3
 					desc = "UPPER_NO_ICON"
 				}
 			}
@@ -464,7 +479,7 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = shopkeepers
 				}
 				add = {
-					value = 12
+					value = 6
 					desc = "POP_SHOPKEEPERS"
 				}
 			}
@@ -473,7 +488,7 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = academics
 				}
 				add = {
-					value = 24
+					value = 12
 					desc = "POP_ACADEMICS"
 				}
 			}
@@ -482,7 +497,7 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = bureaucrats
 				}
 				add = {
-					value = 12
+					value = 6
 					desc = "POP_BUREAUCRATS"
 				}
 			}
@@ -491,13 +506,13 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = officers
 				}
 				add = {
-					value = 12
+					value = 6
 					desc = "POP_OFFICERS"
 				}
 			}
 			else = {
 				add = {
-					value = 9
+					value = 5
 					desc = "MIDDLE_NO_ICON"
 				}
 			}
@@ -511,7 +526,7 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = clerks
 				}
 				add = {
-					value = 6
+					value = 3
 					desc = "POP_CLERKS"
 				}
 			}
@@ -520,13 +535,13 @@ eafp_movement_liberty_civil_right = {
 					is_pop_type = farmers
 				}
 				add = {
-					value = 12
+					value = 6
 					desc = "POP_FARMERS"
 				}
 			}
 			else = {
 				add = {
-					value = 3
+					value = 2
 					desc = "LOWER_NO_ICON"
 				}
 			}
@@ -548,6 +563,23 @@ eafp_movement_liberty_civil_right = {
 			desc = "POP_LITERACY"
 			value = literacy_rate
 			add = 0.10
+		}
+
+		# Match the vanilla radical movement's response to voting rights.
+		if = {
+			limit = { owner = { country_has_voting_franchise = no } }
+			multiply = { value = 1.25 desc = "COUNTRY_IS_AUTOCRATIC" }
+		}
+		else_if = {
+			limit = {
+				owner = {
+					OR = {
+						has_law_or_variant = law_type:law_census_voting
+						has_law_or_variant = law_type:law_universal_suffrage
+					}
+				}
+			}
+			multiply = { value = 0.75 desc = "COUNTRY_IS_DEMOCRATIC" }
 		}
 
 		if = {
@@ -575,6 +607,7 @@ eafp_movement_liberty_civil_right = {
 		else = {
 			add = 5
 		}
+		min = 0
 	}
 	
 	revolution = {
