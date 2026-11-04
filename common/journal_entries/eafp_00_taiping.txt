@@ -7,7 +7,7 @@
 
 	is_shown_when_inactive = {
 		exists = c:CHI
-		THIS = c:CHI
+		c:CHI ?= THIS
 	}
 
 	possible = {
@@ -131,15 +131,7 @@
 					has_variable = CHI_deported_missionaries
 					custom_tooltip = {
 						text = lost_war_tt
-						OR = {
-							has_variable = recently_lost_war
-							AND = {
-								has_variable = recently_had_war
-								NOT = {
-									has_variable = recently_won_war
-								}
-							}
-						}
+						has_variable = recently_lost_war
 					}
 				}
 				remove_variable = CHI_deported_missionaries
@@ -199,6 +191,7 @@
 	}
 
 	weight = 10000
+		
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
@@ -209,7 +202,7 @@ REPLACE:je_heavenly_kingdom_main = {
 
 	is_shown_when_inactive = {
 		exists = c:CHI
-		THIS = c:CHI
+		c:CHI ?= THIS
 	}
 
 	possible = {
@@ -227,12 +220,11 @@ REPLACE:je_heavenly_kingdom_main = {
 		is_subject = no
 		any_scope_state = {
 			is_incorporated = yes
-			any_scope_pop = {
-				has_pop_religion = protestant
+			religion_percent_state = {
+				target = rel:protestant
+				value >= 0.01
 			}
-
 			region = sr:region_south_china	# 추가
-
 			is_capital = no
 			state_region = {
 				OR = {
@@ -250,12 +242,11 @@ REPLACE:je_heavenly_kingdom_main = {
 		random_scope_state = {
 			limit = {
 				is_incorporated = yes
-				any_scope_pop = {
-					has_pop_religion = protestant
+				religion_percent_state = {
+					target = rel:protestant
+					value >= 0.01
 				}
-
 				region = sr:region_south_china	# 추가
-
 				is_capital = no
 				state_region = {
 					OR = {
@@ -302,10 +293,9 @@ REPLACE:je_heavenly_kingdom_main = {
 		any_scope_state = {
 			AND = {
 				has_modifier = god_worshippers
-				hidden_trigger = {
-					any_scope_pop = {
-						has_pop_religion = protestant
-					}
+				religion_percent_state = {
+					target = rel:protestant
+					value >= 0.01
 				}
 				state_religious_acceptance = {
 	 				target = rel:protestant
@@ -321,7 +311,7 @@ REPLACE:je_heavenly_kingdom_main = {
 			id = heavenly.4
 		}
 	}
-	event_outcome_failed_effect_desc = {
+	event_outcome_failed_effect_desc = { # 추가
 		header = heavenly.4.a
 		effect = {
 			add_journal_entry = { type = je_hui_revolt_pre }
@@ -331,7 +321,7 @@ REPLACE:je_heavenly_kingdom_main = {
 			}
 		}
 	}
-	event_outcome_failed_effect_desc = {
+	event_outcome_failed_effect_desc = { # 추가
 		header = heavenly.4.b
 		effect = {
 			add_journal_entry = { type = je_hui_revolt_pre }
@@ -344,60 +334,8 @@ REPLACE:je_heavenly_kingdom_main = {
 	}
 
 	weight = 10000
+		
 	should_be_pinned_by_default_uninvolved_or_context = yes
-}
-
-je_taiping_timer = { # 추가
-	icon = "gfx/interface/icons/event_icons/event_military.dds"
-
-	group = je_group_qing
-
-	complete = {
-		custom_tooltip = {
-			text = taiping_timer_complete
-			NOT = { exists = c:TPG }
-		}
-	}
-	
-	timeout = 720
-
-	on_timeout = {
-		#custom_tooltip = {
-		#	text = taiping_time_attack
-		#}
-		show_as_tooltip = {
-			custom_tooltip = {
-				text = warlord_china_explosion_point_remove_5_tt
-				post_notification = warlord_china_explosion_point_remove
-				change_variable = {
-					name = china_warlord_explosion
-					subtract = 0.25
-				}
-			}
-			power_bloc = {
-				every_power_bloc_member = {
-					limit = {
-						NOT = { THIS = c:CHI }
-						is_subject = no
-					}
-					add_modifier = {
-						name = departure_of_south_sea_nations_modifier
-						months = long_modifier_time
-					}
-				}
-			}
-		}
-		trigger_event = { id = heavenly.103 }
-	}
-	
-	on_complete = {
-	}
-
-
-	weight = 1000
-	should_be_pinned_by_default_uninvolved_or_context = yes
-
-	transferable = no
 }
 
 REPLACE:je_taiping = {
@@ -410,16 +348,14 @@ REPLACE:je_taiping = {
 	complete = {
 		custom_tooltip = {
 			text = taiping_destroyed
-			hidden_trigger = {
-				NOT = {
-					exists = c:TPG
-				}
+			NOT = {
+				exists = c:TPG
 			}
 		}
 	}
 
 	immediate = {
-		c:TPG = {
+		c:TPG ?= {
 			save_scope_as = taiping_scope
 		}
 		# 이하 추가
@@ -438,7 +374,7 @@ REPLACE:je_taiping = {
 			}
 		}
 	}
-	
+
 	on_complete = {
 		trigger_event = { id = heavenly.5 days = 0 }
 		hidden_effect = {
@@ -465,6 +401,7 @@ REPLACE:je_taiping = {
 	progress_desc = je_taiping_progress # 추가
 
 	weight = 1000
+		
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
 	transferable = no
@@ -496,7 +433,7 @@ REPLACE:je_taiping_revolution = {
 	}
 
 	immediate = {
-		c:CHI = {
+		c:CHI ?= {
 			save_scope_as = china_scope
 		}
 		# 이하 추가
@@ -539,7 +476,7 @@ REPLACE:je_taiping_revolution = {
 				}
 			}
 		}
-		c:CHI = {
+		c:CHI ?= {
 			every_scope_state = {
 				limit = {
 					controller = ROOT
@@ -557,7 +494,7 @@ REPLACE:je_taiping_revolution = {
 			name = num_claimed_states_in_china_proper
 			value = 0
 		}
-		c:CHI = {
+		c:CHI ?= {
 			every_scope_state = {
 				limit = {
 					has_modifier = recently_conquered_state
@@ -627,7 +564,7 @@ REPLACE:je_taiping_revolution = {
 		}
 		
 	}
-	event_outcome_completed_effect_desc = {
+	event_outcome_completed_effect_desc = { # 추가
 		header = heavenly.6.a
 		effect = {
 			add_modifier = {
@@ -636,7 +573,7 @@ REPLACE:je_taiping_revolution = {
 			}
 		}
 	}
-	event_outcome_completed_effect_desc = {
+	event_outcome_completed_effect_desc = { # 추가
 		header = heavenly.6.b
 		effect = {
 			add_modifier = {
@@ -645,7 +582,7 @@ REPLACE:je_taiping_revolution = {
 			}
 		}
 	}
-	event_outcome_completed_effect_desc = {
+	event_outcome_completed_effect_desc = { # 추가
 		header = heavenly.6.c
 		effect = {
 			add_modifier = {
@@ -654,7 +591,7 @@ REPLACE:je_taiping_revolution = {
 			}
 		}
 	}
-	event_outcome_completed_effect_desc = {
+	event_outcome_completed_effect_desc = { # 추가
 		header = heavenly.6.e
 		effect = {
 			add_modifier = {
@@ -665,6 +602,9 @@ REPLACE:je_taiping_revolution = {
 	}
 
 	fail = {
+		#NOT = {
+		#	exists = c:TPG
+		#}
 		exists = c:CHI # 추가
 		has_truce_with = c:CHI # 추가
 	}
@@ -705,7 +645,7 @@ REPLACE:je_taiping_revolution = {
 					}
 				}
 			}
-			c:CHI = {
+			c:CHI ?= {
 				every_scope_state = {
 					limit = {
 						controller = ROOT
@@ -723,7 +663,7 @@ REPLACE:je_taiping_revolution = {
 				name = num_claimed_states_in_china_proper
 				value = 0
 			}
-			c:CHI = {
+			c:CHI ?= {
 				every_scope_state = {
 					limit = {
 						has_modifier = recently_conquered_state
@@ -780,6 +720,58 @@ REPLACE:je_taiping_revolution = {
 	transferable = no
 }
 
+je_taiping_timer = { # 추가
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
+
+	group = je_group_qing
+
+	complete = {
+		custom_tooltip = {
+			text = taiping_timer_complete
+			NOT = { exists = c:TPG }
+		}
+	}
+	
+	timeout = 720
+
+	on_timeout = {
+		#custom_tooltip = {
+		#	text = taiping_time_attack
+		#}
+		show_as_tooltip = {
+			custom_tooltip = {
+				text = warlord_china_explosion_point_remove_5_tt
+				post_notification = warlord_china_explosion_point_remove
+				change_variable = {
+					name = china_warlord_explosion
+					subtract = 0.25
+				}
+			}
+			power_bloc = {
+				every_power_bloc_member = {
+					limit = {
+						NOT = { THIS = c:CHI }
+						is_subject = no
+					}
+					add_modifier = {
+						name = departure_of_south_sea_nations_modifier
+						months = long_modifier_time
+					}
+				}
+			}
+		}
+		trigger_event = { id = heavenly.103 }
+	}
+	
+	on_complete = {
+	}
+
+
+	weight = 1000
+	should_be_pinned_by_default_uninvolved_or_context = yes
+
+	transferable = no
+}
 
 je_taiping_truce_chi = { # 추가
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
@@ -803,7 +795,7 @@ je_taiping_truce_chi = { # 추가
 		custom_tooltip = {
 			text = taiping_truce_chi
 			end_truce = c:TPG
-			c:TPG = {
+			c:TPG ?= {
 				create_diplomatic_play = {
 					name = taiping_rebellion
 					target_country = c:CHI
@@ -812,7 +804,7 @@ je_taiping_truce_chi = { # 추가
 				}
 			}
 			add_journal_entry = { type = je_taiping }
-			c:TPG = {
+			c:TPG ?= {
 				add_journal_entry = { type = je_taiping_revolution }
 			}
 		}
@@ -868,7 +860,7 @@ je_taiping_pre = { # 추가
 		custom_tooltip = {
 			text = taiping_truce_chi
 			end_truce = c:TPG
-			c:TPG = {
+			c:TPG ?= {
 				create_diplomatic_play = {
 					name = taiping_rebellion
 					target_country = c:CHI
@@ -879,9 +871,17 @@ je_taiping_pre = { # 추가
 					change_infamy = -150
 				}
 			}
+			random_diplomatic_play = {
+				limit = {
+					initiator = c:TPG
+					target = c:CHI
+					is_diplomatic_play_type = dp_taiping_rebellion
+				}
+				add_diplomatic_play_war_support = { target = c:TPG value = 50 }
+			}
 			add_journal_entry = { type = je_taiping }
 			add_journal_entry = { type = je_taiping_timer }
-			c:TPG = {
+			c:TPG ?= {
 				add_journal_entry = { type = je_taiping_revolution }
 			}
 		}

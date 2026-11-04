@@ -35,6 +35,7 @@ eafp_on_diplomatic_demand_accepted = {
 }
 
 eafp_on_wargoal_enforced = {
+	# Final enforcement only; the occupation timer also fires before the peace settlement.
 	effect = {
 		if = {
 			limit = {
@@ -43,16 +44,9 @@ eafp_on_wargoal_enforced = {
 				}
 			}
 			scope:target ?= {
-				set_variable = { 
-					name = temp_wargoal_impact 
-					value = {
-						value = scope:wargoal_impact 
-						multiply = 1
-					}
-				}
 				je:je_eastasian_expansionism = {
 					add_progress = {
-						value = owner.var:temp_wargoal_impact
+						value = scope:wargoal_impact
 						name = eastasian_expansionism_paranoia_progress_bar
 					}
 				}
@@ -60,21 +54,17 @@ eafp_on_wargoal_enforced = {
 		}
 		if = {
 			limit = {
-				owner = {
+				scope:actor ?= {
 					has_journal_entry = je_eastasian_expansionism
 				}
 			}
-			owner = {
-				set_variable = { 
-					name = temp_wargoal_impact 
-					value = {
-						value = scope:wargoal_impact 
-						multiply = -1
-					}
-				}
+			scope:actor ?= {
 				je:je_eastasian_expansionism = {
 					add_progress = {
-						value = owner.var:temp_wargoal_impact
+						value = {
+							value = scope:wargoal_impact
+							multiply = -1
+						}
 						name = eastasian_expansionism_paranoia_progress_bar
 					}
 				}
