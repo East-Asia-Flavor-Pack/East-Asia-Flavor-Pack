@@ -72,7 +72,10 @@ def main():
     assert "add_career_length" not in career
 
     # Startup coverage must match the historical office and remaining time.
-    history = read(paths[4])
+    # Office holders are initialized in Japan's character history, not the global setup.
+    history_path = ROOT / "common/history/characters/jap - japan.txt"
+    structural_check(history_path)
+    history = history_path.read_text(encoding="utf-8-sig")
     incumbents = [
         ("JAP_ii_naoaki", "tairo", 60, (1.0, 1.2), (60, 72)),
         ("eafp_jap_okubo_tadazane_template", "rojushuza", 12, (1, 2), (12, 24)),
@@ -124,7 +127,6 @@ def main():
     assert "NOT = { has_role = character_role_politician }" in selected
     assert selected.index("add_character_role = character_role_politician") < selected.index("set_as_interest_group_leader = yes")
     assert leader.index("var:tairo_var = { save_scope_as") < leader.index("var:rojushuza_var = { save_scope_as")
-    assert "eafp_japan_sync_daimyo_ig_leader = yes" in block(history, "c:JAP")
     assert "appoint_roju_effect" not in end and "appoint_rojushuza_effect" not in end
     death = block(read(paths[5]), "eafp_japan_on_bakufu_politician_death")
     assert "has_variable = eafp_bakufu_office_position" in death
@@ -152,6 +154,8 @@ def main():
     assert "id = eafp_japan.9" not in journal + history
 
     templates = read(paths[3])
+    # The starting tairo is already the IG leader through his historical template.
+    assert "ig_leader = yes" in clean(block(templates, "JAP_ii_naoaki"))
     assert "role = character_role_magnate" not in block(templates, "eafp_jap_matsudaira_muneakira_template")
     assert "role = character_role_magnate" in block(templates, "JAP_ii_naoaki")
     assert "role = character_role_politician" in block(templates, "JAP_ii_naoaki")
@@ -163,7 +167,7 @@ def main():
     recruitment = block(effects, "create_bakufu_politician_character")
     candidate = block(recruitment, "random_scope_character")
     assert "has_role_of_type = magnate" in candidate
-    assert "var:daimyo_var ?= s:STATE_KYOTO" in candidate
+    assert "var:daimyo_han_var ?= flag:hikone" in candidate
     assert "set_last_name = Ii" not in recruitment
     assert "set_last_name = Sakai" in recruitment
     assert "name = daimyo_var" not in recruitment and "character_role_magnate" not in recruitment

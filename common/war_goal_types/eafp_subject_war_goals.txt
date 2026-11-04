@@ -1,0 +1,91 @@
+﻿# Restore the original headquarters relation after liberation/independence.
+# Hidden restoration goal, following vanilla 1.14 make_personal_union.
+eafp_restore_military_headquarters_china = {
+	icon = "gfx/interface/icons/war_goals/make_tributary.dds"
+
+	kind = make_subject
+	subject_type = subject_type_military_headquarters_china
+
+	settings = {
+		require_target_be_part_of_war
+		turns_into_subject
+		conflicts_with_make_subject
+		validate_subject_relation
+		validate_conflicts_make_subject
+	}
+
+	execution_priority = 12
+
+	contestion_type = control_half_target_country_states
+
+	side_switch = on_capitulation
+
+	target_type = country
+
+	possible = {
+		always = no
+	}
+
+	valid = {
+	}
+
+	maneuvers = {
+		value = 0
+
+		add = {
+			desc = "MANEUVERS_BASE_VALUE"
+			value = 10
+		}
+	}
+
+	infamy_severity = 0.5
+
+	infamy = {
+		value = 0
+
+		scope:target_country = {
+			add = country_infamy_value
+		}
+
+		multiply = {
+			desc = "INFAMY_FROM_LOYAL_SUBJECT"
+			value = 1
+
+			if = {
+				limit = {
+					scope:target_country = {
+						is_subject_of = root
+						liberty_desire < define:NDiplomacy|WAR_GOAL_INFAMY_LOW_LIBERTY_DESIRE_THRESHOLD
+					}
+				}
+				multiply = define:NDiplomacy|WAR_GOAL_INFAMY_LOW_LIBERTY_DESIRE_SUBJECT_MULT
+			}
+		}
+
+		multiply = {
+			desc = "INFAMY_FROM_REBELLIOUS_SUBJECT" # Rebellious as in they are the aggressor in the play
+			value = 1
+
+			if = {
+				limit = {
+					scope:target_country = {
+						is_subject_of = root
+						is_diplomatic_play_enemy_of = root
+						scope:diplomatic_play ?= {
+							initiator_is = scope:target_country
+						}
+					}
+				}
+				multiply = define:NDiplomacy|WAR_GOAL_INFAMY_REBELLING_SUBJECT_MULT
+			}
+		}
+	}
+
+	mirrored_wargoal = {
+		method = subjugate
+	}
+
+	ai = {
+		is_significant_demand = yes
+	}
+}

@@ -82,7 +82,8 @@ def main():
     groups_code = unquoted("\n".join(read(p) for p in (game / "common/journal_entry_groups").glob("*.txt")))
     assert re.search(r"je_group_global_international_situations\s*=\s*\{\s*context\s*=\s*none", groups_code)
     assert re.search(r"should_show_when_not_involved\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
-    assert not re.search(r"\b(?:possible|is_shown_when_inactive)\s*=", je_code), \
+    # Visibility does not activate a contextless journal; possible is the auto-start gate.
+    assert not re.search(r"\bpossible\s*=", je_code), \
         "The international JE must activate through the treaty, not automatically"
     assert re.search(
         r"eafp_concession_grant_effect\s*=\s*yes\s*\}\s*\}\s*"
@@ -144,7 +145,18 @@ def main():
     expected_groups = {key for key in groups if category(key) == "urban"}
     gates = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     actual_groups = set(re.findall(r"is_building_group\s*=\s*(bg_\w+)", gates))
-    assert actual_groups == expected_groups, ("Urban filter mismatch", actual_groups ^ expected_groups)
+    assert actual_groups <= groups.keys(), ("Unknown building groups", actual_groups - groups.keys())
+
+    def selected_by_filter(key):
+        # is_building_group includes descendants, as in vanilla's manufacturing decree.
+        while key:
+            if key in actual_groups:
+                return True
+            key = groups[key].get("parent_group")
+        return False
+
+    covered_groups = {key for key in groups if selected_by_filter(key)}
+    assert covered_groups == expected_groups, ("Urban filter mismatch", covered_groups ^ expected_groups)
     region = "geographic_region_china_proper"
     assert definitions[region] == 1, ("Missing/duplicate concession region", region)
     assert set(re.findall(r"is_in_geographic_region\s*=\s*(\w+)", clean)) == {region}, \

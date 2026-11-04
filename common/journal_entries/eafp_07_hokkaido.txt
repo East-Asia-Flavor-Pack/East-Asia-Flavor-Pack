@@ -1,7 +1,4 @@
-﻿# Vanilla 1.13.11 je_taming_the_north with explicit EAFP follow-up deltas.
-# The deleted legacy northern journal is not restored.
-
-REPLACE:je_taming_the_north = {
+﻿REPLACE:je_taming_the_north = {
     icon = "gfx/interface/icons/event_icons/event_map.dds"
 
     group = je_group_historical_content
@@ -61,13 +58,6 @@ REPLACE:je_taming_the_north = {
 
     immediate = {
         if = {
-            limit = { NOT = { has_variable = ainu_friendship_var } }
-            set_variable = {
-                name = ainu_friendship_var
-                value = 0
-            }
-        }
-        if = {
             limit = {
                 OR = {
                     c:JAP ?= ROOT
@@ -101,19 +91,13 @@ REPLACE:je_taming_the_north = {
             name = hokkaido_agriculture_arable_counter_var
             value = 0
         }
+        set_variable = {
+            name = ainu_friendship_var
+            value = 0
+        }
     }
 
     on_monthly_pulse = {
-        effect = {
-            # Repair already-active journals without resetting existing friendship.
-            if = {
-                limit = { NOT = { has_variable = ainu_friendship_var } }
-                set_variable = {
-                    name = ainu_friendship_var
-                    value = 0
-                }
-            }
-        }
     }
 
     on_yearly_pulse = {
@@ -154,7 +138,7 @@ REPLACE:je_taming_the_north = {
             text = taming_the_north_colonies_goal_tt
             has_variable = button_je_taming_the_north_establish_colonies_var
         }
-
+        
     }
 
     on_complete = {
@@ -240,7 +224,7 @@ REPLACE:je_taming_the_north = {
                 add_journal_entry = { type = je_karafuto }
             }
         }
-}
+    }
 
     event_outcome_completed_effect_desc = {
         header = hokkaido_events.7.a
@@ -264,7 +248,7 @@ REPLACE:je_taming_the_north = {
 
     fail = {
         NOT = {
-            has_state_in_state_region = STATE_HOKKAIDO
+            has_or_is_contesting_state_in_state_region = STATE_HOKKAIDO
         }
     }
 
@@ -279,7 +263,7 @@ REPLACE:je_taming_the_north = {
             }
         }
         set_variable = eafp_jap_taming_north_failed # 추가
-}
+    }
 
     event_outcome_failed_effect_desc = {
         header = hokkaido_events.8.a
@@ -313,6 +297,6 @@ REPLACE:je_taming_the_north = {
 
     weight = 5000
 
-
+      
     should_be_pinned_by_default_uninvolved_or_context = yes
 }
