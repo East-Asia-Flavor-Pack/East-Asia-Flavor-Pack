@@ -1,4 +1,4 @@
-"""Source-level Boshin journal integration and lifecycle regression checks.
+﻿"""Source-level Boshin journal integration and lifecycle regression checks.
 
 Run: python tools/validate_boshin_international_journal.py
 The small trigger evaluator covers these fixtures, not Victoria 3's runtime/UI.
@@ -8,6 +8,7 @@ import re
 
 from generate_japanese_culture_patch import find_block
 from validate_japan_regional_content import structural_check
+from journal_schema import named, outcome
 
 ROOT = Path(__file__).resolve().parents[1]
 JE = 'common/journal_entries/eafp_boshin_war.txt'
@@ -107,14 +108,19 @@ def main():
     assert je.count('add_war_war_support =') == 2
     for side in ('sabaku', 'tobaku'):
         assert f'add_war_war_support = {{ target = global_var:eafp_boshin_{side} value = 5 }}' in je
-    assert 'trigger_event = { id = boshin_war.9 }' in block(je, 'on_complete')
-    for outcome in ('on_complete', 'on_fail', 'on_invalid'):
-        assert 'eafp_boshin_cleanup = yes' in block(je, outcome)
+    journal = named(je, 'je_boshin_war').body(je)
+    assert 'trigger_event = { id = boshin_war.9 }' in outcome(journal, 'complete')
+    for kind in ('complete', 'fail', 'invalid'):
+        result = outcome(journal, kind)
+        assert 'eafp_boshin_cleanup = yes' in named(result, 'effect').body(result)
     for path in (ROOT / 'common').rglob('*.txt'):
         assert not re.search(r'\bje_boshin_war_(sabaku|tobaku)\b', path.read_text(encoding='utf-8-sig')), path
     assert not re.search(r'\bje_boshin_war_(sabaku|tobaku)\b', events)
 
-    outcomes = {key: parse(block(je, key))[0][2] for key in ('complete', 'fail', 'invalid')}
+    outcomes = {}
+    for key in ('complete', 'fail', 'invalid'):
+        result = outcome(journal, key)
+        outcomes[key] = parse(named(result, 'trigger').body(result))
     cases = [
         ('opening before diplomacy', world(checked=False), (False, False, False)),
         ('diplomatic play', world(play=True), (False, False, False)),

@@ -41,14 +41,21 @@ je_boxer_rebellion_pre = {
 
 	immediate = {
 		set_global_variable = boxer_rebellion_happened
-		trigger_event = { id = boxer_rebellion_events.1 } 
+		trigger_event = { id = boxer_rebellion_events.1 }
 	}
 
-	complete = {
-		OR = {
-			has_journal_entry = je_boxer_rebellion_western
-			has_journal_entry = je_boxer_rebellion_bxr
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				has_journal_entry = je_boxer_rebellion_western
+				has_journal_entry = je_boxer_rebellion_bxr
+			}
 		}
+		effect = {}
 	}
 
 	on_monthly_pulse = {
@@ -99,43 +106,54 @@ je_boxer_rebellion_western = { # 청나라가 서양 열강 편을 듦.
 		}
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = taiping_destroyed
-			hidden_trigger = {
-				NOT = {
-					exists = c:BXR
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = taiping_destroyed
+				hidden_trigger = {
+					NOT = {
+						exists = c:BXR
+					}
 				}
+			}
+		}
+		effect = {
+			c:CHI ?= {
+				trigger_event = { id = boxer_rebellion_events.106 }
 			}
 		}
 	}
 
-	on_complete = {
-		c:CHI ?= {
-			trigger_event = { id = boxer_rebellion_events.106 }
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			exists = c:BXR
+			OR = {
+				c:CHI ?= { has_truce_with = c:BXR }
+				NOT = { exists = c:CHI }
+			}
 		}
-	}
-	
-	fail = {
-		exists = c:BXR
-		OR = {
-			c:CHI ?= { has_truce_with = c:BXR }
-			NOT = { exists = c:CHI }
-		}
-	}
-	on_fail = {
-		c:CHI = {
-			trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
-		}
-	}
-	event_outcome_failed_effect_desc = {
-		header = boxer_rebellion_events.3.a
 		effect = {
 			c:CHI = {
-				chi_remove_1_fragile_unity = yes
-				add_radicals = {
-					value = very_large_radicals
-					culture = cu:han
+				trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
+			}
+		}
+		event_outcome_effect_desc = {
+			header = boxer_rebellion_events.3.a
+			effect = {
+				c:CHI = {
+					chi_remove_1_fragile_unity = yes
+					add_radicals = {
+						value = very_large_radicals
+						culture = cu:han
+					}
 				}
 			}
 		}
@@ -162,7 +180,7 @@ je_boxer_rebellion_bxr = { # 청나라가 의화단 편을 듦.
 				}
 			}
 		}
-		
+
 	}
 
 	should_show_when_not_involved = {
@@ -176,81 +194,98 @@ je_boxer_rebellion_bxr = { # 청나라가 의화단 편을 듦.
 		}
 	}
 
-	complete = {
-		c:CHI ?= {
-			custom_tooltip = {
-				text = qing_owns_all_han_states_tt
-				NOT = {
-					any_state = {
-						state_region = { is_homeland = cu:han }
-						NOT = { owner = c:CHI }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			c:CHI ?= {
+				custom_tooltip = {
+					text = qing_owns_all_han_states_tt
+					NOT = {
+						any_state = {
+							state_region = { is_homeland = cu:han }
+							NOT = { owner = c:CHI }
+						}
+					}
+				}
+			}
+		}
+		effect = {
+			c:CHI = {
+				trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
+			}
+		}
+		event_outcome_effect_desc = {
+			header = boxer_rebellion_events.2.a
+			effect = {
+				c:CHI = {
+					add_loyalists = {
+						value = 0.2
+						culture = cu:han
+					}
+					add_modifier = {
+						name = revere_the_emperor
+						days = long_modifier_time
+					}
+				}
+			}
+		}
+		event_outcome_effect_desc = {
+			header = boxer_rebellion_events.2.b
+			effect = {
+				c:CHI = {
+					add_loyalists = {
+						value = 0.2
+						culture = cu:han
+					}
+					add_modifier = {
+						name = united_in_righteousness
+						days = long_modifier_time
 					}
 				}
 			}
 		}
 	}
 
-	on_complete = {
-		c:CHI = {
-			trigger_event = { id = boxer_rebellion_events.2 } # The Mandate of Heaven
-		}
-	}
-	event_outcome_completed_effect_desc = {
-		header = boxer_rebellion_events.2.a
-		effect = {
-			c:CHI = {
-				add_loyalists = {
-					value = 0.2
-					culture = cu:han
-				}
-				add_modifier = {
-					name = revere_the_emperor
-					days = long_modifier_time
-				}
-			}
-		}
-	}
-	event_outcome_completed_effect_desc = {
-		header = boxer_rebellion_events.2.b
-		effect = {
-			c:CHI = {
-				add_loyalists = {
-					value = 0.2
-					culture = cu:han
-				}
-				add_modifier = {
-					name = united_in_righteousness
-					days = long_modifier_time
-				}
-			}
-		}
-	}
-	
 	timeout = 1825
 
-	on_timeout = {
-		c:CHI = {
-			trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
-		}
-	}
-	event_outcome_timeout_effect_desc = {
-		header = boxer_rebellion_events.3.a
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
 		effect = {
 			c:CHI = {
-				chi_remove_1_fragile_unity = yes
-				add_radicals = {
-					value = very_large_radicals
-					culture = cu:han
+				trigger_event = { id = boxer_rebellion_events.3 } # The Qing and the Han
+			}
+		}
+		event_outcome_effect_desc = {
+			header = boxer_rebellion_events.3.a
+			effect = {
+				c:CHI = {
+					chi_remove_1_fragile_unity = yes
+					add_radicals = {
+						value = very_large_radicals
+						culture = cu:han
+					}
 				}
 			}
 		}
 	}
 
-	invalid = {
-		custom_tooltip = {
-			text = china_shatters_tt
-			has_global_variable = china_shatters
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
 		}
+		effect = {}
 	}
 
 	weight = 1000

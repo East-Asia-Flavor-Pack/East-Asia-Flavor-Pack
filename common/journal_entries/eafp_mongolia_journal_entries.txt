@@ -31,11 +31,18 @@
 		events = { eafp_mgl.100 }
 	}
 
-	complete = { is_subject = no }
-	on_complete = {
-		trigger_event = { id = eafp_mgl.103 popup = yes }
-		trigger_event = { id = eafp_mgl.210 days = 90 popup = yes }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = { is_subject = no }
+		effect = {
+			trigger_event = { id = eafp_mgl.103 popup = yes }
+			trigger_event = { id = eafp_mgl.210 days = 90 popup = yes }
+		}
 	}
+
 }
 
 je_eafp_mgl_unite_the_mongols = {
@@ -64,19 +71,26 @@ je_eafp_mgl_unite_the_mongols = {
 		eafp_mgl_grant_unification_claims_once = yes
 		trigger_event = { id = eafp_mgl.300 days = 7 popup = yes }
 	}
-	complete = {
-		custom_tooltip = {
-			text = eafp_mgl_unification_state_count_tt
-			any_scope_state = {
-				is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area
-				count >= 6
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = eafp_mgl_unification_state_count_tt
+				any_scope_state = {
+					is_in_geographic_region = geographic_region_eafp_mgl_united_industrial_area
+					count >= 6
+				}
 			}
 		}
+		effect = {
+			set_variable = eafp_mgl_unite_the_mongols_complete
+			trigger_event = { id = eafp_mgl.305 days = 1 popup = yes }
+		}
 	}
-	on_complete = {
-		set_variable = eafp_mgl_unite_the_mongols_complete
-		trigger_event = { id = eafp_mgl.305 days = 1 popup = yes }
-	}
+
 }
 
 je_eafp_mgl_echoes_of_chinggis = {
@@ -113,42 +127,73 @@ je_eafp_mgl_echoes_of_chinggis = {
 
 	on_weekly_pulse = { effect = { generate_eafp_mgl_steppe_league_member_list = yes } }
 
-	fail = {
-		OR = {
-			custom_tooltip = {
-				text = eafp_mgl_steppe_league_rejected_tt
-				has_variable = eafp_mgl_steppe_league_immediate_rejector
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			OR = {
+				custom_tooltip = {
+					text = eafp_mgl_steppe_league_rejected_tt
+					has_variable = eafp_mgl_steppe_league_immediate_rejector
+				}
+				custom_tooltip = {
+					text = eafp_mgl_steppe_league_lost_eligibility_tt
+					AND = { NOT = { c:MGL ?= this } has_variable = eafp_mgl_invited_to_steppe_league NOT = { has_variable = eafp_mgl_steppe_league_member } NOT = { is_eafp_mgl_steppe_league_candidate = yes } }
+				}
+				AND = { NOT = { c:MGL ?= this } is_subject = yes NOT = { top_overlord = c:MGL } }
+				AND = { c:MGL ?= this is_subject = yes }
 			}
-			custom_tooltip = {
-				text = eafp_mgl_steppe_league_lost_eligibility_tt
-				AND = { NOT = { c:MGL ?= this } has_variable = eafp_mgl_invited_to_steppe_league NOT = { has_variable = eafp_mgl_steppe_league_member } NOT = { is_eafp_mgl_steppe_league_candidate = yes } }
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						c:MGL ?= this
+						custom_tooltip = {
+							text = eafp_mgl_steppe_league_members_tt
+							any_country = {
+								NOT = { c:MGL ?= this }
+								has_variable = eafp_mgl_steppe_league_member
+								has_variable = eafp_mgl_steppe_league_acceptor
+								count >= 2
+							}
+						}
+
+					}
+				}
 			}
-			AND = { NOT = { c:MGL ?= this } is_subject = yes NOT = { top_overlord = c:MGL } }
-			AND = { c:MGL ?= this is_subject = yes }
 		}
-	}
-	on_fail = {
-		remove_variable = eafp_mgl_invited_to_steppe_league
-		remove_variable = eafp_mgl_steppe_league_acceptor
-		remove_variable = eafp_mgl_steppe_league_member
-		generate_eafp_mgl_steppe_league_member_list = yes
+		effect = {
+			remove_variable = eafp_mgl_invited_to_steppe_league
+			remove_variable = eafp_mgl_steppe_league_acceptor
+			remove_variable = eafp_mgl_steppe_league_member
+			generate_eafp_mgl_steppe_league_member_list = yes
+		}
 	}
 
-	complete = {
-		c:MGL ?= this
-		custom_tooltip = {
-			text = eafp_mgl_steppe_league_members_tt
-			any_country = {
-				NOT = { c:MGL ?= this }
-				has_variable = eafp_mgl_steppe_league_member
-				has_variable = eafp_mgl_steppe_league_acceptor
-				count >= 2
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			c:MGL ?= this
+			custom_tooltip = {
+				text = eafp_mgl_steppe_league_members_tt
+				any_country = {
+					NOT = { c:MGL ?= this }
+					has_variable = eafp_mgl_steppe_league_member
+					has_variable = eafp_mgl_steppe_league_acceptor
+					count >= 2
+				}
 			}
 		}
+		effect = {
+			trigger_event = { id = eafp_mgl.407 popup = yes }
+		}
 	}
-	on_complete = {
-		trigger_event = { id = eafp_mgl.407 popup = yes }
-	}
+
 }
 
 je_eafp_mgl_develop_the_united_mongol_lands = {
@@ -204,32 +249,45 @@ je_eafp_mgl_develop_the_united_mongol_lands = {
 			10 = eafp_mgl.525
 		}
 	}
-	complete = {
-		eafp_mgl_united_state_count >= 2
-		custom_tooltip = {
-			text = eafp_mgl_united_gdp_growth_goal_tt
-			has_variable = eafp_mgl_united_gdp_goal
-			eafp_mgl_united_gdp >= var:eafp_mgl_united_gdp_goal
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			eafp_mgl_united_state_count >= 2
+			custom_tooltip = {
+				text = eafp_mgl_united_gdp_growth_goal_tt
+				has_variable = eafp_mgl_united_gdp_goal
+				eafp_mgl_united_gdp >= var:eafp_mgl_united_gdp_goal
+			}
+			custom_tooltip = {
+				text = eafp_mgl_united_raw_reserves_goal_tt
+				eafp_mgl_united_raw_building_count > 0
+				eafp_mgl_united_healthy_raw_building_share >= 0.75
+			}
+			NOT = { is_subject_type = subject_type_military_headquarters_china }
+			custom_tooltip = {
+				text = eafp_mgl_united_industry_reserves_goal_tt
+				eafp_mgl_united_industry_building_count > 0
+				eafp_mgl_united_healthy_industry_building_share >= 0.75
+			}
 		}
-		custom_tooltip = {
-			text = eafp_mgl_united_raw_reserves_goal_tt
-			eafp_mgl_united_raw_building_count > 0
-			eafp_mgl_united_healthy_raw_building_share >= 0.75
-		}
-		NOT = { is_subject_type = subject_type_military_headquarters_china }
-		custom_tooltip = {
-			text = eafp_mgl_united_industry_reserves_goal_tt
-			eafp_mgl_united_industry_building_count > 0
-			eafp_mgl_united_healthy_industry_building_share >= 0.75
+		effect = {
+			remove_variable = eafp_mgl_united_gdp_goal
+			set_variable = eafp_mgl_industrial_combine_unlocked
+			add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
+			trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
+			add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
+			trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
 		}
 	}
-	on_complete = {
-		remove_variable = eafp_mgl_united_gdp_goal
-		set_variable = eafp_mgl_industrial_combine_unlocked
-		add_modifier = { name = eafp_mgl_industrial_takeoff years = 10 }
-		trigger_event = { id = eafp_mgl.519 days = 1 popup = yes }
-		add_modifier = { name = eafp_mgl_united_industrial_market years = 10 }
-		trigger_event = { id = eafp_mgl.526 days = 1 popup = yes }
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		# Legacy empty endpoint: do not conclude automatically.
+		trigger = { always = no }
+		effect = { remove_variable = eafp_mgl_united_gdp_goal }
 	}
-	on_invalid = { remove_variable = eafp_mgl_united_gdp_goal }
 }

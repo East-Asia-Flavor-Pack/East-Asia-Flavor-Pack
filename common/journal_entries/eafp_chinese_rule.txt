@@ -16,53 +16,58 @@
 		}
 	}
 
-	complete = {
-		OR = {
-			NOT = { is_subject_type = subject_type_military_headquarters_china }
-			NOT = { is_subject_of = c:CHI }
-		}
-	}
-
-	on_complete = {
-		if = {
-			limit = { has_law = law_type:law_eafp_military_headquarters }
-			activate_law = law_type:law_autocracy
-		}
-		if = {
-			limit = { c:MGL ?= THIS }
-			if = {
-				limit = { NOT = { has_variable = eafp_mgl_restoration_started } }
-				add_journal_entry = { type = je_eafp_mgl_restoration_of_the_state }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				NOT = { is_subject_type = subject_type_military_headquarters_china }
+				NOT = { is_subject_of = c:CHI }
 			}
 		}
-		else = {
+		effect = {
 			if = {
-				limit = { country_has_primary_culture = cu:han }
-				remove_primary_culture = cu:han
+				limit = { has_law = law_type:law_eafp_military_headquarters }
+				activate_law = law_type:law_autocracy
 			}
 			if = {
-				limit = { country_has_primary_culture = cu:manchu }
-				remove_primary_culture = cu:manchu
-			}
-			hidden_effect = {
+				limit = { c:MGL ?= THIS }
 				if = {
-					limit = { any_scope_character = { is_heir_of_own_country = yes } }
-					heir = { kill_character = { hidden = yes } }
+					limit = { NOT = { has_variable = eafp_mgl_restoration_started } }
+					add_journal_entry = { type = je_eafp_mgl_restoration_of_the_state }
 				}
-				ruler = { kill_character = { hidden = yes } }
 			}
-		}
-
-		if = {
-			limit = {
-				is_subject_type = subject_type_military_headquarters_china
+			else = {
+				if = {
+					limit = { country_has_primary_culture = cu:han }
+					remove_primary_culture = cu:han
+				}
+				if = {
+					limit = { country_has_primary_culture = cu:manchu }
+					remove_primary_culture = cu:manchu
+				}
+				hidden_effect = {
+					if = {
+						limit = { any_scope_character = { is_heir_of_own_country = yes } }
+						heir = { kill_character = { hidden = yes } }
+					}
+					ruler = { kill_character = { hidden = yes } }
+				}
 			}
-			change_subject_type = subject_type_vassal
-		}
 
-		remove_variable = eafp_china_military_headquarters_governor_term
+			if = {
+				limit = {
+					is_subject_type = subject_type_military_headquarters_china
+				}
+				change_subject_type = subject_type_vassal
+			}
+
+			remove_variable = eafp_china_military_headquarters_governor_term
+		}
 	}
-	
+
 	weight = 500
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
@@ -87,53 +92,75 @@ je_home_of_the_manchus = {
 		}
 	}
 
-	complete = {
-		OR = {
-			NOT = { is_subject_type = subject_type_military_headquarters_china }
-			NOT = { is_subject_of = c:CHI }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				NOT = { is_subject_type = subject_type_military_headquarters_china }
+				NOT = { is_subject_of = c:CHI }
+			}
 		}
-	}
-	
-	on_complete = {
-		if = {
-			limit = { has_law = law_type:law_eafp_military_headquarters }
-			activate_law = law_type:law_autocracy
-		}
-		if = {
-			limit = { country_has_primary_culture = cu:han }
-			remove_primary_culture = cu:han
-		}
+		effect = {
+			if = {
+				limit = { has_law = law_type:law_eafp_military_headquarters }
+				activate_law = law_type:law_autocracy
+			}
+			if = {
+				limit = { country_has_primary_culture = cu:han }
+				remove_primary_culture = cu:han
+			}
 
-		if = {
-			limit = { NOT = { has_variable = imperial_family_exiled } }
-			hidden_effect = {
-				if = {
-					limit = { any_scope_character = { is_heir_of_own_country = yes } }
-					heir = { kill_character = { hidden = yes } }
+			if = {
+				limit = { NOT = { has_variable = imperial_family_exiled } }
+				hidden_effect = {
+					if = {
+						limit = { any_scope_character = { is_heir_of_own_country = yes } }
+						heir = { kill_character = { hidden = yes } }
+					}
+					ruler = { kill_character = { hidden = yes } }
 				}
-				ruler = { kill_character = { hidden = yes } }
+			}
+
+			if = {
+				limit = {
+					is_subject_type = subject_type_military_headquarters_china
+				}
+				change_subject_type = subject_type_vassal
+			}
+
+			remove_variable = eafp_china_military_headquarters_governor_term
+		}
+	}
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			c:CHI = { NOT = { country_has_primary_culture = cu:manchu } }
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						OR = {
+							NOT = { is_subject_type = subject_type_military_headquarters_china }
+							NOT = { is_subject_of = c:CHI }
+						}
+
+					}
+				}
 			}
 		}
-
-		if = {
-			limit = {
-				is_subject_type = subject_type_military_headquarters_china
-			}
-			change_subject_type = subject_type_vassal
+		effect = {
+			remove_variable = eafp_china_military_headquarters_governor_term
+			add_journal_entry = { type = je_chinese_rule }
 		}
-
-		remove_variable = eafp_china_military_headquarters_governor_term
 	}
 
-	fail = {
-		c:CHI = { NOT = { country_has_primary_culture = cu:manchu } }
-	}
-
-	on_fail = {
-		remove_variable = eafp_china_military_headquarters_governor_term
-		add_journal_entry = { type = je_chinese_rule }
-	}
-	
 	weight = 500
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
@@ -145,28 +172,33 @@ je_southern_zoufan = {
 
 	group = je_group_historical_content
 
-	complete = {
-		NAND = {
-			is_in_power_bloc = yes
-			is_power_bloc_leader = no
-			power_bloc ?= {
-				has_identity = identity:identity_eafp_mandate_of_heaven
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			NAND = {
+				is_in_power_bloc = yes
+				is_power_bloc_leader = no
+				power_bloc ?= {
+					has_identity = identity:identity_eafp_mandate_of_heaven
+				}
+				is_subject = no
 			}
-			is_subject = no
+		}
+		effect = {
+			if = {
+				limit = { has_modifier = departure_of_south_sea_nations_modifier }
+				remove_modifier = departure_of_south_sea_nations_modifier
+			}
+			if = {
+				limit = { has_modifier = southern_zoufan_modifier }
+				remove_modifier = southern_zoufan_modifier
+			}
 		}
 	}
 
-	on_complete = {
-		if = {
-			limit = { has_modifier = departure_of_south_sea_nations_modifier }
-			remove_modifier = departure_of_south_sea_nations_modifier
-		}
-		if = {
-			limit = { has_modifier = southern_zoufan_modifier }
-			remove_modifier = southern_zoufan_modifier
-		}
-	}
-	
 	weight = 100
 
 	transferable = no

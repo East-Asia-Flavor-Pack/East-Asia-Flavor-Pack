@@ -1,4 +1,4 @@
-"""Check Formosa progression boundaries and localization from the actual scripts.
+﻿"""Check Formosa progression boundaries and localization from the actual scripts.
 
 Run: python tools/validate_formosa_expedition.py
 The small trigger evaluator covers this chain only, not engine scope/UI behavior.
@@ -6,6 +6,7 @@ The small trigger evaluator covers this chain only, not engine scope/UI behavior
 from pathlib import Path
 import operator
 import re
+from journal_schema import named, outcome
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -105,9 +106,10 @@ def main():
     assert allows(monthly_gate, surveying=True)
     assert not allows(monthly_gate, surveying=False)
     assert not allows(monthly_gate, surveying=True, claim=True)
-    assert "remove_modifier = formosa_survey_modifier" in block(journal, "on_complete")
+    completed = outcome(journal, "complete")
+    assert "remove_modifier = formosa_survey_modifier" in named(completed, "effect").body(completed)
     assert "remove_modifier = formosa_survey_modifier" in block(block(events, "formosa_expedition_events.2"), "option")
-    assert "owns_entire_state_region = STATE_FORMOSA" in block(journal, "complete")
+    assert "owns_entire_state_region = STATE_FORMOSA" in named(completed, "trigger").body(completed)
 
     # All displayed text references must exist exactly once in each supported language.
     feature_text = "\n".join([journal, bar, events, start_button, pause_button])

@@ -60,79 +60,90 @@
 		trigger_event = { id = eafp_joseon_qing_war_events.1 popup = yes }
 	}
 
-	complete = {
-		NOT = {
-			any_scope_war = {
-				this = scope:joseon_qing_war
-			}
-		}
-		OR = {
-			NOT = { exists = c:CHI }
-			AND = {
-				exists = c:CHI
-				NOT = { is_subject_of = c:CHI }
-			}
-		}
-	}
-
-	on_complete = {
-		trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
-	}
-
-	event_outcome_completed_effect_desc = {
-		header = eafp_joseon_qing_war_events.2.t
-		effect = {
-			if = {
-				limit = {
-					eafp_jqw_war_support_high_trigger = yes
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			NOT = {
+				any_scope_war = {
+					this = scope:joseon_qing_war
 				}
-				eafp_jqw_victory_high_reward_effect = yes
 			}
-			else_if = {
-				limit = {
-					eafp_jqw_war_support_medium_trigger = yes
+			OR = {
+				NOT = { exists = c:CHI }
+				AND = {
+					exists = c:CHI
+					NOT = { is_subject_of = c:CHI }
 				}
-				eafp_jqw_victory_medium_reward_effect = yes
-			}
-			else = {
-				eafp_jqw_victory_low_reward_effect = yes
 			}
 		}
-	}
-
-	fail = {
-		NOT = {
-			any_scope_war = {
-				this = scope:joseon_qing_war
-			}
-		}
-		exists = c:CHI
-		is_subject_of = c:CHI
-	}
-
-	on_fail = {
-		trigger_event = { id = eafp_joseon_qing_war_events.3 popup = yes }
-	}
-
-	event_outcome_failed_effect_desc = {
-		header = eafp_joseon_qing_war_events.3.t
 		effect = {
-			add_modifier = {
-				name = eafp_modifier_joseon_qing_war_defeat
-				years = normal_modifier_time
-			}
-			add_radicals = {
-				value = medium_radicals
+			trigger_event = { id = eafp_joseon_qing_war_events.2 popup = yes }
+		}
+		event_outcome_effect_desc = {
+			header = eafp_joseon_qing_war_events.2.t
+			effect = {
+				if = {
+					limit = {
+						eafp_jqw_war_support_high_trigger = yes
+					}
+					eafp_jqw_victory_high_reward_effect = yes
+				}
+				else_if = {
+					limit = {
+						eafp_jqw_war_support_medium_trigger = yes
+					}
+					eafp_jqw_victory_medium_reward_effect = yes
+				}
+				else = {
+					eafp_jqw_victory_low_reward_effect = yes
+				}
 			}
 		}
 	}
 
-	invalid = {
-		NOT = { c:KOR ?= THIS }
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			NOT = {
+				any_scope_war = {
+					this = scope:joseon_qing_war
+				}
+			}
+			exists = c:CHI
+			is_subject_of = c:CHI
+		}
+		effect = {
+			trigger_event = { id = eafp_joseon_qing_war_events.3 popup = yes }
+		}
+		event_outcome_effect_desc = {
+			header = eafp_joseon_qing_war_events.3.t
+			effect = {
+				add_modifier = {
+					name = eafp_modifier_joseon_qing_war_defeat
+					years = normal_modifier_time
+				}
+				add_radicals = {
+					value = medium_radicals
+				}
+			}
+		}
 	}
 
-	on_invalid = {
-		remove_variable = eafp_var_jqw_current_war_support
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			NOT = { c:KOR ?= THIS }
+		}
+		effect = {
+			remove_variable = eafp_var_jqw_current_war_support
+		}
 	}
 
 	on_weekly_pulse = {

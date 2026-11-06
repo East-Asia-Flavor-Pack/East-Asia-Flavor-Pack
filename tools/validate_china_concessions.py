@@ -91,7 +91,7 @@ def main():
         unquoted(treaties),
     ), "Treaty entry into force must activate the international JE after granting rights"
     assert len(re.findall(r"\badd_contextless_journal_entry\s*=", clean)) == 1
-    assert not re.search(r"\b(?:complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
+    assert not re.search(r"\b(?:outcome|complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
         "The international JE must persist and calculate only once per pulse"
     assert len(re.findall(r"\bon_weekly_pulse\s*=", je_code)) == 1
     assert len(re.findall(r"\bon_monthly_pulse\s*=", je_code)) == 1

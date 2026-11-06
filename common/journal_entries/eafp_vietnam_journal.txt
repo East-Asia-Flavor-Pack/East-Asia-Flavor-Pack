@@ -17,26 +17,14 @@
 	modifiers_while_active = {
 		dai_raging_rebellion_modifier
 	}
-	
-	complete = {
-		NOT = { exists = c:CAM }
-		any_scope_state = {
-			filter = {
-				state_region = { is_homeland = cu:khmer }
-				culture_percent_state = {
-					target = cu:khmer
-					value > 0
-				}
-			}
-			count = all
-			state_region = { is_homeland = cu:khmer }
-			is_incorporated = yes
-			loyalist_fraction = {
-				value >= 0.20
-				culture = cu:khmer
-			}
-		}
-		OR = {
+
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			NOT = { exists = c:CAM }
 			any_scope_state = {
 				filter = {
 					state_region = { is_homeland = cu:khmer }
@@ -47,63 +35,133 @@
 				}
 				count = all
 				state_region = { is_homeland = cu:khmer }
-				culture_percent_state = {
-					target = cu:vietnamese
-					value >= 0.2
+				is_incorporated = yes
+				loyalist_fraction = {
+					value >= 0.20
+					culture = cu:khmer
 				}
 			}
-			cultural_acceptance_base = { target = cu:khmer value >= acceptance_status_4 }
+			OR = {
+				any_scope_state = {
+					filter = {
+						state_region = { is_homeland = cu:khmer }
+						culture_percent_state = {
+							target = cu:khmer
+							value > 0
+						}
+					}
+					count = all
+					state_region = { is_homeland = cu:khmer }
+					culture_percent_state = {
+						target = cu:vietnamese
+						value >= 0.2
+					}
+				}
+				cultural_acceptance_base = { target = cu:khmer value >= acceptance_status_4 }
+			}
 		}
-	}
-
-	on_complete = {
-		trigger_event = { id = khmer_issue_events.1 }
-	}
-	event_outcome_completed_effect_desc = {
-		header = khmer_issue_events.1.a
 		effect = {
-			every_scope_state = {
-				limit = { state_region = { is_homeland = cu:khmer } }
-				add_modifier = {
-					name = caithoquiluu_modifier
-					days = very_long_modifier_time
+			trigger_event = { id = khmer_issue_events.1 }
+		}
+		event_outcome_effect_desc = {
+			header = khmer_issue_events.1.a
+			effect = {
+				every_scope_state = {
+					limit = { state_region = { is_homeland = cu:khmer } }
+					add_modifier = {
+						name = caithoquiluu_modifier
+						days = very_long_modifier_time
+					}
 				}
 			}
 		}
 	}
 
-	fail = {
-		# je_khmer_issue_fail
-		c:CAM ?= {
-			NOT = { is_subject_of = c:DAI }
-		}
-	}
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			# je_khmer_issue_fail
+			c:CAM ?= {
+				NOT = { is_subject_of = c:DAI }
+			}
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						NOT = { exists = c:CAM }
+						any_scope_state = {
+							filter = {
+								state_region = { is_homeland = cu:khmer }
+								culture_percent_state = {
+									target = cu:khmer
+									value > 0
+								}
+							}
+							count = all
+							state_region = { is_homeland = cu:khmer }
+							is_incorporated = yes
+							loyalist_fraction = {
+								value >= 0.20
+								culture = cu:khmer
+							}
+						}
+						OR = {
+							any_scope_state = {
+								filter = {
+									state_region = { is_homeland = cu:khmer }
+									culture_percent_state = {
+										target = cu:khmer
+										value > 0
+									}
+								}
+								count = all
+								state_region = { is_homeland = cu:khmer }
+								culture_percent_state = {
+									target = cu:vietnamese
+									value >= 0.2
+								}
+							}
+							cultural_acceptance_base = { target = cu:khmer value >= acceptance_status_4 }
+						}
 
-	on_fail = {
-		trigger_event = { id = khmer_issue_events.2 }
-	}
-
-	invalid = {
-		hidden_trigger = {
-			NAND = {
-				exists = c:CAM
-				any_diplomatic_play = {
-					initiator = c:CAM
-					target = ROOT
-					is_diplomatic_play_type = dp_secession
+					}
 				}
 			}
 		}
-		NOT = {
-			any_scope_state = {
-				state_region = { is_homeland = cu:khmer }
+		effect = {
+			trigger_event = { id = khmer_issue_events.2 }
+		}
+	}
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			hidden_trigger = {
+				NAND = {
+					exists = c:CAM
+					any_diplomatic_play = {
+						initiator = c:CAM
+						target = ROOT
+						is_diplomatic_play_type = dp_secession
+					}
+				}
+			}
+			NOT = {
+				any_scope_state = {
+					state_region = { is_homeland = cu:khmer }
+				}
 			}
 		}
+		effect = {}
 	}
 
 	on_monthly_pulse = {
 		effect = {
-			
+
 		}
 	}
 

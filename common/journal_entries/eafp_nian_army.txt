@@ -82,124 +82,137 @@
 
 	scripted_progress_bar = nian_army_progress_bar
 
-	complete = {
-		custom_tooltip = {
-			text = je_nian_army_complete
-			scope:journal_entry = { 
-				"scripted_bar_progress(nian_army_progress_bar)" <= 0
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_nian_army_complete
+				scope:journal_entry = {
+					"scripted_bar_progress(nian_army_progress_bar)" <= 0
+				}
 			}
 		}
-	}
-
-	on_complete = {
-		hidden_effect = {
-			remove_variable = nian_army_progress_var_d_mobilized_garrison
-			remove_variable = nian_army_progress_var_d_stationing_garrison
-			remove_variable = nian_army_progress_var_d_devastation
-		}
-		trigger_event = { id = nian_army.2 popup = yes }
-	}
-	event_outcome_completed_effect_desc = {
-		header = nian_army.2.a
 		effect = {
-			every_scope_state = {
-				limit = {
-					OR = {
-						THIS = scope:state1
-						THIS = scope:state2
-						THIS = scope:state3
-						THIS = scope:state4
-						THIS = scope:state5
+			hidden_effect = {
+				remove_variable = nian_army_progress_var_d_mobilized_garrison
+				remove_variable = nian_army_progress_var_d_stationing_garrison
+				remove_variable = nian_army_progress_var_d_devastation
+			}
+			trigger_event = { id = nian_army.2 popup = yes }
+		}
+		event_outcome_effect_desc = {
+			header = nian_army.2.a
+			effect = {
+				every_scope_state = {
+					limit = {
+						OR = {
+							THIS = scope:state1
+							THIS = scope:state2
+							THIS = scope:state3
+							THIS = scope:state4
+							THIS = scope:state5
+						}
+					}
+					add_radicals_in_state = {
+						value = small_radicals
+						culture = cu:han
+					}
+					kill_population_percent_in_state = {
+						percent = 0.005
+						culture = cu:han
+					}
+					state_region = {
+						add_devastation = 30
 					}
 				}
-				add_radicals_in_state = {
-					value = small_radicals
-					culture = cu:han
-				}
-				kill_population_percent_in_state = {
-					percent = 0.005
-					culture = cu:han
-				}
-				state_region = {
-					add_devastation = 30 
-				}
 			}
 		}
-	}
-	event_outcome_completed_effect_desc = {
-		header = nian_army.2.b
-		effect = {
-			every_scope_state = {
-				limit = {
-					OR = {
-						THIS = scope:state1
-						THIS = scope:state2
-						THIS = scope:state3
-						THIS = scope:state4
-						THIS = scope:state5
+		event_outcome_effect_desc = {
+			header = nian_army.2.b
+			effect = {
+				every_scope_state = {
+					limit = {
+						OR = {
+							THIS = scope:state1
+							THIS = scope:state2
+							THIS = scope:state3
+							THIS = scope:state4
+							THIS = scope:state5
+						}
+					}
+					kill_population_percent_in_state = {
+						percent = 0.0025
+						culture = cu:han
+					}
+					state_region = {
+						add_devastation = 15
 					}
 				}
-				kill_population_percent_in_state = {
-					percent = 0.0025
-					culture = cu:han
-				}
-				state_region = {
-					add_devastation = 15 
-				}
 			}
 		}
 	}
 
-	fail = {
-		custom_tooltip = {
-			text = je_nian_army_fail
-			scope:journal_entry = { 
-				"scripted_bar_progress(nian_army_progress_bar)" >= 100
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_nian_army_fail
+				scope:journal_entry = {
+					"scripted_bar_progress(nian_army_progress_bar)" >= 100
+				}
 			}
 		}
-	}
-
-	on_fail = {
-		hidden_effect = {
-			remove_variable = nian_army_progress_var_d_mobilized_garrison
-			remove_variable = nian_army_progress_var_d_stationing_garrison
-			remove_variable = nian_army_progress_var_d_devastation
-		}
-		trigger_event = { id = nian_army.3 popup = yes }
-	}
-	event_outcome_failed_effect_desc = {
-		header = nian_army.3.a
 		effect = {
-			every_scope_state = {
-				limit = { region = sr:region_north_china }
-				add_radicals_in_state = {
-					value = very_large_radicals
-					culture = cu:han
-				}
-				state_region = {
-					add_devastation = 15
+			hidden_effect = {
+				remove_variable = nian_army_progress_var_d_mobilized_garrison
+				remove_variable = nian_army_progress_var_d_stationing_garrison
+				remove_variable = nian_army_progress_var_d_devastation
+			}
+			trigger_event = { id = nian_army.3 popup = yes }
+		}
+		event_outcome_effect_desc = {
+			header = nian_army.3.a
+			effect = {
+				every_scope_state = {
+					limit = { region = sr:region_north_china }
+					add_radicals_in_state = {
+						value = very_large_radicals
+						culture = cu:han
+					}
+					state_region = {
+						add_devastation = 15
+					}
 				}
 			}
 		}
 	}
 
-	invalid = {
-		custom_tooltip = {
-			text = china_shatters_tt
-			has_global_variable = china_shatters
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
 		}
-	}
-
-	on_invalid = {
-		hidden_effect = {
-			remove_variable = nian_army_progress_var_d_mobilized_garrison
-			remove_variable = nian_army_progress_var_d_stationing_garrison
-			remove_variable = nian_army_progress_var_d_devastation
+		effect = {
+			hidden_effect = {
+				remove_variable = nian_army_progress_var_d_mobilized_garrison
+				remove_variable = nian_army_progress_var_d_stationing_garrison
+				remove_variable = nian_army_progress_var_d_devastation
+			}
 		}
 	}
 
 	modifiers_while_active = {
-		
+
 	}
 
 	on_weekly_pulse = {
@@ -261,7 +274,7 @@
 	}
 
 	on_monthly_pulse = {
-		effect = {			
+		effect = {
 			set_variable = {
 				name = nian_army_progress_var_d_mobilized_garrison
 				value = {

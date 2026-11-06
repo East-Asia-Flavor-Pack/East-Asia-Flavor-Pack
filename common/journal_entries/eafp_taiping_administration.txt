@@ -15,56 +15,98 @@
 		}
 	}
 
-	complete = {
-		OR = {
-			custom_tooltip = {
-				text = taiping_house_on_sand_complete
-				hidden_trigger = {
-					NOT = { exists = c:CHI }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				custom_tooltip = {
+					text = taiping_house_on_sand_complete
+					hidden_trigger = {
+						NOT = { exists = c:CHI }
+					}
+				}
+				custom_tooltip = {
+					text = china_shatters_tt
+					has_global_variable = china_shatters
 				}
 			}
+		}
+		effect = {
+			hidden_effect = {
+				set_variable = taiping_house_on_sand_succeeded
+				eafp_taiping_cleanup_administration = yes
+			}
+			trigger_event = { id = heavenly.1005 popup = yes }
+		}
+		event_outcome_effect_desc = {
+			header = heavenly.1005.a
+			effect = {
+				add_modifier = {
+					name = tianming
+					years = 5
+				}
+			}
+		}
+	}
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			NOT = { has_journal_entry = je_taiping_revolution }
+		}
+		effect = {
+			hidden_effect = {
+				set_variable = taiping_house_on_sand_ended
+				eafp_taiping_cleanup_administration = yes
+			}
+		}
+	}
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
 			custom_tooltip = {
-				text = china_shatters_tt
-				has_global_variable = china_shatters
+				text = taiping_house_on_sand_fail
+				scope:journal_entry = {
+					"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" <= 0
+				}
+			}
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						OR = {
+							custom_tooltip = {
+								text = taiping_house_on_sand_complete
+								hidden_trigger = {
+									NOT = { exists = c:CHI }
+								}
+							}
+							custom_tooltip = {
+								text = china_shatters_tt
+								has_global_variable = china_shatters
+							}
+						}
+
+					}
+				}
 			}
 		}
-	}
-
-	invalid = {
-		NOT = { has_journal_entry = je_taiping_revolution }
-	}
-
-	on_complete = {
-		hidden_effect = {
-			set_variable = taiping_house_on_sand_succeeded
-			eafp_taiping_cleanup_administration = yes
-		}
-		trigger_event = { id = heavenly.1005 popup = yes }
-	}
-
-	on_invalid = {
-		hidden_effect = {
+		effect = {
+			set_variable = taiping_house_on_sand_failed
 			set_variable = taiping_house_on_sand_ended
-			eafp_taiping_cleanup_administration = yes
-		}
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = taiping_house_on_sand_fail
-			scope:journal_entry = {
-				"scripted_bar_progress(taiping_revolutionary_fervor_progress_bar)" <= 0
+			hidden_effect = {
+				eafp_taiping_cleanup_administration = yes
 			}
+			trigger_event = { id = heavenly.1004 popup = yes }
 		}
-	}
-
-	on_fail = {
-		set_variable = taiping_house_on_sand_failed
-		set_variable = taiping_house_on_sand_ended
-		hidden_effect = {
-			eafp_taiping_cleanup_administration = yes
-		}
-		trigger_event = { id = heavenly.1004 popup = yes }
 	}
 
 	on_monthly_pulse = {
@@ -75,16 +117,6 @@
 
 	scripted_progress_bar = taiping_revolutionary_fervor_progress_bar
 	progress_desc = je_taiping_house_on_sand_progress
-
-	event_outcome_completed_effect_desc = {
-		header = heavenly.1005.a
-		effect = {
-			add_modifier = {
-				name = tianming
-				years = 5
-			}
-		}
-	}
 
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes
@@ -116,53 +148,80 @@ je_taiping_internal_conflict = {
 		}
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = taiping_internal_conflict_complete
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = taiping_internal_conflict_complete
+				hidden_trigger = {
+					has_variable = taiping_house_on_sand_succeeded
+				}
+			}
+		}
+		effect = {
+			remove_modifier = internal_conflict_in_tpg
+			remove_modifier = taiping_coup_aftermath_modifier
+			remove_variable = taiping_internal_conflict
+			remove_variable = taiping_house_on_sand_succeeded
+			remove_variable = taiping_house_on_sand_ended
+		}
+	}
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			OR = {
+				has_variable = taiping_house_on_sand_ended
+				NOR = {
+					has_law_or_variant = law_type:law_monarchy
+					has_law_or_variant = law_type:law_theocracy
+				}
+			}
+		}
+		effect = {
+			remove_modifier = taiping_coup_aftermath_modifier
+			remove_variable = taiping_internal_conflict
+			remove_variable = taiping_house_on_sand_succeeded
+			remove_variable = taiping_house_on_sand_ended
+		}
+	}
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = taiping_internal_conflict_fail
+				scope:journal_entry = { "scripted_bar_progress(taiping_internal_conflict_progress_bar)" >= 100 }
+			}
+			# A fulfilled objective wins if both ending conditions are met.
 			hidden_trigger = {
-				has_variable = taiping_house_on_sand_succeeded
+				NOT = {
+					AND = {
+						custom_tooltip = {
+							text = taiping_internal_conflict_complete
+							hidden_trigger = {
+								has_variable = taiping_house_on_sand_succeeded
+							}
+						}
+
+					}
+				}
 			}
 		}
-	}
-
-	on_complete = {
-		remove_modifier = internal_conflict_in_tpg
-		remove_modifier = taiping_coup_aftermath_modifier
-		remove_variable = taiping_internal_conflict
-		remove_variable = taiping_house_on_sand_succeeded
-		remove_variable = taiping_house_on_sand_ended
-	}
-
-	invalid = {
-		OR = {
-			has_variable = taiping_house_on_sand_ended
-			NOR = {
-				has_law_or_variant = law_type:law_monarchy
-				has_law_or_variant = law_type:law_theocracy
+		effect = {
+			set_variable = {
+				name = taiping_internal_conflict
+				value = 100
 			}
+			trigger_event = { id = heavenly.1008 popup = yes }
 		}
-	}
-
-	on_invalid = {
-		remove_modifier = taiping_coup_aftermath_modifier
-		remove_variable = taiping_internal_conflict
-		remove_variable = taiping_house_on_sand_succeeded
-		remove_variable = taiping_house_on_sand_ended
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = taiping_internal_conflict_fail
-			scope:journal_entry = { "scripted_bar_progress(taiping_internal_conflict_progress_bar)" >= 100 }
-		}
-	}
-
-	on_fail = {
-		set_variable = {
-			name = taiping_internal_conflict
-			value = 100
-		}
-		trigger_event = { id = heavenly.1008 popup = yes }
 	}
 
 	on_monthly_pulse = {

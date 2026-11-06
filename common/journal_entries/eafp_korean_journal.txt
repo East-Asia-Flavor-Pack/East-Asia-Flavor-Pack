@@ -7,44 +7,54 @@ je_korean_kings_health = {
 	is_shown_in_lobby = {
 		c:KOR ?= THIS
 	}
-	
+
 	scripted_progress_bar = eafp_progress_bar_kings_health
-	
+
 	scripted_button = eafp_scripted_button_health_walk
 	scripted_button = eafp_scripted_button_health_inspectation_tour
 	scripted_button = eafp_scripted_button_health_hunting
 	scripted_button = eafp_scripted_button_health_tomb_tour
 
-	complete = {
-		has_technology_researched = quinine
-	}
-
-	on_complete = {
-		ruler = {
-			hidden_effect = {
-				set_character_busy_and_immortal = no
-			}
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			has_technology_researched = quinine
 		}
-		every_interest_group = {
-			leader = {
+		effect = {
+			ruler = {
 				hidden_effect = {
 					set_character_busy_and_immortal = no
 				}
 			}
-		}
-		remove_variable = no_heirs
-		trigger_event = eafp_kor_mainline.19
-	}
-	
-	fail = {	#급사
-		custom_tooltip = {
-			text = je_korean_kings_health_goal
-			always = no
+			every_interest_group = {
+				leader = {
+					hidden_effect = {
+						set_character_busy_and_immortal = no
+					}
+				}
+			}
+			remove_variable = no_heirs
+			trigger_event = eafp_kor_mainline.19
 		}
 	}
 
-	on_fail = {
-		
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {	#급사
+			custom_tooltip = {
+				text = je_korean_kings_health_goal
+				always = no
+			}
+		}
+		effect = {
+
+		}
 	}
 
 	status_desc = {
@@ -236,7 +246,7 @@ je_korean_kings_health = {
 	}
 
 	weight = 3000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##삼정개혁
@@ -257,27 +267,32 @@ je_korean_land_problem = {
 	scripted_progress_bar = eafp_progress_bar_land_problem_landexp_mil
 	scripted_progress_bar = eafp_progress_bar_land_problem_landexp_civ
 
-	complete = {
-		custom_tooltip = {
-			text = je_korean_land_problem_complete_cond_tt
-			has_variable = eafp_var_sam_all_clear
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
 		}
-	}
-
-	on_complete = {
-		trigger_event = { id = eafp_kor_mainline.299 }
-	}
-	event_outcome_completed_effect_desc = {
-		header = eafp_kor_mainline.299.oa
 		effect = {
-			add_modifier = {
-				name = eafp_modi_land_problem_complete
-				days = long_modifier_time
-				is_decaying = yes
+			trigger_event = { id = eafp_kor_mainline.299 }
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.299.oa
+			effect = {
+				add_modifier = {
+					name = eafp_modi_land_problem_complete
+					days = long_modifier_time
+					is_decaying = yes
+				}
 			}
 		}
 	}
-	
+
 	scripted_button = eafp_scripted_button_sam_jeon
 	scripted_button = eafp_scripted_button_sam_gun
 	scripted_button = eafp_scripted_button_sam_hwan
@@ -295,7 +310,7 @@ je_korean_land_problem = {
 				add_modifier = {
 					name = eafp_modi_land_problem_mil_country
 					multiplier = eafp_val_total_mil_modi_mult
-				}			
+				}
 			}
 		}
 		events = {
@@ -306,7 +321,7 @@ je_korean_land_problem = {
 	#progressbar = yes
 
 	weight = 2000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
 	can_revolution_inherit = yes
@@ -333,31 +348,36 @@ je_yangjeon = {
 		}
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = je_korean_imsul_uprising_goal
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_yangjeon)" >= 360
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_korean_imsul_uprising_goal
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_progress_bar_yangjeon)" >= 360
+				}
+			}
+		}
+		effect = {
+			set_variable = eafp_var_sam_jeon_clear
+			remove_variable = eafp_var_yangjeon_weekly
+			remove_modifier = eafp_modi_yangjeon_cost
+
+			trigger_event = { id = eafp_kor_mainline.298 }
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.298.oa
+			effect = {
+				remove_modifier = eafp_modi_land_problem_adm_country
 			}
 		}
 	}
 
-	on_complete = {
-		set_variable = eafp_var_sam_jeon_clear
-		remove_variable = eafp_var_yangjeon_weekly
-		remove_modifier = eafp_modi_yangjeon_cost
-		
-		trigger_event = { id = eafp_kor_mainline.298 }
-	}
-	event_outcome_completed_effect_desc = {
-		header = eafp_kor_mainline.298.oa
-		effect = {
-			remove_modifier = eafp_modi_land_problem_adm_country
-		}
-	}
-
 	weight = 2000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
 	can_revolution_inherit = yes
@@ -385,7 +405,7 @@ je_korean_imsul_boom = {
 
 	scripted_progress_bar = eafp_progress_bar_imsul_relax
 	scripted_progress_bar = eafp_progress_bar_imsul_spread
-	
+
 	scripted_button = eafp_scripted_button_imsul_1
 	scripted_button = eafp_scripted_button_imsul_2
 	scripted_button = eafp_scripted_button_imsul_3
@@ -395,11 +415,11 @@ je_korean_imsul_boom = {
 	scripted_button = eafp_scripted_button_imsul_lockdown
 	scripted_button = eafp_scripted_button_imsul_reopening
 	scripted_button = eafp_scripted_button_imsul_final
-	
+
 	modifiers_while_active = {
 		eafp_modi_imsul_boom_unrest
 	}
-	
+
 	immediate = {
 		set_variable = {
 			name = eafp_var_je_imsul_uprising
@@ -433,36 +453,41 @@ je_korean_imsul_boom = {
 		}
 	}
 
-	complete = {	#중기적 개혁
-		#always = no
-		custom_tooltip = {
-			text = je_korean_imsul_boom_complete_cond_tt
-			has_global_variable = eafp_global_var_imsul_finish
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {	#중기적 개혁
+			#always = no
+			custom_tooltip = {
+				text = je_korean_imsul_boom_complete_cond_tt
+				has_global_variable = eafp_global_var_imsul_finish
+			}
+		}
+		effect = {
+			every_scope_state = {
+				limit = {
+					has_modifier = eafp_modi_imsul_state_zero
+				}
+				remove_modifier = eafp_modi_imsul_state_zero
+			}
+			every_scope_state = {
+				limit = {
+					has_modifier = eafp_modi_imsul_state_lockdown
+				}
+				remove_modifier = eafp_modi_imsul_state_lockdown
+			}
+			every_scope_state = {
+				limit = {
+					has_variable = eafp_var_imsul_on_state
+				}
+				remove_variable = eafp_var_imsul_on_state
+			}
+			remove_variable = eafp_var_je_imsul_uprising
 		}
 	}
 
-	on_complete = {
-		every_scope_state = {
-			limit = {
-				has_modifier = eafp_modi_imsul_state_zero
-			}
-			remove_modifier = eafp_modi_imsul_state_zero
-		}
-		every_scope_state = {
-			limit = {
-				has_modifier = eafp_modi_imsul_state_lockdown
-			}
-			remove_modifier = eafp_modi_imsul_state_lockdown
-		}
-		every_scope_state = {
-			limit = {
-				has_variable = eafp_var_imsul_on_state
-			}
-			remove_variable = eafp_var_imsul_on_state
-		}
-		remove_variable = eafp_var_je_imsul_uprising
-	}
-	
 	on_weekly_pulse = {
 		effect = {
 			#진행바
@@ -667,9 +692,9 @@ je_korean_imsul_boom = {
 			eafp_kor_mainline.210
 		}
 	}
-	
+
 	weight = 1999
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##삼정이정청
@@ -696,75 +721,98 @@ je_samjeong_ijeongcheong = {
 		eafp_modi_samjeong_ijeongcheong
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = je_samjeong_ijeongcheong_complete_tt
-			samjeong_ijeongcheong_goals_completed >= 9
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_samjeong_ijeongcheong_complete_tt
+				samjeong_ijeongcheong_goals_completed >= 9
+			}
 		}
-	}
-
-	on_complete = {
-		trigger_event = { id = eafp_kor_mainline.229 }
-		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
-	}
-
-	fail = {
-		custom_tooltip = {
-			text = je_samjeong_ijeongcheong_fail_tt
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_samjeong_ijeongcheong_timer)" <= 0
+		effect = {
+			trigger_event = { id = eafp_kor_mainline.229 }
+			remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.229.oa
+			effect = {
+				set_variable = eafp_var_sam_all_clear
 			}
 		}
 	}
 
-	on_fail = {
-		if = {
-			limit = { samjeong_ijeongcheong_goals_completed >= 7 }
-			trigger_event = { id = eafp_kor_mainline.228 }
-		}
-		else_if = {
-			limit = { samjeong_ijeongcheong_goals_completed >= 5 }
-			trigger_event = { id = eafp_kor_mainline.227 }
-		}
-		else = {
-			trigger_event = { id = eafp_kor_mainline.226 }
-		}
-		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
-	}
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_samjeong_ijeongcheong_fail_tt
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_progress_bar_samjeong_ijeongcheong_timer)" <= 0
+				}
+			}
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						custom_tooltip = {
+							text = je_samjeong_ijeongcheong_complete_tt
+							samjeong_ijeongcheong_goals_completed >= 9
+						}
 
-	invalid = {
-		scope:ruler_scope = {
-			is_character_alive = no
+					}
+				}
+			}
 		}
-	}
-
-	on_invalid = {
-		trigger_event = { id = eafp_kor_mainline.230 popup = yes }
-		remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
-	}
-
-	event_outcome_completed_effect_desc = {
-		header = eafp_kor_mainline.229.oa
 		effect = {
-			set_variable = eafp_var_sam_all_clear
+			if = {
+				limit = { samjeong_ijeongcheong_goals_completed >= 7 }
+				trigger_event = { id = eafp_kor_mainline.228 }
+			}
+			else_if = {
+				limit = { samjeong_ijeongcheong_goals_completed >= 5 }
+				trigger_event = { id = eafp_kor_mainline.227 }
+			}
+			else = {
+				trigger_event = { id = eafp_kor_mainline.226 }
+			}
+			remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.226.oa
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.227.oa
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.228.oa
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.229.oa
 		}
 	}
 
-	event_outcome_failed_effect_desc = {
-		header = eafp_kor_mainline.226.oa
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			scope:ruler_scope = {
+				is_character_alive = no
+			}
+		}
+		effect = {
+			trigger_event = { id = eafp_kor_mainline.230 popup = yes }
+			remove_variable = eafp_var_samjeong_ijeongcheong_start_gdp
+		}
 	}
-	event_outcome_failed_effect_desc = {
-		header = eafp_kor_mainline.227.oa
-	}
-	event_outcome_failed_effect_desc = {
-		header = eafp_kor_mainline.228.oa
-	}
-	event_outcome_failed_effect_desc = {
-		header = eafp_kor_mainline.229.oa
-	}
-	
+
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##철종 경연
@@ -781,49 +829,73 @@ je_king_cheoljong_education = {
 	scripted_button = eafp_scripted_button_royal_lecture4
 
 	immediate = {
-		
+
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = je_king_cheoljong_education_goal
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_king_cheoljong_education)" >= 200
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_king_cheoljong_education_goal
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_progress_bar_king_cheoljong_education)" >= 200
+				}
 			}
+		}
+		effect = {
+			trigger_event = { id = eafp_kor_mainline.99 }
+			show_as_tooltip = {
+				eafp_effect_option_gain_balance = {
+					BALANCE = -50
+				}
+				ruler = {
+					add_trait = erudite
+					if = {
+						limit = { has_modifier = eafp_modi_blood_of_traitors }
+						remove_modifier = eafp_modi_blood_of_traitors
+					}
+					if = {
+						limit = { has_modifier = eafp_modi_puppet_king }
+						remove_modifier = eafp_modi_puppet_king
+					}
+					set_ideology = ideology:ideology_land_reformer
+				}
+			}
+			remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
+			ruler = { remove_modifier = eafp_modi_cheoljong_royal_lecture }
 		}
 	}
 
-	on_complete = {
-		trigger_event = { id = eafp_kor_mainline.99 }
-		show_as_tooltip = {
-			eafp_effect_option_gain_balance = {
-				BALANCE = -50
-			}
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
 			ruler = {
-				add_trait = erudite
-				if = {
-					limit = { has_modifier = eafp_modi_blood_of_traitors }
-					remove_modifier = eafp_modi_blood_of_traitors
+				NOT = { has_template = eafp_kor_yi_byeon_character_template }
+			}
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						custom_tooltip = {
+							text = je_king_cheoljong_education_goal
+							scope:journal_entry = {
+								"scripted_bar_progress(eafp_progress_bar_king_cheoljong_education)" >= 200
+							}
+						}
+
+					}
 				}
-				if = {
-					limit = { has_modifier = eafp_modi_puppet_king }
-					remove_modifier = eafp_modi_puppet_king
-				}
-				set_ideology = ideology:ideology_land_reformer
 			}
 		}
-		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
-		ruler = { remove_modifier = eafp_modi_cheoljong_royal_lecture }
-	}
-	
-	fail = {
-		ruler = {
-			NOT = { has_template = eafp_kor_yi_byeon_character_template }
+		effect = {
+			remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
 		}
-	}
-
-	on_fail = {
-		remove_variable = eafp_var_je_king_cheoljong_education_royal_lecture
 	}
 
 	on_monthly_pulse = {
@@ -848,9 +920,9 @@ je_king_cheoljong_education = {
 			eafp_kor_mainline.98
 		}
 	}
-	
+
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##수렴청정
@@ -880,57 +952,65 @@ je_korean_regent = {
 	modifiers_while_active = {
 		modifier_regency_korea
 	}
-	
-	invalid = {
-		country_je_sedo_politics_is_invalid = yes
-	}
 
-	on_invalid = {
-		var:eafp_var_je_regent_character = {
-			set_character_busy_and_immortal = no
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			country_je_sedo_politics_is_invalid = yes
 		}
-		remove_variable = eafp_var_je_regent_regnal_year
-		remove_variable = eafp_var_je_regent_character
-		post_notification = eafp_message_end_regent
-	}
-
-	complete = {	
-		ruler ?= {
-			is_adult = yes
-		}
-		custom_tooltip = {
-			text = je_korean_regent_complete_tt2
-			var:eafp_var_je_regent_regnal_year >= 3
-		}
-	}
-
-	on_complete = {
-		hidden_effect = {
+		effect = {
 			var:eafp_var_je_regent_character = {
 				set_character_busy_and_immortal = no
 			}
 			remove_variable = eafp_var_je_regent_regnal_year
 			remove_variable = eafp_var_je_regent_character
-
-			if = {
-				limit = {
-					ruler = { has_template = eafp_kor_yi_hwan_character_template }
-				}
-				trigger_event = { id = eafp_kor_mainline.105 }
-			}
-			else_if = {
-				limit = {
-					ruler = { has_template = eafp_kor_yi_byeon_character_template }
-				}
-				trigger_event = { id = eafp_kor_mainline.106 }
-			}
-			else_if = {
-				limit = {
-					ruler = { has_template = eafp_kor_yi_hyeong_character_template }
-				}
-				trigger_event = { id = eafp_kor_mainline.107 }
-			}
 			post_notification = eafp_message_end_regent
+		}
+	}
+
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			ruler ?= {
+				is_adult = yes
+			}
+			custom_tooltip = {
+				text = je_korean_regent_complete_tt2
+				var:eafp_var_je_regent_regnal_year >= 3
+			}
+		}
+		effect = {
+			hidden_effect = {
+				var:eafp_var_je_regent_character = {
+					set_character_busy_and_immortal = no
+				}
+				remove_variable = eafp_var_je_regent_regnal_year
+				remove_variable = eafp_var_je_regent_character
+
+				if = {
+					limit = {
+						ruler = { has_template = eafp_kor_yi_hwan_character_template }
+					}
+					trigger_event = { id = eafp_kor_mainline.105 }
+				}
+				else_if = {
+					limit = {
+						ruler = { has_template = eafp_kor_yi_byeon_character_template }
+					}
+					trigger_event = { id = eafp_kor_mainline.106 }
+				}
+				else_if = {
+					limit = {
+						ruler = { has_template = eafp_kor_yi_hyeong_character_template }
+					}
+					trigger_event = { id = eafp_kor_mainline.107 }
+				}
+				post_notification = eafp_message_end_regent
+			}
 		}
 	}
 
@@ -941,10 +1021,10 @@ je_korean_regent = {
 	}
 
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
-je_korean_regent_inactive = { # 수렴청정 저널이 없을때 저널 창에 비활성상태로 떠있을 저널 
+je_korean_regent_inactive = { # 수렴청정 저널이 없을때 저널 창에 비활성상태로 떠있을 저널
 	icon = "gfx/interface/icons/eafp_icons/sedo_politics.dds"
 
 	group = je_group_historical_content
@@ -970,23 +1050,35 @@ je_korean_regent_inactive = { # 수렴청정 저널이 없을때 저널 창에 �
 	modifiers_while_active = {
 		modifier_regency_landowners
 	}
-	
-	invalid = {
-		country_je_sedo_politics_is_invalid = yes
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			country_je_sedo_politics_is_invalid = yes
+		}
+		effect = {}
 	}
-	
-	complete = {	
-		ruler ?= {
-			is_adult = yes
+
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			ruler ?= {
+				is_adult = yes
+			}
+			custom_tooltip = {
+				text = je_korean_regent_complete_tt2
+				always = no
+			}
 		}
-		custom_tooltip = {
-			text = je_korean_regent_complete_tt2
-			always = no
-		}
+		effect = {}
 	}
 
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##세도정치
@@ -1021,7 +1113,7 @@ je_sedo_politics = {
 			value = 150000
 		}
 	}
-	
+
 	scripted_button = eafp_scripted_button_sedo_politics_balance_authority
 	scripted_button = eafp_scripted_button_sedo_politics_balance_bureaucracy
 	scripted_button = eafp_scripted_button_sedo_politics_balance_money
@@ -1030,57 +1122,65 @@ je_sedo_politics = {
 	scripted_button = eafp_scripted_button_sedo_politics_balance_authority_ai
 	scripted_button = eafp_scripted_button_sedo_politics_balance_bureaucracy_ai
 	scripted_button = eafp_scripted_button_sedo_politics_balance_money_ai
-	
+
 	modifiers_while_active = {
 		eafp_modi_monarchy_power
 	}
-	
-	invalid = {
-		country_je_sedo_politics_is_invalid = yes
-	}
 
-	on_invalid = {
-		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					set_character_busy_and_immortal = no
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			country_je_sedo_politics_is_invalid = yes
+		}
+		effect = {
+			hidden_effect = {
+				ig:ig_landowners = {
+					leader = {
+						set_character_busy_and_immortal = no
+					}
 				}
-			}
-			remove_variable = eafp_var_je_sedo_politics_balance
-			remove_variable = eafp_var_je_sedo_politics_account
-			remove_modifier = eafp_modi_sedo_they_are_angry
-			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
-			ig:ig_landowners.leader = {
-				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
-				kill_character = {
-					hidden = yes
+				remove_variable = eafp_var_je_sedo_politics_balance
+				remove_variable = eafp_var_je_sedo_politics_account
+				remove_modifier = eafp_modi_sedo_they_are_angry
+				remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
+				ig:ig_landowners.leader = {
+					remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
+					kill_character = {
+						hidden = yes
+					}
 				}
 			}
 		}
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = je_sedo_politics_complete_tt
-			var:eafp_var_je_sedo_politics_balance <= 0
-		}
-	}
-
-	on_complete = {
-		hidden_effect = {
-			ig:ig_landowners = {
-				leader = {
-					set_character_busy_and_immortal = no
-				}
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_sedo_politics_complete_tt
+				var:eafp_var_je_sedo_politics_balance <= 0
 			}
-			remove_variable = eafp_var_je_sedo_politics_balance
-			remove_variable = eafp_var_je_sedo_politics_account
-			remove_modifier = eafp_modi_sedo_they_are_angry
-			remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
-			ig:ig_landowners.leader = {
-				remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
-				kill_character = {
-					hidden = yes
+		}
+		effect = {
+			hidden_effect = {
+				ig:ig_landowners = {
+					leader = {
+						set_character_busy_and_immortal = no
+					}
+				}
+				remove_variable = eafp_var_je_sedo_politics_balance
+				remove_variable = eafp_var_je_sedo_politics_account
+				remove_modifier = eafp_modi_sedo_they_are_angry
+				remove_modifier = eafp_modi_sedo_politics_power_balance_5_country
+				ig:ig_landowners.leader = {
+					remove_modifier = eafp_modi_sedo_politics_power_balance_5_character
+					kill_character = {
+						hidden = yes
+					}
 				}
 			}
 		}
@@ -1215,7 +1315,7 @@ je_sedo_politics = {
 				}
 				eafp_sedo_politics_authority_event_roll = yes
 			}
-			# 
+			#
 			change_variable = {
 				name = eafp_var_je_sedo_politics_balance
 				add = eafp_val_sedo_politics_monthly
@@ -1232,7 +1332,7 @@ je_sedo_politics = {
 	}
 
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 ##유학의 왕국 - 대충 유학자나 종교, 대외관계 관련 이벤트 이모저모
@@ -1242,9 +1342,9 @@ je_korean_confu = {
 	group = je_group_historical_content
 
 	scripted_progress_bar = eafp_progress_bar_confu
-	
+
 	scripted_button = eafp_scripted_button_educating
-	
+
 	modifiers_while_active = {
 		eafp_modi_confucian_state
 	}
@@ -1255,70 +1355,78 @@ je_korean_confu = {
 			value = 0
 		}
 	}
-	
-	complete = {
-		custom_tooltip = {
-			text = je_korean_imsul_uprising_goal
-			scope:journal_entry = {
-				"scripted_bar_progress(eafp_progress_bar_confu)" >= 1000
+
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_korean_imsul_uprising_goal
+				scope:journal_entry = {
+					"scripted_bar_progress(eafp_progress_bar_confu)" >= 1000
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = { has_modifier = eafp_modi_catholic_plague }
+				remove_modifier = eafp_modi_catholic_plague
+			}
+			remove_variable = eafp_progress_bar_confu_from_trade_var
+			trigger_event = { id = eafp_kor_mainline.171 }
+			show_as_tooltip = {
+				add_modifier = {
+					name = eafp_modi_confucian_state_reverse
+					days = normal_modifier_time
+				}
+				ig:ig_intelligentsia = {
+					set_interest_group_name = ig_intelligentsia
+					###
+					add_ideology = ideology_republican
+					add_ideology = ideology_anti_clerical
+					remove_ideology = ideology_silhak
+					set_ig_trait = ig_trait:ig_trait_social_criticism
+					set_ig_trait = ig_trait:ig_trait_avant_garde
+					set_ig_trait = ig_trait:ig_trait_propagandists
+				}
+			}
+			hidden_effect = {
+				every_scope_character = {
+					limit = {
+						has_ideology = ideology:ideology_eafp_missionary
+					}
+					set_character_busy_and_immortal = no
+					kill_character = {
+						hidden = yes
+					}
+				}
 			}
 		}
 	}
 
-	on_complete = {
-		if = {
-			limit = { has_modifier = eafp_modi_catholic_plague }
-			remove_modifier = eafp_modi_catholic_plague
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			NOT = { country_has_state_religion = rel:confucian }
 		}
-		remove_variable = eafp_progress_bar_confu_from_trade_var
-		trigger_event = { id = eafp_kor_mainline.171 }
-		show_as_tooltip = {
-			add_modifier = {
-				name = eafp_modi_confucian_state_reverse
-				days = normal_modifier_time
+		effect = {
+			if = {
+				limit = { has_modifier = eafp_modi_catholic_plague }
+				remove_modifier = eafp_modi_catholic_plague
 			}
-			ig:ig_intelligentsia = {
-				set_interest_group_name = ig_intelligentsia
-				###
-				add_ideology = ideology_republican
-				add_ideology = ideology_anti_clerical
-				remove_ideology = ideology_silhak
-				set_ig_trait = ig_trait:ig_trait_social_criticism
-				set_ig_trait = ig_trait:ig_trait_avant_garde
-				set_ig_trait = ig_trait:ig_trait_propagandists
-			}
-		}
-		hidden_effect = {
-			every_scope_character = {
-				limit = {
-					has_ideology = ideology:ideology_eafp_missionary
-				}
-				set_character_busy_and_immortal = no
-				kill_character = {
-					hidden = yes
-				}
-			}
-		}
-	}
-
-	invalid = {
-		NOT = { country_has_state_religion = rel:confucian }
-	}
-
-	on_invalid = {
-		if = {
-			limit = { has_modifier = eafp_modi_catholic_plague }
-			remove_modifier = eafp_modi_catholic_plague
-		}
-		remove_variable = eafp_progress_bar_confu_from_trade_var
-		hidden_effect = {
-			every_scope_character = {
-				limit = {
-					has_ideology = ideology:ideology_eafp_missionary
-				}
-				set_character_busy_and_immortal = no
-				kill_character = {
-					hidden = yes
+			remove_variable = eafp_progress_bar_confu_from_trade_var
+			hidden_effect = {
+				every_scope_character = {
+					limit = {
+						has_ideology = ideology:ideology_eafp_missionary
+					}
+					set_character_busy_and_immortal = no
+					kill_character = {
+						hidden = yes
+					}
 				}
 			}
 		}
@@ -1351,7 +1459,7 @@ je_korean_confu = {
 
 	on_monthly_pulse = {
 		effect = {	#비랜덤성
-			##캣홀릭 
+			##캣홀릭
 			eafp_effect_cal_catholic_modi_mult = yes
 			eafp_effect_catholic_spread = yes
 			eafp_effect_missionary_spawn = yes
@@ -1366,7 +1474,7 @@ je_korean_confu = {
 	}
 
 	weight = 1000
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
@@ -1394,32 +1502,42 @@ je_korean_fading_power = {
 		}
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = je_korean_land_problem_complete_cond_tt
-			has_variable = eafp_var_sam_all_clear
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_korean_land_problem_complete_cond_tt
+				has_variable = eafp_var_sam_all_clear
+			}
+			NOT = { has_journal_entry = je_sedo_politics }
 		}
-		NOT = { has_journal_entry = je_sedo_politics }
-	}
-
-	invalid = { NOT = { country_has_monarchy_law = yes } }
-
-	on_complete = {
-		trigger_event = { id = eafp_kor_mainline.999 }
-		ig:ig_landowners = {
-			add_modifier = {
-				name = je_korean_fading_power_modifier
-				months = 120
-				is_decaying = yes
+		effect = {
+			trigger_event = { id = eafp_kor_mainline.999 }
+			ig:ig_landowners = {
+				add_modifier = {
+					name = je_korean_fading_power_modifier
+					months = 120
+					is_decaying = yes
+				}
+			}
+			ruler = {
+				set_interest_group = PREV.ig:ig_industrialists
 			}
 		}
-		ruler = {
-			set_interest_group = PREV.ig:ig_industrialists
-		}
+	}
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = { NOT = { country_has_monarchy_law = yes } }
+		effect = {}
 	}
 
 	weight = 100
-	
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
@@ -1427,7 +1545,7 @@ je_korean_fading_power = {
 ####경복궁 중건 관련 저널들
 je_rlg_seoul_gyeongbokgung_poor = {
 	icon = "gfx/interface/icons/event_icons/event_map.dds"
-    
+
 	group = je_group_historical_content
 
 	is_shown_when_inactive = {
@@ -1445,22 +1563,27 @@ je_rlg_seoul_gyeongbokgung_poor = {
 			is_building_type = building_gyeongbokgung_poor
 		}
 	}
-    
-	complete = {
-		OR = {
-			custom_tooltip = {
-				text = je_korean_land_problem_complete_cond_tt
-				has_variable = eafp_var_sam_all_clear
-			}
-			NOT = { has_journal_entry = je_sedo_politics }
-		}
-	}
 
-	on_complete = {
-		add_journal_entry = {
-			type = je_rlg_seoul_gyeongbokgung_rebuild
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				custom_tooltip = {
+					text = je_korean_land_problem_complete_cond_tt
+					has_variable = eafp_var_sam_all_clear
+				}
+				NOT = { has_journal_entry = je_sedo_politics }
+			}
 		}
-		add_technology_researched = eafp_tech_palace
+		effect = {
+			add_journal_entry = {
+				type = je_rlg_seoul_gyeongbokgung_rebuild
+			}
+			add_technology_researched = eafp_tech_palace
+		}
 	}
 
 	should_be_pinned_by_default_uninvolved_or_context = no
@@ -1471,16 +1594,27 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 
 	group = je_group_historical_content
 
-	complete = {
-		owns_entire_state_region = STATE_SEOUL
-		any_scope_building = {
-			is_building_type = building_gyeongbokgung_poor
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			owns_entire_state_region = STATE_SEOUL
+			any_scope_building = {
+				is_building_type = building_gyeongbokgung_poor
+			}
+			scope:journal_entry = {
+				is_goal_complete = yes
+			}
 		}
-		scope:journal_entry = {
-			is_goal_complete = yes
+		effect = {
+			trigger_event = {
+				id = eafp_kor_mainline.1510
+			}
 		}
 	}
-	
+
 	scripted_button = eafp_scripted_button_wonnap
 
 	immediate = {
@@ -1494,12 +1628,6 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 		}
 	}
 
-	on_complete = {
-		trigger_event = {
-			id = eafp_kor_mainline.1510
-		}
-	}
-	
 	on_weekly_pulse = {
 		effect = {
 			if = {
@@ -1561,7 +1689,7 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 			}
 		}
 	}
-    
+
 	current_value = {
 		value = root.var:eafp_var_gyeongbokgung_rebuild
 	}
@@ -1569,15 +1697,15 @@ je_rlg_seoul_gyeongbokgung_rebuild = {
 	goal_add_value = {
 		add = 1000
 	}
-    
+
 	progressbar = yes
-    
+
 	#fail = {
 	#}
 
 	#on_fail = {
 	#}
-    
+
 	#invalid = {
 	#}
 

@@ -12,45 +12,62 @@
 		global_var:eafp_boshin_sabaku = { save_scope_as = eafp_boshin_sabaku }
 		global_var:eafp_boshin_tobaku = { save_scope_as = eafp_boshin_tobaku }
 	}
-	custom_completion_header = je_boshin_war_sabaku_victory_header
-	complete = {
-		custom_tooltip = {
-			text = eafp_boshin_sabaku_victory_tt
-			eafp_boshin_sabaku_alive = yes
-			eafp_boshin_tobaku_alive = no
-		}
-	}
-	on_complete = {
-		scope:eafp_boshin_sabaku = {
-			trigger_event = { id = boshin_war.9 }
-			change_tag = JAP
-		}
-		eafp_boshin_cleanup = yes
-	}
-	custom_failure_header = je_boshin_war_tobaku_victory_header
-	fail = {
-		custom_tooltip = {
-			text = eafp_boshin_tobaku_victory_tt
-			eafp_boshin_tobaku_alive = yes
-			eafp_boshin_sabaku_alive = no
-		}
-	}
-	on_fail = { eafp_boshin_cleanup = yes }
-	invalid = {
-		OR = {
-			NOR = {
+	outcome = {
+		header = je_boshin_war_sabaku_victory_header
+		effect_header = eafp_journal_on_resolution_header
+		color = "gold_positive"
+		conclusion_desc = eafp_je_boshin_war_complete_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = eafp_boshin_sabaku_victory_tt
 				eafp_boshin_sabaku_alive = yes
-				eafp_boshin_tobaku_alive = yes
-			}
-			AND = {
-				has_global_variable = eafp_boshin_checked
-				eafp_boshin_sabaku_alive = yes
-				eafp_boshin_tobaku_alive = yes
-				eafp_boshin_conflict_ongoing = no
+				eafp_boshin_tobaku_alive = no
 			}
 		}
+		effect = {
+			scope:eafp_boshin_sabaku = {
+				trigger_event = { id = boshin_war.9 }
+				change_tag = JAP
+			}
+			eafp_boshin_cleanup = yes
+		}
 	}
-	on_invalid = { eafp_boshin_cleanup = yes }
+
+	outcome = {
+		header = je_boshin_war_tobaku_victory_header
+		effect_header = eafp_journal_on_resolution_header
+		color = "blue_negative"
+		conclusion_desc = eafp_je_boshin_war_fail_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = eafp_boshin_tobaku_victory_tt
+				eafp_boshin_tobaku_alive = yes
+				eafp_boshin_sabaku_alive = no
+			}
+		}
+		effect = { eafp_boshin_cleanup = yes }
+	}
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			OR = {
+				NOR = {
+					eafp_boshin_sabaku_alive = yes
+					eafp_boshin_tobaku_alive = yes
+				}
+				AND = {
+					has_global_variable = eafp_boshin_checked
+					eafp_boshin_sabaku_alive = yes
+					eafp_boshin_tobaku_alive = yes
+					eafp_boshin_conflict_ongoing = no
+				}
+			}
+		}
+		effect = { eafp_boshin_cleanup = yes }
+	}
+
 	on_weekly_pulse = {
 		effect = {
 			eafp_boshin_sync_participants = yes

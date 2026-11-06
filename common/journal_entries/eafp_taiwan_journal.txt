@@ -112,46 +112,69 @@
 		}
 	}
 
-	complete = {
-		c:KOR ?= {
-			OR = {
-				has_variable = eafp_taiwan_pioneer_resolved_var
-				owns_entire_state_region = STATE_FORMOSA
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			c:KOR ?= {
+				OR = {
+					has_variable = eafp_taiwan_pioneer_resolved_var
+					owns_entire_state_region = STATE_FORMOSA
+				}
+			}
+		}
+		effect = {
+			c:KOR ?= {
+				set_variable = eafp_taiwan_pioneer_complete_var
+			}
+		}
+		event_outcome_effect_desc = {
+			header = eafp_ryukyu.4.a
+			effect = {
+				custom_tooltip = eafp_taiwan_pioneer_resolved_tt
 			}
 		}
 	}
 
-	on_complete = {
-		c:KOR ?= {
-			set_variable = eafp_taiwan_pioneer_complete_var
-		}
-	}
-
-	event_outcome_completed_effect_desc = {
-		header = eafp_ryukyu.4.a
-		effect = {
-			custom_tooltip = eafp_taiwan_pioneer_resolved_tt
-		}
-	}
-
-	fail = {
-		c:KOR ?= {
-			NOT = { has_variable = eafp_taiwan_pioneer_resolved_var }
-			OR = {
-				NOT = { exists = c:RYU }
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			c:KOR ?= {
+				NOT = { has_variable = eafp_taiwan_pioneer_resolved_var }
+				OR = {
+					NOT = { exists = c:RYU }
+					NOT = {
+						c:RYU ?= {
+							is_subject_of = c:KOR
+						}
+					}
+				}
+			}
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
 				NOT = {
-					c:RYU ?= {
-						is_subject_of = c:KOR
+					AND = {
+						c:KOR ?= {
+							OR = {
+								has_variable = eafp_taiwan_pioneer_resolved_var
+								owns_entire_state_region = STATE_FORMOSA
+							}
+						}
+
 					}
 				}
 			}
 		}
-	}
-
-	on_fail = {
-		c:KOR ?= {
-			set_variable = eafp_taiwan_pioneer_failed_var
-			trigger_event = { id = eafp_ryukyu.5 popup = yes }
+		effect = {
+			c:KOR ?= {
+				set_variable = eafp_taiwan_pioneer_failed_var
+				trigger_event = { id = eafp_ryukyu.5 popup = yes }
+			}
 		}
 	}
 

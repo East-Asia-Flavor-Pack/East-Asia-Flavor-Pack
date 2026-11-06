@@ -4,6 +4,7 @@
 #						All scopes are character scopes with the interacting country stored as the actor
 #potential				Trigger to check if the interaction should be shown
 #possible 				Trigger to check if the interaction is available
+#actor_capacity			Country-scoped trigger on the interacting country that must also be true for the interaction to be available, for limits like free slots that do not depend on the character
 #effect					The effects of the interaction
 #cooldown				Scriptable duration that this interaction will be unavailable for the interacting country
 
@@ -12,7 +13,6 @@
 
 #ai_chance				Scriptable value for the chance (0-100) that the AI will use this interaction when available, default 0
 
-# Vanilla 1.13.11 exile conditions plus the existing Korean regent restriction.
 REPLACE:exile_character = {
 	clicksound = "event:/SFX/DLC/1.3_ip1/UI/exile_character"
 
@@ -23,6 +23,7 @@ REPLACE:exile_character = {
 			has_law_or_variant = law_type:law_single_party_state
 			has_law_or_variant = law_type:law_secret_police
 			has_law_or_variant = law_type:law_outlawed_dissent
+			divided_monarchists_ai_active = yes
 		}
 	}
 
@@ -55,7 +56,7 @@ REPLACE:exile_character = {
 			}
 		}
 
-		trigger_if = {
+		trigger_if = { # 추가
 			limit = {
 				owner ?= {
 					has_journal_entry = je_korean_regent
@@ -164,7 +165,7 @@ REPLACE:exile_character = {
 				custom_tooltip = {
 					text = house_tokugawa_not_tt
 					NOT = {
-						has_variable = house_tokugawa
+						var:dynasty_var ?= flag:house_tokugawa
 					}
 				}
 			}
@@ -180,7 +181,7 @@ REPLACE:exile_character = {
 				custom_tooltip = {
 					text = house_yamato_not_tt
 					NOT = {
-						has_variable = house_yamato
+						var:dynasty_var ?= flag:house_yamato
 					}
 				}
 			}
@@ -210,6 +211,12 @@ REPLACE:exile_character = {
 				set_variable = exile_golpista_var
 				character_execute_immediate_coup = yes
 			}
+		}
+		else_if = {
+			limit = {
+				rlit_pushkin_needed_for_golden_age = yes
+			}
+			rlit_pushkin_force_duel_effect = yes
 		}
 		else = {
 			if = {
@@ -525,6 +532,90 @@ REPLACE:exile_character = {
 				}
 				multiply = 0.25
 			}
+		}
+		if = {
+			limit = {
+				owner ?= {
+					has_journal_entry = je_tp_tsar_unshakable_autocracy
+					NOT = { has_variable = je_tp_tsar_unshakable_autocracy_button_1_complete }
+				}
+				has_role_of_type = agitator
+				OR = {
+					has_socialist_ideology = yes
+					has_progressive_ideology = yes
+					has_liberal_ideology = yes
+				}
+			}
+			add = 15
+		}
+		if = {
+			limit = {
+				save_temporary_scope_as = tp_exile_candidate_scope
+				owner ?= {
+					has_journal_entry = je_tp_fav_bootlicker
+					OR = {
+						var:tp_bootlicker_rival_1 ?= scope:tp_exile_candidate_scope
+						var:tp_bootlicker_rival_2 ?= scope:tp_exile_candidate_scope
+						var:tp_bootlicker_rival_3 ?= scope:tp_exile_candidate_scope
+					}
+				}
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				character_is_rival_french_house = yes
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				character_is_rival_french_house = yes
+				is_interest_group_leader = yes
+				interest_group ?= {
+					any_scope_character = {
+						has_role_of_type = politician
+						is_interest_group_leader = no
+						character_matches_divided_monarchists_ai_path = yes
+					}
+				}
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				owner ?= {
+					divided_monarchists_ai_backs_monarchist = yes
+				}
+				has_role_of_type = agitator
+				OR = {
+					has_ideology = ideology:ideology_republican_leader
+					has_ideology = ideology:ideology_radical
+					has_ideology = ideology:ideology_positivist
+				}
+			}
+			add = 25
+		}
+		if = {
+			limit = {
+				owner ?= {
+					ai_wants_radicals = yes
+				}
+				character_is_french_house = yes
+			}
+			add = 50
+		}
+		if = {
+			limit = {
+				has_template = RUS_alexander_pushkin
+			}
+			multiply = 0
+		}
+		if = {
+			limit = {
+				character_matches_divided_monarchists_ai_path = yes
+			}
+			multiply = 0
 		}
 	}
 }

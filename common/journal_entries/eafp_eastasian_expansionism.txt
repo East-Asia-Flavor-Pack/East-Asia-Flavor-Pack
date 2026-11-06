@@ -48,7 +48,7 @@
 			}
 			create_political_movement = { type = movement_religious_majority }
 		}
-		
+
 		add_modifier = {
 			name = modifier_extremists_complain
 			multiplier = 0.1
@@ -59,94 +59,154 @@
 		modifier_mass_paranoia
 	}
 
-	complete = {
-		custom_tooltip = {
-			text = has_states_least_two_strategic_region_tt
-			any_scope_state = {
-				NOT = {
-					region = ROOT.capital.region
-				}
-			}
-		}
-
-		any_scope_state = {
-			count = all
-			region = {
-				custom_description = {
-					text = country_owns_entire_strategic_region
-					object = ROOT
-					any_scope_state = {
-						count = all
-						owner = ROOT
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = has_states_least_two_strategic_region_tt
+				any_scope_state = {
+					NOT = {
+						region = ROOT.capital.region
 					}
 				}
 			}
-		}
 
-		any_neighbouring_state = {
-			count = all
-			region = {
-				custom_description = {
-					text = country_or_subject_owns_entire_strategic_region
-					object = ROOT
-					any_scope_state = {
-						count = all
-						OR = {
+			any_scope_state = {
+				count = all
+				region = {
+					custom_description = {
+						text = country_owns_entire_strategic_region
+						object = ROOT
+						any_scope_state = {
+							count = all
 							owner = ROOT
-							owner = { is_subject_of = ROOT }
+						}
+					}
+				}
+			}
+
+			any_neighbouring_state = {
+				count = all
+				region = {
+					custom_description = {
+						text = country_or_subject_owns_entire_strategic_region
+						object = ROOT
+						any_scope_state = {
+							count = all
+							OR = {
+								owner = ROOT
+								owner = { is_subject_of = ROOT }
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-
-	on_complete = {
-		if = {
-			limit = { has_modifier = modifier_extremists_complain }
-			remove_modifier = modifier_extremists_complain
-		}
-		trigger_event = { id = eastasian_expansionism_events.4 popup = yes }
-	}
-
-	fail = {
-		OR = {
-			custom_tooltip = {
-				text = je_korean_imsul_uprising_goal
-				je:je_eastasian_expansionism ?= { "scripted_bar_progress(eastasian_expansionism_paranoia_progress_bar)" >= 100 }
+		effect = {
+			if = {
+				limit = { has_modifier = modifier_extremists_complain }
+				remove_modifier = modifier_extremists_complain
 			}
-			is_subject = yes
-			aggressive_diplomatic_plays_permitted = no
-			is_country_type = unrecognized
+			trigger_event = { id = eastasian_expansionism_events.4 popup = yes }
 		}
 	}
 
-	on_fail = {
-		if = {
-			limit = { has_modifier = modifier_extremists_complain }
-			remove_modifier = modifier_extremists_complain
-		}
-		trigger_event = { id = eastasian_expansionism_events.2 popup = yes }
-	}
-
-	invalid = {
-		any_country = {
-			NOT = { THIS = ROOT }
-			any_primary_culture = {
-				has_discrimination_trait_group = heritage_group_east_asian
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			OR = {
+				custom_tooltip = {
+					text = je_korean_imsul_uprising_goal
+					je:je_eastasian_expansionism ?= { "scripted_bar_progress(eastasian_expansionism_paranoia_progress_bar)" >= 100 }
+				}
+				is_subject = yes
+				aggressive_diplomatic_plays_permitted = no
+				is_country_type = unrecognized
 			}
-			is_country_type = recognized
-			aggressive_diplomatic_plays_permitted = yes
-			is_subject = no
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						custom_tooltip = {
+							text = has_states_least_two_strategic_region_tt
+							any_scope_state = {
+								NOT = {
+									region = ROOT.capital.region
+								}
+							}
+						}
+
+						any_scope_state = {
+							count = all
+							region = {
+								custom_description = {
+									text = country_owns_entire_strategic_region
+									object = ROOT
+									any_scope_state = {
+										count = all
+										owner = ROOT
+									}
+								}
+							}
+						}
+
+						any_neighbouring_state = {
+							count = all
+							region = {
+								custom_description = {
+									text = country_or_subject_owns_entire_strategic_region
+									object = ROOT
+									any_scope_state = {
+										count = all
+										OR = {
+											owner = ROOT
+											owner = { is_subject_of = ROOT }
+										}
+									}
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
+		effect = {
+			if = {
+				limit = { has_modifier = modifier_extremists_complain }
+				remove_modifier = modifier_extremists_complain
+			}
+			trigger_event = { id = eastasian_expansionism_events.2 popup = yes }
 		}
 	}
 
-	on_invalid = {
-		if = {
-			limit = { has_modifier = modifier_extremists_complain }
-			remove_modifier = modifier_extremists_complain
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			any_country = {
+				NOT = { THIS = ROOT }
+				any_primary_culture = {
+					has_discrimination_trait_group = heritage_group_east_asian
+				}
+				is_country_type = recognized
+				aggressive_diplomatic_plays_permitted = yes
+				is_subject = no
+			}
 		}
-		trigger_event = { id = eastasian_expansionism_events.3 popup = yes }
+		effect = {
+			if = {
+				limit = { has_modifier = modifier_extremists_complain }
+				remove_modifier = modifier_extremists_complain
+			}
+			trigger_event = { id = eastasian_expansionism_events.3 popup = yes }
+		}
 	}
 
 	on_monthly_pulse = {

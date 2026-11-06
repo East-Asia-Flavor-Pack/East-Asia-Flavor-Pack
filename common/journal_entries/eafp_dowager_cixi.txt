@@ -28,46 +28,79 @@
 		}
 		# cixi_coup_d는 script_value에서.
 	}
-	complete = {
-		custom_tooltip = {
-			text = je_dowager_cixi_goal
-			scope:Xingzhen_Yehe_Nara_scope = {
-				has_variable = cixi_complete
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_dowager_cixi_goal
+				scope:Xingzhen_Yehe_Nara_scope = {
+					has_variable = cixi_complete
+				}
+			}
+		}
+		effect = {
+			trigger_event = dowager_cixi_events.4
+			hidden_effect = {
+				remove_variable = cixi_coup
 			}
 		}
 	}
-	on_complete = {
-		trigger_event = dowager_cixi_events.4
-		hidden_effect = {
-			remove_variable = cixi_coup
-		}
-	}
-	fail = {
-		custom_tooltip = {
-			text = cixi_not_removed
-			scope:Xingzhen_Yehe_Nara_scope = {
-				has_variable = cixi_fail
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = cixi_not_removed
+				scope:Xingzhen_Yehe_Nara_scope = {
+					has_variable = cixi_fail
+				}
+
 			}
-			
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						custom_tooltip = {
+							text = je_dowager_cixi_goal
+							scope:Xingzhen_Yehe_Nara_scope = {
+								has_variable = cixi_complete
+							}
+						}
+
+					}
+				}
+			}
+		}
+		effect = {
+			trigger_event = dowager_cixi_events.3
+			hidden_effect = {
+				remove_variable = cixi_coup
+			}
 		}
 	}
-	on_fail = {
-		trigger_event = dowager_cixi_events.3
-		hidden_effect = {
-			remove_variable = cixi_coup
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			custom_tooltip = {
+				text = china_shatters_tt
+				has_global_variable = china_shatters
+			}
+		}
+		effect = {
+			hidden_effect = {
+				remove_variable = cixi_coup
+			}
 		}
 	}
-	invalid = {
-		custom_tooltip = {
-			text = china_shatters_tt
-			has_global_variable = china_shatters
-		}
-	}
-	on_invalid = {
-		hidden_effect = {
-			remove_variable = cixi_coup
-		}
-	}
+
 	status_desc = {
 		first_valid = {
 			triggered_desc = {
@@ -166,37 +199,55 @@ je_remove_cixi = {
 			save_scope_as = Xingzhen_Yehe_Nara_scope
 		}
 	}
-	complete = {
-		scope:journal_entry = {
-			is_goal_complete = yes
-		}
-		scope:Xingzhen_Yehe_Nara_scope.popularity <= ruler.popularity
-	}
-	on_complete = {
-		show_as_tooltip = {
-			trigger_event = dowager_cixi_events.4
-		}
-		hidden_effect = {
-			scope:Xingzhen_Yehe_Nara_scope = {
-				set_variable = cixi_complete
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			scope:journal_entry = {
+				is_goal_complete = yes
 			}
-			remove_variable = remove_cixi_progress
+			scope:Xingzhen_Yehe_Nara_scope.popularity <= ruler.popularity
+		}
+		effect = {
+			show_as_tooltip = {
+				trigger_event = dowager_cixi_events.4
+			}
+			hidden_effect = {
+				scope:Xingzhen_Yehe_Nara_scope = {
+					set_variable = cixi_complete
+				}
+				remove_variable = remove_cixi_progress
+			}
 		}
 	}
-	fail = {
-		scope:Xingzhen_Yehe_Nara_scope.popularity > ruler.popularity
-	}
-	on_fail = {
-		hidden_effect = {
-			remove_variable = remove_cixi_progress
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			scope:Xingzhen_Yehe_Nara_scope.popularity > ruler.popularity
+		}
+		effect = {
+			hidden_effect = {
+				remove_variable = remove_cixi_progress
+			}
 		}
 	}
-	invalid = {
-		NOT = { has_journal_entry = je_dowager_cixi }
-	}
-	on_invalid = {
-		hidden_effect = {
-			remove_variable = remove_cixi_progress
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			NOT = { has_journal_entry = je_dowager_cixi }
+		}
+		effect = {
+			hidden_effect = {
+				remove_variable = remove_cixi_progress
+			}
 		}
 	}
 
@@ -216,7 +267,7 @@ je_remove_cixi = {
 	goal_add_value = {
 		add = 12
 	}
-	
+
 	progressbar = yes
 
 	weight = 699

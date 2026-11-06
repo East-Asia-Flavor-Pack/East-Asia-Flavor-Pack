@@ -37,35 +37,38 @@
 	scripted_button = chi_war_dynamism_NINGXIA_button
 	scripted_button = chi_war_dynamism_GANSU_button
 	scripted_button = chi_war_dynamism_XIAN_button
-		
-	invalid = {
-		hidden_trigger = {
-			is_at_war = no
-			any_country = {
-				count < 2
-				OR = {
-					c:CHI ?= THIS
-					country_has_primary_culture = cu:han
-				}
-				any_scope_state = {
-					is_in_geographic_region = geographic_region_han_homelands
+
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			hidden_trigger = {
+				is_at_war = no
+				any_country = {
+					count < 2
+					OR = {
+						c:CHI ?= THIS
+						country_has_primary_culture = cu:han
+					}
+					any_scope_state = {
+						is_in_geographic_region = geographic_region_han_homelands
+					}
 				}
 			}
 		}
-	}
-
-	on_invalid = {
-		hidden_effect = {
-			every_state = {
-				limit = {
-					has_variable_list = chi_war_dynamism_varlist
-					is_target_in_variable_list = {
-						name = chi_war_dynamism_varlist
-						target = ROOT
+		effect = {
+			hidden_effect = {
+				every_state = {
+					limit = {
+						has_variable_list = chi_war_dynamism_varlist
+						is_target_in_variable_list = {
+							name = chi_war_dynamism_varlist
+							target = ROOT
+						}
 					}
+					clear_variable_list = chi_war_dynamism_varlist
+					remove_modifier = chi_war_dynamism_modifier
 				}
-				clear_variable_list = chi_war_dynamism_varlist
-				remove_modifier = chi_war_dynamism_modifier
 			}
 		}
 	}
@@ -141,17 +144,20 @@ je_reunify_china_warlord = {
 		}
 	}
 
-	invalid = {
-		OR = {
-			NOT = { exists = global_var:chinese_central_government }
-			global_var:chinese_central_government ?= { is_country_alive = no }
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		trigger = {
+			OR = {
+				NOT = { exists = global_var:chinese_central_government }
+				global_var:chinese_central_government ?= { is_country_alive = no }
+			}
 		}
-	}
-
-	on_invalid = {
-		if = {
-			limit = { exists = global_var:chinese_central_government }
-			remove_global_variable = chinese_central_government
+		effect = {
+			if = {
+				limit = { exists = global_var:chinese_central_government }
+				remove_global_variable = chinese_central_government
+			}
 		}
 	}
 

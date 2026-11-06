@@ -1,4 +1,4 @@
-"""Validate the integration of Japan's three scripted offices (not an engine test).
+﻿"""Validate the integration of Japan's three scripted offices (not an engine test).
 
 Run with: python -B tools/validate_japan_office_roles.py
 """
@@ -7,6 +7,7 @@ import re
 
 from generate_japanese_culture_patch import find_block
 from validate_japan_regional_content import structural_check
+from journal_schema import named, outcome
 
 ROOT = Path(__file__).resolve().parents[1]
 POSITIONS = ("roju", "rojushuza", "tairo")
@@ -144,8 +145,10 @@ def main():
         assert f"remove_variable = eafp_bakufu_recruitment_pending_{pos}" in abolition
     for key in ("eafp_japan_assign_bakufu_office", "eafp_japan_process_pending_office_recruitment", "eafp_japan_sync_daimyo_ig_leader"):
         assert "NOT = { has_global_variable = japan_bakufu_politicians_abolished }" in block(effects, key)
-    for key in ("on_complete", "on_invalid"):
-        part = block(journal, key)
+    journal_body = named(journal, "je_bakuhantaisei").body(journal)
+    for key in ("complete", "invalid"):
+        result = outcome(journal_body, key)
+        part = named(result, "effect").body(result)
         assert "country_clear_bakufu_politicians = yes" in part
         assert "eafp_japan_end_regions = yes" in part
     weekly = block(journal, "on_weekly_pulse")

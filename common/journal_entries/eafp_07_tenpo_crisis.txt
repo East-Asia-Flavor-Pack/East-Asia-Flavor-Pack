@@ -27,100 +27,105 @@ REPLACE:je_tenpo_crisis = {
 		trigger_event = { id = tenpo_events.101 months = 2 } # 추가
 }
 
-	custom_completion_header = je_tenpo_crisis_complete_header
-
-	complete = {
-		custom_tooltip = {
-			text = je_tenpo_crisis_success_tt
-			tenpo_total_agenda_goals_completed >= 8
+	outcome = {
+		header = je_tenpo_crisis_complete_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = je_tenpo_crisis_success_tt
+				tenpo_total_agenda_goals_completed >= 8
+			}
 		}
-	}
-
-	on_complete = {
-		custom_tooltip = je_tenpo_crisis_success_2_tt
-		trigger_event = {
-			id = tenpo_events.3
-			popup = yes
-		}
-		hidden_effect = {
-			remove_variable = tenpo_gdp_goal
-		}
-
-}
-
-	event_outcome_completed_effect_desc = {
-		header = je_tenpo_crisis_success_outcome_1_tt
 		effect = {
-			add_modifier = {
-				name = modifier_tenpo_crisis_reward_hardliner
-				days = long_modifier_time
+			custom_tooltip = je_tenpo_crisis_success_2_tt
+			trigger_event = {
+				id = tenpo_events.3
+				popup = yes
 			}
-			add_loyalists = {
-				value = medium_radicals
-				strata = upper
+			hidden_effect = {
+				remove_variable = tenpo_gdp_goal
+			}
+
+	}
+		event_outcome_effect_desc = {
+			header = je_tenpo_crisis_success_outcome_1_tt
+			effect = {
+				add_modifier = {
+					name = modifier_tenpo_crisis_reward_hardliner
+					days = long_modifier_time
+				}
+				add_loyalists = {
+					value = medium_radicals
+					strata = upper
+				}
+			}
+		}
+		event_outcome_effect_desc = {
+			header = je_tenpo_crisis_success_outcome_2_tt
+			effect = {
+				add_modifier = {
+					name = modifier_tenpo_crisis_reward_reformer
+					days = long_modifier_time
+				}
+				add_loyalists = {
+					value = medium_radicals
+					strata = lower
+				}
+			}
+		}
+		event_outcome_effect_desc = {
+			header = je_tenpo_crisis_success_outcome_3_tt
+			effect = {
+				add_modifier = {
+					name = modifier_tenpo_crisis_reward_balanced
+					days = long_modifier_time
+				}
+				add_loyalists = {
+					value = medium_radicals
+					strata = middle
+				}
 			}
 		}
 	}
 
-	event_outcome_completed_effect_desc = {
-		header = je_tenpo_crisis_success_outcome_2_tt
+	outcome = {
+		header = je_tenpo_crisis_failure_header
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
 		effect = {
-			add_modifier = {
-				name = modifier_tenpo_crisis_reward_reformer
-				days = long_modifier_time
+			trigger_event = {
+				id = tenpo_events.4
+				popup = yes
 			}
-			add_loyalists = {
-				value = medium_radicals
-				strata = lower
+			hidden_effect = {
+				remove_variable = tenpo_gdp_goal
 			}
-		}
-	}
 
-	event_outcome_completed_effect_desc = {
-		header = je_tenpo_crisis_success_outcome_3_tt
-		effect = {
-			add_modifier = {
-				name = modifier_tenpo_crisis_reward_balanced
-				days = long_modifier_time
-			}
-			add_loyalists = {
-				value = medium_radicals
-				strata = middle
-			}
-		}
 	}
-
-	custom_failure_header = je_tenpo_crisis_failure_header
+		event_outcome_effect_desc = {
+	        header = tenpo_events.4.a
+	        effect = {
+				add_modifier = {
+					name = modifier_tenpo_fail
+					days = normal_modifier_time
+				}
+				custom_tooltip = tenpo_events_4_demotion_tt
+	        }
+	    }
+		event_outcome_effect_desc = {
+	        header = tenpo_events.4.b
+	        effect = {
+				custom_tooltip = tenpo_events_4_demotion_tt
+	        }
+	    }
+	}
 
 	timeout = 4380 # ~12 years. Roughly spanning Tenpo and Koka eras.
 
-	on_timeout = {
-		trigger_event = {
-			id = tenpo_events.4
-			popup = yes
-		}
-		hidden_effect = {
-			remove_variable = tenpo_gdp_goal
-		}
-
-}
-
-	event_outcome_timeout_effect_desc = {
-        header = tenpo_events.4.a
-        effect = {
-			add_modifier = {
-				name = modifier_tenpo_fail
-				days = normal_modifier_time
-			}
-			custom_tooltip = tenpo_events_4_demotion_tt
-        }
-    }
-    event_outcome_timeout_effect_desc = {
-        header = tenpo_events.4.b
-        effect = {
-        	custom_tooltip = tenpo_events_4_demotion_tt
-        }
-    }
 	possible = {
 	}
 
@@ -139,7 +144,12 @@ REPLACE:je_tenpo_crisis = {
 	modifiers_while_active = {
 	}
 
-	invalid = {
+	outcome = {
+		conclusion_desc = eafp_journal_invalid_conclusion_desc
+		flags = { hidden invalid_outcome }
+		# Legacy empty endpoint: do not conclude automatically.
+		trigger = { always = no }
+		effect = {}
 	}
 
 	weight = 5000

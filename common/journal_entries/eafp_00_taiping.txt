@@ -107,7 +107,7 @@
 			scope:journal_entry = { # 추가
 				if = {
 					limit = {
-						is_progressing = yes 
+						is_progressing = yes
 					}
 					change_variable = {
 						name = num_months_in_progress
@@ -151,22 +151,29 @@
 		}
 	}
 
-	complete = {
-		custom_tooltip = { # 추가
-			text = je_chinese_missions_complete_tt
-			scope:journal_entry = { is_goal_complete = yes }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = { # 추가
+				text = je_chinese_missions_complete_tt
+				scope:journal_entry = { is_goal_complete = yes }
+			}
+			custom_tooltip = {
+				text = missionary_ban_tt
+				has_variable = CHI_deported_missionaries
+			}
+			OR = {
+				# is_country_type = recognized
+				has_law_or_variant = law_type:law_state_atheism
+				has_law_or_variant = law_type:law_isolationism
+				has_law_or_variant = law_type:law_closed_borders
+			}
+
 		}
-		custom_tooltip = {
-			text = missionary_ban_tt
-			has_variable = CHI_deported_missionaries
-		}
-		OR = {
-			# is_country_type = recognized
-			has_law_or_variant = law_type:law_state_atheism
-			has_law_or_variant = law_type:law_isolationism
-			has_law_or_variant = law_type:law_closed_borders
-		}
-		
+		effect = {}
 	}
 
 	is_progressing = { # 추가
@@ -185,13 +192,13 @@
 	current_value = { # 추가
 		value = scope:journal_entry.var:num_months_in_progress
 	}
-	
+
 	goal_add_value = { # 추가
 		value = 12
 	}
 
 	weight = 10000
-		
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
@@ -277,64 +284,76 @@ REPLACE:je_heavenly_kingdom_main = {
 		}
 	}
 
-	complete = {
-		NOT = {
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			NOT = {
+				any_scope_state = {
+					has_modifier = god_worshippers
+				}
+			}
+		}
+		effect = {}
+	}
+
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
 			any_scope_state = {
 				has_modifier = god_worshippers
+				count >= 4
 			}
-		}
-	}
-
-	fail = {
-		any_scope_state = {
-			has_modifier = god_worshippers
-			count >= 4
-		}
-		any_scope_state = {
-			AND = {
-				has_modifier = god_worshippers
-				religion_percent_state = {
-					target = rel:protestant
-					value >= 0.01
+			any_scope_state = {
+				AND = {
+					has_modifier = god_worshippers
+					religion_percent_state = {
+						target = rel:protestant
+						value >= 0.01
+					}
+					state_religious_acceptance = {
+						target = rel:protestant
+						value <= religious_acceptance_low
+					}
+					turmoil >= 0.15
 				}
-				state_religious_acceptance = {
-	 				target = rel:protestant
-					value <= religious_acceptance_low
+			}
+		}
+		effect = {
+			trigger_event = {
+				id = heavenly.4
+			}
+		}
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.4.a
+			effect = {
+				add_journal_entry = { type = je_hui_revolt_pre }
+				add_journal_entry = { type = je_taiping_pre }
+				c:TPG = {
+					add_journal_entry = { type = je_taiping_revolution_pre }
 				}
-				turmoil >= 0.15
 			}
 		}
-	}
-
-	on_fail = {
-		trigger_event = {
-			id = heavenly.4
-		}
-	}
-	event_outcome_failed_effect_desc = { # 추가
-		header = heavenly.4.a
-		effect = {
-			add_journal_entry = { type = je_hui_revolt_pre }
-			add_journal_entry = { type = je_taiping_pre }
-			c:TPG = {
-				add_journal_entry = { type = je_taiping_revolution_pre }
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.4.b
+			effect = {
+				add_journal_entry = { type = je_hui_revolt_pre }
+				add_journal_entry = { type = je_taiping_pre }
+				c:TPG = {
+					add_journal_entry = { type = je_taiping_revolution_pre }
+				}
+				play_as = scope:heavenly_kingdom_scope
 			}
-		}
-	}
-	event_outcome_failed_effect_desc = { # 추가
-		header = heavenly.4.b
-		effect = {
-			add_journal_entry = { type = je_hui_revolt_pre }
-			add_journal_entry = { type = je_taiping_pre }
-			c:TPG = {
-				add_journal_entry = { type = je_taiping_revolution_pre }
-			}
-			play_as = scope:heavenly_kingdom_scope
 		}
 	}
 
 	weight = 10000
-		
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
@@ -345,11 +364,25 @@ REPLACE:je_taiping = {
 
 	scripted_button = call_up_local_militias_button # 추가
 
-	complete = {
-		custom_tooltip = {
-			text = taiping_destroyed
-			NOT = {
-				exists = c:TPG
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = taiping_destroyed
+				NOT = {
+					exists = c:TPG
+				}
+			}
+		}
+		effect = {
+			trigger_event = { id = heavenly.5 days = 0 }
+			hidden_effect = {
+				remove_modifier = taiping_taiping_rebellion
+				remove_modifier = taiping_focus_on_attack_modifier # 추가
+				remove_modifier = taiping_focus_on_defence_modifier # 추가
 			}
 		}
 	}
@@ -375,33 +408,29 @@ REPLACE:je_taiping = {
 		}
 	}
 
-	on_complete = {
-		trigger_event = { id = heavenly.5 days = 0 }
-		hidden_effect = {
-			remove_modifier = taiping_taiping_rebellion
-			remove_modifier = taiping_focus_on_attack_modifier # 추가
-			remove_modifier = taiping_focus_on_defence_modifier # 추가
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			exists = c:TPG
+			has_truce_with = c:TPG
 		}
-	}
-
-	fail = {
-		exists = c:TPG
-		has_truce_with = c:TPG
-	}
-
-	on_fail = { # 아예 다시 씀
-		hidden_effect = {
-			add_journal_entry = { type = je_taiping_truce_chi }
-			c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg } }
-			remove_modifier = taiping_focus_on_attack_modifier
-			remove_modifier = taiping_focus_on_defence_modifier
+		effect = { # 아예 다시 씀
+			hidden_effect = {
+				add_journal_entry = { type = je_taiping_truce_chi }
+				c:TPG = { add_journal_entry = { type = je_taiping_truce_tpg } }
+				remove_modifier = taiping_focus_on_attack_modifier
+				remove_modifier = taiping_focus_on_defence_modifier
+			}
 		}
 	}
 
 	progress_desc = je_taiping_progress # 추가
 
 	weight = 1000
-		
+
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
 	transferable = no
@@ -414,22 +443,85 @@ REPLACE:je_taiping_revolution = {
 
 	scripted_button = taiping_relocate_the_capital_button # 추가
 
-	complete = {
-		OR = {
-			custom_tooltip = { # 중국과 휴전 중 조건 뺌
-				text = china_destroyed
-				hidden_trigger = {
-					NOT = {
-						exists = c:CHI
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			OR = {
+				custom_tooltip = { # 중국과 휴전 중 조건 뺌
+					text = china_destroyed
+					hidden_trigger = {
+						NOT = {
+							exists = c:CHI
+						}
 					}
 				}
+				custom_tooltip = { # 추가
+					text = china_shatters_tt
+					has_global_variable = china_shatters
+				}
 			}
-			custom_tooltip = { # 추가
-				text = china_shatters_tt
-				has_global_variable = china_shatters
+
+		}
+		effect = {
+			trigger_event = { id = heavenly.6 days = 0 }
+			custom_tooltip = {
+				text = rebellion_effects_remove
+				remove_modifier = taiping_taiping_rebellion
+				every_interest_group = {
+					limit = {
+						has_modifier = taiping_taiping_revolution
+					}
+					remove_modifier = taiping_taiping_revolution
+				}
+				remove_modifier = taiping_focus_on_attack_modifier # 추가
+				remove_modifier = taiping_focus_on_defence_modifier # 추가
+				remove_modifier = taiping_unincorporated_states_modifier # 추가
+				remove_variable = num_unincorporated_states_in_china_proper # 추가
+				remove_modifier = taiping_unincorporated_states_modifier2 # 추가
+				remove_variable = num_claimed_states_in_china_proper # 추가
+				eafp_taiping_cleanup_administration = yes
+			}
+
+		}
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.6.a
+			effect = {
+				add_modifier = {
+					name = modifier_conversion_of_china
+					days = long_modifier_time
+				}
 			}
 		}
-
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.6.b
+			effect = {
+				add_modifier = {
+					name = modifier_new_treatise_on_administration
+					days = long_modifier_time
+				}
+			}
+		}
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.6.c
+			effect = {
+				add_modifier = {
+					name = modifier_second_crusade_against_manchu
+					days = long_modifier_time
+				}
+			}
+		}
+		event_outcome_effect_desc = { # 추가
+			header = heavenly.6.e
+			effect = {
+				add_modifier = {
+					name = modifier_relations_with_west
+					days = long_modifier_time
+				}
+			}
+		}
 	}
 
 	immediate = {
@@ -543,83 +635,53 @@ REPLACE:je_taiping_revolution = {
 		eafp_taiping_refresh_fervor_modifier = yes
 	}
 
-	on_complete = {
-		trigger_event = { id = heavenly.6 days = 0 }
-		custom_tooltip = {
-			text = rebellion_effects_remove
-			remove_modifier = taiping_taiping_rebellion
-			every_interest_group = {
-				limit = {
-					has_modifier = taiping_taiping_revolution
+	outcome = {
+		header = je_standard_failure_header
+		effect_header = je_standard_on_failure_header
+		color = "blue_negative"
+		conclusion_desc = je_standard_failure_conclusion_desc
+		trigger = {
+			#NOT = {
+			#	exists = c:TPG
+			#}
+			exists = c:CHI # 추가
+			has_truce_with = c:CHI # 추가
+			# A fulfilled objective wins if both ending conditions are met.
+			hidden_trigger = {
+				NOT = {
+					AND = {
+						OR = {
+							custom_tooltip = { # 중국과 휴전 중 조건 뺌
+								text = china_destroyed
+								hidden_trigger = {
+									NOT = {
+										exists = c:CHI
+									}
+								}
+							}
+							custom_tooltip = { # 추가
+								text = china_shatters_tt
+								has_global_variable = china_shatters
+							}
+						}
+
+
+					}
 				}
-				remove_modifier = taiping_taiping_revolution
-			}
-			remove_modifier = taiping_focus_on_attack_modifier # 추가
-			remove_modifier = taiping_focus_on_defence_modifier # 추가
-			remove_modifier = taiping_unincorporated_states_modifier # 추가
-			remove_variable = num_unincorporated_states_in_china_proper # 추가
-			remove_modifier = taiping_unincorporated_states_modifier2 # 추가
-			remove_variable = num_claimed_states_in_china_proper # 추가
-			eafp_taiping_cleanup_administration = yes
-		}
-		
-	}
-	event_outcome_completed_effect_desc = { # 추가
-		header = heavenly.6.a
-		effect = {
-			add_modifier = {
-				name = modifier_conversion_of_china
-				days = long_modifier_time
 			}
 		}
-	}
-	event_outcome_completed_effect_desc = { # 추가
-		header = heavenly.6.b
-		effect = {
-			add_modifier = {
-				name = modifier_new_treatise_on_administration
-				days = long_modifier_time
-			}
-		}
-	}
-	event_outcome_completed_effect_desc = { # 추가
-		header = heavenly.6.c
-		effect = {
-			add_modifier = {
-				name = modifier_second_crusade_against_manchu
-				days = long_modifier_time
-			}
-		}
-	}
-	event_outcome_completed_effect_desc = { # 추가
-		header = heavenly.6.e
-		effect = {
-			add_modifier = {
-				name = modifier_relations_with_west
-				days = long_modifier_time
-			}
-		}
-	}
+		effect = { # 추가
+			hidden_effect = {
+				# add_journal_entry = { type = je_taiping_truce_tpg } 청나라 쪽에서 추가
+				remove_modifier = taiping_focus_on_attack_modifier
+				remove_modifier = taiping_focus_on_defence_modifier
 
-	fail = {
-		#NOT = {
-		#	exists = c:TPG
-		#}
-		exists = c:CHI # 추가
-		has_truce_with = c:CHI # 추가
-	}
-
-	on_fail = { # 추가
-		hidden_effect = {
-			# add_journal_entry = { type = je_taiping_truce_tpg } 청나라 쪽에서 추가
-			remove_modifier = taiping_focus_on_attack_modifier
-			remove_modifier = taiping_focus_on_defence_modifier
-			
-			remove_modifier = taiping_unincorporated_states_modifier
-			remove_variable = num_unincorporated_states_in_china_proper
-			remove_modifier = taiping_unincorporated_states_modifier2
-			remove_variable = num_claimed_states_in_china_proper
-			eafp_taiping_cleanup_administration = yes
+				remove_modifier = taiping_unincorporated_states_modifier
+				remove_variable = num_unincorporated_states_in_china_proper
+				remove_modifier = taiping_unincorporated_states_modifier2
+				remove_variable = num_claimed_states_in_china_proper
+				eafp_taiping_cleanup_administration = yes
+			}
 		}
 	}
 
@@ -658,7 +720,7 @@ REPLACE:je_taiping_revolution = {
 					}
 				}
 			}
-	
+
 			set_variable = {
 				name = num_claimed_states_in_china_proper
 				value = 0
@@ -689,7 +751,7 @@ REPLACE:je_taiping_revolution = {
 					}
 				}
 			}
-	
+
 			if = {
 				limit = { var:num_claimed_states_in_china_proper >= var:num_unincorporated_states_in_china_proper }
 				add_modifier = {
@@ -725,47 +787,58 @@ je_taiping_timer = { # 추가
 
 	group = je_group_qing
 
-	complete = {
-		custom_tooltip = {
-			text = taiping_timer_complete
-			NOT = { exists = c:TPG }
+	outcome = {
+		header = je_standard_completion_header
+		effect_header = je_standard_on_completion_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = taiping_timer_complete
+				NOT = { exists = c:TPG }
+			}
+		}
+		effect = {
 		}
 	}
-	
+
 	timeout = 720
 
-	on_timeout = {
-		#custom_tooltip = {
-		#	text = taiping_time_attack
-		#}
-		show_as_tooltip = {
-			custom_tooltip = {
-				text = warlord_china_explosion_point_remove_5_tt
-				post_notification = warlord_china_explosion_point_remove
-				change_variable = {
-					name = china_warlord_explosion
-					subtract = 0.25
-				}
-			}
-			power_bloc = {
-				every_power_bloc_member = {
-					limit = {
-						NOT = { THIS = c:CHI }
-						is_subject = no
-					}
-					add_modifier = {
-						name = departure_of_south_sea_nations_modifier
-						months = long_modifier_time
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
+		effect = {
+			#custom_tooltip = {
+			#	text = taiping_time_attack
+			#}
+			show_as_tooltip = {
+				custom_tooltip = {
+					text = warlord_china_explosion_point_remove_5_tt
+					post_notification = warlord_china_explosion_point_remove
+					change_variable = {
+						name = china_warlord_explosion
+						subtract = 0.25
 					}
 				}
+				power_bloc = {
+					every_power_bloc_member = {
+						limit = {
+							NOT = { THIS = c:CHI }
+							is_subject = no
+						}
+						add_modifier = {
+							name = departure_of_south_sea_nations_modifier
+							months = long_modifier_time
+						}
+					}
+				}
 			}
+			trigger_event = { id = heavenly.103 }
 		}
-		trigger_event = { id = heavenly.103 }
 	}
-	
-	on_complete = {
-	}
-
 
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes
@@ -783,7 +856,7 @@ je_taiping_truce_chi = { # 추가
 
 	immediate = {
 		end_truce = c:TPG
-		create_bidirectional_truce = {  
+		create_bidirectional_truce = {
 			country = c:TPG
 			months = 6
 		}
@@ -791,25 +864,32 @@ je_taiping_truce_chi = { # 추가
 
 	timeout = 180
 
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_chi
-			end_truce = c:TPG
-			c:TPG ?= {
-				create_diplomatic_play = {
-					name = taiping_rebellion
-					target_country = c:CHI
-					type = dp_taiping_rebellion
-					escalation = 80
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
+		effect = {
+			custom_tooltip = {
+				text = taiping_truce_chi
+				end_truce = c:TPG
+				c:TPG ?= {
+					create_diplomatic_play = {
+						name = taiping_rebellion
+						target_country = c:CHI
+						type = dp_taiping_rebellion
+						escalation = 80
+					}
 				}
-			}
-			add_journal_entry = { type = je_taiping }
-			c:TPG ?= {
-				add_journal_entry = { type = je_taiping_revolution }
+				add_journal_entry = { type = je_taiping }
+				c:TPG ?= {
+					add_journal_entry = { type = je_taiping_revolution }
+				}
 			}
 		}
 	}
-	
+
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
@@ -829,9 +909,16 @@ je_taiping_truce_tpg = { # 추가
 
 	timeout = 180
 
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_tpg
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
+		effect = {
+			custom_tooltip = {
+				text = taiping_truce_tpg
+			}
 		}
 	}
 
@@ -856,37 +943,44 @@ je_taiping_pre = { # 추가
 
 	timeout = 60
 
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_chi
-			end_truce = c:TPG
-			c:TPG ?= {
-				create_diplomatic_play = {
-					name = taiping_rebellion
-					target_country = c:CHI
-					type = dp_taiping_rebellion
-					escalation = 80
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
+		effect = {
+			custom_tooltip = {
+				text = taiping_truce_chi
+				end_truce = c:TPG
+				c:TPG ?= {
+					create_diplomatic_play = {
+						name = taiping_rebellion
+						target_country = c:CHI
+						type = dp_taiping_rebellion
+						escalation = 80
+					}
+					hidden_effect = {
+						change_infamy = -150
+					}
 				}
-				hidden_effect = {
-					change_infamy = -150
+				random_diplomatic_play = {
+					limit = {
+						initiator = c:TPG
+						target = c:CHI
+						is_diplomatic_play_type = dp_taiping_rebellion
+					}
+					add_diplomatic_play_war_support = { target = c:TPG value = 50 }
 				}
-			}
-			random_diplomatic_play = {
-				limit = {
-					initiator = c:TPG
-					target = c:CHI
-					is_diplomatic_play_type = dp_taiping_rebellion
+				add_journal_entry = { type = je_taiping }
+				add_journal_entry = { type = je_taiping_timer }
+				c:TPG ?= {
+					add_journal_entry = { type = je_taiping_revolution }
 				}
-				add_diplomatic_play_war_support = { target = c:TPG value = 50 }
-			}
-			add_journal_entry = { type = je_taiping }
-			add_journal_entry = { type = je_taiping_timer }
-			c:TPG ?= {
-				add_journal_entry = { type = je_taiping_revolution }
 			}
 		}
 	}
-	
+
 	weight = 1000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 
@@ -903,9 +997,16 @@ je_taiping_revolution_pre = { # 추가
 
 	timeout = 60
 
-	on_timeout = {
-		custom_tooltip = {
-			text = taiping_truce_tpg
+	outcome = {
+		header = JOURNAL_ENTRY_TIMEOUT
+		effect_header = JOURNAL_ENTRY_ON_TIMEOUT
+		color = "blue_negative"
+		conclusion_desc = JOURNAL_ENTRY_TIMEOUT_CONCLUSION_DESC
+		flags = { timeout }
+		effect = {
+			custom_tooltip = {
+				text = taiping_truce_tpg
+			}
 		}
 	}
 
