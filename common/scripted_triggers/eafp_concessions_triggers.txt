@@ -1,4 +1,4 @@
-﻿# State rights are the only persistent concession data.
+﻿# Rights are persistent; building levels and cap are read from engine state.
 # Final urban groups from the installed 1.13 building-group inheritance tree.
 # A single OR avoids counting a building again through its parent group.
 eafp_concession_is_urban_building = {
@@ -36,11 +36,13 @@ eafp_concession_involved_country = {
 # State scope; HOLDER is a country scope token.
 eafp_concession_can_grant = {
 	eafp_concession_eligible_state = yes
+	eafp_concession_free_capacity >= 1
 	exists = $HOLDER$
 	NOT = { owner = $HOLDER$ }
 	NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = $HOLDER$ } }
 	$HOLDER$ = {
 		is_country_alive = yes
+		exists = capital
 		country_rank >= rank_value:great_power
 		has_interest_marker_in_region = prev.region
 	}
@@ -55,6 +57,7 @@ eafp_concession_has_holder = {
 
 eafp_concession_active = {
 	eafp_concession_eligible_state = yes
+	$HOLDER$ = { has_company = company_type:company_eafp_concession }
 	eafp_concession_has_holder = { HOLDER = $HOLDER$ }
 	owner.prestige <= $HOLDER$.prestige
 }
@@ -88,5 +91,26 @@ eafp_concession_can_start_return_war = {
 	}
 	scope:concession_holder = {
 		NOT = { is_subject_of = scope:concession_host }
+	}
+}
+
+# State scope; shared by visibility validation and the actual GUI effect.
+eafp_concession_can_expand = {
+	eafp_concession_active = { HOLDER = $HOLDER$ }
+	eafp_concession_free_capacity >= 1
+	$HOLDER$ = {
+		has_company = company_type:company_eafp_concession
+		gold_reserves >= eafp_concession_expansion_cost
+	}
+	any_scope_building = {
+		is_building_type = building_eafp_concession
+		levels_owned_by_country = { target = $HOLDER$ value >= 1 }
+	}
+}
+
+# Country scope; unlike involvement, this excludes merely hosting others' concessions.
+eafp_concession_holder_has_rights = {
+	any_state_in_china_proper = {
+		is_target_in_variable_list = { name = concession_owner_varlist target = prev }
 	}
 }

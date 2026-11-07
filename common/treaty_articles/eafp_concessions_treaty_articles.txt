@@ -85,7 +85,15 @@
 				save_scope_as = concession_state
 				# The state may have changed hands since the article entered into force.
 				owner = { save_scope_as = concession_host }
-				eafp_concession_return_effect = yes
+				if = {
+					limit = {
+						exists = scope:withdrawing_country
+						scope:withdrawing_country = scope:concession_host
+						scope:article.treaty.remaining_binding_period > 0
+					}
+					eafp_concession_return_effect = { FORCED = yes }
+				}
+				else = { eafp_concession_return_effect = { FORCED = no } }
 			}
 		}
 	}

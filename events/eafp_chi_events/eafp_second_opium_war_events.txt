@@ -79,6 +79,11 @@ second_opium_war.2 = {
 			}
 		}
 
+		# Tianjin is in North China; use the same involvement setup as the first war.
+		add_involvement = {
+			strategic_region = sr:region_north_china
+			value = 2500
+		}
 		create_diplomatic_play = {
 			name = second_opium_war
 			target_country = c:CHI
@@ -101,7 +106,32 @@ second_opium_war.2 = {
 			}
 		}
 		random_diplomatic_play = {
-			limit = { is_diplomatic_play_type = dp_second_opium_war }
+			limit = {
+				initiator = c:GBR
+				target = c:CHI
+				is_diplomatic_play_type = dp_second_opium_war
+			}
+			# Tianjin: enforce the existing concession article as a primary demand.
+			if = {
+				limit = {
+					exists = s:STATE_BEIJING.region_state:CHI
+					s:STATE_BEIJING.region_state:CHI = { eafp_concession_can_grant = { HOLDER = c:GBR } }
+				}
+				add_war_goal = {
+					holder = c:GBR
+					type = enforce_treaty_article
+					target_country = c:CHI
+					primary_demand = yes
+					article = {
+						article = eafp_grant_concession
+						source_country = c:CHI
+						target_country = c:GBR
+						inputs = {
+							{ state = s:STATE_BEIJING.region_state:CHI }
+						}
+					}
+				}
+			}
 			if = {
 				limit = { c:CHI = { has_law_or_variant = law_type:law_isolationism } }
 				add_war_goal = {

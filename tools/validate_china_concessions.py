@@ -1,8 +1,8 @@
-﻿"""Static integration checks for China's concessions (not an engine interpreter).
+"""Static integration checks for China's concessions (not an engine interpreter).
 
 Run: python tools/validate_china_concessions.py --game-root "C:/Users/user/Documents/GitHub/Vic3-vanilla" --source-only
 Omit --source-only when checking an installed game with its assets.
-Runtime scenarios and limitations are in documentation/china_concessions_design_plan.md.
+Runtime scenarios and limitations are in scratch/china_concessions_design_plan.md.
 """
 from argparse import ArgumentParser
 from collections import Counter
@@ -68,7 +68,12 @@ def main():
                  "weekly_income")
     for key in forbidden:
         assert not re.search(r"\b" + key + r"\b", clean), ("Removed mechanism", key)
-    assert not re.search(r"\b(?:set_variable|set_global_variable|change_variable|create_obligation|remove_obligation)\s*=", clean)
+    assert not re.search(r"\b(?:set_global_variable|change_variable|create_obligation|remove_obligation)\s*=", clean)
+    # Only an unreconstructable historical loss is stored. No ownership/cap ledger.
+    variable_writes = re.findall(r"\bset_variable\s*=\s*\{\s*name\s*=\s*(\w+)", clean)
+    assert variable_writes and set(variable_writes) == {"concession_loss_prestige_snapshot"}
+    assert len(variable_writes) == len(re.findall(r"\bset_variable\s*=", clean))
+    assert "remove_variable = concession_loss_prestige_snapshot" in clean
 
     hooks = read(ROOT / "common/on_actions/concessions_code_on_actions.txt")
     entries = read(ROOT / "common/on_actions/00_code_on_actions_definition.txt")
@@ -107,14 +112,59 @@ def main():
     assert definitions["eafp_return_concession"] == 0, "Return is handled by treaty withdrawal"
     assert "eafp_return_concession" not in clean, "Removed return article must not be referenced"
     assert re.search(r"on_withdrawal\s*=\s*\{\s*scope:article\s*=", treaties)
-    assert treaties.count("eafp_concession_return_effect = yes") == 1
+    assert len(re.findall(r"eafp_concession_return_effect\s*=\s*\{\s*FORCED\s*=\s*(?:yes|no)\s*\}", treaties)) == 2
+    assert "scope:article.treaty.remaining_binding_period > 0" in treaties
+    assert "scope:withdrawing_country = scope:concession_host" in treaties
+    assert not re.search(r"eafp_concession_return_effect\s*=\s*yes", scripts)
     assert re.search(r"on_break\s*=\s*\{\s*\}", treaties), "Break already runs withdrawal cleanup"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
-    assert "add_treasury" not in effects
+    assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
+    assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
+    assert effects.count("eafp_concession_add_company_level = yes") == 2, "Grant and expansion share ownership creation"
+    assert "add_company = company_type:company_eafp_concession" in effects
+    assert "remove_company = company_type:company_eafp_concession" in effects
+    assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
+    assert "eafp_concession_expand_effect = yes" in je_code
+    assert "eafp_concession_expand_effect = yes" in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
+    assert "eafp_concession_free_capacity >= 1" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
     assert "eafp_concession_grant_effect" not in hooks, "Inheritance must not award buildings"
     values = read(ROOT / "common/script_values/eafp_concessions_values.txt")
     assert values.count("add = weekly_profit") == 1
+    # Verify the live shared-building definitions against installed vanilla.
+    building = read(ROOT / "common/buildings/eafp_concessions_buildings.txt")
+    assert re.findall(r"^(building_eafp_concession\w*)\s*=", building, re.M) == ["building_eafp_concession"]
+    for setting in ("buildable", "expandable", "downsizeable"):
+        assert re.search(r"\b" + setting + r"\s*=\s*no", building)
+    building_group = read(ROOT / "common/building_groups/eafp_concessions_buildings.txt")
+    assert "urbanization = 0" in building_group
+    assert "infrastructure_usage_per_level = 2.5" in building_group
+    vanilla_pm = read(game / "common/production_methods/11_private_infrastructure.txt")
+    vanilla_pm = vanilla_pm[vanilla_pm.index("pm_trade_center = {"):vanilla_pm.index("pm_financial_district_privately_owned = {")]
+    concession_pm = read(ROOT / "common/production_methods/eafp_concessions_production_methods.txt")
+    for key in ("building_employment_clerks_add", "building_employment_shopkeepers_add",
+                "state_weekly_trades_add", "state_trade_capacity_add",
+                "goods_input_merchant_marine_add", "country_influence_add"):
+        pattern = r"\b" + key + r"\s*=\s*([\d.]+)"
+        expected = [float(x) * 5 for x in re.findall(pattern, vanilla_pm)]
+        assert expected and expected == [float(x) for x in re.findall(pattern, concession_pm)], key
+    ratios = r"state_trade_quantity_mult\s*=\s*(-?[\d.]+)"
+    assert re.findall(ratios, vanilla_pm) == re.findall(ratios, concession_pm)
+    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 2
+    assert "NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }" in effects
+    assert re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building\s*=\s*building_eafp_concession\s*\}", effects)
+    refresh = effects[effects.index("eafp_concession_refresh_effect = {"):]
+    assert "eafp_concession_urban_cap" not in refresh and "eafp_concession_over_capacity" not in refresh
+    assert "levels = -" not in effects, "Do not assume unsupported negative ownership removal"
+    assert "count = 32" in effects and "value >= scope:concession_level_mid" in effects
+    assert "level_after_queued_constructions = level" in je_code, "Include waiting construction in duplicate prevention"
+    queue_types = re.findall(r"start_privately_funded_building_construction\s*=\s*(\w+)", je_code)
+    assert queue_types and len(queue_types) == len(set(queue_types))
+    vanilla_buildings = "\n".join(read(p) for p in (game / "common/buildings").glob("*.txt"))
+    for key in queue_types:
+        assert re.search(r"^" + key + r"\s*=", vanilla_buildings, re.M), key
+        assert "can_construct_building = " + key in je_code, key
+    assert "eafp_concession_free_capacity >= 1" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
     for key, modifier in (("concession_payment", "country_expenses_add"),
@@ -183,6 +233,9 @@ def main():
         keys.update(key + suffix for suffix in ("", "_desc", "_effects_desc", "_article_short_desc"))
     keys.update(("concept_concession_desc", "concession_payment", "concession_paid",
                  "eafp_concession_active_label", "eafp_concession_inactive_label"))
+    keys.update(key for key in feature_definitions
+                if key.startswith(("building_eafp_", "bg_eafp_", "company_eafp_", "pm_eafp_", "pmg_eafp_")))
+    keys.update(("eafp_concession_company_slot", "eafp_concession_forced_loss", "eafp_concession_right_live", "eafp_concession_right_returned"))
     keys.update("war_goal_eafp_concession_incident_return" + s
                 for s in ("", "_type_name", "_type_desc", "_desc", "_sway_desc"))
     keys.update("dp_eafp_concession_incident" + s for s in ("", "_desc", "_tooltip"))
@@ -211,8 +264,9 @@ def main():
           f"{len(expected_groups)} urban groups; {len(keys)} localized keys in 3 languages; "
           "international journal pulses, hooks, treaty callbacks, removed mechanisms and encoding.")
     print("SKIP: asset existence (--source-only)." if args.source_only else "PASS: asset existence.")
-    print("Runtime behavior (money units, ownership +5, state selection, war goal targets, "
-          "save/reload, state merge order and GUI) still requires Victoria 3.")
+    print("PASS: shared building, five-times trade-center PMs, cap display, queue duplicate prevention and industry references.")
+    print("Game execution skipped: company lifecycle, private queue attribution and GUI are not runtime-verified. "
+          "Known limitations: owner-specific shared-level removal and partial production suspension are unavailable.")
 
 
 if __name__ == "__main__":
