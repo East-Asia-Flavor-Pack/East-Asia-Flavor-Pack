@@ -1,0 +1,51 @@
+﻿REPLACE:country_is_valid_qing_treaty_partner = {
+	OR = {
+		country_has_primary_culture = cu:manchu
+		country_has_primary_culture = cu:han
+	}
+	is_country_type = unrecognized
+	hidden_trigger = {
+		is_player = no
+	}
+	OR = {
+		trigger_if = {
+			limit = {
+				has_journal_entry = je_warlord_china
+			}
+			custom_tooltip = { # 수정
+				text = china_explosion_point_75_tt
+				var:china_warlord_explosion_sum <= 0.75
+			}
+		}
+		country_rank < rank_value:unrecognized_major_power
+	}
+	OR = {
+		is_subject = no
+		is_subject_of = ROOT
+	}
+	trigger_if = {
+		limit = {
+			country_rank >= rank_value:unrecognized_major_power
+		}
+		OR = {
+			custom_tooltip = {
+				text = war_with_china_not_russia_tt
+				any_enemy_in_war = {
+					NOT = {
+						c:RUS ?= this
+					}
+				}
+			}
+			custom_tooltip = {
+				text = owes_russia_obligation_tt
+				c:RUS ?= {
+					is_owed_obligation_by = PREV
+				}
+			}
+			army_power_projection <= { # Army is less than half Russia's
+				value = c:RUS.army_power_projection
+				multiply = 0.5
+			}
+		}
+	}
+}

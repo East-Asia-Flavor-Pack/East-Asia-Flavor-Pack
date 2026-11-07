@@ -82,6 +82,7 @@ gg_korea.2 = { # Donghak Rebellion
 			check_range_bounds = no
 			leader = {
 				save_scope_as = gov_leader_scope
+				set_temporary_event_immortality = { DURATION = 3 }
 			}
 		}
 	}
@@ -98,6 +99,10 @@ gg_korea.2 = { # Donghak Rebellion
 		scope:ongoing_revolution = {
 			add_civil_war_progress = 0.50
 		}
+	}
+
+	after = {
+		revoke_temporary_event_immortality = { CHARACTER = scope:gov_leader_scope }
 	}
 }
 
@@ -123,12 +128,13 @@ gg_korea.3 = { # Choe Je-u 이건 바닐라 on_action에 얽혀있는 거라 안
 	duration = 3
 
 	trigger = {
+		# triggered by on_action - historical_agitators_yearly_events
 		has_dlc_feature = ep1_content
 		game_date > 1855.1.1
 		game_date < 1880.1.1
 		country_has_primary_culture = cu:korean
 		NOT = {
-			has_global_variable = choi_je_woo_spawn
+			is_template_used = KOR_choi_je_woo
 		}
 		has_technology_researched = egalitarianism
 		any_scope_state = {
@@ -142,6 +148,9 @@ gg_korea.3 = { # Choe Je-u 이건 바닐라 on_action에 얽혀있는 거라 안
 		create_character = {
 			template = KOR_choi_je_woo
 			save_scope_as = choi_je_woo_scope
+			on_created = {
+				set_temporary_event_immortality = { DURATION = 3 }
+			}
 		}
 		random_scope_state = {
 			limit = {
@@ -151,7 +160,6 @@ gg_korea.3 = { # Choe Je-u 이건 바닐라 on_action에 얽혀있는 거라 안
 			}
 			save_scope_as = choi_je_woo_state
 		}
-		set_global_variable = choi_je_woo_spawn
 	}
 
 	# option = {
@@ -193,6 +201,10 @@ gg_korea.3 = { # Choe Je-u 이건 바닐라 on_action에 얽혀있는 거라 안
 				days = { 15 30 }
 			}
 		}
+	}
+
+	after = {
+		revoke_temporary_event_immortality = { CHARACTER = scope:choi_je_woo_scope }
 	}
 }
 
@@ -237,10 +249,10 @@ gg_korea.4 = { # Donghak Petition
 
 	duration = 3
 
+	fire_only_once = yes
+
 	trigger = {
-		NOT = {
-			has_variable = donghak_petition_event_var
-		}
+		# triggered by journal entry - je_donghak_movement [on_monthly_pulse]
 		radical_fraction = {
 			value >= 0.2
 		}
@@ -283,7 +295,6 @@ gg_korea.4 = { # Donghak Petition
 				save_scope_as = petition_state
 			}
 		}
-		set_variable = donghak_petition_event_var
 	}
 
 	option = {
@@ -365,6 +376,7 @@ gg_korea.5 = { # Donghak Petition Success
 			days = long_modifier_time
 		}
 	}
+
 }
 
 gg_korea.6 = { # Donghak Petition Failure
@@ -411,6 +423,7 @@ gg_korea.6 = { # Donghak Petition Failure
 			}
 		}
 	}
+
 }
 
 gg_korea.7 = { # Korean Uprising
@@ -623,6 +636,7 @@ gg_korea.8 = { # Sino-Japanese War - for Japan
 			ig:ig_industrialists ?= {
 				leader = {
 					save_scope_as = industrialists_leader_scope
+					set_temporary_event_immortality = { DURATION = 3 }
 				}
 			}
 			ig:ig_landowners ?= {
@@ -633,6 +647,7 @@ gg_korea.8 = { # Sino-Japanese War - for Japan
 			ig:ig_intelligentsia ?= {
 				leader = {
 					save_scope_as = intelligentsia_leader_scope
+					set_temporary_event_immortality = { DURATION = 3 }
 				}
 			}
 			ig:ig_rural_folk ?= {
@@ -643,6 +658,7 @@ gg_korea.8 = { # Sino-Japanese War - for Japan
 			ig:ig_petty_bourgeoisie ?= {
 				leader = {
 					save_scope_as = pb_leader_scope
+					set_temporary_event_immortality = { DURATION = 3 }
 				}
 			}
 		}
@@ -681,6 +697,12 @@ gg_korea.8 = { # Sino-Japanese War - for Japan
 				target = root
 			}
 		}
+	}
+
+	after = {
+		revoke_temporary_event_immortality = { CHARACTER = scope:industrialists_leader_scope }
+		revoke_temporary_event_immortality = { CHARACTER = scope:intelligentsia_leader_scope }
+		revoke_temporary_event_immortality = { CHARACTER = scope:pb_leader_scope }
 	}
 }
 

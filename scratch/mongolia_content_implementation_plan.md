@@ -321,7 +321,7 @@ flowchart TB
 
 이 일지는 `common/history/countries/mgl - china.txt`에서 게임 시작 시 등록한다. 청 종속 여부는 활성 조건에서 제외하고, `is_subject = no`가 되면 완료한다. `gui/journal_entry_widgets/eafp_mongolia_widgets.gui`의 전용 위젯이 일본 유신과 동일한 `custom_widget_container_je_icon` 위치에 현재 젭춘담바의 초상화·이름·이해집단·특성을 표시한다. 일지 주간 갱신과 국가 월간 갱신으로 인물 참조를 유지하므로 완료 후에도 승계가 이어진다.
 
-`je_chinese_rule`는 별도로 장군부 통치 종료와 일반 전제정치 복귀를 담당하며, 몽골의 종교 지도자를 제거하지 않는다. 독립 준비 사건 `eafp_mgl.100`은 복원 일지의 `on_monthly_pulse` 안 `events` 목록에 등록한다. 1911년 이후 조건은 이벤트 파일의 `trigger`에서 검사하고, `cooldown = { days = never_fire_again_modifier_time }`으로 재발생을 막는다. 이벤트 발생 여부만 기록하는 변수는 사용하지 않는다. 따라서 1836년에 1911년 세대의 인물들이 생성되지 않는다.
+`je_chinese_rule`는 별도로 장군부 통치 종료와 일반 전제정치 복귀를 담당하며, 몽골의 종교 지도자를 제거하지 않는다. 독립 준비 사건 `eafp_mgl.100`은 복원 일지의 `on_monthly_pulse` 안 `events` 목록에 등록한다. 1911년 이후 조건은 이벤트 파일의 `trigger`에서 검사하고, `fire_only_once = yes`으로 재발생을 막는다. 이벤트 발생 여부만 기록하는 변수는 사용하지 않는다. 따라서 1836년에 1911년 세대의 인물들이 생성되지 않는다.
 
 구현 참조는 저장소의 일본 `eafp_00_meiji_restoration.txt`(전용 위젯·주간 갱신), 일본 인물 history(`emperor_var`), `japan_code_on_actions.txt`(`no_heirs`·불사 보호 해제), 기존 바닐라 조사 문서다. 2026-10-01 작업에서는 바닐라 설치 경로 `D:/SteamLibrary/steamapps/common/Victoria 3/game`의 천황 승계·유신 효과와 GUI를 직접 대조했다. busy 해제와 불사 분리는 설치본의 `set_character_immortal` 사용례와 저장소 효과 문서를 확인했다. 게임 내 실행 검증은 미완료다. 정적 검사에서는 중괄호, 신규 효과·템플릿·위젯 참조, 3개 언어 현지화 키와 UTF-8 BOM, `git diff --check`를 확인했다. 실제 실행 시에는 새 게임과 기존 저장에서 젭춘담바의 busy 해제 및 불사 유지, 1836년 초상화, 1843/1850/1874년 교체, 독립 완료 순간 즉위, 공화정 전환, 1924년 종료, 세 장군부의 일반 전제정치 복귀를 검증해야 한다.
 
