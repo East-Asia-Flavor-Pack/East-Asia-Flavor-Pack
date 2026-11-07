@@ -214,7 +214,7 @@ def main():
     assert re.search(r"eafp_concession_eligible_state\s*=\s*\{\s*"
                      r"is_in_geographic_region\s*=\s*" + region + r"\b", gates)
     if not args.source_only:
-        for asset in set(re.findall(r'(?:icon|texture|video)\s*=\s*"?([^"\s}]+)', code)):
+        for asset in set(re.findall(r'(?:icon|texture|video)\s*=\s*"?([^"\s{}]+)', code)):
             assert (ROOT / asset).is_file() or (game / asset).is_file(), ("Missing asset", asset)
 
     gui = read(ROOT / "gui/journal_entry_widgets/eafp_concessions_in_china.gui")
@@ -224,6 +224,19 @@ def main():
     assert "JournalEntry.GetCountry" not in gui and "viewer" not in gui + sgui, \
         "All observers must see the same international overview"
     assert "scripted_button" not in je
+    # The international widget reads live state and ownership; its accordion is UI-only.
+    assert "State.GetIDString" in gui and "GetVariableSystem.SetOrToggle" in gui
+    assert "IsDataModelEmpty(GetGlobalList('concession_candidate_states_gvarlist'))" in gui
+    assert "BuildingOwnership.IsCountryOwned" in gui
+    for key in re.findall(r"GetScriptedGui\('([^']+)'\)", gui):
+        assert key in definitions, ("Missing GUI action", key)
+    for key in re.findall(r"ScriptValue\('([^']+)'\)", gui):
+        assert key in definitions, ("Missing GUI value", key)
+    assert "eafp_concession_cap_usage" in values
+    # Catch divide-by-zero and overflow regressions in the visual meter.
+    cap_usage = values.split("eafp_concession_cap_usage = {", 1)[1]
+    assert "divide = { value = eafp_concession_urban_cap min = 1 }" in cap_usage
+    assert "max = 1" in cap_usage
     keys = set(re.findall(r"(?:text|tooltip|title|desc|flavor|name|custom_tooltip)\s*=\s*\"?((?:concessions_in_china\.\d+\.|eafp_(?:grant|return)_concession_|eafp_concession_|EAFP_CONCESSION_AI_)\w+)", code))
     # Script names, effects, and saved scopes are not localization keys.
     keys = {k for k in keys if k not in definitions and k != "eafp_concession_compensation"}
@@ -239,6 +252,10 @@ def main():
     keys.update("war_goal_eafp_concession_incident_return" + s
                 for s in ("", "_type_name", "_type_desc", "_desc", "_sway_desc"))
     keys.update("dp_eafp_concession_incident" + s for s in ("", "_desc", "_tooltip"))
+    # SelectLocalization branches are not direct text= keys.
+    keys.update("eafp_concession_" + suffix for suffix in (
+        "cap_available", "cap_full", "cap_exceeded", "holder_receives", "holder_paused",
+        "company_ownership_row", "company_right_tt"))
     localizations = {}
     for lang in LANGUAGES:
         catalog = {}
@@ -250,6 +267,11 @@ def main():
         assert read(path).splitlines()[0] == "l_" + lang + ":"
         for key in keys:
             assert len(catalog.get(key, [])) == 1, ("Missing/duplicate localization", lang, key)
+        assert "BuildingOwnership.GetOwnershipRatio" in catalog["eafp_concession_asset_amount"][0]
+        localized_gui = gui + "\n" + "\n".join(catalog[k][0] for k in keys)
+        for pattern in (r"GetScriptedGui\('([^']+)'\)", r"ScriptValue\('([^']+)'\)"):
+            for key in re.findall(pattern, localized_gui):
+                assert key in definitions, ("Missing localized UI reference", lang, key)
         localizations[lang] = catalog
 
     for key in keys:

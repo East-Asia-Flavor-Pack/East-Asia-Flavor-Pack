@@ -1,91 +1,198 @@
-﻿types eafp_concession_widgets {
+﻿# Self-contained JE widget: vanilla visual types, no external mod dependency.
+# Details are client UI state keyed by actual state ID, never a gameplay variable.
+types eafp_concession_widgets {
+	type eafp_concession_body = textbox {
+		autoresize = yes
+		multiline = yes
+		minimumsize = { 480 -1 }
+		maximumsize = { 480 -1 }
+		align = left|nobaseline
+	}
+	type eafp_concession_section = textbox {
+		size = { 480 28 }
+		align = left|nobaseline
+		default_format = "#b"
+	}
 	type eafp_concession_state_rows = flowcontainer {
 		direction = vertical
-		layoutpolicy_horizontal = expanding
+		spacing = 10
+		ignoreinvisible = yes
 		datamodel = "[GetGlobalList('concession_candidate_states_gvarlist')]"
 		item = {
-			flowcontainer = {
+			container = {
 				datacontext = "[Scope.GetState]"
-				direction = vertical
 				visible = "[GetScriptedGui('eafp_concession_state_row').IsShown(GuiScope.SetRoot(State.MakeScope).End)]"
-				button = {
-					using = clean_button
-					size = { 470 36 }
-					onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
-					textbox = {
-						raw_text = "[State.GetOwner.GetFlagTextIcon] [State.GetName]"
-						autoresize = yes
-					}
-				}
-				textbox = {
-					text = "eafp_concession_state_income"
-					tooltip = "eafp_concession_economy_tt"
-					size = { 470 35 }
-					autoresize = yes
-					multiline = yes
-				}
-				textbox = {
-					text = "eafp_concession_capacity_row"
-					tooltip = "eafp_concession_capacity_tt"
-					size = { 470 45 }
-					autoresize = yes
-					multiline = yes
-				}
-				textbox = {
-					text = "eafp_concession_shared_assets_note"
-					size = { 470 45 }
-					autoresize = yes
-					multiline = yes
-				}
-				textbox = {
-					text = "eafp_concession_private_investment_label"
-					tooltip = "eafp_concession_private_investment_tt"
-					size = { 470 30 }
-					autoresize = yes
-					multiline = yes
-				}
-				button = {
-					using = clean_button
-					size = { 470 30 }
-					visible = "[GetScriptedGui('eafp_concession_expand_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-					enabled = "[GetScriptedGui('eafp_concession_expand_gui').IsValid(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-					tooltip = "[GetScriptedGui('eafp_concession_expand_gui').ExecuteTooltip(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-					onclick = "[GetScriptedGui('eafp_concession_expand_gui').Execute(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-					text = "eafp_concession_expand_label"
-				}
+				background = { using = entry_bg }
 				flowcontainer = {
 					direction = vertical
-					visible = "[State.GetBuilding('building_eafp_concession').IsValid]"
-					datamodel = "[State.GetBuilding('building_eafp_concession').GetBuildingOwnerships]"
-					item = {
+					margin = { 10 10 }
+					spacing = 5
+					ignoreinvisible = yes
+					section_header_button = {
+						blockoverride "layout" { size = { 480 38 } }
+						blockoverride "fontsize" { using = fontsize_medium }
+						blockoverride "left_text" { raw_text = "[State.GetOwner.GetFlagTextIcon] [State.GetName]" }
+						blockoverride "right_text" {
+							section_header_right_text = { text = "eafp_concession_card_total" }
+						}
+						blockoverride "onclick" {
+							onclick = "[GetVariableSystem.SetOrToggle('eafp_concession_detail', State.GetIDString)]"
+						}
+						blockoverride "onclick_showmore" {
+							visible = "[Not(GetVariableSystem.HasValue('eafp_concession_detail', State.GetIDString))]"
+						}
+						blockoverride "onclick_showless" {
+							visible = "[GetVariableSystem.HasValue('eafp_concession_detail', State.GetIDString)]"
+						}
+					}
+					eafp_concession_body = {
+						text = "eafp_concession_cap_status"
+						tooltip = "eafp_concession_capacity_tt"
+					}
+					gold_progressbar_horizontal = {
+						size = { 480 18 }
+						visible = "[EqualTo_CFixedPoint(GuiScope.SetRoot(State.MakeScope).ScriptValue('eafp_concession_over_capacity'), '(CFixedPoint)0')]"
+						tooltip = "eafp_concession_capacity_tt"
+						blockoverride "values" {
+							min = 0
+							max = 1
+							value = "[GuiScope.SetRoot(State.MakeScope).ScriptValue('eafp_concession_cap_usage')]"
+						}
+					}
+					bad_progressbar_horizontal = {
+						size = { 480 18 }
+						visible = "[GreaterThan_CFixedPoint(GuiScope.SetRoot(State.MakeScope).ScriptValue('eafp_concession_over_capacity'), '(CFixedPoint)0')]"
+						tooltip = "eafp_concession_capacity_tt"
+						blockoverride "values" { min = 0 max = 1 value = 1 }
+					}
+					flowcontainer = {
+						spacing = 8
+						widget = {
+							size = { 236 62 }
+							background = { using = entry_bg }
+							tooltip = "eafp_concession_economy_tt"
+							textbox = { position = { 8 4 } size = { 220 24 } text = "eafp_concession_profit_heading" }
+							textbox = { position = { 8 30 } size = { 220 26 } text = "eafp_concession_profit_value" default_format = "#v" }
+						}
+						widget = {
+							size = { 236 62 }
+							background = { using = entry_bg }
+							tooltip = "eafp_concession_economy_tt"
+							textbox = { position = { 8 4 } size = { 220 24 } text = "eafp_concession_payment_heading" }
+							textbox = { position = { 8 30 } size = { 220 26 } text = "eafp_concession_payment_value" default_format = "#v" }
+						}
+					}
+					eafp_concession_body = { text = "eafp_concession_activity_summary" }
+					# Only the selected state expands. The JE panel supplies scrolling.
+					flowcontainer = {
+						direction = vertical
+						spacing = 6
+						ignoreinvisible = yes
+						visible = "[GetVariableSystem.HasValue('eafp_concession_detail', State.GetIDString)]"
+						divider_clean = { size = { 480 1 } }
+						flowcontainer = {
+							spacing = 8
+							button = {
+								using = default_button
+								size = { 236 32 }
+								text = "eafp_concession_open_state"
+								onclick = "[InformationPanelBar.OpenStatePanel(State.AccessSelf)]"
+							}
+							button = {
+								using = default_button
+								size = { 236 32 }
+								text = "eafp_concession_open_building"
+								enabled = "[State.GetBuilding('building_eafp_concession').IsValid]"
+								onclick = "[InformationPanelBar.OpenBuildingDetailsPanel(State.GetBuilding('building_eafp_concession').AccessSelf)]"
+							}
+						}
+						eafp_concession_section = { text = "eafp_concession_rights_heading" }
 						flowcontainer = {
 							direction = vertical
-							visible = "[BuildingOwnership.GetOwnerBuilding.IsValid]"
-							flowcontainer = {
-								direction = vertical
-								visible = "[BuildingOwnership.GetOwnerBuilding.GetCompany.IsValid]"
-								textbox = {
-									text = "eafp_concession_company_ownership_row"
-									tooltip = "eafp_concession_company_right_tt"
-									size = { 470 30 }
-									autoresize = yes
-									multiline = yes
+							spacing = 3
+							datamodel = "[State.MakeScope.GetList('concession_owner_varlist')]"
+							item = {
+								flowcontainer = {
+									datacontext = "[Scope.GetCountry]"
+									direction = vertical
+									background = { using = entry_bg }
+									eafp_concession_body = { text = "eafp_concession_holder_row" tooltip = "eafp_concession_prestige_tt" }
+									eafp_concession_body = { text = "eafp_concession_holder_income" tooltip = "eafp_concession_economy_tt" }
 								}
 							}
 						}
-					}
-				}
-				flowcontainer = {
-					direction = vertical
-					datamodel = "[State.MakeScope.GetList('concession_owner_varlist')]"
-					item = {
-						textbox = {
-							datacontext = "[Scope.GetCountry]"
-							text = "eafp_concession_holder_row"
-							size = { 470 28 }
-							autoresize = yes
-							multiline = yes
-							tooltip = "eafp_concession_prestige_tt"
+						eafp_concession_section = { text = "eafp_concession_assets_heading" }
+						flowcontainer = {
+							direction = vertical
+							spacing = 3
+							visible = "[State.GetBuilding('building_eafp_concession').IsValid]"
+							datamodel = "[State.GetBuilding('building_eafp_concession').GetBuildingOwnerships]"
+							item = {
+								flowcontainer = {
+									spacing = 8
+									background = { using = entry_bg }
+									flowcontainer = {
+										direction = vertical
+										ignoreinvisible = yes
+										minimumsize = { 350 48 }
+										maximumsize = { 350 -1 }
+										textbox = {
+											visible = "[BuildingOwnership.IsCountryOwned]"
+											size = { 350 48 }
+											elide = right
+											text = "eafp_concession_country_asset"
+											tooltip = "eafp_concession_country_asset"
+										}
+										flowcontainer = {
+											direction = vertical
+											ignoreinvisible = yes
+											visible = "[And(Not(BuildingOwnership.IsCountryOwned), BuildingOwnership.GetOwnerBuilding.IsValid)]"
+											textbox = {
+												visible = "[BuildingOwnership.GetOwnerBuilding.GetCompany.IsValid]"
+												size = { 350 48 }
+												multiline = yes
+												elide = right
+												text = "eafp_concession_company_asset"
+												tooltip = "eafp_concession_company_asset_tt"
+											}
+											textbox = {
+												visible = "[Not(BuildingOwnership.GetOwnerBuilding.GetCompany.IsValid)]"
+												size = { 350 48 }
+												multiline = yes
+												elide = right
+												text = "eafp_concession_private_asset"
+												tooltip = "eafp_concession_private_asset"
+											}
+										}
+										textbox = {
+											visible = "[And(Not(BuildingOwnership.IsCountryOwned), Not(BuildingOwnership.GetOwnerBuilding.IsValid))]"
+											size = { 350 48 }
+											text = "eafp_concession_other_asset"
+										}
+									}
+									textbox = {
+										size = { 122 48 }
+										align = right|nobaseline
+										multiline = yes
+										text = "eafp_concession_asset_amount"
+									}
+								}
+							}
+						}
+						eafp_concession_body = { text = "eafp_concession_shared_assets_note" }
+						divider_clean = { size = { 480 1 } }
+						eafp_concession_body = {
+							text = "eafp_concession_private_investment_label"
+							tooltip = "eafp_concession_private_investment_tt"
+						}
+						button = {
+							using = default_button
+							size = { 480 38 }
+							visible = "[GetScriptedGui('eafp_concession_expand_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							enabled = "[GetScriptedGui('eafp_concession_expand_gui').IsValid(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							tooltip = "[GetScriptedGui('eafp_concession_expand_gui').ExecuteTooltip(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							onclick = "[GetScriptedGui('eafp_concession_expand_gui').Execute(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							text = "eafp_concession_expand_label"
 						}
 					}
 				}
@@ -96,6 +203,29 @@
 flowcontainer = {
 	name = "widget_eafp_concessions"
 	direction = vertical
-	layoutpolicy_horizontal = expanding
+	spacing = 10
+	ignoreinvisible = yes
+	parentanchor = hcenter
+	flowcontainer = {
+		spacing = 8
+		icon = { size = { 44 44 } texture = "gfx/interface/icons/building_icons/building_trade_center.dds" }
+		textbox = { size = { 448 44 } text = "eafp_concession_overview_heading" using = fontsize_medium align = left|nobaseline }
+	}
+	textbox = {
+		autoresize = yes
+		multiline = yes
+		minimumsize = { 500 -1 }
+		maximumsize = { 500 -1 }
+		text = "eafp_concession_overview_hint"
+	}
+	textbox = {
+		visible = "[IsDataModelEmpty(GetGlobalList('concession_candidate_states_gvarlist'))]"
+		autoresize = yes
+		multiline = yes
+		minimumsize = { 500 -1 }
+		maximumsize = { 500 -1 }
+		text = "eafp_concession_empty_overview"
+		background = { using = entry_bg }
+	}
 	eafp_concession_state_rows = {}
 }
