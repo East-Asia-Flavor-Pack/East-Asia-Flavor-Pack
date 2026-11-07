@@ -67,14 +67,46 @@ def main():
             assert depth == 0, (lang, expression)
         assert 'japan_invasion.5.t' not in loc[lang]
         assert 'japan_invasion.5.eafp_title' in loc[lang]
-    added = []
+    repaired_keys = {
+        'je_eastasian_expansionism_country_owns_entire_strategic_region_tt',
+        'je_eastasian_expansionism_country_or_subject_owns_entire_strategic_region_tt',
+        'eafp_scripted_button_gando_ambition_gando_acquisition',
+        'eafp_scripted_button_gando_ambition_gando_acquisition_desc',
+        'war_with_china_not_korea_tt',
+        'owes_korea_obligation_tt',
+        'new_culture_movement_progress_bar',
+        'new_culture_movement_progress_bar_desc',
+        'je_chinese_missions_goal',
+        'je_chinese_educational_mission_goal',
+        'je_reconstruct_summer_palace_goal',
+        'je_xinhai_revolution',
+        'je_xinhai_revolution_reason',
+        'je_xinhai_revolution_kmt',
+        'je_xinhai_revolution_kmt_reason',
+        'je_hui_revolt_pre_reason',
+        'je_gando_ambition',
+        'je_gando_ambition_reason',
+        'je_scholar_bureaucrats',
+        'je_scholar_bureaucrats_reason',
+        'eafp_debug.3.t',
+        'eafp_debug.3.d',
+        'eafp_debug.3.a',
+        'kor_hwan_slot_1',
+        'kor_hwan_slot_1_desc',
+        'kor_hwan_slot_2',
+        'kor_hwan_slot_2_desc',
+        'kor_hwan_slot_3',
+        'kor_hwan_slot_3_desc',
+        'kor_hwan_slot_4',
+        'kor_hwan_slot_4_desc',
+        'kor_hwan_slot_5',
+        'kor_hwan_slot_5_desc',
+        'kor_hwan_slot_6',
+        'kor_hwan_slot_6_desc',
+    }
     for lang in LANGS:
-        path = ROOT / 'localization' / lang / f'eafp_115_error_fixes_l_{lang}.yml'
-        keys = set(re.findall(r'^ ([\w.]+):', read(path), re.M))
-        assert len(keys) == 35
-        added.append(keys)
-    assert added[0] == added[1] == added[2]
-    print(f'PASS: {len(checked)} reported EAFP quote substitutions; 3-language parentheses, title key and 35 added key families.')
+        assert repaired_keys <= loc[lang].keys(), (lang, repaired_keys - loc[lang].keys())
+    print(f'PASS: {len(checked)} reported EAFP quote substitutions; 3-language parentheses, title key and 35 repaired key families.')
 
     for stem in ('Ahn_Changho', 'Yi_Haung', 'cheoljong', 'jeonbongjun', 'kim_ok_gyun',
                  'min_yeong_hwan', 'seojaepil', 'yoo_giljoon'):
