@@ -39,4 +39,18 @@
 	character_modifier = {
 		character_prominence_add = 10
 	}
+
+	# The background shown behind the character in the character panel. Can be listed several times to get variations
+	# The first entry whose trigger passes is used, so list the most specific ones first. An entry without a trigger always passes
+	# A character holding several roles uses the background of their highest priority role. If that role has no valid entry the next highest priority role is tried, and so on
+	# Root = character
+	character_background = {
+		trigger = {
+			has_role_of_type = general
+		}
+		texture = "gfx/interface/character_panel/backgrounds/char_role_rulergeneral.dds"
+	}
+	character_background = {
+		texture = "gfx/interface/character_panel/backgrounds/char_role_ruler.dds"
+	}
 }
