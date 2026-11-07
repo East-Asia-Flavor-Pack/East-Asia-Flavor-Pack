@@ -3,7 +3,8 @@
 	priority = 1			# Used to select the primary title for a character, higher priority gets selected over lower
 
 	auto_assigned = yes/no		# If this is set to yes, then all characters of this role's archetype will receive this role when created
-	
+	can_be_interest_group_leader = yes/no	# Defaults to yes. If set to no, characters with this role will never be selected or set as an interest group leader
+
 	career_length = { min max }			# For how many years will a character hold this role before retiring (randomly set between min and max)
 	
 	# Root = character
