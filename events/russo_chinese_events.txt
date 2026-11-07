@@ -1,4 +1,5 @@
-﻿ namespace = russo_chinese
+﻿# 수정 많이 함
+
  namespace = russo_chinese
 
 russo_chinese.1 = {
@@ -24,39 +25,23 @@ russo_chinese.1 = {
 	}
 
 	immediate = {
+		scope:donor_scope ?= {
+			save_scope_as = china_scope
+		}
 		s:STATE_OUTER_MANCHURIA ?= {
 			random_scope_state = {
-				save_scope_as = outer_manchuria_scope
-			}
-		}
-		random_country = {
-			limit = {
-				OR = {
-					country_has_primary_culture = cu:manchu
-					country_has_primary_culture = cu:han
-				}
-				OR = { # 추가
-					any_scope_state = {
-						state_region = s:STATE_OUTER_MANCHURIA
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } }
-					}
-					any_subject_or_below = {
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_OUTER_MANCHURIA
+				limit = {
+					# scope:china_scope ?= owner
+					OR = { # 추가, 정군부일때 조건
+						scope:china_scope ?= owner
+						owner = {
+							is_subject_type = subject_type_military_headquarters_china
+							is_subject_of_and_not_being_freed = scope:donor_scope
 						}
 					}
 				}
-				#any_scope_state = {
-				#	state_region = s:STATE_OUTER_MANCHURIA
-				#	is_split_state = no
-				#	is_capital = no
-				#}
-				is_country_type = unrecognized
-				is_player = no
+				save_scope_as = outer_manchuria_scope
 			}
-			save_scope_as = china_scope
 		}
 	}
 
@@ -76,34 +61,36 @@ russo_chinese.1 = {
 				}
 			}
 		}
-		# s:STATE_OUTER_MANCHURIA ?= {
-		# 	random_scope_state = {
-		# 		limit = {
-		# 			scope:china_scope ?= owner
-		# 		}
-		# 		set_state_owner = c:RUS
-		# 		add_modifier = {
-		# 			name = modifier_ruler_of_the_east
-		# 			days = long_modifier_time
-		# 		}
-		# 	}
-		# }
-		every_country = { # 추가
-			limit = {
-				OR = {
-					THIS = scope:china_scope
-					is_subject_type = subject_type_military_headquarters_china
+		custom_tooltip = {
+			text = treaty_of_beijing_tt
+			# 추가. 주 옮기기 전에 청나라에 옮김.
+			if = {
+				limit = { scope:outer_manchuria_scope.owner != scope:china_scope }
+				scope:outer_manchuria_scope = { set_state_owner = scope:china_scope }
+			}
+			create_treaty = {
+				name = treaty_name_treaty_of_beijing
+				first_country = c:RUS
+				second_country = scope:china_scope
+				is_draft = no
+				binding_period = { years = 20 }
+
+				articles_to_create = {
+					{
+						article = state_transfer
+						source_country = scope:china_scope
+						target_country = c:RUS
+						inputs = {
+							{ state = scope:outer_manchuria_scope }
+						}
+					}
 				}
 			}
-			every_scope_state = {
-				limit = {
-					state_region = s:STATE_OUTER_MANCHURIA
-				}
-				set_state_owner = c:RUS
-				add_modifier = {
-					name = modifier_ruler_of_the_east
-					days = long_modifier_time
-				}
+		}
+		scope:outer_manchuria_scope ?= {
+			add_modifier = {
+				name = modifier_ruler_of_the_east
+				days = long_modifier_time
 			}
 		}
 	}
@@ -123,34 +110,36 @@ russo_chinese.1 = {
 				}
 			}
 		}
-		# s:STATE_OUTER_MANCHURIA ?= {
-		# 	random_scope_state = {
-		# 		limit = {
-		# 			scope:china_scope ?= owner
-		# 		}
-		# 		set_state_owner = c:RUS
-		# 		add_modifier = {
-		# 			name = modifier_ruler_of_the_east_navy
-		# 			days = long_modifier_time
-		# 		}
-		# 	}
-		# }
-		every_country = { # 추가
-			limit = {
-				OR = {
-					THIS = scope:china_scope
-					is_subject_type = subject_type_military_headquarters_china
+		custom_tooltip = {
+			text = treaty_of_beijing_tt
+			# 추가. 주 옮기기 전에 청나라에 옮김.
+			if = {
+				limit = { scope:outer_manchuria_scope.owner != scope:china_scope }
+				scope:outer_manchuria_scope = { set_state_owner = scope:china_scope }
+			}
+			create_treaty = {
+				name = treaty_name_treaty_of_beijing
+				first_country = c:RUS
+				second_country = scope:china_scope
+				is_draft = no
+				binding_period = { years = 20 }
+
+				articles_to_create = {
+					{
+						article = state_transfer
+						source_country = scope:china_scope
+						target_country = c:RUS
+						inputs = {
+							{ state = scope:outer_manchuria_scope }
+						}
+					}
 				}
 			}
-			every_scope_state = {
-				limit = {
-					state_region = s:STATE_OUTER_MANCHURIA
-				}
-				set_state_owner = c:RUS
-				add_modifier = {
-					name = modifier_ruler_of_the_east_navy
-					days = long_modifier_time
-				}
+		}
+		scope:outer_manchuria_scope ?= {
+			add_modifier = {
+				name = modifier_ruler_of_the_east_navy
+				days = long_modifier_time
 			}
 		}
 	}
@@ -179,66 +168,50 @@ russo_chinese.2 = {
 	}
 
 	immediate = {
-		s:STATE_KIRGHIZIA ?= {
+		scope:donor_scope ?= {
+			save_scope_as = china_scope
+		}
+		s:STATE_KIRGHIZIA = {
 			random_scope_state = {
+				limit = {
+					# scope:china_scope ?= owner
+					OR = { # 추가, 정군부일때 조건
+						scope:china_scope ?= owner
+						owner = {
+							is_subject_type = subject_type_military_headquarters_china
+							is_subject_of_and_not_being_freed = scope:donor_scope
+						}
+					}				}
 				save_scope_as = kirghizia_scope
 			}
 		}
-		s:STATE_ALTAI ?= {
+		s:STATE_ALTAI = {
 			random_scope_state = {
+				limit = {
+					# scope:china_scope ?= owner
+					OR = { # 추가, 정군부일때 조건
+						scope:china_scope ?= owner
+						owner = {
+							is_subject_type = subject_type_military_headquarters_china
+							is_subject_of_and_not_being_freed = scope:donor_scope
+						}
+					}				}
 				save_scope_as = tomsk_scope
 			}
 		}
-		s:STATE_JETISY ?= {
+		s:STATE_JETISY = {
 			random_scope_state = {
+				limit = {
+					# scope:china_scope ?= owner
+					OR = { # 추가, 정군부일때 조건
+						scope:china_scope ?= owner
+						owner = {
+							is_subject_type = subject_type_military_headquarters_china
+							is_subject_of_and_not_being_freed = scope:donor_scope
+						}
+					}				}
 				save_scope_as = ili_scope
 			}
-		}
-		random_country_in_east_asia = {
-			limit = {
-				OR = {
-					country_has_primary_culture = cu:manchu
-					country_has_primary_culture = cu:han
-				}
-				OR = {
-					any_scope_state = {
-						state_region = s:STATE_ALTAI
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
-					}
-					any_scope_state = {
-						state_region = s:STATE_JETISY
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
-					}
-					any_scope_state = {
-						state_region = s:STATE_KIRGHIZIA
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } } # 추가
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_ALTAI
-						}
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_JETISY
-						}
-					}
-					any_subject_or_below = { # 추가
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_KIRGHIZIA
-						}
-					}
-				}
-				is_country_type = unrecognized
-				is_player = no
-			}
-			save_scope_as = china_scope
 		}
 		random_country_in_central_asia = {
 			limit = {
@@ -252,6 +225,12 @@ russo_chinese.2 = {
 	option = {
 		name = russo_chinese.2.a
 		default_option = yes
+		trigger = {
+			OR = {
+				exists = scope:tomsk_scope
+				exists = scope:ili_scope
+			}
+		}
 		if = {
 			limit = {
 				scope:china_scope = {
@@ -265,41 +244,22 @@ russo_chinese.2 = {
 				}
 			}
 		}
-		s:STATE_ALTAI ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
-			}
-		}
-		s:STATE_JETISY ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
-			}
-		}
+		chuguchak_protocol_treaty = yes
 	}
 
 	option = {
 		name = russo_chinese.2.b
+		default_option = yes
 		trigger = {
-			any_scope_state = {
-				state_region = s:STATE_KIRGHIZIA
+			exists = scope:kirghizia_scope
+			OR = {
+				any_scope_state = {
+					state_region = s:STATE_KIRGHIZIA
+				}
+				NOR = {
+					exists = scope:tomsk_scope
+					exists = scope:ili_scope
+				}
 			}
 		}
 		if = {
@@ -315,48 +275,7 @@ russo_chinese.2 = {
 				}
 			}
 		}
-		s:STATE_ALTAI ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
-			}
-		}
-		s:STATE_JETISY ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
-			}
-		}
-		s:STATE_KIRGHIZIA ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
-			}
-		}
+		chuguchak_protocol_treaty_with_kirghizia = yes
 	}
 
 	option = {
@@ -377,46 +296,37 @@ russo_chinese.2 = {
 				}
 			}
 		}
-		s:STATE_ALTAI ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = c:RUS
+		chuguchak_protocol_treaty = yes
+		if = {
+			limit = {
+				exists = scope:kirghizia_scope
 			}
-		}
-		s:STATE_JETISY ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
+			custom_tooltip = {
+				text = chuguchak_protocol_kirgiz_tt
+				# 추가. 주 옮기기 전에 청나라에 옮김.
+				if = {
+					limit = { scope:kirghizia_scope.owner != scope:china_scope }
+					scope:kirghizia_scope = { set_state_owner = scope:china_scope }
+				}
+				####
+				create_treaty = {
+					name = treaty_name_chuguchak_protocol
+					first_country = scope:kirgiz_scope
+					second_country = scope:china_scope
+					is_draft = no
+					binding_period = { years = 20 }
+
+					articles_to_create = {
+						{
+							article = state_transfer
+							source_country = scope:china_scope
+							target_country = scope:kirgiz_scope
+							inputs = {
+								{ state = scope:kirghizia_scope }
+							}
 						}
 					}
 				}
-				set_state_owner = c:RUS
-			}
-		}
-		s:STATE_KIRGHIZIA ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
-						}
-					}
-				}
-				set_state_owner = scope:kirgiz_scope
 			}
 		}
 	}
@@ -450,6 +360,16 @@ russo_chinese.3 = {
 				save_scope_as = vladivostok_scope
 			}
 		}
+	}
+
+	after = {
+		if = {
+			limit = {
+				has_journal_entry = je_tsarpoints_master
+			}
+			je_tsarpoints_add_med = yes
+		}
+		je_the_eastern_border_cleanup = yes
 	}
 
 	option = {
@@ -533,59 +453,54 @@ russo_chinese.4 = {
 	}
 
 	immediate = {
+		scope:donor_scope ?= {
+			save_scope_as = china_scope
+		}
 		s:STATE_AMUR ?= {
 			random_scope_state = {
-				save_scope_as = amur_scope
-			}
-		}
-		random_country = {
-			limit = {
-				OR = {
-					country_has_primary_culture = cu:manchu
-					country_has_primary_culture = cu:han
-				}
-				OR = { # 추가
-					any_scope_state = {
-						state_region = s:STATE_AMUR
-						is_split_state = no
-						is_capital = no
-						owner = { NOT = { is_subject_type = subject_type_military_headquarters_china } }
-					}
-					any_subject_or_below = {
-						is_subject_type = subject_type_military_headquarters_china
-						any_scope_state = {
-							state_region = s:STATE_AMUR
-							is_split_state = no
+				limit = {
+					# scope:china_scope ?= owner
+					OR = { # 추가, 정군부일때 조건
+						scope:china_scope ?= owner
+						owner = {
+							is_subject_type = subject_type_military_headquarters_china
+							is_subject_of_and_not_being_freed = scope:donor_scope
 						}
 					}
 				}
-				#any_scope_state = {
-				#	state_region = s:STATE_AMUR
-				#	is_split_state = no
-				#	is_capital = no
-				#}
-				is_country_type = unrecognized
-				is_player = no
+				save_scope_as = amur_scope
 			}
-			save_scope_as = china_scope
 		}
 	}
 
 	option = {
 		name = russo_chinese.4.a
 		default_option = yes
-		s:STATE_AMUR ?= {
-			random_scope_state = {
-				limit = {
-					#scope:china_scope ?= owner
-					owner = { # 추가
-						OR = {
-							this = scope:china_scope
-							is_subject_type = subject_type_military_headquarters_china
+		custom_tooltip = {
+			text = treaty_of_aigun_tt
+				# 추가. 주 옮기기 전에 청나라에 옮김.
+				if = {
+					limit = { scope:amur_scope.owner != scope:china_scope }
+					scope:amur_scope = { set_state_owner = scope:china_scope }
+				}
+				####
+			create_treaty = {
+				name = treaty_name_treaty_of_aigun
+				first_country = c:RUS
+				second_country = scope:china_scope
+				is_draft = no
+				binding_period = { years = 20 }
+
+				articles_to_create = {
+					{
+						article = state_transfer
+						source_country = scope:china_scope
+						target_country = c:RUS
+						inputs = {
+							{ state = scope:amur_scope }
 						}
 					}
 				}
-				set_state_owner = c:RUS
 			}
 		}
 	}
