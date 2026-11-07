@@ -4,6 +4,10 @@
 # 막번체제
 
 je_bakuhantaisei = {
+	activation_description = {
+		always = yes
+	}
+
 	icon = "gfx/interface/icons/alert_icons/revolution.dds"
 
 	group = je_group_bakuhantaisei
@@ -187,6 +191,10 @@ je_bakuhantaisei = {
 # 막부 개혁
 
 je_bakufu_kaikaku = {
+	activation_description = {
+		always = yes
+	}
+
 	icon = "gfx/interface/icons/objectives/egalitarian_society.dds"
 
 	group = je_group_historical_content
@@ -613,7 +621,11 @@ je_bakufu_kaikaku = {
 	can_revolution_inherit = no
 }
 
-je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
+je_bakufu_kaikoku = {
+	activation_description = {
+		always = yes
+	}
+ # je_meiji_diplomacy에 대응
 	icon = "gfx/interface/icons/event_icons/event_trade.dds"
 	group = je_group_historical_content
 
@@ -659,7 +671,11 @@ je_bakufu_kaikoku = { # je_meiji_diplomacy에 대응
 	weight = 10000
 }
 
-je_bakufu_guntai = { # je_meiji_army에 대응
+je_bakufu_guntai = {
+	activation_description = {
+		always = yes
+	}
+ # je_meiji_army에 대응
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 	group = je_group_historical_content
 
@@ -730,7 +746,11 @@ je_bakufu_guntai = { # je_meiji_army에 대응
 	weight = 10000
 }
 
-je_bakufu_naibu = { # je_meiji_restoration에 대응
+je_bakufu_naibu = {
+	activation_description = {
+		always = yes
+	}
+ # je_meiji_restoration에 대응
 	icon = "gfx/interface/icons/pops_icons/bureaucrats.dds"
 
 	group = je_group_historical_content
@@ -858,7 +878,11 @@ je_bakufu_naibu = { # je_meiji_restoration에 대응
 	weight = 10000
 }
 
-je_bakufu_zaisei = { # je_meiji_economy에 대응
+je_bakufu_zaisei = {
+	activation_description = {
+		always = yes
+	}
+ # je_meiji_economy에 대응
 	icon = "gfx/interface/icons/event_icons/event_industry.dds"
 	group = je_group_historical_content
 
@@ -915,6 +939,25 @@ je_bakufu_zaisei = { # je_meiji_economy에 대응
 # 자유민권운동
 
 je_liberty_civil_right_movement = {
+	activation_description = {
+		AND = {
+			custom_tooltip = {
+				text = liberty_civil_right_support_above_5_tt
+				any_political_movement = {
+					is_political_movement_type = eafp_movement_liberty_civil_right
+					political_movement_popular_support >= 0.05
+				}
+			}
+			custom_tooltip = {
+				text = liberty_civil_right_movement_above_15_tt
+				any_political_movement = {
+					is_political_movement_type = eafp_movement_liberty_civil_right
+					political_movement_radicalism >= 0.15
+				}
+			}
+		}
+	}
+
 	icon = "gfx/interface/icons/event_icons/waving_flag.dds"
 
 	group = je_group_historical_content
@@ -1050,6 +1093,13 @@ je_liberty_civil_right_movement = {
 # 정한론
 
 je_seikanron = {
+	activation_description = {
+		any_political_lobby = {
+			is_political_lobby_type = lobby_anti_country
+			target = c:KOR
+		}
+	}
+
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
 	group = je_group_historical_content
@@ -1180,6 +1230,24 @@ je_seikanron = {
 # 가라후토 개척: 러시아랑 딜 보는 컨텐츠
 
 je_karafuto = {
+	activation_description = {
+		c:JAP ?= THIS
+		has_variable = eafp_jap_taming_north_completed
+		NOT = { has_variable = eafp_jap_taming_north_failed }
+		has_state_in_state_region = STATE_HOKKAIDO
+		exists = c:RUS
+		c:RUS ?= {
+			OR = {
+				AND = {
+					is_ai = yes
+					NOT = { has_law = law_type:law_no_colonial_affairs }
+					has_state_in_state_region = STATE_OUTER_MANCHURIA
+				}
+				has_state_in_state_region = STATE_SAKHALIN
+			}
+		}
+	}
+
 	icon = "gfx/interface/icons/law_icons/frontier_colonization.dds"
 
 	group = je_group_historical_content
@@ -1276,6 +1344,11 @@ je_karafuto = {
 # 일본의 대만 원정
 
 je_formosa_expedition = {
+	activation_description = {
+		c:JAP ?= THIS
+		owns_entire_state_region = STATE_RYUKYU_ISLANDS
+	}
+
 	icon = "gfx/interface/icons/law_icons/frontier_colonization.dds"
 
 	group = je_group_historical_content

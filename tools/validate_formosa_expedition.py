@@ -114,12 +114,16 @@ def main():
     # All displayed text references must exist exactly once in each supported language.
     feature_text = "\n".join([journal, bar, events, start_button, pause_button])
     refs = set(re.findall(r'\b(?:name|desc|title|flavor|text|custom_tooltip)\s*=\s*"?((?:je_formosa|formosa_|eafp_formosa_|modifier_formosa|start_formosa|pause_formosa)[\w.]*)', feature_text))
-    refs |= {"je_formosa_expedition", "je_formosa_expedition_reason", "je_formosa_expedition_goal", "formosa_survey_modifier"}
+    refs |= {"je_formosa_expedition", "je_formosa_expedition_reason", "formosa_survey_modifier"}
     for language in ("korean", "english", "simp_chinese"):
         path = ROOT / f"localization/{language}/eafp_japan_l_{language}.yml"
         assert path.read_bytes().startswith(b"\xef\xbb\xbf"), path
         text = path.read_text(encoding="utf-8-sig")
         keys = re.findall(r'^\s*([\w.]+):(?:\d+)?\s*"', text, re.M)
+        # This JE uses a scripted progress bar, not the legacy goal counter.
+        # 1.15 reports an implicit _goal localization as redundant in this case.
+        assert "goal_add_value" not in journal
+        assert "je_formosa_expedition_goal" not in keys
         for ref in refs:
             assert keys.count(ref) == 1, (language, ref)
         assert "formosa_scope" not in text
