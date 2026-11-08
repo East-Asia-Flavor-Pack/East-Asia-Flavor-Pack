@@ -120,7 +120,11 @@ def main():
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
     assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
-    assert effects.count("eafp_concession_add_company_level = yes") == 2, "Grant and expansion share ownership creation"
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 1
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 1
+    assert effects.count("levels = $LEVELS$") == 2
+    grant_gate = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt").split("eafp_concession_can_grant = {", 1)[1].split("eafp_concession_has_holder = {", 1)[0]
+    assert "eafp_concession_free_capacity >= 5" in grant_gate
     assert "add_company = company_type:company_eafp_concession" in effects
     assert "remove_company = company_type:company_eafp_concession" in effects
     assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
@@ -131,6 +135,8 @@ def main():
     assert "eafp_concession_grant_effect" not in hooks, "Inheritance must not award buildings"
     values = read(ROOT / "common/script_values/eafp_concessions_values.txt")
     assert values.count("add = weekly_profit") == 1
+    assert re.search(r"eafp_concession_urban_cap\s*=\s*\{\s*value = eafp_concession_urban_levels\s*multiply = 5\s*\}", values)
+    assert re.search(r"eafp_concession_trade_equivalent\s*=\s*\{\s*value = eafp_concession_total_levels\s*\}", values)
     # Verify the live shared-building definitions against installed vanilla.
     building = read(ROOT / "common/buildings/eafp_concessions_buildings.txt")
     assert re.findall(r"^(building_eafp_concession\w*)\s*=", building, re.M) == ["building_eafp_concession"]
@@ -138,7 +144,7 @@ def main():
         assert re.search(r"\b" + setting + r"\s*=\s*no", building)
     building_group = read(ROOT / "common/building_groups/eafp_concessions_buildings.txt")
     assert "urbanization = 0" in building_group
-    assert "infrastructure_usage_per_level = 2.5" in building_group
+    assert "infrastructure_usage_per_level = 0.5" in building_group
     vanilla_pm = read(game / "common/production_methods/11_private_infrastructure.txt")
     vanilla_pm = vanilla_pm[vanilla_pm.index("pm_trade_center = {"):vanilla_pm.index("pm_financial_district_privately_owned = {")]
     concession_pm = read(ROOT / "common/production_methods/eafp_concessions_production_methods.txt")
@@ -146,7 +152,7 @@ def main():
                 "state_weekly_trades_add", "state_trade_capacity_add",
                 "goods_input_merchant_marine_add", "country_influence_add"):
         pattern = r"\b" + key + r"\s*=\s*([\d.]+)"
-        expected = [float(x) * 5 for x in re.findall(pattern, vanilla_pm)]
+        expected = [float(x) for x in re.findall(pattern, vanilla_pm)]
         assert expected and expected == [float(x) for x in re.findall(pattern, concession_pm)], key
     ratios = r"state_trade_quantity_mult\s*=\s*(-?[\d.]+)"
     assert re.findall(ratios, vanilla_pm) == re.findall(ratios, concession_pm)
@@ -286,7 +292,7 @@ def main():
           f"{len(expected_groups)} urban groups; {len(keys)} localized keys in 3 languages; "
           "international journal pulses, hooks, treaty callbacks, removed mechanisms and encoding.")
     print("SKIP: asset existence (--source-only)." if args.source_only else "PASS: asset existence.")
-    print("PASS: shared building, five-times trade-center PMs, cap display, queue duplicate prevention and industry references.")
+    print("PASS: shared building, one-to-one trade-center PMs, initial five levels, five-times urban cap, queue duplicate prevention and industry references.")
     print("Game execution skipped: company lifecycle, private queue attribution and GUI are not runtime-verified. "
           "Known limitations: owner-specific shared-level removal and partial production suspension are unavailable.")
 

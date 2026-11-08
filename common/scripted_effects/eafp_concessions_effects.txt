@@ -39,21 +39,22 @@ eafp_concession_inherit_state_rights = {
 	}
 }
 
-# State scope. Both treaty grants and paid expansion use this ownership operation.
+# State scope. LEVELS is 5 for a new right and 1 for paid expansion.
 # Never reset the production methods/reserves of an existing shared building.
 eafp_concession_add_company_level = {
 	if = {
 		limit = { any_scope_building = { is_building_type = building_eafp_concession } }
 		create_building = {
 			building = building_eafp_concession
-			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = 1 } }
+			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = $LEVELS$ } }
 		}
 	}
 	else = {
 		create_building = {
 			building = building_eafp_concession
 			activate_production_methods = { pm_eafp_concession_trade_quantity_normal }
-			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = 1 } }
+			reserves = 1
+			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = $LEVELS$ } }
 		}
 	}
 }
@@ -80,13 +81,13 @@ eafp_concession_grant_effect = {
 		if = {
 			limit = { scope:concession_holder = { has_company = company_type:company_eafp_concession } }
 			save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
-			eafp_concession_add_company_level = yes
+			eafp_concession_add_company_level = { LEVELS = 5 }
 			if = {
 				limit = {
 					eafp_concession_total_levels > scope:concession_previous_levels
 					any_scope_building = {
 						is_building_type = building_eafp_concession
-						levels_owned_by_country = { target = scope:concession_holder value >= 1 }
+						levels_owned_by_country = { target = scope:concession_holder value >= 5 }
 					}
 				}
 				add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
@@ -114,7 +115,7 @@ eafp_concession_expand_effect = {
 	if = {
 		limit = { eafp_concession_can_expand = { HOLDER = scope:concession_holder } }
 		save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
-		eafp_concession_add_company_level = yes
+		eafp_concession_add_company_level = { LEVELS = 1 }
 		if = {
 			limit = { eafp_concession_total_levels > scope:concession_previous_levels }
 			scope:concession_holder = { add_treasury = { value = eafp_concession_expansion_cost multiply = -1 } }
@@ -236,15 +237,6 @@ eafp_concession_refresh_effect = {
 		else_if = {
 			limit = { has_building = building_eafp_concession }
 			remove_building = building_eafp_concession
-		}
-		# A shared building can only be switched off as a whole.
-		if = {
-			limit = { has_building = building_eafp_concession }
-			if = {
-				limit = { eafp_concession_active_holder_count > 0 }
-				activate_building = { building = building_eafp_concession }
-			}
-			else = { deactivate_building = { building = building_eafp_concession } }
 		}
 	}
 	every_country = {
