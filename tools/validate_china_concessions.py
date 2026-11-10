@@ -65,7 +65,8 @@ def main():
                  "base_monthly_per_urban_level", "fixed_monthly_cost",
                  "variable_cost_ratio", "disruption_factor", "representation_factor",
                  "works_extra_cost", "prestige_per_grant", "prestige_country_cap",
-                 "weekly_income")
+                 "weekly_income", "eafp_concession_host_debit",
+                 "eafp_concession_state_debit", "eafp_concession_holder_credit")
     for key in forbidden:
         assert not re.search(r"\b" + key + r"\b", clean), ("Removed mechanism", key)
     assert not re.search(r"\b(?:set_global_variable|change_variable|create_obligation|remove_obligation)\s*=", clean)
@@ -119,6 +120,10 @@ def main():
     assert re.search(r"on_break\s*=\s*\{\s*\}", treaties), "Break already runs withdrawal cleanup"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
     assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
+    # The weekly Chinese-treasury-to-holder transfer and its modifiers are removed entirely.
+    assert not re.search(r"\bconcession_pa(?:yment|id)\b", clean), \
+        "No recurring treasury transfer from the Chinese owner to holders"
+    assert "EAFP_CONCESSION_AI_INCOME" not in treaties, "Treaty AI must not value a removed transfer"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
     assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 1
     assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 1
@@ -173,9 +178,7 @@ def main():
     assert "eafp_concession_free_capacity >= 1" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
-    for key, modifier in (("concession_payment", "country_expenses_add"),
-                          ("concession_paid", "country_tax_income_add")):
-        assert re.search(r"^" + key + r"\s*=\s*\{[^}]*" + modifier + r"\s*=\s*1\s*\}", mods, re.M)
+    assert not re.search(r"^concession_pa(?:yment|id)\s*=", mods, re.M), "Transfer modifiers are removed"
 
     # Check all installed urban building-group inheritance, including owner buildings.
     groups = {}
@@ -250,7 +253,7 @@ def main():
         keys.update((key, key + "_reason"))
     for key in ("eafp_grant_concession",):
         keys.update(key + suffix for suffix in ("", "_desc", "_effects_desc", "_article_short_desc"))
-    keys.update(("concept_concession_desc", "concession_payment", "concession_paid",
+    keys.update(("concept_concession_desc",
                  "eafp_concession_active_label", "eafp_concession_inactive_label"))
     keys.update(key for key in feature_definitions
                 if key.startswith(("building_eafp_", "bg_eafp_", "company_eafp_", "pm_eafp_", "pmg_eafp_")))
@@ -260,7 +263,7 @@ def main():
     keys.update("dp_eafp_concession_incident" + s for s in ("", "_desc", "_tooltip"))
     # SelectLocalization branches are not direct text= keys.
     keys.update("eafp_concession_" + suffix for suffix in (
-        "cap_available", "cap_full", "cap_exceeded", "holder_receives", "holder_paused",
+        "cap_available", "cap_full", "cap_exceeded",
         "company_ownership_row", "company_right_tt"))
     localizations = {}
     for lang in LANGUAGES:
