@@ -25,20 +25,6 @@ eafp_concession_start_return_war = {
 	}
 }
 
-# State scope; used only for an identified civil-war split or a same-owner merge.
-# Inheritance never calls grant, so it cannot award another concession level.
-eafp_concession_inherit_state_rights = {
-	every_in_list = {
-		variable = concession_owner_varlist
-		$TARGET$ = {
-			if = {
-				limit = { NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = prev } } }
-				add_to_variable_list = { name = concession_owner_varlist target = prev }
-			}
-		}
-	}
-}
-
 # State scope. LEVELS is 5 for a new right and 1 for paid expansion.
 # Never reset the production methods/reserves of an existing shared building.
 eafp_concession_add_company_level = {
@@ -59,7 +45,8 @@ eafp_concession_add_company_level = {
 	}
 }
 
-# Rights live on actual states, never state regions or province anchors.
+# State scope; callers save concession_state/host/holder. The right itself is the
+# in-force treaty article plus the holder's ownership; nothing is registered here.
 eafp_concession_grant_effect = {
 	if = {
 		limit = {
@@ -78,6 +65,8 @@ eafp_concession_grant_effect = {
 				}
 			}
 		}
+		# Success is judged from ownership: the article may not yet count as in force here.
+		save_temporary_scope_value_as = { name = concession_grant_ok value = 0 }
 		if = {
 			limit = { scope:concession_holder = { has_company = company_type:company_eafp_concession } }
 			save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
@@ -90,18 +79,13 @@ eafp_concession_grant_effect = {
 						levels_owned_by_country = { target = scope:concession_holder value >= 5 }
 					}
 				}
-				add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
-				# Expansion is allowed only while the granting treaty article is in force.
-				if = {
-					limit = { NOT = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:concession_holder } } }
-					add_to_variable_list = { name = concession_treaty_varlist target = scope:concession_holder }
-				}
+				save_temporary_scope_value_as = { name = concession_grant_ok value = 1 }
 			}
-			else = { debug_log = "EAFP concession grant: company ownership creation failed; right not registered" }
+			else = { debug_log = "EAFP concession grant: company ownership creation failed" }
 		}
-		else = { debug_log = "EAFP concession grant: company establishment failed; right not registered" }
+		else = { debug_log = "EAFP concession grant: company establishment failed" }
 		if = {
-			limit = { NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_holder } } }
+			limit = { scope:concession_grant_ok < 1 }
 			scope:concession_holder = {
 				send_interface_message = {
 					title = eafp_concession_grant_failed_title
@@ -115,28 +99,50 @@ eafp_concession_grant_effect = {
 	}
 }
 
-# Shared by the player GUI and monthly AI. No treasury charge when growth fails.
+# State scope. Shared by the player GUI (+1 / +5) and monthly AI (+1). LEVELS is 1 or 5.
+# Levels are queued as privately funded construction, like vanilla expansion; nothing is
+# created instantly. The engine funds the construction from the state's private queue and
+# decides ownership of finished levels. The fee is charged only per level actually queued.
 eafp_concession_expand_effect = {
 	if = {
-		limit = { eafp_concession_can_expand = { HOLDER = scope:concession_holder } }
-		save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
-		eafp_concession_add_company_level = { LEVELS = 1 }
-		if = {
-			limit = { eafp_concession_total_levels > scope:concession_previous_levels }
-			scope:concession_holder = { add_treasury = { value = eafp_concession_expansion_cost multiply = -1 } }
+		limit = { eafp_concession_can_expand = { HOLDER = scope:concession_holder STATE = scope:concession_state LEVELS = $LEVELS$ } }
+		save_temporary_scope_value_as = { name = concession_previous_queue value = eafp_concession_total_levels_after_queue }
+		while = {
+			count = $LEVELS$
+			start_privately_funded_building_construction = building_eafp_concession
 		}
+		save_temporary_scope_value_as = {
+			name = concession_queued_added
+			value = { value = eafp_concession_total_levels_after_queue subtract = scope:concession_previous_queue }
+		}
+		if = {
+			limit = { scope:concession_queued_added > 0 }
+			scope:concession_holder = {
+				add_treasury = {
+					value = eafp_concession_expansion_cost
+					multiply = scope:concession_queued_added
+					multiply = -1
+				}
+			}
+		}
+		else = { debug_log = "EAFP concession expansion: private construction was not queued; no fee charged" }
 	}
 }
 
 # FORCED is explicit at every caller; no dependence on treaty callback ordering.
-# Every return (treaty withdrawal, incident, war) ends only the right and treaty status.
+# Every return (treaty withdrawal, incident, war) ends only the right, i.e. the treaty.
 # Built concession levels always remain with their owners, whoever owns the state;
 # no script path removes building_eafp_concession.
+# Inside on_withdrawal (scope:article exists) the treaty is already ending, so the
+# article itself is the evidence of the right; elsewhere the live right is required.
 eafp_concession_return_effect = {
 	if = {
 		limit = {
 			owner = scope:concession_host
-			eafp_concession_has_holder = { HOLDER = scope:concession_holder }
+			OR = {
+				exists = scope:article
+				eafp_concession_has_holder = { HOLDER = scope:concession_holder STATE = scope:concession_state }
+			}
 		}
 		# Derive the holder's actual levels through comparisons, not a persistent ledger.
 		# Binary search needs at most 32 steps for engine integer building levels.
@@ -161,14 +167,9 @@ eafp_concession_return_effect = {
 			}
 			save_temporary_scope_value_as = { name = concession_loss_levels value = scope:concession_level_low }
 		}
-		# Snapshot before removing the right or dissolving the company.
+		# Snapshot before ending the treaty or dissolving the company.
 		save_temporary_scope_value_as = { name = concession_loss_relation value = eafp_concession_loss_relations }
 		save_temporary_scope_value_as = { name = concession_loss_prestige value = eafp_concession_loss_prestige }
-		remove_list_variable = { name = concession_owner_varlist target = scope:concession_holder }
-		if = {
-			limit = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:concession_holder } }
-			remove_list_variable = { name = concession_treaty_varlist target = scope:concession_holder }
-		}
 		if = {
 			limit = { always = $FORCED$ eafp_concession_loss_prestige > 0 }
 			scope:concession_host = {
@@ -194,6 +195,25 @@ eafp_concession_return_effect = {
 				}
 			}
 		}
+		# Incident/war returns end the right by withdrawing the holder from the granting
+		# treaty (no break penalties; the forced shock was applied above). The resulting
+		# on_withdrawal sees a holder withdrawal, so it runs with FORCED = no and never
+		# repeats the shock. Inside on_withdrawal the treaty is already ending.
+		if = {
+			limit = { NOT = { exists = scope:article } }
+			scope:concession_holder = {
+				every_scope_treaty = {
+					limit = {
+						any_scope_article = {
+							has_type = eafp_grant_concession
+							target_country = scope:concession_holder
+							input_state = scope:concession_state
+						}
+					}
+					withdraw = { country = scope:concession_holder apply_break_penalties = no }
+				}
+			}
+		}
 		eafp_concession_refresh_effect = yes
 	}
 }
@@ -201,79 +221,21 @@ eafp_concession_return_effect = {
 # One global refresh, used by the international JE and immediate right/ownership changes.
 # No money is moved here and this effect never schedules a timer or creates country journal entries.
 eafp_concession_refresh_effect = {
+	# Derived iteration list only (not a rights record): every state that actually has
+	# the concession building, including buildings retained after a right ended.
 	clear_global_variable_list = concession_candidate_states_gvarlist
 	every_state = {
-		limit = { OR = { has_variable_list = concession_owner_varlist has_building = building_eafp_concession } }
-		save_temporary_scope_as = eafp_refresh_state
-		every_in_list = {
-			variable = concession_owner_varlist
-			save_temporary_scope_as = eafp_refresh_holder
-			if = {
-				limit = {
-					OR = {
-						is_country_alive = no
-						this = scope:eafp_refresh_state.owner
-						NOT = { has_company = company_type:company_eafp_concession }
-						scope:eafp_refresh_state = {
-							NOT = {
-								any_scope_building = {
-									is_building_type = building_eafp_concession
-									levels_owned_by_country = { target = scope:eafp_refresh_holder value >= 1 }
-								}
-							}
-						}
-					}
-				}
-				scope:eafp_refresh_state = {
-					remove_list_variable = { name = concession_owner_varlist target = prev }
-				}
-			}
-			# Adopt a right whose granting article is in force but not yet recorded (older saves).
-			# Inherited rights have no article and therefore never become expandable.
-			else_if = {
-				limit = {
-					scope:eafp_refresh_state = { NOT = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:eafp_refresh_holder } } }
-					any_scope_treaty = {
-						any_scope_article = {
-							has_type = eafp_grant_concession
-							target_country = scope:eafp_refresh_holder
-							input_state = scope:eafp_refresh_state
-						}
-					}
-				}
-				scope:eafp_refresh_state = {
-					add_to_variable_list = { name = concession_treaty_varlist target = scope:eafp_refresh_holder }
-				}
-			}
-		}
-		# Treaty status never outlives the right it belongs to.
-		every_in_list = {
-			variable = concession_treaty_varlist
-			save_temporary_scope_as = eafp_refresh_treaty_holder
-			if = {
-				limit = {
-					scope:eafp_refresh_state = {
-						NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:eafp_refresh_treaty_holder } }
-					}
-				}
-				scope:eafp_refresh_state = {
-					remove_list_variable = { name = concession_treaty_varlist target = scope:eafp_refresh_treaty_holder }
-				}
-			}
-		}
-		# A building without rights (any return, or a change of state owner) is always retained.
-		if = {
-			limit = { any_in_list = { variable = concession_owner_varlist always = yes } }
-			add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
-		}
+		limit = { has_building = building_eafp_concession }
+		add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
 	}
 	every_country = {
-		# Rights are already reconciled above. Removing a company never removes ordinary factories.
-		# A company that still owns retained assets (e.g. after treaty withdrawal) is kept.
+		save_temporary_scope_as = eafp_refresh_country
+		# Removing a company never removes ordinary factories. A company that still owns
+		# retained assets (e.g. after the treaty ended) is kept.
 		if = {
 			limit = {
 				has_company = company_type:company_eafp_concession
-				NOT = { eafp_concession_holder_has_rights = yes }
+				NOT = { eafp_concession_holder_has_rights = { HOLDER = scope:eafp_refresh_country } }
 				company:company_eafp_concession = { company_owned_levels < 1 }
 			}
 			remove_company = company_type:company_eafp_concession

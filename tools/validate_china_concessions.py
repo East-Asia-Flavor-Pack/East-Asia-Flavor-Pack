@@ -116,7 +116,15 @@ def main():
     # Every return ends only the right; built concession levels always remain.
     assert len(re.findall(r"eafp_concession_return_effect\s*=\s*\{\s*FORCED\s*=\s*(?:yes|no)\s*\}", treaties)) == 2
     assert "KEEP_ASSETS" not in clean, "Asset removal mode was removed; returns always keep assets"
-    assert "concession_treaty_varlist" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"), "Expansion requires an in-force treaty"
+    # Rights are read live from in-force treaty articles and building ownership; no stored lists.
+    triggers_text = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
+    assert not re.search(r"concession_(?:owner|treaty)_varlist", clean), "Rights must not be stored in variable lists"
+    assert not re.search(r"concession_(?:owner|treaty)_varlist", read(ROOT / "gui/journal_entry_widgets/eafp_concessions_in_china.gui"))
+    assert "eafp_concession_has_treaty = { HOLDER = $HOLDER$ STATE = $STATE$ }" in triggers_text, "Expansion requires an in-force treaty"
+    assert re.search(r"input_state = \$STATE\$", triggers_text) and "any_scope_treaty" in triggers_text
+    assert "levels_owned_by_country = { target = $HOLDER$ value >= 1 }" in triggers_text, "A right also needs ownership"
+    assert "withdraw = { country = scope:concession_holder apply_break_penalties = no }" in effects, "Incident/war returns end the treaty"
+    assert "eafp_concession_inherit_state_rights" not in clean, "Treaty rights are tied to one state; nothing is inherited"
     assert "company_owned_levels < 1" in effects, "Keep a company that still owns retained assets"
     assert "scope:article.treaty.remaining_binding_period > 0" in treaties
     assert "scope:withdrawing_country = scope:concession_host" in treaties
@@ -130,16 +138,22 @@ def main():
     assert "EAFP_CONCESSION_AI_INCOME" not in treaties, "Treaty AI must not value a removed transfer"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
     assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 1
-    assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 1
+    # Paid expansion queues private construction instead of adding ownership instantly.
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 0
+    assert "start_privately_funded_building_construction = building_eafp_concession" in effects
+    assert "count = $LEVELS$" in effects and "multiply = scope:concession_queued_added" in effects
     assert effects.count("levels = $LEVELS$") == 2
+    values_text = read(ROOT / "common/script_values/eafp_concessions_values.txt")
     grant_gate = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt").split("eafp_concession_can_grant = {", 1)[1].split("eafp_concession_has_holder = {", 1)[0]
     assert "eafp_concession_free_capacity >= 5" in grant_gate
     assert "add_company = company_type:company_eafp_concession" in effects
     assert "remove_company = company_type:company_eafp_concession" in effects
-    assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
-    assert "eafp_concession_expand_effect = yes" in je_code
-    assert "eafp_concession_expand_effect = yes" in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
-    assert "eafp_concession_free_capacity >= 1" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
+    assert "NOT = { eafp_concession_holder_has_rights = { HOLDER = scope:eafp_refresh_country } }" in effects
+    assert "eafp_concession_expand_effect = { LEVELS = 1 }" in je_code
+    sgui = read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
+    assert "eafp_concession_expand_effect = { LEVELS = 1 }" in sgui and "eafp_concession_expand_effect = { LEVELS = 5 }" in sgui
+    assert "eafp_concession_free_capacity >= $LEVELS$" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
+    assert re.search(r"eafp_concession_free_capacity\s*=\s*\{[^}]*subtract = eafp_concession_total_levels_after_queue", values_text), "Queued levels reserve cap room"
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
     assert "eafp_concession_grant_effect" not in hooks, "Inheritance must not award buildings"
     values = read(ROOT / "common/script_values/eafp_concessions_values.txt")
@@ -149,6 +163,10 @@ def main():
     # Verify the live shared-building definitions against installed vanilla.
     building = read(ROOT / "common/buildings/eafp_concessions_buildings.txt")
     assert re.findall(r"^(building_eafp_concession\w*)\s*=", building, re.M) == ["building_eafp_concession"]
+    # The definition closes every construction path; only the expand effect queues by script.
+    assert "can_build_government = { always = no }" in building
+    assert "can_build_private = { always = no }" in building
+    assert "eafp_concession_queue_open" not in clean, "No queue gate variable"
     for setting in ("buildable", "expandable", "downsizeable"):
         assert re.search(r"\b" + setting + r"\s*=\s*no", building)
     building_group = read(ROOT / "common/building_groups/eafp_concessions_buildings.txt")
@@ -178,7 +196,6 @@ def main():
     for key in queue_types:
         assert re.search(r"^" + key + r"\s*=", vanilla_buildings, re.M), key
         assert "can_construct_building = " + key in je_code, key
-    assert "eafp_concession_free_capacity >= 1" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
     assert not re.search(r"^concession_pa(?:yment|id)\s*=", mods, re.M), "Transfer modifiers are removed"

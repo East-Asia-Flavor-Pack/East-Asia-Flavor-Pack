@@ -38,18 +38,30 @@
 	}
 	on_monthly_pulse = {
 		effect = {
+			# The holder is drawn from in-force concession articles for this state; the
+			# active-holder value needs concession_state saved first.
 			every_state = {
-				limit = { eafp_concession_active_holder_count > 0 }
+				limit = {
+					has_building = building_eafp_concession
+					eafp_concession_eligible_state = yes
+				}
 				save_scope_as = concession_state
+				if = {
+				limit = { eafp_concession_active_holder_count > 0 }
 				owner = { save_scope_as = concession_host }
 				random = {
 					chance = 5
-					random_in_list = {
-						variable = concession_owner_varlist
+					random_country = {
 						limit = {
 							is_country_alive = yes
 							NOT = { this = scope:concession_host }
 							prestige >= scope:concession_host.prestige
+							any_scope_treaty = {
+								any_scope_article = {
+									has_type = eafp_grant_concession
+									input_state = scope:concession_state
+								}
+							}
 						}
 						save_scope_as = concession_holder
 						random_list = {
@@ -84,22 +96,21 @@
 						}
 					}
 				}
+				}
 			}
 			# Once per actual state, after incidents; never once per holder.
 			# Requires a real concession company and building.
+			# The active-holder count (treaty + company + prestige) needs concession_state saved.
 			every_in_global_list = {
 				variable = concession_candidate_states_gvarlist
+				save_scope_as = concession_state
+				if = {
 				limit = {
 					eafp_concession_active_holder_count > 0
 					eafp_concession_total_levels > 0
 					infrastructure_delta > 0
 					state_unemployment_rate > 0
 					owner = { investment_pool > 0 }
-					any_in_list = {
-						variable = concession_owner_varlist
-						has_company = company_type:company_eafp_concession
-						prestige >= prev.owner.prestige
-					}
 				}
 				ordered_scope_building = {
 					limit = {
@@ -206,22 +217,42 @@
 						state = { start_privately_funded_building_construction = building_art_academy }
 					}
 				}
+				}
 			}
 
 			# One paid expansion per AI holder/month, using the same effect as the GUI.
+			# Treaty checks need saved scopes, so the most profitable eligible state is
+			# tracked with a running maximum instead of an ordered list iterator.
 			every_country = {
-				limit = { is_ai = yes is_country_alive = yes eafp_concession_holder_has_rights = yes }
+				limit = {
+					is_ai = yes
+					is_country_alive = yes
+					has_company = company_type:company_eafp_concession
+				}
 				save_temporary_scope_as = concession_holder
-				ordered_in_global_list = {
-					variable = concession_candidate_states_gvarlist
-					limit = {
-						eafp_concession_can_expand = { HOLDER = scope:concession_holder }
-						eafp_concession_state_profit > 0
+				if = {
+					limit = { eafp_concession_holder_has_rights = { HOLDER = scope:concession_holder } }
+					# Reset per holder; a stale best-state scope is never used while this is 0.
+					save_temporary_scope_value_as = { name = concession_best_profit value = 0 }
+					every_in_global_list = {
+						variable = concession_candidate_states_gvarlist
+						save_temporary_scope_as = concession_state
+						if = {
+							limit = {
+								eafp_concession_state_profit > scope:concession_best_profit
+								eafp_concession_can_expand = { HOLDER = scope:concession_holder STATE = scope:concession_state LEVELS = 1 }
+							}
+							save_temporary_scope_value_as = { name = concession_best_profit value = eafp_concession_state_profit }
+							save_temporary_scope_as = concession_best_state
+						}
 					}
-					order_by = eafp_concession_state_profit
-					max = 1
-					check_range_bounds = no
-					eafp_concession_expand_effect = yes
+					if = {
+						limit = { scope:concession_best_profit > 0 }
+						scope:concession_best_state = {
+							save_temporary_scope_as = concession_state
+							eafp_concession_expand_effect = { LEVELS = 1 }
+						}
+					}
 				}
 			}
 

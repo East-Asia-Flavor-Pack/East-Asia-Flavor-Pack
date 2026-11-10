@@ -4,11 +4,30 @@
 
 2026-11-10 변경: 중국 소유국 국고에서 조계 보유국 국고로 매주 돈을 직접 옮기던 이전금(`concession_payment`/`concession_paid` modifier)을 정의·번역·구 세이브 정리까지 모두 삭제했다. 보유국 수익은 조계지 무역과 조계회사 배당뿐이다. 7절 참조.
 
+2026-11-10 변경(권리 목록 삭제): 아래 내용이 이후 모든 절의 `concession_owner_varlist`·`concession_treaty_varlist` 서술(3절 원본 데이터, 상속, 권리 등록·제거, 조약 상태 목록)보다 우선한다.
+- 두 state 변수 목록을 코드에서 완전히 없앴다. 권리는 저장하지 않고 매번 엔진 상태에서 읽는다. 조약 상태: 보유국의 발효 중 조약(`any_scope_treaty`, 국가 범위는 발효 조약만 포함)에 `eafp_grant_concession` 항목이 있고 target = 보유국, input_state = 그 주인지(`eafp_concession_has_treaty`). 소유권 상태: 그 주 조계지 건물에 보유국 소유 레벨이 1 이상인지.
+- `eafp_concession_has_holder = { HOLDER STATE }` = 생존·비소유국·조약·소유권. `eafp_concession_active`, `eafp_concession_can_expand`도 `STATE`를 받는다. 조약 항목 안으로 들어가므로 `HOLDER`/`STATE`는 반드시 저장 스코프(`scope:...`, 주 범위 scripted GUI에서는 `root`)여야 하며 `this`/`prev`를 쓰지 않는다. `prev`는 전역 링크라 `prev.prev` 연쇄를 쓰지 않았다.
+- `eafp_concession_holder_has_rights = { HOLDER }`(조약 target 여부), `eafp_concession_involved_country`(조계 항목이 있는 발효 조약에 묶인 국가). `eafp_concession_can_grant`에서는 「이미 보유」 검사를 뺐다. 발효 중 중복은 항목의 `usage_limit = once_per_side_with_same_inputs`가 막고, JE·아편전쟁 사건이 `HOLDER = prev`/`c:GBR`로 호출하므로 조약 탐색을 넣을 수 없다.
+- `eafp_concession_active_holder_count`는 `scope:concession_state`가 필요하다. 효과는 저장 후 평가하고 GUI는 `AddScope('concession_state', State.MakeScope)`로 넘긴다. 조약·회사·위신만 보며 소유권은 이 값에서 확인할 수 없다(국가를 건물 범위로 가져갈 수 없음).
+- 지급: 성공 판정은 소유권 증가(≥5)로 하고 등록 단계는 없다. 실패 시 안내만 하며 조약 항목은 남는다. 이 경우 소유권이 없으므로 `has_holder`·확장·사건은 성립하지 않는다.
+- 반환: 조약 철회 경로(`on_withdrawal`, `scope:article` 존재)는 항목 자체를 근거로 실행한다. 월간 사건·반환 전쟁 경로는 충격 적용 후 보유국을 해당 조약에서 `withdraw`(위약 벌칙 없음)시켜 권리를 끝낸다. 이어지는 `on_withdrawal`은 보유국 철회이므로 `FORCED = no`로 실행되어 충격이 중복되지 않는다. **조약 전체에서 철회하므로 같은 조약의 다른 항목(다른 주의 조계 포함)도 함께 끝난다.**
+- 상속 효과 `eafp_concession_inherit_state_rights`를 삭제했다. 조약 항목은 실제 주 하나에 묶이므로 분할·병합·내전 on_action은 refresh만 실행한다. 분할로 생긴 새 주에는 권리가 없다.
+- `concession_candidate_states_gvarlist`는 권리 기록이 아닌 파생 순회 목록으로 유지하며, 이제 조계지 건물이 있는 모든 주(권리 종료 후 잔존 건물 포함)로 다시 만든다. 저널 카드의 권리 보유국 목록은 건물 소유 항목 중 조약이 유효한 회사 소유국만 표시한다. AI 월간 확장은 저장 스코프가 필요하므로 정렬 순회 대신 순이익 최댓값 추적으로 한 주를 고른다.
+- 구 세이브에 남은 두 목록 변수는 읽지 않으며 정리하지 않는다.
+
 2026-11-10 변경(조계지 영구 잔존·조약 중 확장): 아래 내용이 2·5·8·11절의 해당 서술(반환 시 건물 제거 등)보다 우선한다.
 - 어떤 스크립트 경로도 `building_eafp_concession`을 제거하지 않는다. `eafp_concession_return_effect`(인자는 `FORCED`뿐)는 조약 철회·월간 사건 반환·반환 전쟁 모두에서 조계권과 조약 상태만 끝내고 이미 지어진 조계지 레벨을 남긴다. 주의 소유국이 바뀌어도(분할·병합·내전·보유국 자신의 획득 포함) 권리 정리만 일어나고 건물은 남는다. 관계·위신 충격 규칙은 그대로다.
 - refresh는 권리 없는 주의 조계지 건물을 자동 철거하지 않는다. 조계회사는 권리가 없어도 `company_owned_levels ≥ 1`이면 유지하고, 권리와 자산이 모두 없을 때만 해산한다(슬롯 modifier는 회사 존재를 따른다).
 - 확장(GUI 버튼·AI 공용 `eafp_concession_can_expand`)은 새 state 변수 목록 `concession_treaty_varlist`에 보유국이 있어야 한다(툴팁 `eafp_concession_expand_treaty_tt`). 지급 성공 시 추가, 모든 반환 시 제거, refresh에서 권리 없는 항목 제거·실제 유효 조약 항목(`any_scope_treaty`→`eafp_grant_concession`, 같은 보유국·주)이 있는 권리는 추가(구 세이브 이전). 상속 권리는 조약 항목이 없으므로 확장할 수 없다.
 - 제한: 권리 없는 잔존 조계지는 저널 후보 목록(권리 기준)에 표시되지 않는다. 잔존 레벨은 cap에 계속 포함되어 그 주의 신규 획득·확장 여유를 줄인다. 반환 충격의 손실 레벨 L은 실제로 잃는 자산이 아니라 반환 시점의 국가 보유 레벨이다. 엔진 자체 경로(국유화·회사 해산 처리 등)로 건물이 바뀌는 것은 막지 않는다. 조약 재협상으로 항목이 사라질 때 `on_withdrawal`이 호출되는지는 미검증이며, refresh는 조약 탐색으로 상태를 제거하지 않는다.
+
+2026-11-10 변경(확장 = 민간 건설 큐, +1/+5): 아래 내용이 5·9절의 「회사 소유 +1 즉시 추가」 서술보다 우선한다.
+- `eafp_concession_expand_effect = { LEVELS = 1|5 }`, `eafp_concession_can_expand = { HOLDER LEVELS }`. 효과는 `start_privately_funded_building_construction = building_eafp_concession`을 LEVELS회 호출해 그 주의 민간 건설 큐에 등록한다. 즉시 생성·`add_ownership`은 하지 않는다(`eafp_concession_add_company_level`은 조약 지급 +5 전용).
+- 저널 카드에 +1·+5 버튼 두 개(바닐라 클릭/Shift 클릭 수량). AI 월간 확장은 +1. 바닐라 Shift 클릭은 엔진 내장이라 scripted GUI에서 수정키를 읽을 수 없어 별도 버튼으로 구현했다.
+- 수수료 £50,000/레벨은 큐에 실제로 늘어난 레벨 수(`eafp_concession_total_levels_after_queue` 증가분)만큼 부과한다. 조건의 국고 검사는 `eafp_concession_expansion_cost_levels_1/5`.
+- cap: `eafp_concession_free_capacity`가 실제 레벨이 아니라 큐 포함 레벨(`level_after_queued_constructions` 합)을 빼므로 대기 중 레벨이 여유를 점유한다(조약 지급 +5 판정에도 적용). 엔진 한도는 `can_queue_building_levels = LEVELS`로 검사한다. GUI 용량 줄에 「건설 대기」 레벨을 표시한다.
+- 건물 정의(사용자 지시): `buildable = no`, `expandable = no`, `downsizeable = no`, `can_build_government = { always = no }`, `can_build_private = { always = no }`. 정의상 모든 건설·증설 경로가 닫혀 있으며 게이트 변수는 두지 않는다. 확장은 `eafp_concession_expand_effect`의 `start_privately_funded_building_construction` 스크립트 호출로만 시도하고, 조약·cap·수수료·큐 한도는 `eafp_concession_can_expand`가 판정한다.
+- 제한(미검증): 엔진이 스크립트 큐 등록 시에도 `expandable`/`can_build_private`를 검사하면 등록이 거부된다. 이 경우 `eafp_concession_total_levels_after_queue`가 늘지 않으므로 수수료는 부과되지 않고 debug_log만 남으며, 확장 버튼은 눌려도 아무 일도 일어나지 않는다. 또한 `can_queue_building_levels` 조건이 `expandable = no` 건물에서 항상 거짓이면 버튼이 비활성으로 표시된다. 등록되더라도 공사 진행 중 재검사로 취소될 수 있다. 민간 공사의 재원은 주 소유국(중국)의 민간 투자 풀이고 완공 레벨의 소유권은 엔진이 정하므로 조계회사 소유를 보장하지 않는다. 큐 등록 직후 `level_after_queued_constructions`가 같은 효과 안에서 갱신되지 않으면 수수료가 부과되지 않는다.
 
 최신 수량 변경: 조계 1레벨 = 무역소 1레벨, 새 국가의 주별 조계권 획득마다 +5레벨, 주별 상한 = 도심지 ×5. 이미 조계지 건물이 있는 주에도 새 보유국의 회사 지분 5레벨을 더한다. 저널 유료 확장은 기존 +1레벨·£50,000을 유지한다. 반환 충격의 분모는 실제 도심지 레벨을 유지하고 상한 계산과 분리한다. 구 세이브의 기존 레벨 자동 증설은 하지 않는다.
 

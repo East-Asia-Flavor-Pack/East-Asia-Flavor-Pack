@@ -1,29 +1,44 @@
-﻿eafp_concession_state_row = {
+﻿# In a state-scoped scripted GUI, root is that state; it is passed as STATE because
+# treaty checks enter article scope and need a fixed reference to the state.
+eafp_concession_state_row = {
 	scope = state
 	is_shown = {
 		is_in_geographic_region = geographic_region_china_proper
-		any_in_list = { variable = concession_owner_varlist always = yes }
+		has_building = building_eafp_concession
 	}
 }
 
 # A holder's own action only. The international journal has no owner country.
+# Queue 1 level / 5 levels of private construction, mirroring vanilla click / shift-click.
 eafp_concession_expand_gui = {
 	scope = state
-	is_shown = { eafp_concession_has_holder = { HOLDER = scope:actor } }
-	is_valid = { eafp_concession_can_expand = { HOLDER = scope:actor } }
+	is_shown = { eafp_concession_has_holder = { HOLDER = scope:actor STATE = root } }
+	is_valid = { eafp_concession_can_expand = { HOLDER = scope:actor STATE = root LEVELS = 1 } }
 	effect = {
 		scope:actor = { save_temporary_scope_as = concession_holder }
-		eafp_concession_expand_effect = yes
+		save_temporary_scope_as = concession_state
+		eafp_concession_expand_effect = { LEVELS = 1 }
+	}
+}
+
+eafp_concession_expand_5_gui = {
+	scope = state
+	is_shown = { eafp_concession_has_holder = { HOLDER = scope:actor STATE = root } }
+	is_valid = { eafp_concession_can_expand = { HOLDER = scope:actor STATE = root LEVELS = 5 } }
+	effect = {
+		scope:actor = { save_temporary_scope_as = concession_holder }
+		save_temporary_scope_as = concession_state
+		eafp_concession_expand_effect = { LEVELS = 5 }
 	}
 }
 
 # Existing holder-row localization uses this visibility predicate.
 eafp_concession_holder_active_gui = {
 	scope = state
-	is_shown = { eafp_concession_active = { HOLDER = scope:holder } }
+	is_shown = { eafp_concession_active = { HOLDER = scope:holder STATE = root } }
 }
 
 eafp_concession_holder_right_gui = {
 	scope = state
-	is_shown = { eafp_concession_has_holder = { HOLDER = scope:holder } }
+	is_shown = { eafp_concession_has_holder = { HOLDER = scope:holder STATE = root } }
 }
