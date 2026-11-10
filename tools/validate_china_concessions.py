@@ -113,7 +113,11 @@ def main():
     assert definitions["eafp_return_concession"] == 0, "Return is handled by treaty withdrawal"
     assert "eafp_return_concession" not in clean, "Removed return article must not be referenced"
     assert re.search(r"on_withdrawal\s*=\s*\{\s*scope:article\s*=", treaties)
+    # Every return ends only the right; built concession levels always remain.
     assert len(re.findall(r"eafp_concession_return_effect\s*=\s*\{\s*FORCED\s*=\s*(?:yes|no)\s*\}", treaties)) == 2
+    assert "KEEP_ASSETS" not in clean, "Asset removal mode was removed; returns always keep assets"
+    assert "concession_treaty_varlist" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"), "Expansion requires an in-force treaty"
+    assert "company_owned_levels < 1" in effects, "Keep a company that still owns retained assets"
     assert "scope:article.treaty.remaining_binding_period > 0" in treaties
     assert "scope:withdrawing_country = scope:concession_host" in treaties
     assert not re.search(r"eafp_concession_return_effect\s*=\s*yes", scripts)
@@ -161,9 +165,8 @@ def main():
         assert expected and expected == [float(x) for x in re.findall(pattern, concession_pm)], key
     ratios = r"state_trade_quantity_mult\s*=\s*(-?[\d.]+)"
     assert re.findall(ratios, vanilla_pm) == re.findall(ratios, concession_pm)
-    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 2
-    assert "NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }" in effects
-    assert re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building\s*=\s*building_eafp_concession\s*\}", effects)
+    assert "building_eafp_concession" not in re.findall(r"remove_building\s*=\s*(\w+)", clean), "Concession buildings are never removed by script"
+    assert not re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building", effects), "Refresh must not remove retained buildings"
     refresh = effects[effects.index("eafp_concession_refresh_effect = {"):]
     assert "eafp_concession_urban_cap" not in refresh and "eafp_concession_over_capacity" not in refresh
     assert "levels = -" not in effects, "Do not assume unsupported negative ownership removal"

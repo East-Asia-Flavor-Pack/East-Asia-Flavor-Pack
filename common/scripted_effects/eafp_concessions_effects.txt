@@ -91,6 +91,11 @@ eafp_concession_grant_effect = {
 					}
 				}
 				add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
+				# Expansion is allowed only while the granting treaty article is in force.
+				if = {
+					limit = { NOT = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:concession_holder } } }
+					add_to_variable_list = { name = concession_treaty_varlist target = scope:concession_holder }
+				}
 			}
 			else = { debug_log = "EAFP concession grant: company ownership creation failed; right not registered" }
 		}
@@ -124,6 +129,9 @@ eafp_concession_expand_effect = {
 }
 
 # FORCED is explicit at every caller; no dependence on treaty callback ordering.
+# Every return (treaty withdrawal, incident, war) ends only the right and treaty status.
+# Built concession levels always remain with their owners, whoever owns the state;
+# no script path removes building_eafp_concession.
 eafp_concession_return_effect = {
 	if = {
 		limit = {
@@ -153,22 +161,13 @@ eafp_concession_return_effect = {
 			}
 			save_temporary_scope_value_as = { name = concession_loss_levels value = scope:concession_level_low }
 		}
-		# Snapshot before removing the right/building or dissolving the company.
+		# Snapshot before removing the right or dissolving the company.
 		save_temporary_scope_value_as = { name = concession_loss_relation value = eafp_concession_loss_relations }
 		save_temporary_scope_value_as = { name = concession_loss_prestige value = eafp_concession_loss_prestige }
 		remove_list_variable = { name = concession_owner_varlist target = scope:concession_holder }
 		if = {
-			limit = {
-				has_building = building_eafp_concession
-				NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }
-			}
-			remove_building = building_eafp_concession
-		}
-		else_if = {
-			limit = { has_building = building_eafp_concession }
-			# Engine exposes whole-building removal, not company-specific level removal.
-			# Do not destroy other holders' assets or invent negative ownership support.
-			debug_log = "EAFP concession return: rights revoked; shared ownership removal unavailable, residual assets retained"
+			limit = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:concession_holder } }
+			remove_list_variable = { name = concession_treaty_varlist target = scope:concession_holder }
 		}
 		if = {
 			limit = { always = $FORCED$ eafp_concession_loss_prestige > 0 }
@@ -229,22 +228,53 @@ eafp_concession_refresh_effect = {
 					remove_list_variable = { name = concession_owner_varlist target = prev }
 				}
 			}
+			# Adopt a right whose granting article is in force but not yet recorded (older saves).
+			# Inherited rights have no article and therefore never become expandable.
+			else_if = {
+				limit = {
+					scope:eafp_refresh_state = { NOT = { is_target_in_variable_list = { name = concession_treaty_varlist target = scope:eafp_refresh_holder } } }
+					any_scope_treaty = {
+						any_scope_article = {
+							has_type = eafp_grant_concession
+							target_country = scope:eafp_refresh_holder
+							input_state = scope:eafp_refresh_state
+						}
+					}
+				}
+				scope:eafp_refresh_state = {
+					add_to_variable_list = { name = concession_treaty_varlist target = scope:eafp_refresh_holder }
+				}
+			}
 		}
+		# Treaty status never outlives the right it belongs to.
+		every_in_list = {
+			variable = concession_treaty_varlist
+			save_temporary_scope_as = eafp_refresh_treaty_holder
+			if = {
+				limit = {
+					scope:eafp_refresh_state = {
+						NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:eafp_refresh_treaty_holder } }
+					}
+				}
+				scope:eafp_refresh_state = {
+					remove_list_variable = { name = concession_treaty_varlist target = scope:eafp_refresh_treaty_holder }
+				}
+			}
+		}
+		# A building without rights (any return, or a change of state owner) is always retained.
 		if = {
 			limit = { any_in_list = { variable = concession_owner_varlist always = yes } }
 			add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
 		}
-		else_if = {
-			limit = { has_building = building_eafp_concession }
-			remove_building = building_eafp_concession
-		}
 	}
 	every_country = {
 		# Rights are already reconciled above. Removing a company never removes ordinary factories.
+		# A company that still owns retained assets (e.g. after treaty withdrawal) is kept.
 		if = {
 			limit = {
 				has_company = company_type:company_eafp_concession
 				NOT = { eafp_concession_holder_has_rights = yes }
+				company:company_eafp_concession = { company_owned_levels < 1 }
 			}
 			remove_company = company_type:company_eafp_concession
 		}
