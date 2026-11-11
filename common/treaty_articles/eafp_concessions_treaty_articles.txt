@@ -1,9 +1,12 @@
 ﻿eafp_grant_concession = {
 	kind = directed
-	cost = 0
+	# Influence cost, same as vanilla treaty_port (paid as maintenance by the target).
+	cost = 50
 	icon = "gfx/interface/icons/diplomatic_treaties_articles_icons/treaty_port_treaties.dds"
 	# An executed, non-renegotiable article must not repeat its one-time effect.
-	flags = { can_be_enforced }
+	# hostile / ai_consider_threaten_naval_hostilities as on vanilla treaty_port, so the AI
+	# treats it as a coercive demand it may back with naval threats.
+	flags = { can_be_enforced hostile ai_consider_threaten_naval_hostilities }
 	usage_limit = once_per_side_with_same_inputs
 	maintenance_paid_by = target_country
 	required_inputs = { state }
@@ -132,11 +135,18 @@
 	ai = {
 		treaty_categories = { economy trade expansion }
 		article_ai_usage = { request offer }
-		evaluation_chance = { value = 0.1 }
+		# Great powers (the only possible receivers) consider concessions more often.
+		evaluation_chance = {
+			value = 0.1
+			if = {
+				limit = { country_rank >= rank_value:great_power }
+				value = 0.3
+			}
+		}
 		state_input_filter = {
 			scope:input = {
 				owner = root
-			eafp_concession_can_grant = { HOLDER = scope:other_country }
+				eafp_concession_can_grant = { HOLDER = scope:other_country }
 			}
 		}
 		inherent_accept_score = {
@@ -145,18 +155,53 @@
 				limit = { exists = scope:article.input_state }
 				add = { value = 30 desc = "EAFP_CONCESSION_AI_RIGHT" }
 				add = { value = 20 desc = "EAFP_CONCESSION_AI_TRADE_CENTER" }
+				# Bigger cities are worth more to the receiver and cost the giver more.
+				add = {
+					value = scope:article.input_state.eafp_concession_urban_levels
+					multiply = 2
+					max = 40
+					desc = "EAFP_CONCESSION_AI_CITY"
+				}
 				if = {
 					limit = { this = scope:source_country }
 					multiply = -1
 				}
 			}
 		}
-		wargoal_score_multiplier = { value = 1 }
+		# How eagerly the AI picks this article as a war goal / play demand.
+		wargoal_score_multiplier = {
+			value = 1
+			if = {
+				limit = {
+					this = scope:target_country
+					country_rank >= rank_value:great_power
+				}
+				add = 1
+				# Joining or leading the Second Opium War against the giver.
+				if = {
+					limit = {
+						is_diplomatic_play_enemy_of = scope:source_country
+						any_diplomatic_play = { is_diplomatic_play_type = dp_second_opium_war }
+					}
+					add = 2
+				}
+				# Britain should go for Tianjin in the Second Opium War (cf. vanilla Hong Kong).
+				if = {
+					limit = {
+						c:GBR ?= this
+						scope:article.input_state ?= { state_region = s:STATE_BEIJING }
+						any_diplomatic_play = { is_diplomatic_play_type = dp_second_opium_war }
+					}
+					add = 3
+				}
+			}
+		}
 	}
 	wargoal = {
 		execution_priority = 21
 		contestion_type = control_target_state
-		maneuvers = { value = 10 }
+		# Cheaper to add than before (10) so AI great powers fit it into plays and sway offers.
+		maneuvers = { value = 5 }
 		infamy = { value = 5 }
 	}
 }

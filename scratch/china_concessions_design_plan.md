@@ -19,6 +19,23 @@
 - 함께 고친 버그: 새 건물 PM으로 존재하지 않는 `pm_eafp_concession_trade_quantity_normal`을 지정하던 것을 `pm_eafp_concession`·`pm_trade_center_trade_quantity_normal`로 바꿨다.
 - 제한(미검증): 「덮어쓰기」 동작은 사용자 확인에 근거하며 엔진 문서는 기존 건물에서 레벨이 max(기존, 지정값)이라고만 적는다. 보유국 소유를 국가 합계로 읽으므로 그 국가의 금융지구·장원 등 다른 소유 형태 지분이 있으면 기대 총량 계산에 포함된다. `create_building`이 기존 건물의 생산 방식을 `activate_production_methods` 값으로 바꿀 수 있다. 변수 맵 값으로 숫자를 쓰는 형식은 바닐라(`value = year`, `variable_map(name|key)`)를 따랐다.
 
+2026-11-12 변경(2차 아편전쟁·조계 요구 AI):
+- `dp_second_opium_war`: `requires_interest_marker = no`, `initiator_can_add_war_goals = yes`, `target_can_add_war_goals = yes`. 참전 허용(`additional_involvement_trigger`)은 열강 전체 또는 화북(`sr:region_north_china`)에 이해관계가 있는 국가다. 양측이 전쟁 목표를 추가할 수 있으므로 회유 제안에 조계 등 요구를 담을 수 있다.
+- 영국의 톈진(`STATE_BEIJING`의 항구) 조계는 외교전 생성 직후 `enforce_treaty_article`·`primary_demand = yes`로 추가된다. 조건을 못 맞추면 debug_log를 남긴다.
+- 도달 조건 분리: `eafp_concession_can_grant` = `eafp_concession_can_receive` + 도달(해당 전략지역 이해관계 **또는** 주 소유국과 외교전 적대·전쟁 중). 이전에는 이해관계만 인정해 영국이 화북 이해관계가 없으면 톈진 요구가 빠졌다. 지급 효과는 도달을 빼고 `eafp_concession_can_receive`만 재검사한다(협상·요구 시점에 이미 통과했고, 조약 발효 시점에는 외교전이 끝났을 수 있으므로).
+- 조계 항목 AI: flags에 바닐라 조약항과 같은 `hostile`·`ai_consider_threaten_naval_hostilities` 추가. `evaluation_chance`는 열강 0.3(기타 0.1). 수락 점수에 도시 규모(도심지 레벨 × 2, 최대 40, `EAFP_CONCESSION_AI_CITY`)를 더한다(내주는 쪽은 음수). `wargoal_score_multiplier`는 수취국이 열강이면 +1, 2차 아편전쟁에서 내주는 쪽과 적대 중이면 +2, 영국의 톈진이면 +3(바닐라 홍콩 패턴). 전쟁 목표 기동 비용 10 → 5.
+- 미검증: 엔진이 enforce 전쟁 목표 실행 시 `state_valid_trigger`를 다시 검사하는지, `hostile` 플래그의 정확한 AI 효과는 게임에서 확인하지 않았다.
+
+2026-11-12 변경(영향력·관여): 조계 항목 `cost`를 바닐라 `treaty_port`와 같은 50(영향력, 유지비는 `maintenance_paid_by = target_country`로 보유국 부담)으로 했다. 지급 효과가 권리를 등록한 직후 보유국에 그 주 전략지역 관여 +1000(`add_involvement`)을 준다. 지급이 실패하면 관여도 주지 않는다.
+
+2026-11-12 변경(조계 요구 외교전):
+- 바닐라 `dp_take_treaty_port`·`dp_open_market`처럼 외교 렌즈에서 시작하는 `dp_eafp_demand_concession`(「조계 요구」)을 추가했다. 요구를 먼저 보내고, 상대가 받아들이면 주요 전쟁 목표가 즉시 집행되며, 거부하면 그 요구를 주요 전쟁 목표로 하는 외교전이 시작된다(바닐라 요구 단계를 그대로 쓰며 `on_demand_accepted`는 비워 둔다).
+- 시작 조건: 비분권 국가, 공격적 외교전 허용, 열강, 대상과 종속 관계 없음, 관계 차단 없음, 대상이 조계 적격 주(`eafp_concession_eligible_state`)를 보유.
+- 전쟁 목표 `eafp_demand_concession`(`kind = custom`, 주 대상, `control_target_state`, `requires_interest`·`can_add_for_other_country`로 회유 제안에도 쓸 수 있음). 가능·유효 조건은 대상 국가 소유 주이면서 `eafp_concession_can_grant = { HOLDER = root }`. 기동 비용은 조약항과 같은 인구 비례식, 악명 5.
+- 집행(`on_enforced`)은 `create_treaty`(`is_draft = no`, 구속 5년)로 대상국 → 보유국 `eafp_grant_concession` 항목이 든 조약을 즉시 발효시킨다. 지급·저널 추가는 조약의 `on_entry_into_force`가 하므로, 전쟁으로 얻은 조계도 조약 기반이며 탈퇴 조건·철회 반환이 그대로 적용된다. 조약 이름 `eafp_concession_treaty_name`.
+- AI: `ai_strategy_default`의 `wargoal_scores`에 INJECT로 `eafp_demand_concession`을 추가했다. 받을 수 있는 열강이면 40 + 도심지 레벨 × 3(최대 60), 강압 가능 거리면 +20.
+- 미검증: 요구 수락 시 엔진이 custom 전쟁 목표의 `on_enforced`를 실행하는지, `create_treaty`로 만든 조약에서 `on_entry_into_force`가 실행되는지, AI가 custom 전쟁 목표 키로 `wargoal_scores`를 읽는지는 게임에서 확인하지 않았다.
+
 최신 수량 변경: 조계 1레벨 = 무역소 1레벨, 새 국가의 주별 조계권 획득마다 +5레벨, 주별 상한 = 도심지 ×5. 이미 조계지 건물이 있는 주에도 새 보유국의 회사 지분 5레벨을 더한다. 저널 유료 확장은 기존 +1레벨·£50,000을 유지한다. 반환 충격의 분모는 실제 도심지 레벨을 유지하고 상한 계산과 분리한다. 구 세이브의 기존 레벨 자동 증설은 하지 않는다.
 
 ## 1. 구현 범위

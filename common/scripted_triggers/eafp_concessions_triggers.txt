@@ -34,7 +34,24 @@ eafp_concession_involved_country = {
 }
 
 # State scope; HOLDER is a country scope token.
+# State scope. Proposal/demand gate: the receiver must reach the state, i.e. hold an
+# interest marker in its strategic region or be confronting its owner in a play or war
+# (lets a demand such as Britain's Tianjin concession stand without a North China marker).
 eafp_concession_can_grant = {
+	eafp_concession_can_receive = { HOLDER = $HOLDER$ }
+	$HOLDER$ = {
+		OR = {
+			has_interest_marker_in_region = prev.region
+			is_diplomatic_play_enemy_of = prev.owner
+			has_war_with = prev.owner
+		}
+	}
+}
+
+# State scope. Everything except reach; the grant effect re-checks only this, because the
+# article already passed eafp_concession_can_grant when it was agreed or demanded and the
+# play/war that justified a demand may be over by the time the treaty enters into force.
+eafp_concession_can_receive = {
 	eafp_concession_eligible_state = yes
 	eafp_concession_free_capacity >= 5
 	exists = $HOLDER$
@@ -44,7 +61,6 @@ eafp_concession_can_grant = {
 		is_country_alive = yes
 		exists = capital
 		country_rank >= rank_value:great_power
-		has_interest_marker_in_region = prev.region
 	}
 }
 

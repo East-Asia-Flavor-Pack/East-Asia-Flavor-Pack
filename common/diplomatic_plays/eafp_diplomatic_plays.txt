@@ -150,28 +150,35 @@ dp_first_opium_war = {
 
 dp_second_opium_war = {
 	war_goal = enforce_treaty_article
-	
+
 	texture = "gfx/interface/icons/war_goals/war_reparations.dds"
 
 	allow_negotiated_peace = no
-	initiator_can_add_war_goals = no
-	target_can_add_war_goals = no
-	
+	# Third countries may join either side (like France in 1857). Both sides can add war
+	# goals so sway offers to joiners can include demands such as concessions.
+	requires_interest_marker = no
+	initiator_can_add_war_goals = yes
+	target_can_add_war_goals = yes
+
 	selectable_in_lens = {
 		always = no
 	}
-	
+
 	possible = {
 		exists = c:GBR
 		scope:target = {
 			this = c:CHI
 		}
 	}
-	
+
+	# Great powers anywhere, plus any country already interested in North China.
 	additional_involvement_trigger = {
 		NOT = { is_country_type = decentralized }
-		country_rank >= rank_value:great_power
 		aggressive_diplomatic_plays_permitted = yes
+		OR = {
+			country_rank >= rank_value:great_power
+			has_interest_marker_in_region = sr:region_north_china
+		}
 	}
 	
 	on_weekly_pulse = {}

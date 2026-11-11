@@ -9,3 +9,28 @@ dp_eafp_concession_incident = {
 	on_war_begins = {}
 	on_war_end = {}
 }
+
+# Lens demand like vanilla dp_take_treaty_port / dp_open_market: the concession is sent as a
+# demand first. If the target accepts, the war goal is enforced at once (the concession
+# treaty enters into force); if it refuses, the play starts with it as the primary demand.
+dp_eafp_demand_concession = {
+	war_goal = eafp_demand_concession
+	texture = "gfx/interface/icons/war_goals/take_treaty_port.dds"
+	add_infamy_for_starting_target_wargoals = yes
+	possible = {
+		NOT = { is_country_type = decentralized }
+		aggressive_diplomatic_plays_permitted = yes
+		country_rank >= rank_value:great_power
+		NOT = { is_subject_of = scope:target_country }
+		scope:target_country = {
+			NOT = { is_country_type = decentralized }
+			NOT = { is_subject_of = root }
+			any_scope_state = { eafp_concession_eligible_state = yes }
+		}
+		diplomatic_play_has_no_relations_blockers = yes
+	}
+	ai_acceptance_max = 100
+	on_weekly_pulse = {}
+	on_war_begins = {}
+	on_war_end = {}
+}

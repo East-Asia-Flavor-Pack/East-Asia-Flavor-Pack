@@ -137,5 +137,28 @@
 				add = 100
 			}
 		}
+
+		# Concession demand play (dp_eafp_demand_concession): great powers that can receive
+		# a concession weigh it like a coercive economic demand, more for bigger cities.
+		eafp_demand_concession = {
+			value = 0
+			if = {
+				limit = {
+					country_rank >= rank_value:great_power
+					exists = scope:target_state
+					scope:target_state = { eafp_concession_can_grant = { HOLDER = root } }
+				}
+				add = 40
+				add = {
+					value = scope:target_state.eafp_concession_urban_levels
+					multiply = 3
+					max = 60
+				}
+				if = {
+					limit = { can_reach_target_country_to_coerce = { TARGET_COUNTRY = scope:target_country } }
+					add = 20
+				}
+			}
+		}
 	}
 }

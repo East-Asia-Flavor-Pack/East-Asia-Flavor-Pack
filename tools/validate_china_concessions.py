@@ -129,12 +129,56 @@ def main():
         return " ".join(body[:end].split())
     assert can_withdraw_block(treaties) == can_withdraw_block(
         read(game / "common/treaty_articles/14_treaty_port.txt")), "can_withdraw differs from vanilla treaty_port"
+
+    # Reach (interest marker, or play/war against the owner) gates proposals and demands only;
+    # the grant effect re-checks the rest, so an enforced demand survives the play's end.
+    triggers_code = unquoted(read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"))
+    can_grant = triggers_code.split("eafp_concession_can_grant = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("eafp_concession_can_receive = { HOLDER = $HOLDER$ }", "has_interest_marker_in_region = prev.region",
+                   "is_diplomatic_play_enemy_of = prev.owner", "has_war_with = prev.owner"):
+        assert clause in can_grant, clause
+    assert "has_interest_marker_in_region" not in triggers_code.split("\neafp_concession_can_receive = {", 1)[1].split("\n}", 1)[0]
+    assert "eafp_concession_can_receive = { HOLDER = scope:concession_holder }" in effects.split("eafp_concession_grant_effect = {", 1)[1]
+    # AI: coercive flags as on treaty_port, Second Opium War / Tianjin war-goal weighting.
+    assert re.search(r"flags\s*=\s*\{\s*can_be_enforced\s+hostile\s+ai_consider_threaten_naval_hostilities\s*\}", unquoted(treaties))
+    assert "is_diplomatic_play_type = dp_second_opium_war" in treaties and "state_region = s:STATE_BEIJING" in treaties
+    # Concession demand play (like dp_take_treaty_port): a lens play whose primary war goal,
+    # when enforced, creates a real in-force treaty with the concession article.
+    demand_play = unquoted(read(ROOT / "common/diplomatic_plays/eafp_concessions_diplomatic_plays.txt"))
+    demand_play = demand_play.split("dp_eafp_demand_concession = {", 1)[1].split("\n}", 1)[0]
+    assert "war_goal = eafp_demand_concession" in demand_play and "selectable_in_lens" not in demand_play
+    war_goals = unquoted(read(ROOT / "common/war_goal_types/eafp_concessions_war_goals.txt"))
+    demand_goal = war_goals.split("eafp_demand_concession = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("kind = custom", "target_type = state", "contestion_type = control_target_state",
+                   "eafp_concession_can_grant = { HOLDER = root }", "is_draft = no",
+                   "article = eafp_grant_concession", "source_country = scope:target_country",
+                   "target_country = root", "{ state = scope:target_state }"):
+        assert clause in demand_goal, clause
+    assert "eafp_concession_grant_effect" not in demand_goal, "Grant only through the treaty's on_entry_into_force"
+    strategy = unquoted(read(ROOT / "common/ai_strategies/eafp_default_strategy.txt"))
+    assert re.search(r"wargoal_scores\s*=\s*\{.*?\beafp_demand_concession\s*=\s*\{", strategy, re.S), "AI score"
+    # Second Opium War: third parties can join, and Britain demands Tianjin as a primary demand.
+    plays = unquoted(read(ROOT / "common/diplomatic_plays/eafp_diplomatic_plays.txt"))
+    second_play = plays.split("dp_second_opium_war = {", 1)[1].split("\n}", 1)[0]
+    for setting in ("requires_interest_marker = no", "initiator_can_add_war_goals = yes", "target_can_add_war_goals = yes"):
+        assert setting in second_play, setting
+    second_war = unquoted(read(ROOT / "events/eafp_chi_events/eafp_second_opium_war_events.txt"))
+    assert re.search(r"add_war_goal\s*=\s*\{\s*holder = c:GBR\s*type = enforce_treaty_article\s*target_country = c:CHI\s*"
+                     r"primary_demand = yes\s*article\s*=\s*\{\s*article = eafp_grant_concession[^}]*"
+                     r"inputs\s*=\s*\{\s*\{\s*state = s:STATE_BEIJING\.region_state:CHI", second_war), "Tianjin primary demand"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
     assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
     # The weekly Chinese-treasury-to-holder transfer and its modifiers are removed entirely.
     assert not re.search(r"\bconcession_pa(?:yment|id)\b", clean), \
         "No recurring treasury transfer from the Chinese owner to holders"
     assert "EAFP_CONCESSION_AI_INCOME" not in treaties, "Treaty AI must not value a removed transfer"
+    # Influence cost equals vanilla treaty_port; a successful grant adds +1000 involvement.
+    vanilla_port_cost = re.search(r"^\s*cost\s*=\s*(\d+)", read(game / "common/treaty_articles/14_treaty_port.txt"), re.M)[1]
+    assert re.search(r"^\s*cost\s*=\s*(\d+)", unquoted(treaties), re.M)[1] == vanilla_port_cost, "Influence cost = treaty_port"
+    grant_body = effects.split("eafp_concession_grant_effect = {", 1)[1].split("\n}", 1)[0]
+    assert grant_body.index("add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }") \
+        < grant_body.index("add_involvement = { strategic_region = scope:concession_region value = 1000 }"), \
+        "Involvement only after the right is registered"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
     # Grant and paid expansion both move in steps of 5 levels.
     assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 2
@@ -325,6 +369,9 @@ def main():
     keys.update("war_goal_eafp_concession_incident_return" + s
                 for s in ("", "_type_name", "_type_desc", "_desc", "_sway_desc"))
     keys.update("dp_eafp_concession_incident" + s for s in ("", "_desc", "_tooltip"))
+    keys.update("war_goal_eafp_demand_concession" + s
+                for s in ("", "_type_name", "_type_desc", "_desc", "_sway_desc"))
+    keys.update("dp_eafp_demand_concession" + s for s in ("", "_desc", "_tooltip"))
     # SelectLocalization branches are not direct text= keys.
     keys.update("eafp_concession_" + suffix for suffix in (
         "cap_available", "cap_full", "cap_exceeded",

@@ -285,7 +285,7 @@ eafp_concession_grant_effect = {
 	if = {
 		limit = {
 			owner = scope:concession_host
-			eafp_concession_can_grant = { HOLDER = scope:concession_holder }
+			eafp_concession_can_receive = { HOLDER = scope:concession_holder }
 		}
 		scope:concession_holder = {
 			if = {
@@ -310,6 +310,11 @@ eafp_concession_grant_effect = {
 					}
 				}
 				add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
+				# A concluded concession gives the holder +1000 involvement in the state's strategic region.
+				region = { save_temporary_scope_as = concession_region }
+				scope:concession_holder = {
+					add_involvement = { strategic_region = scope:concession_region value = 1000 }
+				}
 			}
 			else = { debug_log = "EAFP concession grant: company ownership creation failed; right not registered" }
 		}
