@@ -324,6 +324,13 @@ def main():
     assert covered_groups == expected_groups, ("Urban filter mismatch", covered_groups ^ expected_groups)
     region = "geographic_region_china_proper"
     assert definitions[region] == 1, ("Missing/duplicate concession region", region)
+    # [concept_concession] is used throughout the UI text, so the game concept must exist.
+    concepts = "\n".join(unquoted(read(p)) for p in (ROOT / "common/game_concepts").glob("*.txt"))
+    assert len(re.findall(r"^concept_concession\s*=\s*\{", concepts, re.M)) == 1, "Missing/duplicate concept_concession"
+    concept_icon = re.search(r'concept_concession\s*=\s*\{[^}]*texture\s*=\s*"([^"]+)"',
+                             "\n".join(read(p) for p in (ROOT / "common/game_concepts").glob("*.txt")))
+    assert concept_icon and ((ROOT / concept_icon[1]).is_file() or (game / concept_icon[1]).is_file()
+                             or args.source_only), ("Missing concept icon", concept_icon and concept_icon[1])
     assert set(re.findall(r"is_in_geographic_region\s*=\s*(\w+)", clean)) == {region}, \
         "Concession geography must use China Proper"
     assert re.search(r"eafp_concession_eligible_state\s*=\s*\{\s*"
@@ -361,7 +368,7 @@ def main():
     for key in ("eafp_grant_concession",):
         # The article's _desc text was removed on purpose (2026-11-11); no code references it.
         keys.update(key + suffix for suffix in ("", "_effects_desc", "_article_short_desc"))
-    keys.update(("concept_concession_desc",
+    keys.update(("concept_concession", "concept_concessions", "concept_concession_desc",
                  "eafp_concession_active_label", "eafp_concession_inactive_label"))
     keys.update(key for key in feature_definitions
                 if key.startswith(("building_eafp_", "bg_eafp_", "company_eafp_", "pm_eafp_", "pmg_eafp_")))
