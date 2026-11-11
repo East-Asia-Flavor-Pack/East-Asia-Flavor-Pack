@@ -63,6 +63,23 @@
 			}
 		}
 	}
+	# Same withdrawal rule as vanilla treaty_port (14_treaty_port.txt): the granting
+	# state owner may withdraw only while it outranks the holder, and an unrecognized
+	# owner cannot withdraw from a recognized holder. The holder may always withdraw.
+	can_withdraw = {
+		trigger_if = {
+			limit = {
+				scope:withdrawing_country = scope:source_country
+			}
+			scope:withdrawing_country = {
+				country_rank > scope:non_withdrawing_country.country_rank
+				OR = {
+					NOT = { is_country_type = unrecognized }
+					scope:target_country = { is_country_type = unrecognized }
+				}
+			}
+		}
+	}
 	on_entry_into_force = {
 		scope:article_options = {
 			source_country = { save_scope_as = concession_host }

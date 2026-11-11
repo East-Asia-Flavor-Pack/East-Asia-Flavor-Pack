@@ -117,6 +117,18 @@ def main():
     assert "scope:withdrawing_country = scope:concession_host" in treaties
     assert not re.search(r"eafp_concession_return_effect\s*=\s*yes", scripts)
     assert re.search(r"on_break\s*=\s*\{\s*\}", treaties), "Break already runs withdrawal cleanup"
+
+    # Withdrawal rule must match vanilla treaty_port exactly (whitespace-insensitive).
+    def can_withdraw_block(text):
+        body = unquoted(text).split("can_withdraw = {", 1)[1]
+        depth, end = 1, 0
+        for end, char in enumerate(body):
+            depth += {"{": 1, "}": -1}.get(char, 0)
+            if not depth:
+                break
+        return " ".join(body[:end].split())
+    assert can_withdraw_block(treaties) == can_withdraw_block(
+        read(game / "common/treaty_articles/14_treaty_port.txt")), "can_withdraw differs from vanilla treaty_port"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
     assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
     # The weekly Chinese-treasury-to-holder transfer and its modifiers are removed entirely.
@@ -277,7 +289,8 @@ def main():
     for key in ("je_concessions_in_china",):
         keys.update((key, key + "_reason"))
     for key in ("eafp_grant_concession",):
-        keys.update(key + suffix for suffix in ("", "_desc", "_effects_desc", "_article_short_desc"))
+        # The article's _desc text was removed on purpose (2026-11-11); no code references it.
+        keys.update(key + suffix for suffix in ("", "_effects_desc", "_article_short_desc"))
     keys.update(("concept_concession_desc",
                  "eafp_concession_active_label", "eafp_concession_inactive_label"))
     keys.update(key for key in feature_definitions
