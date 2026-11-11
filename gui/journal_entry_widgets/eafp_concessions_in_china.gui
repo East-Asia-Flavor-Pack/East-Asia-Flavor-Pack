@@ -97,18 +97,13 @@ types eafp_concession_widgets {
 							}
 						}
 						eafp_concession_section = { text = "eafp_concession_rights_heading" }
-						# No rights list: rows come from the building's company ownerships and are
-						# shown only for countries whose concession treaty is still in force.
 						flowcontainer = {
 							direction = vertical
 							spacing = 3
-							ignoreinvisible = yes
-							visible = "[State.GetBuilding('building_eafp_concession').IsValid]"
-							datamodel = "[State.GetBuilding('building_eafp_concession').GetBuildingOwnerships]"
+							datamodel = "[State.MakeScope.GetList('concession_owner_varlist')]"
 							item = {
 								flowcontainer = {
-									visible = "[And(BuildingOwnership.GetOwnerBuilding.GetCompany.IsValid, GetScriptedGui('eafp_concession_holder_right_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('holder', BuildingOwnership.GetOwnerBuilding.GetCompany.GetCountry.MakeScope).End))]"
-									datacontext = "[BuildingOwnership.GetOwnerBuilding.GetCompany.GetCountry]"
+									datacontext = "[Scope.GetCountry]"
 									direction = vertical
 									background = { using = entry_bg }
 									eafp_concession_body = { text = "eafp_concession_holder_row" tooltip = "eafp_concession_prestige_tt" }
@@ -180,30 +175,14 @@ types eafp_concession_widgets {
 							text = "eafp_concession_private_investment_label"
 							tooltip = "eafp_concession_private_investment_tt"
 						}
-						eafp_concession_body = { text = "eafp_concession_expand_queue_note" }
-						# Queue 1 or 5 levels of private construction (vanilla click / shift-click amounts).
-						flowcontainer = {
-							direction = horizontal
-							spacing = 8
-							ignoreinvisible = yes
-							button = {
-								using = default_button
-								size = { 236 38 }
-								visible = "[GetScriptedGui('eafp_concession_expand_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								enabled = "[GetScriptedGui('eafp_concession_expand_gui').IsValid(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								tooltip = "eafp_concession_expand_button_tt"
-								onclick = "[GetScriptedGui('eafp_concession_expand_gui').Execute(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								text = "eafp_concession_expand_label"
-							}
-							button = {
-								using = default_button
-								size = { 236 38 }
-								visible = "[GetScriptedGui('eafp_concession_expand_5_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								enabled = "[GetScriptedGui('eafp_concession_expand_5_gui').IsValid(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								tooltip = "eafp_concession_expand_5_button_tt"
-								onclick = "[GetScriptedGui('eafp_concession_expand_5_gui').Execute(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
-								text = "eafp_concession_expand_5_label"
-							}
+						button = {
+							using = default_button
+							size = { 480 38 }
+							visible = "[GetScriptedGui('eafp_concession_expand_gui').IsShown(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							enabled = "[GetScriptedGui('eafp_concession_expand_gui').IsValid(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							tooltip = "[GetScriptedGui('eafp_concession_expand_gui').ExecuteTooltip(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							onclick = "[GetScriptedGui('eafp_concession_expand_gui').Execute(GuiScope.SetRoot(State.MakeScope).AddScope('actor', GetPlayer.MakeScope).End)]"
+							text = "eafp_concession_expand_label"
 						}
 					}
 				}

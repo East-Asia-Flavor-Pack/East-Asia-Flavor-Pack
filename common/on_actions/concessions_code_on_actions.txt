@@ -1,21 +1,55 @@
-﻿# Rights are in-force treaty articles tied to one actual state plus building ownership,
-# so nothing is copied between states on a split, merge or civil war. Ownership changes
-# only re-derive the candidate list and company lifecycle.
-eafp_concessions_state_changed = {
+﻿eafp_concessions_state_changed = {
 	trigger = {
 		OR = {
+			has_variable_list = concession_owner_varlist
 			is_in_geographic_region = geographic_region_china_proper
-			has_building = building_eafp_concession
 		}
 	}
 	effect = {
+		# At ownership transfer, union only pieces now owned by the same country.
+		# Both possible surviving states receive the union before an engine merge.
+		# Other countries' split states and treaty ports are never copied here.
+		if = {
+			limit = { exists = owner is_treaty_port = no }
+			owner = { save_temporary_scope_as = eafp_merge_owner }
+			state_region = {
+				every_scope_state = {
+					limit = { owner = scope:eafp_merge_owner is_treaty_port = no }
+					save_temporary_scope_as = eafp_merge_destination
+					state_region = {
+						every_scope_state = {
+							limit = {
+								owner = scope:eafp_merge_owner
+								is_treaty_port = no
+								NOT = { this = scope:eafp_merge_destination }
+							}
+							eafp_concession_inherit_state_rights = { TARGET = scope:eafp_merge_destination }
+						}
+					}
+				}
+			}
+		}
 		eafp_concession_refresh_effect = yes
 	}
 }
 
 # ROOT is the old country and target the newly formed revolt.
+# Only copy a split state's rights to this specific revolt in the same region.
 eafp_concessions_civil_war_start = {
 	effect = {
+		every_scope_state = {
+			limit = { has_variable_list = concession_owner_varlist }
+			save_temporary_scope_as = eafp_split_source
+			state_region = {
+				every_scope_state = {
+					limit = { owner = scope:target is_treaty_port = no }
+					save_temporary_scope_as = eafp_split_target
+					scope:eafp_split_source = {
+							eafp_concession_inherit_state_rights = { TARGET = scope:eafp_split_target }
+					}
+				}
+			}
+		}
 		eafp_concession_refresh_effect = yes
 	}
 }

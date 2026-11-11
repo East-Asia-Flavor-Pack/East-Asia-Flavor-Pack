@@ -91,11 +91,10 @@ def main():
     # Visibility does not activate a contextless journal; possible is the auto-start gate.
     assert not re.search(r"\bpossible\s*=", je_code), \
         "The international JE must activate through the treaty, not automatically"
-    assert re.search(
-        r"eafp_concession_grant_effect\s*=\s*yes\s*\}\s*\}\s*"
-        r"add_contextless_journal_entry\s*=\s*je_concessions_in_china\s*\}",
-        unquoted(treaties),
-    ), "Treaty entry into force must activate the international JE after granting rights"
+    entry_force = unquoted(treaties).split("on_entry_into_force = {", 1)[1].split("on_enforced", 1)[0]
+    assert -1 < entry_force.find("eafp_concession_grant_effect = yes") \
+        < entry_force.find("add_contextless_journal_entry = je_concessions_in_china"), \
+        "Treaty entry into force must activate the international JE after granting rights"
     assert len(re.findall(r"\badd_contextless_journal_entry\s*=", clean)) == 1
     assert not re.search(r"\b(?:outcome|complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
         "The international JE must persist and calculate only once per pulse"
@@ -113,19 +112,7 @@ def main():
     assert definitions["eafp_return_concession"] == 0, "Return is handled by treaty withdrawal"
     assert "eafp_return_concession" not in clean, "Removed return article must not be referenced"
     assert re.search(r"on_withdrawal\s*=\s*\{\s*scope:article\s*=", treaties)
-    # Every return ends only the right; built concession levels always remain.
     assert len(re.findall(r"eafp_concession_return_effect\s*=\s*\{\s*FORCED\s*=\s*(?:yes|no)\s*\}", treaties)) == 2
-    assert "KEEP_ASSETS" not in clean, "Asset removal mode was removed; returns always keep assets"
-    # Rights are read live from in-force treaty articles and building ownership; no stored lists.
-    triggers_text = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
-    assert not re.search(r"concession_(?:owner|treaty)_varlist", clean), "Rights must not be stored in variable lists"
-    assert not re.search(r"concession_(?:owner|treaty)_varlist", read(ROOT / "gui/journal_entry_widgets/eafp_concessions_in_china.gui"))
-    assert "eafp_concession_has_treaty = { HOLDER = $HOLDER$ STATE = $STATE$ }" in triggers_text, "Expansion requires an in-force treaty"
-    assert re.search(r"input_state = \$STATE\$", triggers_text) and "any_scope_treaty" in triggers_text
-    assert "levels_owned_by_country = { target = $HOLDER$ value >= 1 }" in triggers_text, "A right also needs ownership"
-    assert "withdraw = { country = scope:concession_holder apply_break_penalties = no }" in effects, "Incident/war returns end the treaty"
-    assert "eafp_concession_inherit_state_rights" not in clean, "Treaty rights are tied to one state; nothing is inherited"
-    assert "company_owned_levels < 1" in effects, "Keep a company that still owns retained assets"
     assert "scope:article.treaty.remaining_binding_period > 0" in treaties
     assert "scope:withdrawing_country = scope:concession_host" in treaties
     assert not re.search(r"eafp_concession_return_effect\s*=\s*yes", scripts)
@@ -137,23 +124,18 @@ def main():
         "No recurring treasury transfer from the Chinese owner to holders"
     assert "EAFP_CONCESSION_AI_INCOME" not in treaties, "Treaty AI must not value a removed transfer"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
-    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 1
-    # Paid expansion queues private construction instead of adding ownership instantly.
-    assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 0
-    assert "start_privately_funded_building_construction = building_eafp_concession" in effects
-    assert "count = $LEVELS$" in effects and "multiply = scope:concession_queued_added" in effects
+    # Grant and paid expansion both move in steps of 5 levels.
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 2
+    assert "LEVELS = 1 }" not in effects
     assert effects.count("levels = $LEVELS$") == 2
-    values_text = read(ROOT / "common/script_values/eafp_concessions_values.txt")
     grant_gate = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt").split("eafp_concession_can_grant = {", 1)[1].split("eafp_concession_has_holder = {", 1)[0]
     assert "eafp_concession_free_capacity >= 5" in grant_gate
     assert "add_company = company_type:company_eafp_concession" in effects
     assert "remove_company = company_type:company_eafp_concession" in effects
-    assert "NOT = { eafp_concession_holder_has_rights = { HOLDER = scope:eafp_refresh_country } }" in effects
-    assert "eafp_concession_expand_effect = { LEVELS = 1 }" in je_code
-    sgui = read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
-    assert "eafp_concession_expand_effect = { LEVELS = 1 }" in sgui and "eafp_concession_expand_effect = { LEVELS = 5 }" in sgui
-    assert "eafp_concession_free_capacity >= $LEVELS$" in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
-    assert re.search(r"eafp_concession_free_capacity\s*=\s*\{[^}]*subtract = eafp_concession_total_levels_after_queue", values_text), "Queued levels reserve cap room"
+    assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
+    assert "eafp_concession_expand_effect = yes" in je_code
+    assert "eafp_concession_expand_effect = yes" in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
+    assert "eafp_concession_free_capacity >= 1" not in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
     assert "eafp_concession_grant_effect" not in hooks, "Inheritance must not award buildings"
     values = read(ROOT / "common/script_values/eafp_concessions_values.txt")
@@ -163,28 +145,49 @@ def main():
     # Verify the live shared-building definitions against installed vanilla.
     building = read(ROOT / "common/buildings/eafp_concessions_buildings.txt")
     assert re.findall(r"^(building_eafp_concession\w*)\s*=", building, re.M) == ["building_eafp_concession"]
-    # The definition closes every construction path; only the expand effect queues by script.
-    assert "can_build_government = { always = no }" in building
-    assert "can_build_private = { always = no }" in building
-    assert "eafp_concession_queue_open" not in clean, "No queue gate variable"
     for setting in ("buildable", "expandable", "downsizeable"):
         assert re.search(r"\b" + setting + r"\s*=\s*no", building)
-    building_group = read(ROOT / "common/building_groups/eafp_concessions_buildings.txt")
-    assert "urbanization = 0" in building_group
-    assert "infrastructure_usage_per_level = 0.5" in building_group
-    vanilla_pm = read(game / "common/production_methods/11_private_infrastructure.txt")
-    vanilla_pm = vanilla_pm[vanilla_pm.index("pm_trade_center = {"):vanilla_pm.index("pm_financial_district_privately_owned = {")]
-    concession_pm = read(ROOT / "common/production_methods/eafp_concessions_production_methods.txt")
-    for key in ("building_employment_clerks_add", "building_employment_shopkeepers_add",
-                "state_weekly_trades_add", "state_trade_capacity_add",
-                "goods_input_merchant_marine_add", "country_influence_add"):
-        pattern = r"\b" + key + r"\s*=\s*([\d.]+)"
-        expected = [float(x) for x in re.findall(pattern, vanilla_pm)]
-        assert expected and expected == [float(x) for x in re.findall(pattern, concession_pm)], key
-    ratios = r"state_trade_quantity_mult\s*=\s*(-?[\d.]+)"
-    assert re.findall(ratios, vanilla_pm) == re.findall(ratios, concession_pm)
-    assert "building_eafp_concession" not in re.findall(r"remove_building\s*=\s*(\w+)", clean), "Concession buildings are never removed by script"
-    assert not re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building", effects), "Refresh must not remove retained buildings"
+    # The dedicated building group was removed (9edd39e3); the building uses vanilla bg_trade.
+    assert re.search(r"\bbuilding_group\s*=\s*bg_trade\b", building)
+    # Every PM the scripts activate must belong to one of the building's PM groups
+    # (mod base group + vanilla trade-quantity group). Balance numbers are the author's.
+    pm_groups = {}
+    for path in [*(ROOT / "common/production_method_groups").glob("*.txt"),
+                 *(game / "common/production_method_groups").glob("*.txt")]:
+        for name, body in re.findall(r"(?m)^(pmg_\w+)\s*=\s*\{(.*?)^\}", unquoted(read(path)), re.S):
+            block = re.search(r"production_methods\s*=\s*\{([^}]*)\}", body)
+            pm_groups.setdefault(name, re.findall(r"\w+", block[1]) if block else [])
+    building_pmgs = re.findall(r"\bpmg_\w+", building.split("production_method_groups", 1)[1].split("}", 1)[0])
+    allowed_pms = {pm for group in building_pmgs for pm in pm_groups[group]}
+    used_pms = set(re.findall(r"\bpm_\w+", "\n".join(re.findall(r"activate_production_methods?\s*=\s*\{[^}]*\}", unquoted(effects)))))
+    used_pms |= set(re.findall(r"has_active_production_method\s*=\s*(pm_\w+)", unquoted(effects)))
+    assert used_pms and used_pms <= allowed_pms, ("PM outside the building's groups", used_pms - allowed_pms)
+    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 3
+    # Increase = snapshot -> remove -> recreate (user design 2026-11-11).
+    rebuild = effects.split("eafp_concession_add_company_level = {", 1)[1].split("\n}", 1)[0]
+    assert "clear_variable_map = eafp_concession_rebuild_map" in rebuild
+    assert "key = flag:cash_reserve value = scope:eafp_rebuild_reserve_low" in rebuild
+    assert "cash_reserves_ratio >= scope:eafp_rebuild_reserve_mid" in rebuild
+    assert "eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }" in rebuild
+    assert rebuild.index("eafp_concession_measure_country_levels") < rebuild.index("remove_building") \
+        < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Snapshot before removal, recreate after"
+    assert '"variable_map(eafp_concession_rebuild_map|flag:cash_reserve)"' in effects
+    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 2
+    # create_building levels do not stack on an existing building: one call per owner,
+    # dispatched to the 5-level step that matches the stored value.
+    assert "eafp_concession_rebuild_chunk" not in rebuild and "eafp_concession_rebuild_owner_levels = yes" in rebuild
+    assert "while" not in effects.split("eafp_concession_rebuild_chunk = {", 1)[1].split("\n}", 1)[0]
+    dispatch = effects.split("eafp_concession_rebuild_owner_levels = {", 1)[1].split("\n}", 1)[0]
+    steps = [int(x) for x in re.findall(r"eafp_concession_rebuild_chunk = \{ LEVELS = (\d+) \}", dispatch)]
+    cases = [int(x) for x in re.findall(r"^\t\t(\d+) = \{", dispatch, re.M)]
+    assert re.search(r"switch = \{\s*trigger = scope:eafp_rebuild_remaining\s", dispatch), "Dispatch with switch"
+    assert "if =" not in dispatch and "else" not in dispatch
+    assert steps == list(range(5, steps[-1] + 1, 5)) and steps[-1] >= 250, steps[-3:]
+    assert cases == steps, "Each switch case n runs the chunk with LEVELS = n"
+    assert "custom_tooltip = {\n\t\t\ttext = eafp_concession_expand_effect_tt\n\t\t\teafp_concession_expand_effect = yes" \
+        in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt").replace("\r\n", "\n")
+    assert "NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }" in effects
+    assert re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building\s*=\s*building_eafp_concession\s*\}", effects)
     refresh = effects[effects.index("eafp_concession_refresh_effect = {"):]
     assert "eafp_concession_urban_cap" not in refresh and "eafp_concession_over_capacity" not in refresh
     assert "levels = -" not in effects, "Do not assume unsupported negative ownership removal"
@@ -196,6 +199,7 @@ def main():
     for key in queue_types:
         assert re.search(r"^" + key + r"\s*=", vanilla_buildings, re.M), key
         assert "can_construct_building = " + key in je_code, key
+    assert "eafp_concession_free_capacity >= 1" not in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
     assert not re.search(r"^concession_pa(?:yment|id)\s*=", mods, re.M), "Transfer modifiers are removed"
@@ -268,7 +272,8 @@ def main():
     assert "max = 1" in cap_usage
     keys = set(re.findall(r"(?:text|tooltip|title|desc|flavor|name|custom_tooltip)\s*=\s*\"?((?:concessions_in_china\.\d+\.|eafp_(?:grant|return)_concession_|eafp_concession_|EAFP_CONCESSION_AI_)\w+)", code))
     # Script names, effects, and saved scopes are not localization keys.
-    keys = {k for k in keys if k not in definitions and k != "eafp_concession_compensation"}
+    keys = {k for k in keys if k not in definitions
+            and k not in ("eafp_concession_compensation", "eafp_concession_rebuild_map")}
     for key in ("je_concessions_in_china",):
         keys.update((key, key + "_reason"))
     for key in ("eafp_grant_concession",):

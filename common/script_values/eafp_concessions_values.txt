@@ -14,30 +14,17 @@ eafp_concession_state_share = {
 	min = 0
 	multiply = 0.05
 }
-# Requires scope:concession_state (saved by effects; added via AddScope in the GUI).
-# Counts countries with an in-force concession article for the state, a company and
-# prestige at least equal to the owner's. Treaties are bilateral, so a non-owner bound
-# by such an article is its target. Ownership is checked by eafp_concession_active,
-# not here (a value cannot carry the country into building scope).
 eafp_concession_active_holder_count = {
 	value = 0
 	if = {
-		limit = {
-			exists = scope:concession_state
-			scope:concession_state = { eafp_concession_eligible_state = yes }
-		}
-		every_country = {
+		limit = { has_variable_list = concession_owner_varlist eafp_concession_eligible_state = yes }
+		every_in_list = {
+			variable = concession_owner_varlist
 			limit = {
 				is_country_alive = yes
 				has_company = company_type:company_eafp_concession
-				NOT = { this = scope:concession_state.owner }
-				prestige >= scope:concession_state.owner.prestige
-				any_scope_treaty = {
-					any_scope_article = {
-						has_type = eafp_grant_concession
-						input_state = scope:concession_state
-					}
-				}
+				NOT = { this = prev.owner }
+				prestige >= prev.owner.prestige
 			}
 			add = 1
 		}
@@ -59,28 +46,14 @@ eafp_concession_urban_levels = {
 		add = level
 	}
 }
-# Actual levels plus levels already waiting in the construction queue.
-eafp_concession_total_levels_after_queue = {
-	value = 0
-	every_scope_building = {
-		limit = { is_building_type = building_eafp_concession }
-		add = level_after_queued_constructions
-	}
-}
-eafp_concession_queued_levels = {
-	value = eafp_concession_total_levels_after_queue
-	subtract = eafp_concession_total_levels
-	min = 0
-}
-# New grants consume five levels; journal expansions queue one or five.
+# New grants and journal expansions both consume five levels.
 eafp_concession_urban_cap = {
 	value = eafp_concession_urban_levels
 	multiply = 5
 }
-# Queued levels already reserve cap room, so they are subtracted as well.
 eafp_concession_free_capacity = {
 	value = eafp_concession_urban_cap
-	subtract = eafp_concession_total_levels_after_queue
+	subtract = eafp_concession_total_levels
 	min = 0
 }
 eafp_concession_over_capacity = {
@@ -97,13 +70,8 @@ eafp_concession_industry_score = {
 	divide = { value = level min = 1 }
 }
 
-eafp_concession_expansion_cost = { value = 50000 }
-# Per-button totals; the suffix matches the LEVELS parameter of the expand trigger/effect.
-eafp_concession_expansion_cost_levels_1 = { value = eafp_concession_expansion_cost }
-eafp_concession_expansion_cost_levels_5 = {
-	value = eafp_concession_expansion_cost
-	multiply = 5
-}
+# One +5 expansion: 50,000 per level x 5 levels.
+eafp_concession_expansion_cost = { value = 250000 }
 # State scope, evaluated only in the return effect with its pre-removal level snapshot.
 eafp_concession_loss_relations = {
 	value = scope:concession_loss_levels

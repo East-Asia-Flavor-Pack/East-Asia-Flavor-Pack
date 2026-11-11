@@ -25,28 +25,402 @@ eafp_concession_start_return_war = {
 	}
 }
 
-# State scope. LEVELS is 5 for a new right and 1 for paid expansion.
-# Never reset the production methods/reserves of an existing shared building.
-eafp_concession_add_company_level = {
+# State scope; used only for an identified civil-war split or a same-owner merge.
+# Inheritance never calls grant, so it cannot award another concession level.
+eafp_concession_inherit_state_rights = {
+	every_in_list = {
+		variable = concession_owner_varlist
+		$TARGET$ = {
+			if = {
+				limit = { NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = prev } } }
+				add_to_variable_list = { name = concession_owner_varlist target = prev }
+			}
+		}
+	}
+}
+
+# Building scope. Binary search for COUNTRY's levels in this building through
+# levels_owned_by_country comparisons (engine levels are integers; 32 steps suffice).
+# Result: scope:concession_level_low. COUNTRY must be a saved scope.
+eafp_concession_measure_country_levels = {
+	save_temporary_scope_value_as = { name = concession_level_low value = 0 }
+	save_temporary_scope_value_as = { name = concession_level_high value = level }
+	while = {
+		count = 32
+		save_temporary_scope_value_as = {
+			name = concession_level_mid
+			value = { value = scope:concession_level_low add = scope:concession_level_high divide = 2 ceiling = yes }
+		}
+		if = {
+			limit = { levels_owned_by_country = { target = $COUNTRY$ value >= scope:concession_level_mid } }
+			save_temporary_scope_value_as = { name = concession_level_low value = scope:concession_level_mid }
+		}
+		else = {
+			save_temporary_scope_value_as = { name = concession_level_high value = { value = scope:concession_level_mid subtract = 1 } }
+		}
+	}
+}
+
+# State scope. Adds VALUE to KEY's entry in eafp_concession_rebuild_map (creates it if absent).
+# KEY is a country scope; VALUE is a saved scope value.
+eafp_concession_rebuild_map_add = {
 	if = {
-		limit = { any_scope_building = { is_building_type = building_eafp_concession } }
+		limit = { is_key_in_variable_map = { name = eafp_concession_rebuild_map target = $KEY$ } }
+		save_temporary_scope_value_as = {
+			name = eafp_rebuild_merged
+			value = { value = "variable_map(eafp_concession_rebuild_map|$KEY$)" add = $VALUE$ }
+		}
+		remove_from_variable_map = { name = eafp_concession_rebuild_map key = $KEY$ }
+		add_to_variable_map = { name = eafp_concession_rebuild_map key = $KEY$ value = scope:eafp_rebuild_merged }
+	}
+	else = {
+		add_to_variable_map = { name = eafp_concession_rebuild_map key = $KEY$ value = $VALUE$ }
+	}
+}
+
+# State scope. One create_building call giving LEVELS to scope:eafp_rebuild_owner.
+# The owner's concession company receives the levels; an owner without one (e.g. a
+# returned holder whose company was dissolved) keeps them as country ownership.
+# On an existing building the engine keeps max(existing, scripted) reserves, so the
+# follow-up calls pass RESERVES = 0 and never lower the restored reserves.
+eafp_concession_rebuild_create = {
+	if = {
+		limit = { scope:eafp_rebuild_owner = { has_company = company_type:company_eafp_concession } }
 		create_building = {
 			building = building_eafp_concession
-			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = $LEVELS$ } }
+			activate_production_methods = { pm_eafp_concession pm_trade_center_trade_quantity_normal }
+			reserves = $RESERVES$
+			add_ownership = { company = { type = company_eafp_concession country = scope:eafp_rebuild_owner levels = $LEVELS$ } }
 		}
 	}
 	else = {
 		create_building = {
 			building = building_eafp_concession
-			activate_production_methods = { pm_eafp_concession_trade_quantity_normal }
-			reserves = 1
-			add_ownership = { company = { type = company_eafp_concession country = scope:concession_holder levels = $LEVELS$ } }
+			activate_production_methods = { pm_eafp_concession pm_trade_center_trade_quantity_normal }
+			reserves = $RESERVES$
+			add_ownership = { country = { country = scope:eafp_rebuild_owner levels = $LEVELS$ } }
 		}
 	}
 }
 
-# State scope; callers save concession_state/host/holder. The right itself is the
-# in-force treaty article plus the holder's ownership; nothing is registered here.
+# State scope. ONE create_building call giving exactly LEVELS (a multiple of 5) to
+# scope:eafp_rebuild_owner. create_building levels do not add to an existing building's
+# level, so an owner's whole stored amount is created in a single call, never in pieces.
+# The first owner founds the building and restores flag:cash_reserve (nearest 0.1).
+eafp_concession_rebuild_chunk = {
+	if = {
+		limit = { has_building = building_eafp_concession }
+		eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0 }
+	}
+	else = {
+		save_temporary_scope_value_as = {
+			name = eafp_rebuild_reserve
+			value = "variable_map(eafp_concession_rebuild_map|flag:cash_reserve)"
+		}
+		if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.95 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 1 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.85 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.9 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.75 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.8 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.65 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.7 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.55 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.6 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.45 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.5 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.35 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.4 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.25 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.3 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.15 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.2 }
+		}
+		else_if = {
+			limit = { scope:eafp_rebuild_reserve >= 0.05 }
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0.1 }
+		}
+		else = {
+			eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0 }
+		}
+	}
+}
+
+# State scope. Runs eafp_concession_rebuild_chunk once for scope:eafp_rebuild_remaining.
+# Concession levels change only in fives (grant +5, expansion +5), so the stored value
+# is always one of the cases 5, 10, ..., 500 (5 x urban levels up to 100).
+eafp_concession_rebuild_owner_levels = {
+	switch = {
+		trigger = scope:eafp_rebuild_remaining
+		5 = { eafp_concession_rebuild_chunk = { LEVELS = 5 } }
+		10 = { eafp_concession_rebuild_chunk = { LEVELS = 10 } }
+		15 = { eafp_concession_rebuild_chunk = { LEVELS = 15 } }
+		20 = { eafp_concession_rebuild_chunk = { LEVELS = 20 } }
+		25 = { eafp_concession_rebuild_chunk = { LEVELS = 25 } }
+		30 = { eafp_concession_rebuild_chunk = { LEVELS = 30 } }
+		35 = { eafp_concession_rebuild_chunk = { LEVELS = 35 } }
+		40 = { eafp_concession_rebuild_chunk = { LEVELS = 40 } }
+		45 = { eafp_concession_rebuild_chunk = { LEVELS = 45 } }
+		50 = { eafp_concession_rebuild_chunk = { LEVELS = 50 } }
+		55 = { eafp_concession_rebuild_chunk = { LEVELS = 55 } }
+		60 = { eafp_concession_rebuild_chunk = { LEVELS = 60 } }
+		65 = { eafp_concession_rebuild_chunk = { LEVELS = 65 } }
+		70 = { eafp_concession_rebuild_chunk = { LEVELS = 70 } }
+		75 = { eafp_concession_rebuild_chunk = { LEVELS = 75 } }
+		80 = { eafp_concession_rebuild_chunk = { LEVELS = 80 } }
+		85 = { eafp_concession_rebuild_chunk = { LEVELS = 85 } }
+		90 = { eafp_concession_rebuild_chunk = { LEVELS = 90 } }
+		95 = { eafp_concession_rebuild_chunk = { LEVELS = 95 } }
+		100 = { eafp_concession_rebuild_chunk = { LEVELS = 100 } }
+		105 = { eafp_concession_rebuild_chunk = { LEVELS = 105 } }
+		110 = { eafp_concession_rebuild_chunk = { LEVELS = 110 } }
+		115 = { eafp_concession_rebuild_chunk = { LEVELS = 115 } }
+		120 = { eafp_concession_rebuild_chunk = { LEVELS = 120 } }
+		125 = { eafp_concession_rebuild_chunk = { LEVELS = 125 } }
+		130 = { eafp_concession_rebuild_chunk = { LEVELS = 130 } }
+		135 = { eafp_concession_rebuild_chunk = { LEVELS = 135 } }
+		140 = { eafp_concession_rebuild_chunk = { LEVELS = 140 } }
+		145 = { eafp_concession_rebuild_chunk = { LEVELS = 145 } }
+		150 = { eafp_concession_rebuild_chunk = { LEVELS = 150 } }
+		155 = { eafp_concession_rebuild_chunk = { LEVELS = 155 } }
+		160 = { eafp_concession_rebuild_chunk = { LEVELS = 160 } }
+		165 = { eafp_concession_rebuild_chunk = { LEVELS = 165 } }
+		170 = { eafp_concession_rebuild_chunk = { LEVELS = 170 } }
+		175 = { eafp_concession_rebuild_chunk = { LEVELS = 175 } }
+		180 = { eafp_concession_rebuild_chunk = { LEVELS = 180 } }
+		185 = { eafp_concession_rebuild_chunk = { LEVELS = 185 } }
+		190 = { eafp_concession_rebuild_chunk = { LEVELS = 190 } }
+		195 = { eafp_concession_rebuild_chunk = { LEVELS = 195 } }
+		200 = { eafp_concession_rebuild_chunk = { LEVELS = 200 } }
+		205 = { eafp_concession_rebuild_chunk = { LEVELS = 205 } }
+		210 = { eafp_concession_rebuild_chunk = { LEVELS = 210 } }
+		215 = { eafp_concession_rebuild_chunk = { LEVELS = 215 } }
+		220 = { eafp_concession_rebuild_chunk = { LEVELS = 220 } }
+		225 = { eafp_concession_rebuild_chunk = { LEVELS = 225 } }
+		230 = { eafp_concession_rebuild_chunk = { LEVELS = 230 } }
+		235 = { eafp_concession_rebuild_chunk = { LEVELS = 235 } }
+		240 = { eafp_concession_rebuild_chunk = { LEVELS = 240 } }
+		245 = { eafp_concession_rebuild_chunk = { LEVELS = 245 } }
+		250 = { eafp_concession_rebuild_chunk = { LEVELS = 250 } }
+		255 = { eafp_concession_rebuild_chunk = { LEVELS = 255 } }
+		260 = { eafp_concession_rebuild_chunk = { LEVELS = 260 } }
+		265 = { eafp_concession_rebuild_chunk = { LEVELS = 265 } }
+		270 = { eafp_concession_rebuild_chunk = { LEVELS = 270 } }
+		275 = { eafp_concession_rebuild_chunk = { LEVELS = 275 } }
+		280 = { eafp_concession_rebuild_chunk = { LEVELS = 280 } }
+		285 = { eafp_concession_rebuild_chunk = { LEVELS = 285 } }
+		290 = { eafp_concession_rebuild_chunk = { LEVELS = 290 } }
+		295 = { eafp_concession_rebuild_chunk = { LEVELS = 295 } }
+		300 = { eafp_concession_rebuild_chunk = { LEVELS = 300 } }
+		305 = { eafp_concession_rebuild_chunk = { LEVELS = 305 } }
+		310 = { eafp_concession_rebuild_chunk = { LEVELS = 310 } }
+		315 = { eafp_concession_rebuild_chunk = { LEVELS = 315 } }
+		320 = { eafp_concession_rebuild_chunk = { LEVELS = 320 } }
+		325 = { eafp_concession_rebuild_chunk = { LEVELS = 325 } }
+		330 = { eafp_concession_rebuild_chunk = { LEVELS = 330 } }
+		335 = { eafp_concession_rebuild_chunk = { LEVELS = 335 } }
+		340 = { eafp_concession_rebuild_chunk = { LEVELS = 340 } }
+		345 = { eafp_concession_rebuild_chunk = { LEVELS = 345 } }
+		350 = { eafp_concession_rebuild_chunk = { LEVELS = 350 } }
+		355 = { eafp_concession_rebuild_chunk = { LEVELS = 355 } }
+		360 = { eafp_concession_rebuild_chunk = { LEVELS = 360 } }
+		365 = { eafp_concession_rebuild_chunk = { LEVELS = 365 } }
+		370 = { eafp_concession_rebuild_chunk = { LEVELS = 370 } }
+		375 = { eafp_concession_rebuild_chunk = { LEVELS = 375 } }
+		380 = { eafp_concession_rebuild_chunk = { LEVELS = 380 } }
+		385 = { eafp_concession_rebuild_chunk = { LEVELS = 385 } }
+		390 = { eafp_concession_rebuild_chunk = { LEVELS = 390 } }
+		395 = { eafp_concession_rebuild_chunk = { LEVELS = 395 } }
+		400 = { eafp_concession_rebuild_chunk = { LEVELS = 400 } }
+		405 = { eafp_concession_rebuild_chunk = { LEVELS = 405 } }
+		410 = { eafp_concession_rebuild_chunk = { LEVELS = 410 } }
+		415 = { eafp_concession_rebuild_chunk = { LEVELS = 415 } }
+		420 = { eafp_concession_rebuild_chunk = { LEVELS = 420 } }
+		425 = { eafp_concession_rebuild_chunk = { LEVELS = 425 } }
+		430 = { eafp_concession_rebuild_chunk = { LEVELS = 430 } }
+		435 = { eafp_concession_rebuild_chunk = { LEVELS = 435 } }
+		440 = { eafp_concession_rebuild_chunk = { LEVELS = 440 } }
+		445 = { eafp_concession_rebuild_chunk = { LEVELS = 445 } }
+		450 = { eafp_concession_rebuild_chunk = { LEVELS = 450 } }
+		455 = { eafp_concession_rebuild_chunk = { LEVELS = 455 } }
+		460 = { eafp_concession_rebuild_chunk = { LEVELS = 460 } }
+		465 = { eafp_concession_rebuild_chunk = { LEVELS = 465 } }
+		470 = { eafp_concession_rebuild_chunk = { LEVELS = 470 } }
+		475 = { eafp_concession_rebuild_chunk = { LEVELS = 475 } }
+		480 = { eafp_concession_rebuild_chunk = { LEVELS = 480 } }
+		485 = { eafp_concession_rebuild_chunk = { LEVELS = 485 } }
+		490 = { eafp_concession_rebuild_chunk = { LEVELS = 490 } }
+		495 = { eafp_concession_rebuild_chunk = { LEVELS = 495 } }
+		500 = { eafp_concession_rebuild_chunk = { LEVELS = 500 } }
+	}
+}
+
+# State scope. LEVELS is 5 for both a new right and paid expansion (the +5 button).
+# Rebuild instead of adding ownership to the live building:
+#   1. snapshot into the state's variable map eafp_concession_rebuild_map
+#        key = owner country -> levels it owns (levels_owned_by_country binary search)
+#        key = flag:cash_reserve -> cash_reserves_ratio (0..1)
+#      plus the trade-quantity PM and subsidy in temporary scope values;
+#   2. add LEVELS to scope:concession_holder's entry;
+#   3. remove_building, then ONE create_building per owner with its stored levels;
+#   4. restore PM/subsidy and clear the map.
+# The engine has no effect that staffs a building, so the new building re-hires from the
+# state's (now unemployed) workers at the normal hiring rate.
+eafp_concession_add_company_level = {
+	save_temporary_scope_as = eafp_rebuild_state
+	owner = { save_temporary_scope_as = eafp_rebuild_host }
+	clear_variable_map = eafp_concession_rebuild_map
+	save_temporary_scope_value_as = { name = eafp_rebuild_old_level value = 0 }
+	save_temporary_scope_value_as = { name = eafp_rebuild_owned_sum value = 0 }
+	# 1 limited, 2 normal (default for a new building), 3 high, 4 very high.
+	save_temporary_scope_value_as = { name = eafp_rebuild_trade_pm value = 2 }
+	save_temporary_scope_value_as = { name = eafp_rebuild_subsidized value = 0 }
+	# A brand-new building starts with full reserves, as before.
+	save_temporary_scope_value_as = { name = eafp_rebuild_reserve_low value = 1 }
+
+	# 1. Snapshot the existing building.
+	if = {
+		limit = { has_building = building_eafp_concession }
+		random_scope_building = {
+			limit = { is_building_type = building_eafp_concession }
+			save_temporary_scope_as = eafp_rebuild_building
+			save_temporary_scope_value_as = { name = eafp_rebuild_old_level value = level }
+			every_country = {
+				save_temporary_scope_as = eafp_rebuild_owner
+				scope:eafp_rebuild_building = {
+					if = {
+						limit = { levels_owned_by_country = { target = scope:eafp_rebuild_owner value >= 1 } }
+						eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_rebuild_owner }
+						save_temporary_scope_value_as = {
+							name = eafp_rebuild_owned_sum
+							value = { value = scope:eafp_rebuild_owned_sum add = scope:concession_level_low }
+						}
+						scope:eafp_rebuild_state = {
+							eafp_concession_rebuild_map_add = { KEY = scope:eafp_rebuild_owner VALUE = scope:concession_level_low }
+						}
+					}
+				}
+			}
+			# Cash reserve ratio by bisection on [0, 1] (precision 1/1024).
+			save_temporary_scope_value_as = { name = eafp_rebuild_reserve_low value = 0 }
+			save_temporary_scope_value_as = { name = eafp_rebuild_reserve_high value = 1 }
+			while = {
+				count = 10
+				save_temporary_scope_value_as = {
+					name = eafp_rebuild_reserve_mid
+					value = { value = scope:eafp_rebuild_reserve_low add = scope:eafp_rebuild_reserve_high divide = 2 }
+				}
+				if = {
+					limit = { cash_reserves_ratio >= scope:eafp_rebuild_reserve_mid }
+					save_temporary_scope_value_as = { name = eafp_rebuild_reserve_low value = scope:eafp_rebuild_reserve_mid }
+				}
+				else = {
+					save_temporary_scope_value_as = { name = eafp_rebuild_reserve_high value = scope:eafp_rebuild_reserve_mid }
+				}
+			}
+			if = {
+				limit = { has_active_production_method = pm_trade_center_trade_quantity_limited }
+				save_temporary_scope_value_as = { name = eafp_rebuild_trade_pm value = 1 }
+			}
+			else_if = {
+				limit = { has_active_production_method = pm_trade_center_trade_quantity_high }
+				save_temporary_scope_value_as = { name = eafp_rebuild_trade_pm value = 3 }
+			}
+			else_if = {
+				limit = { has_active_production_method = pm_trade_center_trade_quantity_very_high }
+				save_temporary_scope_value_as = { name = eafp_rebuild_trade_pm value = 4 }
+			}
+			if = {
+				limit = { is_subsidized = yes }
+				save_temporary_scope_value_as = { name = eafp_rebuild_subsidized value = 1 }
+			}
+		}
+		# Levels no country comparison could attribute stay with the state owner, so the
+		# rebuild never silently destroys levels.
+		save_temporary_scope_value_as = {
+			name = eafp_rebuild_unattributed
+			value = { value = scope:eafp_rebuild_old_level subtract = scope:eafp_rebuild_owned_sum }
+		}
+		if = {
+			limit = { scope:eafp_rebuild_unattributed > 0 }
+			debug_log = "EAFP concession rebuild: unattributed levels kept as state-owner ownership"
+			eafp_concession_rebuild_map_add = { KEY = scope:eafp_rebuild_host VALUE = scope:eafp_rebuild_unattributed }
+		}
+	}
+	add_to_variable_map = { name = eafp_concession_rebuild_map key = flag:cash_reserve value = scope:eafp_rebuild_reserve_low }
+
+	# 2. The requested increase goes to the holder's entry.
+	save_temporary_scope_value_as = { name = eafp_rebuild_added value = $LEVELS$ }
+	eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }
+
+	# 3. Remove the old building and recreate every owner's levels.
+	if = {
+		limit = { has_building = building_eafp_concession }
+		remove_building = building_eafp_concession
+	}
+	every_country = {
+		save_temporary_scope_as = eafp_rebuild_owner
+		scope:eafp_rebuild_state = {
+			if = {
+				limit = { is_key_in_variable_map = { name = eafp_concession_rebuild_map target = scope:eafp_rebuild_owner } }
+				save_temporary_scope_value_as = {
+					name = eafp_rebuild_remaining
+					value = "variable_map(eafp_concession_rebuild_map|scope:eafp_rebuild_owner)"
+				}
+				eafp_concession_rebuild_owner_levels = yes
+			}
+		}
+	}
+
+	# 4. Restore the snapshotted trade-quantity PM and subsidy, then drop the snapshot.
+	if = {
+		limit = { scope:eafp_rebuild_trade_pm = 1 }
+		activate_production_method = { building_type = building_eafp_concession production_method = pm_trade_center_trade_quantity_limited }
+	}
+	else_if = {
+		limit = { scope:eafp_rebuild_trade_pm = 3 }
+		activate_production_method = { building_type = building_eafp_concession production_method = pm_trade_center_trade_quantity_high }
+	}
+	else_if = {
+		limit = { scope:eafp_rebuild_trade_pm = 4 }
+		activate_production_method = { building_type = building_eafp_concession production_method = pm_trade_center_trade_quantity_very_high }
+	}
+	if = {
+		limit = { scope:eafp_rebuild_subsidized = 1 }
+		random_scope_building = {
+			limit = { is_building_type = building_eafp_concession }
+			set_subsidized = yes
+		}
+	}
+	save_temporary_scope_value_as = {
+		name = eafp_rebuild_expected
+		value = { value = scope:eafp_rebuild_old_level add = scope:eafp_rebuild_added }
+	}
+	if = {
+		limit = { NOT = { eafp_concession_total_levels = scope:eafp_rebuild_expected } }
+		debug_log = "EAFP concession rebuild: recreated level differs from snapshot + increase"
+	}
+	clear_variable_map = eafp_concession_rebuild_map
+}
+
+# Rights live on actual states, never state regions or province anchors.
 eafp_concession_grant_effect = {
 	if = {
 		limit = {
@@ -65,8 +439,6 @@ eafp_concession_grant_effect = {
 				}
 			}
 		}
-		# Success is judged from ownership: the article may not yet count as in force here.
-		save_temporary_scope_value_as = { name = concession_grant_ok value = 0 }
 		if = {
 			limit = { scope:concession_holder = { has_company = company_type:company_eafp_concession } }
 			save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
@@ -79,13 +451,13 @@ eafp_concession_grant_effect = {
 						levels_owned_by_country = { target = scope:concession_holder value >= 5 }
 					}
 				}
-				save_temporary_scope_value_as = { name = concession_grant_ok value = 1 }
+				add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }
 			}
-			else = { debug_log = "EAFP concession grant: company ownership creation failed" }
+			else = { debug_log = "EAFP concession grant: company ownership creation failed; right not registered" }
 		}
-		else = { debug_log = "EAFP concession grant: company establishment failed" }
+		else = { debug_log = "EAFP concession grant: company establishment failed; right not registered" }
 		if = {
-			limit = { scope:concession_grant_ok < 1 }
+			limit = { NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = scope:concession_holder } } }
 			scope:concession_holder = {
 				send_interface_message = {
 					title = eafp_concession_grant_failed_title
@@ -99,77 +471,52 @@ eafp_concession_grant_effect = {
 	}
 }
 
-# State scope. Shared by the player GUI (+1 / +5) and monthly AI (+1). LEVELS is 1 or 5.
-# Levels are queued as privately funded construction, like vanilla expansion; nothing is
-# created instantly. The engine funds the construction from the state's private queue and
-# decides ownership of finished levels. The fee is charged only per level actually queued.
+# Shared by the player GUI and monthly AI. Expansion is in steps of 5 levels only.
+# No treasury charge when growth fails.
 eafp_concession_expand_effect = {
 	if = {
-		limit = { eafp_concession_can_expand = { HOLDER = scope:concession_holder STATE = scope:concession_state LEVELS = $LEVELS$ } }
-		save_temporary_scope_value_as = { name = concession_previous_queue value = eafp_concession_total_levels_after_queue }
-		while = {
-			count = $LEVELS$
-			start_privately_funded_building_construction = building_eafp_concession
-		}
-		save_temporary_scope_value_as = {
-			name = concession_queued_added
-			value = { value = eafp_concession_total_levels_after_queue subtract = scope:concession_previous_queue }
-		}
+		limit = { eafp_concession_can_expand = { HOLDER = scope:concession_holder } }
+		save_temporary_scope_value_as = { name = concession_previous_levels value = eafp_concession_total_levels }
+		eafp_concession_add_company_level = { LEVELS = 5 }
 		if = {
-			limit = { scope:concession_queued_added > 0 }
-			scope:concession_holder = {
-				add_treasury = {
-					value = eafp_concession_expansion_cost
-					multiply = scope:concession_queued_added
-					multiply = -1
-				}
-			}
+			limit = { eafp_concession_total_levels > scope:concession_previous_levels }
+			scope:concession_holder = { add_treasury = { value = eafp_concession_expansion_cost multiply = -1 } }
 		}
-		else = { debug_log = "EAFP concession expansion: private construction was not queued; no fee charged" }
 	}
 }
 
 # FORCED is explicit at every caller; no dependence on treaty callback ordering.
-# Every return (treaty withdrawal, incident, war) ends only the right, i.e. the treaty.
-# Built concession levels always remain with their owners, whoever owns the state;
-# no script path removes building_eafp_concession.
-# Inside on_withdrawal (scope:article exists) the treaty is already ending, so the
-# article itself is the evidence of the right; elsewhere the live right is required.
 eafp_concession_return_effect = {
 	if = {
 		limit = {
 			owner = scope:concession_host
-			OR = {
-				exists = scope:article
-				eafp_concession_has_holder = { HOLDER = scope:concession_holder STATE = scope:concession_state }
-			}
+			eafp_concession_has_holder = { HOLDER = scope:concession_holder }
 		}
 		# Derive the holder's actual levels through comparisons, not a persistent ledger.
 		# Binary search needs at most 32 steps for engine integer building levels.
 		save_temporary_scope_value_as = { name = concession_loss_levels value = 0 }
 		every_scope_building = {
 			limit = { is_building_type = building_eafp_concession }
-			save_temporary_scope_value_as = { name = concession_level_low value = 0 }
-			save_temporary_scope_value_as = { name = concession_level_high value = level }
-			while = {
-				count = 32
-				save_temporary_scope_value_as = {
-					name = concession_level_mid
-					value = { value = scope:concession_level_low add = scope:concession_level_high divide = 2 ceiling = yes }
-				}
-				if = {
-					limit = { levels_owned_by_country = { target = scope:concession_holder value >= scope:concession_level_mid } }
-					save_temporary_scope_value_as = { name = concession_level_low value = scope:concession_level_mid }
-				}
-				else = {
-					save_temporary_scope_value_as = { name = concession_level_high value = { value = scope:concession_level_mid subtract = 1 } }
-				}
-			}
+			eafp_concession_measure_country_levels = { COUNTRY = scope:concession_holder }
 			save_temporary_scope_value_as = { name = concession_loss_levels value = scope:concession_level_low }
 		}
-		# Snapshot before ending the treaty or dissolving the company.
+		# Snapshot before removing the right/building or dissolving the company.
 		save_temporary_scope_value_as = { name = concession_loss_relation value = eafp_concession_loss_relations }
 		save_temporary_scope_value_as = { name = concession_loss_prestige value = eafp_concession_loss_prestige }
+		remove_list_variable = { name = concession_owner_varlist target = scope:concession_holder }
+		if = {
+			limit = {
+				has_building = building_eafp_concession
+				NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }
+			}
+			remove_building = building_eafp_concession
+		}
+		else_if = {
+			limit = { has_building = building_eafp_concession }
+			# Engine exposes whole-building removal, not company-specific level removal.
+			# Do not destroy other holders' assets or invent negative ownership support.
+			debug_log = "EAFP concession return: rights revoked; shared ownership removal unavailable, residual assets retained"
+		}
 		if = {
 			limit = { always = $FORCED$ eafp_concession_loss_prestige > 0 }
 			scope:concession_host = {
@@ -195,25 +542,6 @@ eafp_concession_return_effect = {
 				}
 			}
 		}
-		# Incident/war returns end the right by withdrawing the holder from the granting
-		# treaty (no break penalties; the forced shock was applied above). The resulting
-		# on_withdrawal sees a holder withdrawal, so it runs with FORCED = no and never
-		# repeats the shock. Inside on_withdrawal the treaty is already ending.
-		if = {
-			limit = { NOT = { exists = scope:article } }
-			scope:concession_holder = {
-				every_scope_treaty = {
-					limit = {
-						any_scope_article = {
-							has_type = eafp_grant_concession
-							target_country = scope:concession_holder
-							input_state = scope:concession_state
-						}
-					}
-					withdraw = { country = scope:concession_holder apply_break_penalties = no }
-				}
-			}
-		}
 		eafp_concession_refresh_effect = yes
 	}
 }
@@ -221,22 +549,49 @@ eafp_concession_return_effect = {
 # One global refresh, used by the international JE and immediate right/ownership changes.
 # No money is moved here and this effect never schedules a timer or creates country journal entries.
 eafp_concession_refresh_effect = {
-	# Derived iteration list only (not a rights record): every state that actually has
-	# the concession building, including buildings retained after a right ended.
 	clear_global_variable_list = concession_candidate_states_gvarlist
 	every_state = {
-		limit = { has_building = building_eafp_concession }
-		add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
+		limit = { OR = { has_variable_list = concession_owner_varlist has_building = building_eafp_concession } }
+		save_temporary_scope_as = eafp_refresh_state
+		every_in_list = {
+			variable = concession_owner_varlist
+			save_temporary_scope_as = eafp_refresh_holder
+			if = {
+				limit = {
+					OR = {
+						is_country_alive = no
+						this = scope:eafp_refresh_state.owner
+						NOT = { has_company = company_type:company_eafp_concession }
+						scope:eafp_refresh_state = {
+							NOT = {
+								any_scope_building = {
+									is_building_type = building_eafp_concession
+									levels_owned_by_country = { target = scope:eafp_refresh_holder value >= 1 }
+								}
+							}
+						}
+					}
+				}
+				scope:eafp_refresh_state = {
+					remove_list_variable = { name = concession_owner_varlist target = prev }
+				}
+			}
+		}
+		if = {
+			limit = { any_in_list = { variable = concession_owner_varlist always = yes } }
+			add_to_global_variable_list = { name = concession_candidate_states_gvarlist target = this }
+		}
+		else_if = {
+			limit = { has_building = building_eafp_concession }
+			remove_building = building_eafp_concession
+		}
 	}
 	every_country = {
-		save_temporary_scope_as = eafp_refresh_country
-		# Removing a company never removes ordinary factories. A company that still owns
-		# retained assets (e.g. after the treaty ended) is kept.
+		# Rights are already reconciled above. Removing a company never removes ordinary factories.
 		if = {
 			limit = {
 				has_company = company_type:company_eafp_concession
-				NOT = { eafp_concession_holder_has_rights = { HOLDER = scope:eafp_refresh_country } }
-				company:company_eafp_concession = { company_owned_levels < 1 }
+				NOT = { eafp_concession_holder_has_rights = yes }
 			}
 			remove_company = company_type:company_eafp_concession
 		}

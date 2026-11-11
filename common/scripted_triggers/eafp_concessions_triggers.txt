@@ -1,4 +1,4 @@
-﻿# Rights, building levels and cap are all read from engine state; nothing is cached.
+﻿# Rights are persistent; building levels and cap are read from engine state.
 # Final urban groups from the installed 1.13 building-group inheritance tree.
 # A single OR avoids counting a building again through its parent group.
 eafp_concession_is_urban_building = {
@@ -22,42 +22,24 @@ eafp_concession_eligible_state = {
 	}
 }
 
-# No stored right lists. A right is read live from two engine states:
-#   treaty    - an in-force eafp_grant_concession article (target = holder, input = state);
-#   ownership - the holder's levels in that state's concession building.
-# Treaty checks enter article scope, so HOLDER and STATE must be saved scopes
-# (scope:..., or root in a state-scoped scripted GUI), never this/prev.
-
-# Country scope; a host or holder bound by an in-force concession article.
+# Country scope; involvement follows rights, even while prestige suspends their income.
 eafp_concession_involved_country = {
-	any_scope_treaty = {
-		any_scope_article = { has_type = eafp_grant_concession }
-	}
-}
-
-# Any scope. True while an in-force concession article grants STATE to HOLDER.
-# Country-scoped treaty lists contain in-force treaties only (global ones include drafts).
-eafp_concession_has_treaty = {
-	exists = $HOLDER$
-	exists = $STATE$
-	$HOLDER$ = {
-		any_scope_treaty = {
-			any_scope_article = {
-				has_type = eafp_grant_concession
-				target_country = $HOLDER$
-				input_state = $STATE$
-			}
+	any_state_in_china_proper = {
+		has_variable_list = concession_owner_varlist
+		OR = {
+			owner = PREV
+			is_target_in_variable_list = { name = concession_owner_varlist target = PREV }
 		}
 	}
 }
 
 # State scope; HOLDER is a country scope token.
-# Duplicate in-force grants are prevented by the article's usage_limit, not by a list.
 eafp_concession_can_grant = {
 	eafp_concession_eligible_state = yes
 	eafp_concession_free_capacity >= 5
 	exists = $HOLDER$
 	NOT = { owner = $HOLDER$ }
+	NOT = { is_target_in_variable_list = { name = concession_owner_varlist target = $HOLDER$ } }
 	$HOLDER$ = {
 		is_country_alive = yes
 		exists = capital
@@ -66,23 +48,17 @@ eafp_concession_can_grant = {
 	}
 }
 
-# State scope (STATE is the same state as a saved scope). A right = treaty + ownership.
 eafp_concession_has_holder = {
 	exists = $HOLDER$
+	is_target_in_variable_list = { name = concession_owner_varlist target = $HOLDER$ }
 	$HOLDER$ = { is_country_alive = yes }
 	NOT = { owner = $HOLDER$ }
-	eafp_concession_has_treaty = { HOLDER = $HOLDER$ STATE = $STATE$ }
-	any_scope_building = {
-		is_building_type = building_eafp_concession
-		levels_owned_by_country = { target = $HOLDER$ value >= 1 }
-	}
 }
 
-# State scope (STATE is the same state as a saved scope).
 eafp_concession_active = {
 	eafp_concession_eligible_state = yes
 	$HOLDER$ = { has_company = company_type:company_eafp_concession }
-	eafp_concession_has_holder = { HOLDER = $HOLDER$ STATE = $STATE$ }
+	eafp_concession_has_holder = { HOLDER = $HOLDER$ }
 	owner.prestige <= $HOLDER$.prestige
 }
 
@@ -93,7 +69,7 @@ eafp_concession_event_valid = {
 	exists = scope:concession_holder
 	scope:concession_state = {
 		owner = scope:concession_host
-		eafp_concession_active = { HOLDER = scope:concession_holder STATE = scope:concession_state }
+		eafp_concession_active = { HOLDER = scope:concession_holder }
 	}
 }
 
@@ -118,26 +94,21 @@ eafp_concession_can_start_return_war = {
 	}
 }
 
-# State scope (STATE is the same state as a saved scope); shared by GUI validation and the effect.
+# State scope; shared by visibility validation and the actual GUI effect.
 eafp_concession_can_expand = {
 	custom_tooltip = {
 		text = eafp_concession_expand_active_tt
-		eafp_concession_active = { HOLDER = $HOLDER$ STATE = $STATE$ }
+		eafp_concession_active = { HOLDER = $HOLDER$ }
 	}
 	custom_tooltip = {
-		text = eafp_concession_expand_treaty_tt
-		eafp_concession_has_treaty = { HOLDER = $HOLDER$ STATE = $STATE$ }
-	}
-	# Free capacity already subtracts levels waiting in the construction queue.
-	custom_tooltip = {
-		text = eafp_concession_expand_capacity_$LEVELS$_tt
-		eafp_concession_free_capacity >= $LEVELS$
+		text = eafp_concession_expand_capacity_tt
+		eafp_concession_free_capacity >= 5
 	}
 	custom_tooltip = {
 		text = eafp_concession_expand_treasury_tt
 		$HOLDER$ = {
 			has_company = company_type:company_eafp_concession
-			gold_reserves >= eafp_concession_expansion_cost_levels_$LEVELS$
+			gold_reserves >= eafp_concession_expansion_cost
 		}
 	}
 	custom_tooltip = {
@@ -147,25 +118,11 @@ eafp_concession_can_expand = {
 			levels_owned_by_country = { target = $HOLDER$ value >= 1 }
 		}
 	}
-	custom_tooltip = {
-		text = eafp_concession_expand_queue_tt
-		any_scope_building = {
-			is_building_type = building_eafp_concession
-			can_queue_building_levels = $LEVELS$
-		}
-	}
 }
 
-# Any scope; HOLDER is a saved country scope. Unlike involvement, this excludes hosts:
-# HOLDER must be the target of an in-force concession article.
+# Country scope; unlike involvement, this excludes merely hosting others' concessions.
 eafp_concession_holder_has_rights = {
-	exists = $HOLDER$
-	$HOLDER$ = {
-		any_scope_treaty = {
-			any_scope_article = {
-				has_type = eafp_grant_concession
-				target_country = $HOLDER$
-			}
-		}
+	any_state_in_china_proper = {
+		is_target_in_variable_list = { name = concession_owner_varlist target = prev }
 	}
 }
