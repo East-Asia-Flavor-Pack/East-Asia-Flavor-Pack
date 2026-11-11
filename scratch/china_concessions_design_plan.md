@@ -4,18 +4,19 @@
 
 2026-11-10 변경: 중국 소유국 국고에서 조계 보유국 국고로 매주 돈을 직접 옮기던 이전금(`concession_payment`/`concession_paid` modifier)을 정의·번역·구 세이브 정리까지 모두 삭제했다. 보유국 수익은 조계지 무역과 조계회사 배당뿐이다. 7절 참조.
 
-2026-11-11 변경(증가 = 스냅샷 후 재건축): 아래 내용이 4·5절의 「기존 건물에 `add_ownership` 추가」 서술보다 우선한다. 기준 코드는 사용자가 되돌린 `6997c6dc` 설계이며, 그 위에 이 변경만 얹었다.
-- `eafp_concession_add_company_level = { LEVELS }`(저널 +1 버튼·AI 확장·조약 +5 지급 공용)는 살아 있는 건물에 지분을 더하지 않고 다음 순서로 재건축한다.
-  1. 주 변수 맵 `eafp_concession_rebuild_map`을 비우고 스냅샷을 저장한다. 키 = 국가 스코프 → 그 국가 소유 레벨(`levels_owned_by_country` 32회 이진 탐색, 공용 효과 `eafp_concession_measure_country_levels`). 키 = `flag:cash_reserve` → `cash_reserves_ratio`(0~1, 10회 이분 탐색). 건물이 없으면 1. 무역량 PM과 보조금 여부는 임시 scope value에 둔다.
-  2. 어느 국가에도 귀속되지 않은 레벨(건물 레벨 − 국가별 합)은 주 소유국 항목에 더해 레벨이 사라지지 않게 한다(debug_log).
-  3. `scope:concession_holder` 항목에 LEVELS를 더한다(없으면 새 키).
-  4. `remove_building = building_eafp_concession` 후 `every_country`로 맵의 키 국가마다 `create_building`을 **한 번만** 호출한다(사용자 확인: `create_building`의 레벨은 기존 건물 레벨에 더해지지 않으므로 나눠 부르지 않는다). 조계회사가 있으면 회사 소유, 없으면 국가 소유로 준다. 레벨은 리터럴만 문서화되어 있으므로 `eafp_concession_rebuild_owner_levels`가 `switch = { trigger = scope:eafp_rebuild_remaining 5 = {…} 10 = {…} … 500 = {…} }`로 저장값과 같은 case를 골라 `eafp_concession_rebuild_chunk = { LEVELS = n }`을 실행한다. 조계 레벨은 지급·확장 모두 5단위이므로 저장값은 항상 5의 배수라고 보고(사용자 결정), 그 외 값(구 세이브·미귀속 잔여 등)이나 500 초과는 처리하지 않는다(fallback 없음, 해당 국가 지분은 재생성되지 않음). 첫 호출이 건물을 세우며 `reserves`를 맵의 `flag:cash_reserve` 값(0.1 단위 반올림)으로, 이후 호출은 `reserves = 0`(엔진이 기존값과의 최대값을 유지)으로 준다.
+2026-11-11 변경(증가 = 건물 유지·보유국 지분 덮어쓰기): 아래 내용이 4·5절의 「기존 건물에 `add_ownership` 추가」 서술보다 우선한다. 기준 코드는 사용자가 되돌린 `6997c6dc` 설계이며, 그 위에 이 변경만 얹었다. 같은 날 한때 쓰던 「스냅샷 → `remove_building` → 재생성」 방식은 사용자 지시로 폐기했다.
+- `eafp_concession_add_company_level = { LEVELS }`(저널 +5 버튼·AI 확장·조약 +5 지급 공용)는 `remove_building`을 쓰지 않는다. 사용자 확인에 따라 `create_building`의 레벨은 기존 건물에 더해지지 않고 그 국가 지분을 덮어쓰므로, 보유국 지분을 새 총량으로 한 번에 덮어쓴다.
+  1. 주 변수 맵 `eafp_concession_rebuild_map`을 비우고 키 = 보유국 스코프 → 현재 보유국 소유 레벨(`levels_owned_by_country` 32회 이진 탐색, 공용 효과 `eafp_concession_measure_country_levels`)을 저장한다. 새 보유국·새 건물이면 항목이 없다(0).
+  2. 그 항목에 LEVELS를 더하고 새 총량을 `scope:concession_expected_levels`로 남긴다.
+  3. `eafp_concession_rebuild_owner_levels`가 `switch = { trigger = scope:eafp_rebuild_remaining 5 = {…} 10 = {…} … 500 = {…} }`로 같은 case를 골라 `eafp_concession_rebuild_chunk = { LEVELS = n }`을 실행하고, 이것이 `create_building`을 한 번 호출한다. 조계회사가 있으면 회사 소유, 없으면 국가 소유다. 건물이 있으면 `reserves = 0`(엔진이 기존값과의 최대값 유지 → 현금보유고 변화 없음), 새 건물이면 `reserves = 1`.
+  4. 보유국 소유가 기대 총량에 못 미치면 debug_log를 남기고 맵을 비운다.
+- 조계 레벨은 지급·확장 모두 5단위이므로 저장값은 항상 5의 배수라고 본다(사용자 결정). 그 외 값이나 500 초과는 switch에 case가 없어 덮어쓰지 않는다(fallback 없음).
+- 성공 판정: 지급·확장 모두 「총레벨 증가」 대신 보유국 소유 ≥ `scope:concession_expected_levels`로 판정한다. 확장 비용은 이 조건이 맞을 때만 차감한다.
+- 건물을 지우지 않으므로 다른 국가 지분·근로자·현금보유고·생산 방식·보조금은 그대로다. 따라서 `flag:cash_reserve` 저장, 생산 방식·보조금 복원, 미귀속 레벨 보정 단계는 삭제했다. `remove_building`은 반환(마지막 권리 소멸)과 권리 없는 주 정리에만 남는다.
 - 확장 단위: 저널 버튼·AI 확장 모두 +5레벨(`eafp_concession_add_company_level = { LEVELS = 5 }`), 도심지 상한 여유 5레벨이 필요하다(`eafp_concession_free_capacity >= 5`). 비용 `eafp_concession_expansion_cost`는 레벨당 £50,000 × 5 = 클릭 1회 £250,000이다(2026-11-11 사용자 결정).
-  5. `activate_production_method`로 무역량 PM, `set_subsidized`로 보조금을 복원하고 총레벨이 「이전 + LEVELS」와 다르면 debug_log를 남긴 뒤 맵을 비운다.
-- 근로자: 고용을 즉시 채우는 효과·modifier가 엔진 문서에 없다(`DEFAULT_MAX_HIRING_RATE = 0.1`/주). 재건축하면 기존 근로자는 같은 주의 실업자가 되고 새 건물이 정상 고용 속도로 다시 고용한다. 현금보유고 복원으로 저수익 상태에서도 고용 정지 예외(`BUILDING_PAUSE_HIRES_CASH_RESERVES_THRESHOLD`)를 유지한다.
-- 버튼 툴팁은 재건축 단계가 자동 툴팁을 채우지 않도록 `custom_tooltip = { text = eafp_concession_expand_effect_tt ... }`로 감쌌다.
+- 버튼 툴팁은 `custom_tooltip = { text = eafp_concession_expand_effect_tt ... }`로 감싸 「자국 지분만 덮어쓰고 나머지는 유지」를 안내한다.
 - 함께 고친 버그: 새 건물 PM으로 존재하지 않는 `pm_eafp_concession_trade_quantity_normal`을 지정하던 것을 `pm_eafp_concession`·`pm_trade_center_trade_quantity_normal`로 바꿨다.
-- 제한(미검증): 금융지구·장원 등 「건물 소유」 지분은 국가별 합계로만 읽히므로 재건축 후 회사(또는 국가) 소유로 바뀐다. `create_building` 실패 시 되돌릴 방법이 없다. 같은 effect 안에서 `remove_building` 직후 `has_building`이 즉시 갱신된다고 가정한다. 변수 맵 값으로 숫자를 쓰는 형식은 바닐라(`value = year`, `variable_map(name|key)`)를 따랐다.
+- 제한(미검증): 「덮어쓰기」 동작은 사용자 확인에 근거하며 엔진 문서는 기존 건물에서 레벨이 max(기존, 지정값)이라고만 적는다. 보유국 소유를 국가 합계로 읽으므로 그 국가의 금융지구·장원 등 다른 소유 형태 지분이 있으면 기대 총량 계산에 포함된다. `create_building`이 기존 건물의 생산 방식을 `activate_production_methods` 값으로 바꿀 수 있다. 변수 맵 값으로 숫자를 쓰는 형식은 바닐라(`value = year`, `variable_map(name|key)`)를 따랐다.
 
 최신 수량 변경: 조계 1레벨 = 무역소 1레벨, 새 국가의 주별 조계권 획득마다 +5레벨, 주별 상한 = 도심지 ×5. 이미 조계지 건물이 있는 주에도 새 보유국의 회사 지분 5레벨을 더한다. 저널 유료 확장은 기존 +1레벨·£50,000을 유지한다. 반환 충격의 분모는 실제 도심지 레벨을 유지하고 상한 계산과 분리한다. 구 세이브의 기존 레벨 자동 증설은 하지 않는다.
 

@@ -174,17 +174,20 @@ def main():
     used_pms = set(re.findall(r"\bpm_\w+", "\n".join(re.findall(r"activate_production_methods?\s*=\s*\{[^}]*\}", unquoted(effects)))))
     used_pms |= set(re.findall(r"has_active_production_method\s*=\s*(pm_\w+)", unquoted(effects)))
     assert used_pms and used_pms <= allowed_pms, ("PM outside the building's groups", used_pms - allowed_pms)
-    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 3
-    # Increase = snapshot -> remove -> recreate (user design 2026-11-11).
+    # Only the return and the rightless-state refresh remove the building.
+    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 2
+    # Increase = overwrite the holder's ownership on the live building (user design 2026-11-11).
     rebuild = effects.split("eafp_concession_add_company_level = {", 1)[1].split("\n}", 1)[0]
+    assert "remove_building" not in unquoted(rebuild), "Expansion must not remove the building"
+    assert "flag:cash_reserve" not in effects and "cash_reserves_ratio" not in effects
     assert "clear_variable_map = eafp_concession_rebuild_map" in rebuild
-    assert "key = flag:cash_reserve value = scope:eafp_rebuild_reserve_low" in rebuild
-    assert "cash_reserves_ratio >= scope:eafp_rebuild_reserve_mid" in rebuild
     assert "eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }" in rebuild
-    assert rebuild.index("eafp_concession_measure_country_levels") < rebuild.index("remove_building") \
-        < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Snapshot before removal, recreate after"
-    assert '"variable_map(eafp_concession_rebuild_map|flag:cash_reserve)"' in effects
+    assert rebuild.index("eafp_concession_measure_country_levels = { COUNTRY = scope:concession_holder }") \
+        < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Read the holder's levels, then overwrite"
     assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 2
+    # Grant and expansion judge success by the holder's expected total, not a total-level rise.
+    assert effects.count("value >= scope:concession_expected_levels") == 3
+    assert "concession_previous_levels" not in effects
     # create_building levels do not stack on an existing building: one call per owner,
     # dispatched to the 5-level step that matches the stored value.
     assert "eafp_concession_rebuild_chunk" not in rebuild and "eafp_concession_rebuild_owner_levels = yes" in rebuild
