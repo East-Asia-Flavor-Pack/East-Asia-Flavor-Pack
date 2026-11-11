@@ -174,8 +174,20 @@ def main():
     used_pms = set(re.findall(r"\bpm_\w+", "\n".join(re.findall(r"activate_production_methods?\s*=\s*\{[^}]*\}", unquoted(effects)))))
     used_pms |= set(re.findall(r"has_active_production_method\s*=\s*(pm_\w+)", unquoted(effects)))
     assert used_pms and used_pms <= allowed_pms, ("PM outside the building's groups", used_pms - allowed_pms)
-    # Only the return and the rightless-state refresh remove the building.
-    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 2
+    # Only the return (last right / per-holder share removal) and the rightless-state refresh
+    # remove the building.
+    assert re.findall(r"remove_building\s*=\s*(\w+)", unquoted(effects + je)) == ["building_eafp_concession"] * 3
+    # A return with other rights left removes only the returning holder's share: every other
+    # owner is stored, the building removed, and each stored owner recreated.
+    share = effects.split("eafp_concession_remove_holder_share = {", 1)[1].split("\n}", 1)[0]
+    assert "limit = { NOT = { this = scope:concession_holder } }" in share
+    assert share.index("eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_rebuild_owner }") \
+        < share.index("remove_building = building_eafp_concession") \
+        < share.index("eafp_concession_rebuild_owner_levels = yes"), "Store others, remove, recreate"
+    returning = effects.split("eafp_concession_return_effect = {", 1)[1].split("\n}", 1)[0]
+    assert re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}"
+                     r"(?:\s*#[^\n]*)*\s*eafp_concession_remove_holder_share\s*=\s*yes", returning)
+    assert "residual assets retained" not in effects
     # Increase = overwrite the holder's ownership on the live building (user design 2026-11-11).
     rebuild = effects.split("eafp_concession_add_company_level = {", 1)[1].split("\n}", 1)[0]
     assert "remove_building" not in unquoted(rebuild), "Expansion must not remove the building"
@@ -184,7 +196,18 @@ def main():
     assert "eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }" in rebuild
     assert rebuild.index("eafp_concession_measure_country_levels = { COUNTRY = scope:concession_holder }") \
         < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Read the holder's levels, then overwrite"
-    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 2
+    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 4
+    # State creation/owner change rounds split shares to the nearest multiple of 5 (min 5)
+    # by overwriting, never by removing the building.
+    rounding = effects.split("eafp_concession_round_ownership_effect = {", 1)[1].split("\n}", 1)[0]
+    assert "value = { value = scope:concession_level_low divide = 5 round = yes multiply = 5 min = 5 }" in rounding
+    assert "NOT = { scope:eafp_rebuild_rounded = scope:concession_level_low }" in rounding
+    assert "remove_building" not in unquoted(rounding)
+    assert rounding.index("eafp_concession_measure_country_levels") < rounding.index("eafp_concession_rebuild_owner_levels = yes")
+    state_hook = hooks.split("eafp_concessions_state_changed = {", 1)[1].split("\n}", 1)[0]
+    assert state_hook.index("eafp_concession_round_ownership_effect = yes") < state_hook.index("eafp_concession_refresh_effect = yes")
+    assert re.search(r"on_state_owner_change\s*=\s*\{\s*on_actions\s*=\s*\{\s*eafp_concessions_state_changed", entries)
+    assert re.search(r"on_state_created\s*=\s*\{\s*on_actions\s*=\s*\{\s*eafp_concessions_state_changed", entries)
     # Grant and expansion judge success by the holder's expected total, not a total-level rise.
     assert effects.count("value >= scope:concession_expected_levels") == 3
     assert "concession_previous_levels" not in effects
@@ -338,7 +361,8 @@ def main():
     print("SKIP: asset existence (--source-only)." if args.source_only else "PASS: asset existence.")
     print("PASS: shared building, one-to-one trade-center PMs, initial five levels, five-times urban cap, queue duplicate prevention and industry references.")
     print("Game execution skipped: company lifecycle, private queue attribution and GUI are not runtime-verified. "
-          "Known limitations: owner-specific shared-level removal and partial production suspension are unavailable.")
+          "Known limitations: per-holder share removal rebuilds the building (workforce re-hired); "
+          "partial production suspension is unavailable.")
 
 
 if __name__ == "__main__":

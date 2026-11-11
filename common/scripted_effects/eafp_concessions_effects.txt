@@ -347,6 +347,100 @@ eafp_concession_expand_effect = {
 	}
 }
 
+# State scope; scope:concession_holder is the country whose right just ended while other
+# rights remain in the state. The engine has no per-owner level removal, so:
+#   1. store every OTHER country's levels in eafp_concession_rebuild_map (key = country);
+#   2. remove_building;
+#   3. recreate each stored owner with one create_building (5-step switch).
+# The returning holder is never stored, so its share is gone; other owners keep their
+# levels. The rebuilt building starts fresh (workers re-hire, new reserves/default PMs).
+eafp_concession_remove_holder_share = {
+	save_temporary_scope_as = eafp_rebuild_state
+	clear_variable_map = eafp_concession_rebuild_map
+	random_scope_building = {
+		limit = { is_building_type = building_eafp_concession }
+		save_temporary_scope_as = eafp_rebuild_building
+		every_country = {
+			limit = { NOT = { this = scope:concession_holder } }
+			save_temporary_scope_as = eafp_rebuild_owner
+			scope:eafp_rebuild_building = {
+				if = {
+					limit = { levels_owned_by_country = { target = scope:eafp_rebuild_owner value >= 1 } }
+					eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_rebuild_owner }
+					scope:eafp_rebuild_state = {
+						eafp_concession_rebuild_map_add = { KEY = scope:eafp_rebuild_owner VALUE = scope:concession_level_low }
+					}
+				}
+			}
+		}
+	}
+	remove_building = building_eafp_concession
+	every_country = {
+		save_temporary_scope_as = eafp_rebuild_owner
+		scope:eafp_rebuild_state = {
+			if = {
+				limit = { is_key_in_variable_map = { name = eafp_concession_rebuild_map target = scope:eafp_rebuild_owner } }
+				save_temporary_scope_value_as = {
+					name = eafp_rebuild_remaining
+					value = "variable_map(eafp_concession_rebuild_map|scope:eafp_rebuild_owner)"
+				}
+				eafp_concession_rebuild_owner_levels = yes
+			}
+		}
+	}
+	clear_variable_map = eafp_concession_rebuild_map
+}
+
+# State scope. A state split can leave an owner with a level count that is not a multiple
+# of 5, which the 5-step switch cannot express. Each such owner's levels are overwritten
+# with the nearest multiple of 5 (one create_building call, no remove_building):
+# 7 -> 5, 8 -> 10, 13 -> 15. 1-2 round up to 5 instead of 0, because a 0-level overwrite
+# is not a known way to drop an owner. Owners already on a multiple of 5 are untouched.
+eafp_concession_round_ownership_effect = {
+	if = {
+		limit = { has_building = building_eafp_concession }
+		save_temporary_scope_as = eafp_rebuild_state
+		clear_variable_map = eafp_concession_rebuild_map
+		random_scope_building = {
+			limit = { is_building_type = building_eafp_concession }
+			save_temporary_scope_as = eafp_rebuild_building
+			every_country = {
+				save_temporary_scope_as = eafp_rebuild_owner
+				scope:eafp_rebuild_building = {
+					if = {
+						limit = { levels_owned_by_country = { target = scope:eafp_rebuild_owner value >= 1 } }
+						eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_rebuild_owner }
+						save_temporary_scope_value_as = {
+							name = eafp_rebuild_rounded
+							value = { value = scope:concession_level_low divide = 5 round = yes multiply = 5 min = 5 }
+						}
+						if = {
+							limit = { NOT = { scope:eafp_rebuild_rounded = scope:concession_level_low } }
+							scope:eafp_rebuild_state = {
+								add_to_variable_map = { name = eafp_concession_rebuild_map key = scope:eafp_rebuild_owner value = scope:eafp_rebuild_rounded }
+							}
+						}
+					}
+				}
+			}
+		}
+		every_country = {
+			save_temporary_scope_as = eafp_rebuild_owner
+			scope:eafp_rebuild_state = {
+				if = {
+					limit = { is_key_in_variable_map = { name = eafp_concession_rebuild_map target = scope:eafp_rebuild_owner } }
+					save_temporary_scope_value_as = {
+						name = eafp_rebuild_remaining
+						value = "variable_map(eafp_concession_rebuild_map|scope:eafp_rebuild_owner)"
+					}
+					eafp_concession_rebuild_owner_levels = yes
+				}
+			}
+		}
+		clear_variable_map = eafp_concession_rebuild_map
+	}
+}
+
 # FORCED is explicit at every caller; no dependence on treaty callback ordering.
 eafp_concession_return_effect = {
 	if = {
@@ -375,9 +469,8 @@ eafp_concession_return_effect = {
 		}
 		else_if = {
 			limit = { has_building = building_eafp_concession }
-			# Engine exposes whole-building removal, not company-specific level removal.
-			# Do not destroy other holders' assets or invent negative ownership support.
-			debug_log = "EAFP concession return: rights revoked; shared ownership removal unavailable, residual assets retained"
+			# Other rights remain: only the returning holder's share disappears.
+			eafp_concession_remove_holder_share = yes
 		}
 		if = {
 			limit = { always = $FORCED$ eafp_concession_loss_prestige > 0 }

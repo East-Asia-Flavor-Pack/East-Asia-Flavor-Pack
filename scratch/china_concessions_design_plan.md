@@ -11,6 +11,7 @@
   3. `eafp_concession_rebuild_owner_levels`가 `switch = { trigger = scope:eafp_rebuild_remaining 5 = {…} 10 = {…} … 500 = {…} }`로 같은 case를 골라 `eafp_concession_rebuild_chunk = { LEVELS = n }`을 실행하고, 이것이 `create_building`을 한 번 호출한다. 조계회사가 있으면 회사 소유, 없으면 국가 소유다. 건물이 있으면 `reserves = 0`(엔진이 기존값과의 최대값 유지 → 현금보유고 변화 없음), 새 건물이면 `reserves = 1`.
   4. 보유국 소유가 기대 총량에 못 미치면 debug_log를 남기고 맵을 비운다.
 - 조계 레벨은 지급·확장 모두 5단위이므로 저장값은 항상 5의 배수라고 본다(사용자 결정). 그 외 값이나 500 초과는 switch에 case가 없어 덮어쓰지 않는다(fallback 없음).
+- 주 분할 보정(2026-11-11): `on_state_created`·`on_state_owner_change`(`eafp_concessions_state_changed`)에서 같은 state region의 조계지가 있는 모든 주에 `eafp_concession_round_ownership_effect`를 실행한다. 각 국가 소유 레벨을 재서 5의 배수가 아니면 가장 가까운 5의 배수(`divide = 5 round = yes multiply = 5`)로 `create_building` 한 번에 덮어쓴다(7 → 5, 8 → 10, 13 → 15). 1~2레벨은 0이 아니라 5로 올린다. 0으로 덮어써 소유자를 없애는 방법은 확인되지 않았기 때문이다. `remove_building`은 쓰지 않으며, 보정 후 권리 정리(refresh)를 실행한다. 반올림으로 도심지 상한을 넘을 수 있으나 상한은 진입 조건이므로 기존 건물은 유지한다.
 - 성공 판정: 지급·확장 모두 「총레벨 증가」 대신 보유국 소유 ≥ `scope:concession_expected_levels`로 판정한다. 확장 비용은 이 조건이 맞을 때만 차감한다.
 - 건물을 지우지 않으므로 다른 국가 지분·근로자·현금보유고·생산 방식·보조금은 그대로다. 따라서 `flag:cash_reserve` 저장, 생산 방식·보조금 복원, 미귀속 레벨 보정 단계는 삭제했다. `remove_building`은 반환(마지막 권리 소멸)과 권리 없는 주 정리에만 남는다.
 - 확장 단위: 저널 버튼·AI 확장 모두 +5레벨(`eafp_concession_add_company_level = { LEVELS = 5 }`), 도심지 상한 여유 5레벨이 필요하다(`eafp_concession_free_capacity >= 5`). 비용 `eafp_concession_expansion_cost`는 레벨당 £50,000 × 5 = 클릭 1회 £250,000이다(2026-11-11 사용자 결정).
@@ -151,6 +152,7 @@ cap은 진입 조건이다. U가 10에서 7 또는 0이 되어도 T=50과 기존
 - 월간 강제 반환과 반환 전쟁 결과: 강제 처리.
 - 조약 철회: 철회국이 현재 주 소유국이고 남은 구속 기간이 양수이면 강제, 나머지는 정상 처리.
 - 탈퇴 조건(2026-11-11, 바닐라 `treaty_port`와 동일한 `can_withdraw`): 조계를 내준 쪽(source, 중국 측)은 보유국보다 국가 등급이 높을 때만 탈퇴할 수 있고, 미승인국은 승인국 보유국을 상대로 탈퇴할 수 없다. 보유국(target)은 언제든 탈퇴할 수 있다.
+- 지분별 반환(2026-11-11): 조약 철회·파기·사건·전쟁으로 한 보유국의 권리가 끝나고 그 주에 다른 권리가 남으면 `eafp_concession_remove_holder_share`가 반환국 지분만 없앤다. 엔진에 소유자별 레벨 제거 효과가 없으므로 반환국을 뺀 모든 국가의 소유 레벨을 `eafp_concession_rebuild_map`(키 = 국가)에 저장하고 `remove_building` 후 5단위 switch로 국가마다 `create_building`을 한 번씩 다시 호출한다. 재건축이므로 남은 국가의 근로자는 다시 고용되고 현금보유고(새 건물 1)·생산 방식(기본값)·보조금은 초기화된다. 5의 배수가 아니거나 500을 넘는 지분은 재생성되지 않는다. 마지막 권리가 끝나면 이전처럼 건물 전체를 철거한다.
 - `on_break`에는 반환을 중복 배치하지 않는다. 실제 철회 처리는 `on_withdrawal` 한 곳이다.
 - 정상 반환은 추가 외교 충격이 없다. cap 감소는 반환 자체를 발생시키지 않는다.
 
