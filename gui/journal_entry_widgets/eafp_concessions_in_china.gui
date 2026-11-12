@@ -83,31 +83,117 @@ types eafp_concession_widgets {
 
 	# Owner legend row under the bar: one concession company per row.
 	# Datacontext: BuildingOwnership (entry) and Company (owner).
-	# Width: 8 + 330 + 110 + 8 + 3 x spacing 8 = 480 (details content width).
+	# One concession company in this state: its concession share, then the urban buildings it
+	# owns here. Datacontext: BuildingOwnership (concession entry), Company, State.
+	# Fixed width 480 = 8 bar + 8 gap + 448 content + 8 gap + 8 bar (margin 16 per side).
+	# The two country-colour bars are backgrounds, which always span the whole row height
+	# (expanded building list included): margin_right / margin_left = -472 leaves 8 px.
 	type eafp_concession_owner_row = flowcontainer {
 		datacontext = "[BuildingOwnership.GetOwnerBuilding.GetCompany]"
-		spacing = 8
+		direction = vertical
+		ignoreinvisible = yes
+		minimumsize = { 480 -1 }
+		margin_left = 16
+		margin_right = 16
 		background = { using = entry_bg }
-		widget = {
-			size = { 8 48 }
-			background = { using = entry_bg_simple_colored color = "[Company.GetCountry.GetMapColor]" }
+		background = {
+			using = entry_bg_simple_colored
+			color = "[Company.GetCountry.GetMapColor]"
+			margin_right = -472
 		}
-		textbox = {
-			size = { 330 48 }
-			multiline = yes
-			elide = right
-			text = "eafp_concession_company_asset"
-			tooltip = "eafp_concession_company_asset_tt"
+		background = {
+			using = entry_bg_simple_colored
+			color = "[Company.GetCountry.GetMapColor]"
+			margin_left = -472
 		}
-		textbox = {
-			size = { 110 48 }
-			align = right|nobaseline
-			multiline = yes
-			text = "eafp_concession_asset_amount"
+
+		# Company (48) over its urban-building usage against the cap (24): 330 + 8 + 110.
+		flowcontainer = {
+			spacing = 8
+			flowcontainer = {
+				direction = vertical
+				textbox = {
+					size = { 330 48 }
+					multiline = yes
+					elide = right
+					text = "eafp_concession_company_asset"
+					tooltip = "eafp_concession_company_asset_tt"
+				}
+				# Urban levels this company holds in the state / its cap (its concession levels).
+				# Toggles this company's building list below (UI state per state x company).
+				section_header_button = {
+					tooltip = "eafp_concession_urban_usage_tt"
+					blockoverride "layout" { size = { 330 24 } }
+					blockoverride "arrow_size" { size = { 20 20 } }
+					# Empty: drop section_header_button's fontsize_large so the text uses the
+					# same default size as the widget's other text.
+					blockoverride "fontsize" {}
+					blockoverride "left_text" { text = "eafp_concession_urban_usage" }
+					blockoverride "onclick" {
+						onclick = "[GetVariableSystem.Toggle(Concatenate(Concatenate('eafp_concession_company_', State.GetIDString), Company.GetCountry.GetIDString))]"
+					}
+					blockoverride "onclick_showmore" {
+						visible = "[Not(GetVariableSystem.Exists(Concatenate(Concatenate('eafp_concession_company_', State.GetIDString), Company.GetCountry.GetIDString)))]"
+					}
+					blockoverride "onclick_showless" {
+						visible = "[GetVariableSystem.Exists(Concatenate(Concatenate('eafp_concession_company_', State.GetIDString), Company.GetCountry.GetIDString))]"
+					}
+				}
+			}
+			textbox = {
+				size = { 110 72 }
+				align = right|nobaseline
+				multiline = yes
+				text = "eafp_concession_asset_amount"
+			}
 		}
-		widget = {
-			size = { 8 48 }
-			background = { using = entry_bg_simple_colored color = "[Company.GetCountry.GetMapColor]" }
+
+		# Every building in this state (except the concession building) in which this
+		# company owns levels: one line per building, shown while the usage line above is
+		# expanded (collapsed by default).
+		flowcontainer = {
+			visible = "[GetVariableSystem.Exists(Concatenate(Concatenate('eafp_concession_company_', State.GetIDString), Company.GetCountry.GetIDString))]"
+			direction = vertical
+			ignoreinvisible = yes
+			margin = { 0 4 }
+			datamodel = "[State.AccessBuildings]"
+			item = {
+				flowcontainer = {
+					direction = vertical
+					ignoreinvisible = yes
+					visible = "[Not(ObjectsEqual(Building.Self, State.GetBuilding('building_eafp_concession').Self))]"
+					datamodel = "[Building.GetBuildingOwnerships]"
+					item = {
+						eafp_concession_company_building_row = {
+							visible = "[ObjectsEqual(BuildingOwnership.GetOwnerBuilding.GetCompany.Self, Company.Self)]"
+						}
+					}
+				}
+			}
+		}
+	}
+
+	# One building owned by the row's company. Datacontext: Building, BuildingOwnership.
+	# Clicking opens the building panel; hovering shows the vanilla building tooltip.
+	type eafp_concession_company_building_row = button {
+		size = { 448 26 }
+		onclick = "[InformationPanelBar.OpenBuildingDetailsPanel(Building.AccessSelf)]"
+		tooltipwidget = {
+			FancyTooltip_Building = {}
+		}
+		flowcontainer = {
+			parentanchor = vcenter
+			spacing = 6
+			icon = {
+				size = { 24 24 }
+				texture = "[Building.GetIcon]"
+			}
+			textbox = {
+				size = { 418 24 }
+				align = left|nobaseline
+				elide = right
+				text = "eafp_concession_company_building_row"
+			}
 		}
 	}
 

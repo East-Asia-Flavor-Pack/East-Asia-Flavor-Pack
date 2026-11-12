@@ -88,14 +88,20 @@ def main():
     groups_code = unquoted("\n".join(read(p) for p in (game / "common/journal_entry_groups").glob("*.txt")))
     assert re.search(r"je_group_global_international_situations\s*=\s*\{\s*context\s*=\s*none", groups_code)
     assert re.search(r"should_show_when_not_involved\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
-    # Visibility does not activate a contextless journal; possible is the auto-start gate.
-    assert not re.search(r"\bpossible\s*=", je_code), \
-        "The international JE must activate through the treaty, not automatically"
     entry_force = unquoted(treaties).split("on_entry_into_force = {", 1)[1].split("on_enforced", 1)[0]
-    assert -1 < entry_force.find("eafp_concession_grant_effect = yes") \
-        < entry_force.find("add_contextless_journal_entry = je_concessions_in_china"), \
-        "Treaty entry into force must activate the international JE after granting rights"
-    assert len(re.findall(r"\badd_contextless_journal_entry\s*=", clean)) == 1
+    assert "eafp_concession_grant_effect = yes" in entry_force
+    # The JE is visible while inactive and activates by itself once an in-force concession
+    # treaty exists (a shown JE activates when possible is true); nothing activates it by script.
+    assert re.search(r"is_shown_when_inactive\s*=\s*\{\s*always\s*=\s*yes\s*\}", je_code)
+    assert re.search(r"possible\s*=\s*\{\s*eafp_concession_treaty_exists\s*=\s*yes\s*\}", je_code), \
+        "Activation is based on an in-force concession treaty"
+    treaty_exists = unquoted(read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"))
+    treaty_exists = treaty_exists.split("\neafp_concession_treaty_exists = {", 1)[1].split("\n}", 1)[0]
+    assert "any_scope_treaty" in treaty_exists and "has_type = eafp_grant_concession" in treaty_exists
+    assert not re.search(r"\badd_contextless_journal_entry\s*=\s*je_concessions_in_china", clean)
+    # Pinned for involved countries only.
+    for pin in ("should_be_pinned_by_default_involved = yes", "should_be_pinned_by_default_uninvolved_or_context = no"):
+        assert pin in je_code, pin
     assert not re.search(r"\b(?:outcome|complete|fail|invalid|timeout|transferable|\w+_all_involved)\s*=", je_code), \
         "The international JE must persist and calculate only once per pulse"
     assert len(re.findall(r"\bon_weekly_pulse\s*=", je_code)) == 1
@@ -115,6 +121,35 @@ def main():
     assert len(re.findall(r"eafp_concession_return_effect\s*=\s*\{\s*FORCED\s*=\s*(?:yes|no)\s*\}", treaties)) == 2
     assert "scope:article.treaty.remaining_binding_period > 0" in treaties
     assert "scope:withdrawing_country = scope:concession_host" in treaties
+    # Ownership transfer: remaining holders get a treaty with the new owner (binding 0 days,
+    # no duplicate), and only the current owner's treaty can return the right on withdrawal.
+    assert re.search(r"on_withdrawal\s*=\s*\{.*?limit = \{ scope:article\.source_country = scope:concession_host \}.*?"
+                     r"eafp_concession_return_effect = \{ FORCED = yes \}", unquoted(treaties), re.S)
+    transfer = effects.split("eafp_concession_transfer_treaties_effect = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("NOT = { this = scope:eafp_transfer_owner }", "source_country = scope:eafp_transfer_owner",
+                   "input_state = scope:eafp_transfer_state", "HOST = scope:eafp_transfer_owner",
+                   "HOLDER = scope:eafp_transfer_holder", "STATE = scope:eafp_transfer_state"):
+        assert clause in transfer, clause
+    create_treaty = effects.split("\neafp_concession_create_treaty_effect = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("$HOST$ = {", "first_country = $HOST$", "second_country = $HOLDER$", "is_draft = no",
+                   "binding_period = { days = 0 }", "article = eafp_grant_concession", "source_country = $HOST$",
+                   "target_country = $HOLDER$", "{ state = $STATE$ }"):
+        assert clause in create_treaty, clause
+    # When a lapsed article ends a treaty, its other still-valid concession articles get
+    # their own treaty instead of returning the right.
+    withdrawal = unquoted(treaties).split("on_withdrawal = {", 1)[1].split("on_break", 1)[0]
+    assert re.search(r"any_scope_article = \{\s*has_type = eafp_grant_concession\s*source_country = scope:concession_host\s*"
+                     r"NOT = \{ input_state \?= \{ owner = scope:concession_host \} \}", withdrawal)
+    assert withdrawal.index("eafp_concession_create_treaty_effect") < withdrawal.index("eafp_concession_return_effect = { FORCED = yes }")
+    assert "STATE = scope:concession_state" in withdrawal
+    state_hook = hooks.split("eafp_concessions_state_changed = {", 1)[1].split("\n}", 1)[0]
+    assert state_hook.index("eafp_concession_refresh_effect = yes") < state_hook.index("eafp_concession_transfer_treaties_effect = yes")
+    # The previous owner's treaty is not withdrawn by script; its article stops being
+    # fulfilled once its source no longer owns the state and the treaty ends as a breach.
+    assert "withdraw = {" not in transfer, "Transfer must not withdraw the old treaty directly"
+    assert re.search(r"non_fulfillment\s*=\s*\{\s*consequences\s*=\s*withdraw\s*max_consecutive_contraventions\s*=\s*0\s*"
+                     r"conditions\s*=\s*\{\s*weekly\s*=\s*\{\s*NOT = \{ scope:article\.input_state \?= \{ owner = root \} \}",
+                     unquoted(treaties)), "Old owner's article must lapse through non_fulfillment"
     assert not re.search(r"eafp_concession_return_effect\s*=\s*yes", scripts)
     assert re.search(r"on_break\s*=\s*\{\s*\}", treaties), "Break already runs withdrawal cleanup"
 
@@ -150,11 +185,34 @@ def main():
     war_goals = unquoted(read(ROOT / "common/war_goal_types/eafp_concessions_war_goals.txt"))
     demand_goal = war_goals.split("eafp_demand_concession = {", 1)[1].split("\n}", 1)[0]
     for clause in ("kind = custom", "target_type = state", "contestion_type = control_target_state",
-                   "eafp_concession_can_grant = { HOLDER = root }", "is_draft = no",
+                   "eafp_concession_can_receive = { HOLDER = root }", "is_draft = no",
                    "article = eafp_grant_concession", "source_country = scope:target_country",
                    "target_country = root", "{ state = scope:target_state }"):
         assert clause in demand_goal, clause
     assert "eafp_concession_grant_effect" not in demand_goal, "Grant only through the treaty's on_entry_into_force"
+
+    # Demand/article conditions mirror vanilla treaty_port / take_treaty_port without the
+    # treaty-port-only ones, plus China Proper and an unrecognized state owner.
+    vanilla_goal = read(game / "common/war_goal_types/25_take_treaty_port.txt")
+    vanilla_settings = set(re.findall(r"\w+", vanilla_goal.split("settings = {", 1)[1].split("}", 1)[0].split("#")[0]
+                                      + " ".join(l.split("#")[0] for l in vanilla_goal.split("settings = {", 1)[1].split("}", 1)[0].splitlines())))
+    goal_settings = set(re.findall(r"\w+", demand_goal.split("settings = {", 1)[1].split("}", 1)[0]))
+    assert goal_settings == vanilla_settings - {"validate_take_treaty_port"}, goal_settings ^ (vanilla_settings - {"validate_take_treaty_port"})
+    triggers_text = unquoted(read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"))
+    grantable = triggers_text.split("\neafp_concession_eligible_state = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("is_in_geographic_region = geographic_region_china_proper", "is_treaty_port = no",
+                   "owner = { is_country_type = unrecognized }"):
+        assert clause in grantable, clause
+    assert "eafp_concession_eligible_state = yes" in triggers_text.split("\neafp_concession_can_receive = {", 1)[1].split("\n}", 1)[0]
+    article_code = unquoted(treaties).split("eafp_grant_concession = {", 1)[1]
+    for clause in ("unlocked_by_technologies = {\n\t\tcolonization", "is_revolutionary = no",
+                   "NOT = { is_subject_of = root }", "exists = scope:article.input_state",
+                   "country_rank <= scope:target_country.country_rank",
+                   "eafp_concession_can_receive = { HOLDER = scope:other_country }"):
+        assert clause in article_code.replace("\r\n", "\n"), clause
+    for specific in ("is_potential_treaty_port", "is_coastal", "controls_treaty_port_province"):
+        assert specific not in article_code + demand_goal, specific
+    assert "any_scope_state = { eafp_concession_eligible_state = yes }" in demand_play
     strategy = unquoted(read(ROOT / "common/ai_strategies/eafp_default_strategy.txt"))
     assert re.search(r"wargoal_scores\s*=\s*\{.*?\beafp_demand_concession\s*=\s*\{", strategy, re.S), "AI score"
     # Second Opium War: third parties can join, and Britain demands Tianjin as a primary demand.
@@ -167,7 +225,8 @@ def main():
                      r"primary_demand = yes\s*article\s*=\s*\{\s*article = eafp_grant_concession[^}]*"
                      r"inputs\s*=\s*\{\s*\{\s*state = s:STATE_BEIJING\.region_state:CHI", second_war), "Tianjin primary demand"
     assert "source_modifier" not in treaties and "target_modifier" not in treaties
-    assert effects.count("add_treasury") == 1, "Only paid expansion charges the treasury"
+    # Treasury charges: paid concession expansion and the monthly company industry investment.
+    assert effects.count("add_treasury") == 2, "Only expansion and industry investment charge the treasury"
     # The weekly Chinese-treasury-to-holder transfer and its modifiers are removed entirely.
     assert not re.search(r"\bconcession_pa(?:yment|id)\b", clean), \
         "No recurring treasury transfer from the Chinese owner to holders"
@@ -201,6 +260,11 @@ def main():
     assert "remove_company = company_type:company_eafp_concession" in effects
     assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
     assert "eafp_concession_expand_effect = yes" in je_code
+    # AI expansion waits until the concession building is staffed enough.
+    ai_expand = je_code.split("ordered_in_global_list = {", 1)[1].split("eafp_concession_expand_effect = yes", 1)[0]
+    assert re.search(r"is_building_type = building_eafp_concession\s*occupancy >= eafp_concession_ai_expand_min_occupancy", ai_expand)
+    assert re.search(r"^eafp_concession_ai_expand_min_occupancy = \{ value = 0\.8 \}",
+                     read(ROOT / "common/script_values/eafp_concessions_values.txt"), re.M)
     assert "eafp_concession_expand_effect = yes" in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
     assert "eafp_concession_free_capacity >= 1" not in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
@@ -251,7 +315,9 @@ def main():
     assert "eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }" in rebuild
     assert rebuild.index("eafp_concession_measure_country_levels = { COUNTRY = scope:concession_holder }") \
         < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Read the holder's levels, then overwrite"
-    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 4
+    # return, per-holder share removal, rounding, the industry investment (holder pick + building
+    # share) and the urban usage record.
+    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 7
     # State creation/owner change rounds split shares to the nearest multiple of 5 (min 5)
     # by overwriting, never by removing the building.
     rounding = effects.split("eafp_concession_round_ownership_effect = {", 1)[1].split("\n}", 1)[0]
@@ -285,13 +351,55 @@ def main():
     assert "eafp_concession_urban_cap" not in refresh and "eafp_concession_over_capacity" not in refresh
     assert "levels = -" not in effects, "Do not assume unsupported negative ownership removal"
     assert "count = 32" in effects and "value >= scope:concession_level_mid" in effects
-    assert "level_after_queued_constructions = level" in je_code, "Include waiting construction in duplicate prevention"
-    queue_types = re.findall(r"start_privately_funded_building_construction\s*=\s*(\w+)", je_code)
-    assert queue_types and len(queue_types) == len(set(queue_types))
+    # Monthly industry investment: the concession company gets one level at once (no private
+    # construction queue), paid by the holder only when its share grew; ports are included.
+    assert "start_privately_funded_building_construction" not in clean
+    assert "eafp_concession_industry_investment_effect = yes" in je_code
+    invest = effects.split("eafp_concession_industry_investment_effect = {", 1)[1].split("\n}", 1)[0]
+    invest_types = re.findall(r"eafp_concession_industry_create = \{ TYPE = (\w+) \}", invest)
+    assert invest_types and len(invest_types) == len(set(invest_types)) and "building_port" in invest_types
     vanilla_buildings = "\n".join(read(p) for p in (game / "common/buildings").glob("*.txt"))
-    for key in queue_types:
+    for key in invest_types:
         assert re.search(r"^" + key + r"\s*=", vanilla_buildings, re.M), key
-        assert "can_construct_building = " + key in je_code, key
+        assert "can_construct_building = " + key in invest, key
+    assert "gold_reserves >= eafp_concession_industry_level_cost" in invest
+    # Only a company owning concession levels in this very state is chosen (best starts at 0,
+    # measured on this state's concession building, strictly greater wins).
+    assert "save_temporary_scope_value_as = { name = eafp_industry_best value = 0 }" in invest
+    assert "scope:eafp_industry_concession = { eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_industry_candidate } }" in invest
+    assert re.search(r"limit = \{\s*scope:concession_level_low > scope:eafp_industry_best\s*scope:eafp_industry_used < scope:concession_level_low\s*\}", invest), "Cap: urban levels below concession levels"
+    # Usage record: refreshed weekly and before each investment, counting exactly the
+    # investable building types.
+    assert invest.index("eafp_concession_urban_usage_refresh = yes") < invest.index("every_in_list")
+    assert "variable_map(eafp_concession_urban_map|scope:eafp_industry_candidate)" in invest
+    refresh_body = effects.split("eafp_concession_refresh_effect = {", 1)[1].split("\n}", 1)[0]
+    assert "eafp_concession_urban_usage_refresh = yes" in refresh_body
+    usage = effects.split("eafp_concession_urban_usage_refresh = {", 1)[1].split("\n}", 1)[0]
+    assert "add_to_variable_map = { name = eafp_concession_urban_map key = scope:eafp_usage_holder" in usage
+    urban_trigger = unquoted(read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"))
+    urban_trigger = urban_trigger.split("\neafp_concession_urban_investment_building = {", 1)[1].split("\n}", 1)[0]
+    assert sorted(re.findall(r"is_building_type = (\w+)", urban_trigger)) == sorted(
+        re.findall(r"eafp_concession_industry_create = \{ TYPE = (\w+) \}", invest)), "Cap counts the investable types"
+    assert invest.index("eafp_concession_industry_create") < invest.index("add_treasury"), "Charge after the grant"
+    assert re.search(r"levels_owned_by_country = \{ target = scope:eafp_industry_holder value >= scope:eafp_industry_new_levels \}\s*\}\s*scope:eafp_industry_holder = \{ add_treasury", invest)
+    create = effects.split("eafp_concession_industry_create = {", 1)[1].split("\n}", 1)[0]
+    levels = [int(x) for x in re.findall(r"^\t\t(\d+) = \{ create_building = \{ building = \$TYPE\$ add_ownership = \{ company = \{ type = company_eafp_concession", create, re.M)]
+    assert levels == list(range(1, 101)), "One literal case per level 1..100"
+    # Costs (user values): industry level 100,000; +5 concession expansion 500,000.
+    values_text = read(ROOT / "common/script_values/eafp_concessions_values.txt")
+    assert re.search(r"^eafp_concession_industry_level_cost = \{ value = 100000 \}", values_text, re.M)
+    assert re.search(r"^eafp_concession_expansion_cost = \{ value = 500000 \}", values_text, re.M)
+    # Industry investment needs a staffed, funded concession building; looser than AI expansion.
+    invest_call = je_code.split("eafp_concession_industry_investment_effect = yes", 1)[0].rsplit("every_in_global_list = {", 1)[1]
+    assert "occupancy >= eafp_concession_industry_min_occupancy" in invest_call
+    assert "cash_reserves_ratio >= eafp_concession_industry_min_cash_reserves" in invest_call
+    num = lambda key: float(re.search(r"^" + key + r" = \{ value = ([\d.]+) \}", values_text, re.M)[1])
+    assert num("eafp_concession_industry_min_occupancy") < num("eafp_concession_ai_expand_min_occupancy")
+    assert 0 < num("eafp_concession_industry_min_cash_reserves") < 1
+    # Every candidate building, ports included, needs a positive weekly profit.
+    invest_limit = invest.split("ordered_scope_building = {", 1)[1].split("order_by", 1)[0]
+    assert re.search(r"^\t\t\t\tweekly_profit > 0$", invest_limit, re.M) and "building_port" in invest_limit
+    assert not re.search(r"OR = \{\s*weekly_profit > 0\s*is_building_type = building_port", invest_limit)
     assert "eafp_concession_free_capacity >= 1" not in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert b"## weekly_profit" in (ROOT / "documentation/triggers.log").read_bytes()
     mods = read(ROOT / "common/static_modifiers/eafp_chi_modifiers.txt")
@@ -403,7 +511,36 @@ def main():
         assert clause in bar, clause
     assert "color = \"[Company.GetCountry.GetMapColor]\"" in gui.split("type eafp_concession_owner_segment = widget {", 1)[1]
     owner_row = gui.split("type eafp_concession_owner_row = flowcontainer {", 1)[1].split("\n\t}", 1)[0]
-    assert "datacontext = \"[BuildingOwnership.GetOwnerBuilding.GetCompany]\"" in owner_row and "visible" not in owner_row
+    assert "datacontext = \"[BuildingOwnership.GetOwnerBuilding.GetCompany]\"" in owner_row
+    # No layout boxes in the widget's own markup (vanilla types may use them internally).
+    assert not re.search(r"\b[hv]box\s*=", gui), "Use container/flowcontainer, not hbox/vbox"
+    # The two country-colour bars are 8 px backgrounds of the fixed-width (480) row, so they
+    # always span its full height: one shrunk from the right, one from the left.
+    assert "minimumsize = { 480 -1 }" in owner_row
+    assert re.search(r"margin_left = 16\s*margin_right = 16", owner_row)
+    for side in ("margin_right", "margin_left"):
+        assert re.search(r"background = \{\s*using = entry_bg_simple_colored\s*color = \"\[Company\.GetCountry\.GetMapColor\]\"\s*"
+                         + side + r" = -472\s*\}", owner_row), side
+    assert owner_row.count("Company.GetCountry.GetMapColor") == 2
+    assert not re.search(r"size = \{ 8 \d+ \}", owner_row), "No fixed-height colour bars"
+    assert "IsCountryOwned" not in owner_row
+    # Under each company: the state's buildings (minus the concession building) in which that
+    # company owns levels, each line opening the building with its vanilla tooltip.
+    assert 'datamodel = "[State.AccessBuildings]"' in owner_row
+    # The usage line toggles the list (per state x company, collapsed by default).
+    company_key = "Concatenate(Concatenate('eafp_concession_company_', State.GetIDString), Company.GetCountry.GetIDString)"
+    assert f"onclick = \"[GetVariableSystem.Toggle({company_key})]\"" in owner_row
+    assert re.search(r'section_header_button = \{\s*tooltip = "eafp_concession_urban_usage_tt"', owner_row)
+    # Normal text size: the header's default fontsize_large is overridden with nothing.
+    assert re.search(r'blockoverride "fontsize" \{\}\s*blockoverride "left_text" \{ text = "eafp_concession_urban_usage" \}', owner_row)
+    assert re.search(r'flowcontainer = \{\s*visible = "\[GetVariableSystem\.Exists\(' + re.escape(company_key)
+                     + r'\)\]"(?:(?!flowcontainer = \{).)*datamodel = "\[State\.AccessBuildings\]"', owner_row, re.S)
+    assert "visible = \"[Not(ObjectsEqual(Building.Self, State.GetBuilding('building_eafp_concession').Self))]\"" in owner_row
+    assert 'visible = "[ObjectsEqual(BuildingOwnership.GetOwnerBuilding.GetCompany.Self, Company.Self)]"' in owner_row
+    building_row = gui.split("type eafp_concession_company_building_row = button {", 1)[1].split("\n\t}", 1)[0]
+    for clause in ('onclick = "[InformationPanelBar.OpenBuildingDetailsPanel(Building.AccessSelf)]"',
+                   "FancyTooltip_Building = {}", 'text = "eafp_concession_company_building_row"'):
+        assert clause in building_row, clause
     assert "eafp_concession_ownership_bar = {" in gui.split("types eafp_concession_widgets", 1)[1].split("type eafp_concession_state_rows", 1)[1]
     # Navigation to the state and to the concession building.
     assert "onclick = \"[InformationPanelBar.OpenStatePanel(State.AccessSelf)]\"" in gui
@@ -456,7 +593,8 @@ def main():
     keys = set(re.findall(r"(?:text|tooltip|title|desc|flavor|name|custom_tooltip)\s*=\s*\"?((?:concessions_in_china\.\d+\.|eafp_(?:grant|return)_concession_|eafp_concession_|EAFP_CONCESSION_AI_)\w+)", code))
     # Script names, effects, and saved scopes are not localization keys.
     keys = {k for k in keys if k not in definitions
-            and k not in ("eafp_concession_compensation", "eafp_concession_rebuild_map")}
+            and k not in ("eafp_concession_compensation", "eafp_concession_rebuild_map",
+                          "eafp_concession_urban_map")}
     for key in ("je_concessions_in_china",):
         keys.update((key, key + "_reason", key + "_status"))
     for key in ("eafp_grant_concession",):
@@ -470,6 +608,17 @@ def main():
     for removed in ("eafp_concession_holder_active_gui", "eafp_concession_activity_summary",
                     "eafp_concession_prestige_tt", "eafp_concession_active_label"):
         assert removed not in code, removed
+    # A concession right always works through the building: no separate operation check.
+    assert not re.search(r"\beafp_concession_active\b|eafp_concession_active_holder_count", clean), \
+        "Operation checks were removed"
+    assert "eafp_concession_has_holder = { HOLDER = scope:concession_holder }" in \
+        triggers_text.split("\neafp_concession_event_valid = {", 1)[1].split("\n}", 1)[0]
+    assert "eafp_concession_has_holder = { HOLDER = $HOLDER$ }" in \
+        triggers_text.split("\neafp_concession_can_expand = {", 1)[1].split("\n}", 1)[0]
+    eligible_users = {p.name for p in files if "eafp_concession_eligible_state = yes" in read(p)}
+    assert eligible_users <= {"eafp_concessions_triggers.txt", "eafp_concessions_treaty_articles.txt",
+                              "eafp_concessions_diplomatic_plays.txt"}, eligible_users
+    assert "eafp_concession_eligible_state" not in je_code, "The eligibility check gates grants only"
     keys.update(key for key in feature_definitions
                 if key.startswith(("building_eafp_", "bg_eafp_", "company_eafp_", "pm_eafp_", "pmg_eafp_")))
     keys.update(("eafp_concession_company_slot", "eafp_concession_forced_loss", "eafp_concession_right_live", "eafp_concession_right_returned"))

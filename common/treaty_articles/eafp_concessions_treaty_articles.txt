@@ -11,15 +11,57 @@
 	maintenance_paid_by = target_country
 	required_inputs = { state }
 
-	visible = { NOT = { is_country_type = decentralized } }
-	possible = { always = yes }
+	# Conditions follow vanilla treaty_port (14_treaty_port.txt) minus its treaty-port-only
+	# parts (coastal state, is_potential_treaty_port, treaty port province control, one
+	# treaty port article per state). The state must be in China Proper with an
+	# unrecognized owner (eafp_concession_eligible_state).
+	unlocked_by_technologies = {
+		colonization
+	}
+
+	visible = {
+		is_revolutionary = no
+	}
+
+	possible = {
+		any_scope_state = { eafp_concession_eligible_state = yes }
+		scope:other_country = {
+			NOT = { is_subject_of = root }
+		}
+	}
+
+	requirement_to_maintain = {
+		trigger = {
+			exists = scope:article.input_state
+		}
+	}
+
+	# The granting country must keep owning the state. After an ownership change the new
+	# owner re-grants the right (eafp_concession_transfer_treaties_effect); the old owner's
+	# article then counts as not fulfilled at once and the old owner withdraws from that
+	# treaty like a breach (break penalties apply while it is binding). on_withdrawal does
+	# not return the right, because the article's source is no longer the state's owner;
+	# the treaty's other concession articles that are still valid get treaties of their own.
+	non_fulfillment = {
+		consequences = withdraw
+		max_consecutive_contraventions = 0
+		conditions = {
+			weekly = {
+				NOT = { scope:article.input_state ?= { owner = root } }
+			}
+		}
+	}
+
 	state_valid_trigger = {
 		scope:input = {
 			owner = root
-			eafp_concession_can_grant = { HOLDER = scope:other_country }
+			eafp_concession_can_receive = { HOLDER = scope:other_country }
 		}
 	}
 	can_ratify = {
+		scope:source_country = {
+			country_rank <= scope:target_country.country_rank
+		}
 		custom_tooltip = {
 			text = eafp_grant_concession_valid_tt
 			OR = {
@@ -40,7 +82,7 @@
 					exists = scope:article.input_state
 					scope:article.input_state = {
 						owner = scope:source_country
-						eafp_concession_can_grant = { HOLDER = scope:target_country }
+						eafp_concession_can_receive = { HOLDER = scope:target_country }
 					}
 				}
 			}
@@ -105,8 +147,7 @@
 				}
 			}
 		}
-		
-		add_contextless_journal_entry = je_concessions_in_china
+		# The concession JE activates by itself once this treaty is in force (its possible).
 	}
 	# Enforcement already executes on_entry_into_force.
 	on_enforced = {}
@@ -119,15 +160,41 @@
 				save_scope_as = concession_state
 				# The state may have changed hands since the article entered into force.
 				owner = { save_scope_as = concession_host }
+				# After an ownership change the right is backed by a new treaty with the new
+				# owner (eafp_concession_transfer_treaties_effect); the previous owner's
+				# treaty no longer controls it, so withdrawing from that one returns nothing.
 				if = {
-					limit = {
-						exists = scope:withdrawing_country
-						scope:withdrawing_country = scope:concession_host
-						scope:article.treaty.remaining_binding_period > 0
+					limit = { scope:article.source_country = scope:concession_host }
+					# Another concession article of this treaty lapsed (its source lost its
+					# state), so the treaty ends through non_fulfillment, not by choice. This
+					# article is still valid: keep the right and back it with its own treaty.
+					if = {
+						limit = {
+							eafp_concession_has_holder = { HOLDER = scope:concession_holder }
+							scope:article.treaty ?= {
+								any_scope_article = {
+									has_type = eafp_grant_concession
+									source_country = scope:concession_host
+									NOT = { input_state ?= { owner = scope:concession_host } }
+								}
+							}
+						}
+						eafp_concession_create_treaty_effect = {
+							HOST = scope:concession_host
+							HOLDER = scope:concession_holder
+							STATE = scope:concession_state
+						}
 					}
-					eafp_concession_return_effect = { FORCED = yes }
+					else_if = {
+						limit = {
+							exists = scope:withdrawing_country
+							scope:withdrawing_country = scope:concession_host
+							scope:article.treaty.remaining_binding_period > 0
+						}
+						eafp_concession_return_effect = { FORCED = yes }
+					}
+					else = { eafp_concession_return_effect = { FORCED = no } }
 				}
-				else = { eafp_concession_return_effect = { FORCED = no } }
 			}
 		}
 	}

@@ -14,7 +14,7 @@
 - 주 분할 보정(2026-11-11): `on_state_created`·`on_state_owner_change`(`eafp_concessions_state_changed`)에서 같은 state region의 조계지가 있는 모든 주에 `eafp_concession_round_ownership_effect`를 실행한다. 각 국가 소유 레벨을 재서 5의 배수가 아니면 가장 가까운 5의 배수(`divide = 5 round = yes multiply = 5`)로 `create_building` 한 번에 덮어쓴다(7 → 5, 8 → 10, 13 → 15). 1~2레벨은 0이 아니라 5로 올린다. 0으로 덮어써 소유자를 없애는 방법은 확인되지 않았기 때문이다. `remove_building`은 쓰지 않으며, 보정 후 권리 정리(refresh)를 실행한다. 반올림으로 도심지 상한을 넘을 수 있으나 상한은 진입 조건이므로 기존 건물은 유지한다.
 - 성공 판정: 지급·확장 모두 「총레벨 증가」 대신 보유국 소유 ≥ `scope:concession_expected_levels`로 판정한다. 확장 비용은 이 조건이 맞을 때만 차감한다.
 - 건물을 지우지 않으므로 다른 국가 지분·근로자·현금보유고·생산 방식·보조금은 그대로다. 따라서 `flag:cash_reserve` 저장, 생산 방식·보조금 복원, 미귀속 레벨 보정 단계는 삭제했다. `remove_building`은 반환(마지막 권리 소멸)과 권리 없는 주 정리에만 남는다.
-- 확장 단위: 저널 버튼·AI 확장 모두 +5레벨(`eafp_concession_add_company_level = { LEVELS = 5 }`), 도심지 상한 여유 5레벨이 필요하다(`eafp_concession_free_capacity >= 5`). 비용 `eafp_concession_expansion_cost`는 레벨당 £50,000 × 5 = 클릭 1회 £250,000이다(2026-11-11 사용자 결정).
+- 확장 단위: 저널 버튼·AI 확장 모두 +5레벨(`eafp_concession_add_company_level = { LEVELS = 5 }`), 도심지 상한 여유 5레벨이 필요하다(`eafp_concession_free_capacity >= 5`). 비용 `eafp_concession_expansion_cost`는 클릭 1회 £500,000이다(2026-11-11 £250,000에서 2026-11-13 사용자 결정으로 변경).
 - 버튼 툴팁은 `custom_tooltip = { text = eafp_concession_expand_effect_tt ... }`로 감싸 「자국 지분만 덮어쓰고 나머지는 유지」를 안내한다.
 - 함께 고친 버그: 새 건물 PM으로 존재하지 않는 `pm_eafp_concession_trade_quantity_normal`을 지정하던 것을 `pm_eafp_concession`·`pm_trade_center_trade_quantity_normal`로 바꿨다.
 - 제한(미검증): 「덮어쓰기」 동작은 사용자 확인에 근거하며 엔진 문서는 기존 건물에서 레벨이 max(기존, 지정값)이라고만 적는다. 보유국 소유를 국가 합계로 읽으므로 그 국가의 금융지구·장원 등 다른 소유 형태 지분이 있으면 기대 총량 계산에 포함된다. `create_building`이 기존 건물의 생산 방식을 `activate_production_methods` 값으로 바꿀 수 있다. 변수 맵 값으로 숫자를 쓰는 형식은 바닐라(`value = year`, `variable_map(name|key)`)를 따랐다.
@@ -25,6 +25,32 @@
 - 도달 조건 분리: `eafp_concession_can_grant` = `eafp_concession_can_receive` + 도달(해당 전략지역 이해관계 **또는** 주 소유국과 외교전 적대·전쟁 중). 이전에는 이해관계만 인정해 영국이 화북 이해관계가 없으면 톈진 요구가 빠졌다. 지급 효과는 도달을 빼고 `eafp_concession_can_receive`만 재검사한다(협상·요구 시점에 이미 통과했고, 조약 발효 시점에는 외교전이 끝났을 수 있으므로).
 - 조계 항목 AI: flags에 바닐라 조약항과 같은 `hostile`·`ai_consider_threaten_naval_hostilities` 추가. `evaluation_chance`는 열강 0.3(기타 0.1). 수락 점수에 도시 규모(도심지 레벨 × 2, 최대 40, `EAFP_CONCESSION_AI_CITY`)를 더한다(내주는 쪽은 음수). `wargoal_score_multiplier`는 수취국이 열강이면 +1, 2차 아편전쟁에서 내주는 쪽과 적대 중이면 +2, 영국의 톈진이면 +3(바닐라 홍콩 패턴). 전쟁 목표 기동 비용 10 → 5.
 - 미검증: 엔진이 enforce 전쟁 목표 실행 시 `state_valid_trigger`를 다시 검사하는지, `hostile` 플래그의 정확한 AI 효과는 게임에서 확인하지 않았다.
+
+2026-11-13 변경(조계회사 직접 산업 투자): 6절의 「민간 건설 큐 등록」을 대체한다. 국제 저널의 월간 처리에서 조계권이 있는 주마다(조계지 레벨 > 0, 기반시설 여유, 실업자 있음, 그 주 조계지 건물의 고용률 ≥ `eafp_concession_industry_min_occupancy`(0.6)·현금보유고 비율 ≥ `eafp_concession_industry_min_cash_reserves`(0.2) — AI 확장의 고용률 0.8보다 낮은 기준) `eafp_concession_industry_investment_effect`를 실행한다. 새 조계지는 현금보유고 0으로 시작하므로 보유고가 어느 정도 쌓인 뒤부터 투자한다.
+- 투자할 회사: 그 주의 조계지 건물에 실제로 지분(1레벨 이상)을 가진 조계회사만 후보다. 그 주 조계권 보유국 중 회사가 있고 국고가 `eafp_concession_industry_level_cost`(£100,000) 이상인 나라 가운데 그 주 조계지 지분이 가장 큰 나라의 회사가 투자한다. 다른 주에만 조계지가 있는 회사는 이 주에 투자하지 않는다.
+- 대상 건물: 그 주에 이미 있는 18종 산업 + 항구(`building_port`) 중 1레벨 더 지을 수 있고(`can_queue_building_levels = 1`, 업종별 `can_construct_building`) 주간 순이익이 양수인 것(항구 포함), 레벨당 순이익이 가장 높은 하나.
+- 지급: 보유국의 그 건물 소유 레벨을 재서 +1로 `create_building`(`add_ownership.company`)에 덮어쓴다. 리터럴 레벨만 문서화되어 있어 `eafp_concession_industry_create`가 1~100 switch로 고르며, 100레벨 이상이면 투자하지 않는다. 공사 기간·투자 풀 없이 즉시 생긴다.
+- 비용: 소유 레벨이 실제로 늘었을 때만 보유국 국고에서 £100,000를 뺀다.
+- 미검증: 회사 유형의 `building_types`에는 조계지만 있으므로 다른 업종 지분을 회사 소유로 줄 수 있는지, 국가 합계로 잰 소유 레벨이 회사 지분과 같은지(보유국의 다른 투자자가 같은 건물을 가지면 다름)는 게임에서 확인해야 한다.
+
+2026-11-13 변경(소유권 이전 시 조약 승계): 주 소유자가 바뀌면(`eafp_concessions_state_changed`, 권리 정리 뒤) `eafp_concession_transfer_treaties_effect`가 그 주에 남은 조계권 보유국마다 새 소유국과 조계 조약(`eafp_grant_concession`, 그 주)을 `create_treaty`(`is_draft = no`, 구속기간 0일 = 허용되는 최소)로 맺는다. 같은 소유국·같은 주의 조항이 이미 있으면 맺지 않는다. 보유국에게 이미 권리가 있으므로 조약 발효의 지급 효과는 레벨을 추가하지 않는다. 조약 철회(`on_withdrawal`)는 조항의 내준 쪽이 현재 주 소유국일 때만 반환을 처리하므로, 옛 소유국 조약에서의 탈퇴는 이 주의 조계에 영향이 없다. 옛 소유국과의 조약은 스크립트로 끊지 않는다. 조계 조항에 `non_fulfillment`(주간 조건: 조항의 주를 source가 더는 소유하지 않음, `max_consecutive_contraventions = 0`, `consequences = withdraw`)를 두어, 주를 잃은 옛 소유국의 조항이 곧바로 불이행 처리되고 옛 소유국이 위약처럼 그 조약에서 탈퇴한다(구속 기간 중이면 위약 벌칙 적용). 탈퇴는 조약 전체를 끝내므로 같은 조약의 다른 조항도 함께 사라진다. `on_withdrawal`은 조항의 source가 현재 소유국이 아니므로 조계를 반환하지 않는다. 같은 조약의 다른 조계 조항 중 아직 유효한 것(source가 여전히 그 주를 소유)은, 조약 안에 불이행 조계 조항이 있으면 반환하지 않고 그 주만 담은 새 조계 조약(`eafp_concession_create_treaty_effect`, 구속 0일)으로 다시 맺는다. 조계가 아닌 다른 조항은 되살리지 않는다. 남은 점: 조약 파일의 무역소 생성 블록은 승계 조약에서도 (무역소가 없으면) 실행된다. 보유국이 직접 주를 차지한 경우의 권리 소멸은 그대로다.
+
+2026-11-13 변경(회사별 건물 목록): 저널 위젯의 소유 목록에서 조계회사 줄 아래에, 그 주의 건물(`State.AccessBuildings`) 중 조계지 건물을 뺀 모든 건물에 대해 그 회사가 가진 소유 항목(`ObjectsEqual(BuildingOwnership.GetOwnerBuilding.GetCompany.Self, Company.Self)`)을 한 줄씩 보여 준다(아이콘 · 건물 이름 · 레벨 · 비율, `eafp_concession_company_building_row`). 줄을 누르면 건물 화면이 열리고 바닐라 건물 툴팁이 뜬다. 이 목록은 회사 줄의 「도심 건물 사용량 / 한도」(`section_header_button`)를 눌러 펼치고 접으며 기본은 접힘이다(UI 상태 키 = 주 ID × 회사 국가 ID). 조약 발효 때 회사 소유로 만드는 무역소처럼 한도 계산에 들지 않는 건물도 목록에는 나온다.
+
+2026-11-13 변경(조계회사 도심 건물 한도): 조계회사가 한 주에서 가질 수 있는 도심 건물(월간 투자로 받을 수 있는 18종 산업 + 항구, 트리거 `eafp_concession_urban_investment_building`) 레벨 합의 한도는 그 회사의 그 주 조계지 지분 레벨이다. `eafp_concession_urban_usage_refresh`가 주 변수 맵 `eafp_concession_urban_map`(키 = 보유국, 값 = 그 유형 건물들에서 잰 소유 레벨 합)을 주간 refresh와 매 투자 직전에 갱신하고, 투자 후보는 사용량 < 조계지 지분일 때만 뽑힌다(1레벨씩 늘리므로 한도를 넘지 않는다). 저널 위젯의 소유 목록 행마다 「도심 건물 사용량 / 한도」(`eafp_concession_urban_usage`, 툴팁 `_tt`)를 표시한다. 사용량은 국가 합계로 재므로 보유국의 다른 투자자가 같은 건물을 가지면 함께 셈해진다.
+
+2026-11-13 변경(AI 확장 고용률 조건): AI의 월간 조계 확장은 그 주 조계지 건물의 고용률(`occupancy`)이 `eafp_concession_ai_expand_min_occupancy`(0.8, 바닐라 건물 확장 조건과 같은 값) 이상일 때만 한다. 플레이어 확장 버튼 조건은 바뀌지 않는다.
+
+2026-11-13 변경(저널 활성화·고정): 국제 저널 `je_concessions_in_china`는 비활성 상태로 처음부터 보이며(`is_shown_when_inactive = { always = yes }`), 조계 조약이 있을 때 활성화된다. 보이는 저널은 `possible`(기본 yes)이 참이면 스스로 활성화되므로 `possible = { eafp_concession_treaty_exists = yes }`로 두었다. `eafp_concession_treaty_exists`는 어떤 국가든 `eafp_grant_concession` 항목이 든 발효 중 조약을 가졌는지 본다(국가 범위 조약 목록은 발효 조약만 포함, 전역 목록은 초안도 포함하므로 국가 범위를 쓴다). 스크립트에서 직접 활성화하는 `add_contextless_journal_entry`는 없앴다. 활성화되면 관여국에게만 아웃라이너에 고정되도록 `should_be_pinned_by_default_involved = yes`, `should_be_pinned_by_default_uninvolved_or_context = no`로 했다. 이미 활성화된 구 세이브의 저널은 그대로다.
+
+2026-11-12 변경(작동 판단 삭제): 조계 조약으로 생긴 권리(`concession_owner_varlist`)가 있으면 조계지 건물을 통해 무조건 작동한다. 별도 작동 판단인 트리거 `eafp_concession_active`와 script value `eafp_concession_active_holder_count`를 삭제했다. 확장 조건·사건 유효성(`eafp_concession_event_valid`)·반환 전쟁 목표는 권리 존재(`eafp_concession_has_holder`)만 보고, 월간 사건은 권리가 있는 모든 주, 자동 투자는 후보 목록(권리 있는 주)에서 투자 조건만 본다. `eafp_concession_eligible_state`(관내18성·조약항 아님·미승인국 소유)는 새 조계를 주거나 요구할 때만 쓴다. 권리 정리(refresh: 소유국 사망·주 획득·회사·지분 없음)는 작동 판단이 아니라 권리 유지이므로 그대로다.
+
+2026-11-12 변경(요구·조항 조건을 조약항에 맞춤): 「조계 양도」 조항과 「조계 요구」 외교전의 조건을 바닐라 `treaty_port`·`take_treaty_port`와 같게 했고, 조약항에만 해당하는 조건(해안 주, `is_potential_treaty_port`, 조약항 프로빈스 통제, 주당 조약항 조항 하나, `validate_take_treaty_port`)은 뺐다.
+- 대상 주: `eafp_concession_eligible_state` = 관내18성 + 조약항 아님 + 주 소유국이 미승인국. 지급·요구(`eafp_concession_can_receive`, 외교전, 조항 possible)만 이것을 쓴다. 이전의 「중국 국가 소유」 조건은 없앴다.
+- 조항: `unlocked_by_technologies = { colonization }`, visible `is_revolutionary = no`, possible(대상 국가가 자국 종속국이 아님 + 그런 주를 보유), `requirement_to_maintain`(주 존재), can_ratify(내주는 쪽 국가 등급 ≤ 받는 쪽), state_valid_trigger는 이해관계 없이 `eafp_concession_can_receive`. 바닐라 조약항 조항처럼 이해관계는 요구하지 않는다.
+- 전쟁 목표 `eafp_demand_concession`: 설정을 바닐라와 같게(`skip_build_list`, `validate_conflicts_conquer_state`, `conflicts_with_annex_state` 추가, `requires_interest`가 이해관계 조건), valid는 대상 국가 소유 주 + `eafp_concession_can_receive`.
+- 유지한 조계 고유 규칙: 받는 쪽은 수도가 있는 열강, 그 주에 기존 권리 없음, 도심지 상한 여유 5레벨.
+- 결과: 주 소유국이 승인국이 되면 새 조계를 맺거나 요구할 수 없다. 기존 조계는 아래 「작동 판단 삭제」에 따라 그대로 작동한다.
 
 2026-11-12 변경(번역 파일 통합): 조계 번역을 언어마다 `localization/<언어>/eafp_concessions_in_china_l_<언어>.yml` 한 파일로 모았다. `eafp_concessions_buildings_l_*` 전체(36개)와 `eafp_china_l_*`의 「# 중국 조계지」 구역(115개)을 옮겨 151개이며, 원래 파일의 구역과 `eafp_concessions_buildings_l_*` 파일은 삭제했다. 키·값은 그대로이고 출처 주석은 해당 키(`je_concessions_in_china_reason`)에 붙어 있다. 순서는 세 언어가 같다: 개념 → 건물·생산 방식·회사·modifier → 조약 항목 → 외교전·전쟁 목표(조계 요구, 조계 반환) → 저널 → 저널 위젯(주 행, 소유 지분, 확장 버튼) → 월간 사건 200~207. 이후 미사용 문구 50개(구 버전 저널 2, 비활성 이벤트 1001~1006, 주석 처리된 `concession_state_modifier`·`concession_building_modifier`, 옛 위젯 문구, 어디서도 쓰지 않는 `STATE_CONCESSION`)를 삭제해 언어마다 101개가 남았고, 검사기가 이 파일의 모든 키가 실제로 쓰이는지(코드 참조, 다른 문구의 `$키$`·SelectLocalization 분기, 로드되는 이벤트, 스크립트 정의 이름) 확인한다. `qing_owns_all_concessions_tt`는 그 구역 밖의 청 관련 툴팁이라 `eafp_china_l_*`에 남겼다.
 
@@ -67,7 +93,7 @@
 | 조약 획득 | 기존 조약 발효 효과에서 회사 생성 및 회사 소유 +5, 성공 후 권리 등록 |
 | 회사 수명 | 보유국마다 공통 일반 기업 유형 1개, 첫 설치 시 생성·마지막 권리 소멸 시 해산 |
 | 기업 슬롯 | 회사 존재 중 국가에 `country_max_companies_add = 1`, 번영도와 무관 |
-| 저널 확장 | 보유국 국고 £250,000, 실제 +5 성공 후 과금. AI도 같은 효과 |
+| 저널 확장 | 보유국 국고 £500,000, 실제 +5 성공 후 과금. AI도 같은 효과 |
 | 도시 한도 | 신규 획득 `T + 5 ≤ 5U`, 저널 확장 `T + 1 ≤ 5U`. 이후 U 감소 시 기존 건물 유지 |
 | 자동 산업 투자 | 국제 저널 월간 계산으로 적격 조계 주마다 최대 1레벨 민간 건설 큐 등록 |
 | 현황 GUI | 실제 총량·cap·여유·초과·무역소 환산·회사 소유 항목·국가 권리·확장 버튼 |

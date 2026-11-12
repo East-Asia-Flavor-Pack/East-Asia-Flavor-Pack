@@ -9,9 +9,9 @@ eafp_concession_incident_return = {
 	valid = {
 		exists = scope:target_state
 		exists = scope:target_country
+		# Valid while the right exists; there is no separate operation check.
 		scope:target_state = {
 			owner = root
-			eafp_concession_eligible_state = yes
 			eafp_concession_has_holder = { HOLDER = scope:target_country }
 		}
 	}
@@ -35,26 +35,28 @@ eafp_concession_incident_return = {
 eafp_demand_concession = {
 	icon = "gfx/interface/icons/war_goals/take_treaty_port.dds"
 	kind = custom
+	# Same settings as vanilla take_treaty_port except its validate_take_treaty_port check.
+	# requires_interest supplies the interest-marker condition, as for treaty ports.
 	settings = {
 		require_target_be_part_of_war
 		can_add_for_other_country
+		skip_build_list
 		requires_interest
+
+		# Validation
+		validate_conflicts_conquer_state
+		conflicts_with_annex_state
 	}
 	execution_priority = 21
 	contestion_type = control_target_state
 	target_type = state
-	possible = {
-		country_rank >= rank_value:great_power
-		scope:target_state = {
-			owner = scope:target_country
-			eafp_concession_can_grant = { HOLDER = root }
-		}
-	}
+	possible = {}
+	# As take_treaty_port: the target state belongs to the target country; instead of
+	# is_potential_treaty_port the concession rules apply (China Proper, unrecognized owner).
 	valid = {
-		exists = scope:target_state
 		scope:target_state = {
 			owner = scope:target_country
-			eafp_concession_can_grant = { HOLDER = root }
+			eafp_concession_can_receive = { HOLDER = root }
 		}
 	}
 	maneuvers = {

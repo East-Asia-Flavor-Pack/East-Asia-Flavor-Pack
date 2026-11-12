@@ -10,19 +10,26 @@ eafp_concession_is_urban_building = {
 	}
 }
 
+# State scope. Where concessions can be granted, demanded and operate: a state in China
+# Proper that is not a treaty port and whose owner is an unrecognized country. (Treaty
+# port's own coastal / potential-treaty-port conditions do not apply to concessions.)
 eafp_concession_eligible_state = {
 	is_in_geographic_region = geographic_region_china_proper
 	is_treaty_port = no
-	owner = {
-		OR = {
-			c:CHI ?= this
-			eafp_is_chinese_central_government = yes
-			eafp_is_chinese_fragment = yes
+	owner = { is_country_type = unrecognized }
+}
+
+# Country scope; involvement follows rights.
+# Any scope. True while at least one in-force treaty contains a concession article
+# (country-scoped treaty lists hold in-force treaties only; the global list includes drafts).
+eafp_concession_treaty_exists = {
+	any_country = {
+		any_scope_treaty = {
+			any_scope_article = { has_type = eafp_grant_concession }
 		}
 	}
 }
 
-# Country scope; involvement follows rights.
 eafp_concession_involved_country = {
 	any_state_in_china_proper = {
 		has_variable_list = concession_owner_varlist
@@ -71,12 +78,8 @@ eafp_concession_has_holder = {
 	NOT = { owner = $HOLDER$ }
 }
 
-# A right works regardless of the two countries' prestige (no prestige comparison).
-eafp_concession_active = {
-	eafp_concession_eligible_state = yes
-	$HOLDER$ = { has_company = company_type:company_eafp_concession }
-	eafp_concession_has_holder = { HOLDER = $HOLDER$ }
-}
+# There is no separate "is the concession working" check: a concession right (from the
+# treaty) always works through the concession building.
 
 # Called by delayed event options: never act on a different owner or right.
 eafp_concession_event_valid = {
@@ -85,7 +88,7 @@ eafp_concession_event_valid = {
 	exists = scope:concession_holder
 	scope:concession_state = {
 		owner = scope:concession_host
-		eafp_concession_active = { HOLDER = scope:concession_holder }
+		eafp_concession_has_holder = { HOLDER = scope:concession_holder }
 	}
 }
 
@@ -114,13 +117,13 @@ eafp_concession_can_start_return_war = {
 eafp_concession_can_expand = {
 	custom_tooltip = {
 		text = eafp_concession_expand_active_tt
-		eafp_concession_active = { HOLDER = $HOLDER$ }
+		eafp_concession_has_holder = { HOLDER = $HOLDER$ }
 	}
 	custom_tooltip = {
 		text = eafp_concession_expand_capacity_tt
 		eafp_concession_free_capacity >= 5
 	}
-	# The concession company is already required by eafp_concession_active above.
+	# A missing concession company is founded by the expansion itself (eafp_concession_ensure_company).
 	custom_tooltip = {
 		text = eafp_concession_expand_treasury_tt
 		$HOLDER$ = { gold_reserves >= eafp_concession_expansion_cost }
@@ -138,5 +141,31 @@ eafp_concession_can_expand = {
 eafp_concession_holder_has_rights = {
 	any_state_in_china_proper = {
 		is_target_in_variable_list = { name = concession_owner_varlist target = prev }
+	}
+}
+
+# Building scope. Urban buildings a concession company can be given by the monthly
+# investment (the industries and the port); their levels count against its cap.
+eafp_concession_urban_investment_building = {
+	OR = {
+		is_building_type = building_food_industry
+		is_building_type = building_textile_mill
+		is_building_type = building_furniture_manufactory
+		is_building_type = building_glassworks
+		is_building_type = building_tooling_workshop
+		is_building_type = building_paper_mill
+		is_building_type = building_chemical_plant
+		is_building_type = building_explosives_factory
+		is_building_type = building_synthetics_plant
+		is_building_type = building_steel_mill
+		is_building_type = building_motor_industry
+		is_building_type = building_automotive_industry
+		is_building_type = building_electrics_industry
+		is_building_type = building_shipyard
+		is_building_type = building_arms_industry
+		is_building_type = building_artillery_foundry
+		is_building_type = building_munition_plant
+		is_building_type = building_art_academy
+		is_building_type = building_port
 	}
 }

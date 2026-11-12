@@ -5,10 +5,15 @@
 
 	icon = "gfx/interface/icons/event_icons/event_scales.dds"
 	group = je_group_global_international_situations
+	# Visible while inactive. A shown JE auto-activates when possible is true (default yes),
+	# so it activates once an in-force concession treaty exists.
 	is_shown_when_inactive = { always = yes }
-	# Activated by the concession treaty's on_entry_into_force effect.
+	possible = { eafp_concession_treaty_exists = yes }
 	should_be_involved = { eafp_concession_involved_country = yes }
 	should_show_when_not_involved = { always = yes }
+	# Pinned in the outliner when it appears, only for involved countries.
+	should_be_pinned_by_default_involved = yes
+	should_be_pinned_by_default_uninvolved_or_context = no
 	widget = {
 		gui = "gui/journal_entry_widgets/eafp_concessions_in_china.gui"
 		name = "widget_eafp_concessions"
@@ -40,7 +45,8 @@
 	on_monthly_pulse = {
 		effect = {
 			every_state = {
-				limit = { eafp_concession_active_holder_count > 0 }
+				# Any state with a concession right (no separate operation check).
+				limit = { any_in_list = { variable = concession_owner_varlist always = yes } }
 				save_scope_as = concession_state
 				owner = { save_scope_as = concession_host }
 				random = {
@@ -85,129 +91,30 @@
 					}
 				}
 			}
-			# Once per actual state, after incidents; never once per holder.
-			# Requires a real concession company and building.
+			# Once per actual state, after incidents; never once per holder. The candidate list
+			# holds only states with a concession right. The best-placed concession company
+			# gets one more level of a local industry or port at once, paid from its country's
+			# treasury (eafp_concession_industry_investment_effect).
 			every_in_global_list = {
 				variable = concession_candidate_states_gvarlist
 				limit = {
-					eafp_concession_active_holder_count > 0
 					eafp_concession_total_levels > 0
 					infrastructure_delta > 0
 					state_unemployment_rate > 0
-					owner = { investment_pool > 0 }
-					any_in_list = {
-						variable = concession_owner_varlist
-						has_company = company_type:company_eafp_concession
+					# The local concession building must be reasonably staffed and funded;
+					# looser than the AI expansion's occupancy requirement.
+					any_scope_building = {
+						is_building_type = building_eafp_concession
+						occupancy >= eafp_concession_industry_min_occupancy
+						cash_reserves_ratio >= eafp_concession_industry_min_cash_reserves
 					}
 				}
-				ordered_scope_building = {
-					limit = {
-						weekly_profit > 0
-						level > 0
-						level_after_queued_constructions = level
-						is_under_construction = no
-						can_queue_building_levels = 1
-						OR = {
-							AND = { is_building_type = building_food_industry state = { can_construct_building = building_food_industry } }
-							AND = { is_building_type = building_textile_mill state = { can_construct_building = building_textile_mill } }
-							AND = { is_building_type = building_furniture_manufactory state = { can_construct_building = building_furniture_manufactory } }
-							AND = { is_building_type = building_glassworks state = { can_construct_building = building_glassworks } }
-							AND = { is_building_type = building_tooling_workshop state = { can_construct_building = building_tooling_workshop } }
-							AND = { is_building_type = building_paper_mill state = { can_construct_building = building_paper_mill } }
-							AND = { is_building_type = building_chemical_plant state = { can_construct_building = building_chemical_plant } }
-							AND = { is_building_type = building_explosives_factory state = { can_construct_building = building_explosives_factory } }
-							AND = { is_building_type = building_synthetics_plant state = { can_construct_building = building_synthetics_plant } }
-							AND = { is_building_type = building_steel_mill state = { can_construct_building = building_steel_mill } }
-							AND = { is_building_type = building_motor_industry state = { can_construct_building = building_motor_industry } }
-							AND = { is_building_type = building_automotive_industry state = { can_construct_building = building_automotive_industry } }
-							AND = { is_building_type = building_electrics_industry state = { can_construct_building = building_electrics_industry } }
-							AND = { is_building_type = building_shipyard state = { can_construct_building = building_shipyard } }
-							AND = { is_building_type = building_arms_industry state = { can_construct_building = building_arms_industry } }
-							AND = { is_building_type = building_artillery_foundry state = { can_construct_building = building_artillery_foundry } }
-							AND = { is_building_type = building_munition_plant state = { can_construct_building = building_munition_plant } }
-							AND = { is_building_type = building_art_academy state = { can_construct_building = building_art_academy } }
-						}
-					}
-					order_by = eafp_concession_industry_score
-					max = 1
-					check_range_bounds = no
-					# State-scoped effect does not specify a company. Actual ownership must be tested.
-					if = {
-						limit = { is_building_type = building_food_industry }
-						state = { start_privately_funded_building_construction = building_food_industry }
-					}
-					else_if = {
-						limit = { is_building_type = building_textile_mill }
-						state = { start_privately_funded_building_construction = building_textile_mill }
-					}
-					else_if = {
-						limit = { is_building_type = building_furniture_manufactory }
-						state = { start_privately_funded_building_construction = building_furniture_manufactory }
-					}
-					else_if = {
-						limit = { is_building_type = building_glassworks }
-						state = { start_privately_funded_building_construction = building_glassworks }
-					}
-					else_if = {
-						limit = { is_building_type = building_tooling_workshop }
-						state = { start_privately_funded_building_construction = building_tooling_workshop }
-					}
-					else_if = {
-						limit = { is_building_type = building_paper_mill }
-						state = { start_privately_funded_building_construction = building_paper_mill }
-					}
-					else_if = {
-						limit = { is_building_type = building_chemical_plant }
-						state = { start_privately_funded_building_construction = building_chemical_plant }
-					}
-					else_if = {
-						limit = { is_building_type = building_explosives_factory }
-						state = { start_privately_funded_building_construction = building_explosives_factory }
-					}
-					else_if = {
-						limit = { is_building_type = building_synthetics_plant }
-						state = { start_privately_funded_building_construction = building_synthetics_plant }
-					}
-					else_if = {
-						limit = { is_building_type = building_steel_mill }
-						state = { start_privately_funded_building_construction = building_steel_mill }
-					}
-					else_if = {
-						limit = { is_building_type = building_motor_industry }
-						state = { start_privately_funded_building_construction = building_motor_industry }
-					}
-					else_if = {
-						limit = { is_building_type = building_automotive_industry }
-						state = { start_privately_funded_building_construction = building_automotive_industry }
-					}
-					else_if = {
-						limit = { is_building_type = building_electrics_industry }
-						state = { start_privately_funded_building_construction = building_electrics_industry }
-					}
-					else_if = {
-						limit = { is_building_type = building_shipyard }
-						state = { start_privately_funded_building_construction = building_shipyard }
-					}
-					else_if = {
-						limit = { is_building_type = building_arms_industry }
-						state = { start_privately_funded_building_construction = building_arms_industry }
-					}
-					else_if = {
-						limit = { is_building_type = building_artillery_foundry }
-						state = { start_privately_funded_building_construction = building_artillery_foundry }
-					}
-					else_if = {
-						limit = { is_building_type = building_munition_plant }
-						state = { start_privately_funded_building_construction = building_munition_plant }
-					}
-					else_if = {
-						limit = { is_building_type = building_art_academy }
-						state = { start_privately_funded_building_construction = building_art_academy }
-					}
-				}
+				eafp_concession_industry_investment_effect = yes
 			}
 
 			# One paid expansion per AI holder/month, using the same effect as the GUI.
+			# The AI only expands a concession building that is already well staffed
+			# (occupancy >= eafp_concession_ai_expand_min_occupancy, as vanilla's 0.8).
 			every_country = {
 				limit = { is_ai = yes is_country_alive = yes eafp_concession_holder_has_rights = yes }
 				save_temporary_scope_as = concession_holder
@@ -216,6 +123,10 @@
 					limit = {
 						eafp_concession_can_expand = { HOLDER = scope:concession_holder }
 						eafp_concession_state_profit > 0
+						any_scope_building = {
+							is_building_type = building_eafp_concession
+							occupancy >= eafp_concession_ai_expand_min_occupancy
+						}
 					}
 					order_by = eafp_concession_state_profit
 					max = 1
