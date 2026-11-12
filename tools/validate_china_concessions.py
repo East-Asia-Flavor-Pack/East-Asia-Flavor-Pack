@@ -183,7 +183,18 @@ def main():
     # Grant and paid expansion both move in steps of 5 levels.
     assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 2
     assert "LEVELS = 1 }" not in effects
-    assert effects.count("levels = $LEVELS$") == 2
+    # Concession levels are only company-owned: one create_building, no country-ownership fallback,
+    # and an owner without a company gets one the same way a treaty grant does.
+    assert effects.count("levels = $LEVELS$") == 1
+    assert "add_ownership = { country =" not in unquoted(effects)
+    ensure = effects.split("eafp_concession_ensure_company = {", 1)[1].split("\n}", 1)[0]
+    for clause in ("add_modifier = { name = eafp_concession_company_slot }",
+                   "add_company = company_type:company_eafp_concession",
+                   "set_company_state_region = scope:concession_company_hq"):
+        assert clause in ensure, clause
+    assert effects.count("add_company = company_type:company_eafp_concession") == 1
+    assert "scope:concession_holder = { eafp_concession_ensure_company = yes }" in effects.split("eafp_concession_grant_effect = {", 1)[1]
+    assert "scope:eafp_rebuild_owner = { eafp_concession_ensure_company = yes }" in effects.split("eafp_concession_rebuild_create = {", 1)[1]
     grant_gate = read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt").split("eafp_concession_can_grant = {", 1)[1].split("eafp_concession_has_holder = {", 1)[0]
     assert "eafp_concession_free_capacity >= 5" in grant_gate
     assert "add_company = company_type:company_eafp_concession" in effects
@@ -337,19 +348,102 @@ def main():
                      r"is_in_geographic_region\s*=\s*" + region + r"\b", gates)
     if not args.source_only:
         for asset in set(re.findall(r'(?:icon|texture|video)\s*=\s*"?([^"\s{}]+)', code)):
+            if asset.startswith("["):
+                continue  # data-bound GUI texture such as [Company.GetCompanyType.GetIcon]
             assert (ROOT / asset).is_file() or (game / asset).is_file(), ("Missing asset", asset)
 
     gui = read(ROOT / "gui/journal_entry_widgets/eafp_concessions_in_china.gui")
     assert 'name = "widget_eafp_concessions"' in gui
     assert je.count('name = "widget_eafp_concessions"') == 1
+    # Placed below the JE description; the JE status (default key <je>_status, no status_desc)
+    # states how many states have concessions, and the reason no longer does.
+    assert re.search(r'name = "widget_eafp_concessions"\s*(?:#[^\n]*\s*)*container = "custom_widget_container_5"', je)
+    assert "status_desc" not in je_code
+    count_expr = "[GetDataModelSize(GetGlobalList('concession_candidate_states_gvarlist'))]"
+    for lang in LANGUAGES:
+        china_loc = read(ROOT / f"localization/{lang}/eafp_concessions_in_china_l_{lang}.yml")
+        status = re.search(r'^\s*je_concessions_in_china_status:\s*"(.*)"\s*$', china_loc, re.M)
+        reason = re.search(r'^\s*je_concessions_in_china_reason:\s*"(.*)"\s*$', china_loc, re.M)[1]
+        assert status and count_expr in status[1] and count_expr not in reason, lang
     sgui = read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
     assert "JournalEntry.GetCountry" not in gui and "viewer" not in gui + sgui, \
         "All observers must see the same international overview"
     assert "scripted_button" not in je
-    # The international widget reads live state and ownership; its accordion is UI-only.
-    assert "State.GetIDString" in gui and "GetVariableSystem.SetOrToggle" in gui
-    assert "IsDataModelEmpty(GetGlobalList('concession_candidate_states_gvarlist'))" in gui
-    assert "BuildingOwnership.IsCountryOwned" in gui
+    # The international widget reads live state and ownership; per-state expansion is UI-only
+    # (vanilla building-browser style: each row toggles on its own state ID).
+    toggle_key = "Concatenate('eafp_concession_state_', State.GetIDString)"
+    assert f"GetVariableSystem.Toggle({toggle_key})" in gui and f"GetVariableSystem.Exists({toggle_key})" in gui
+    # The JE widget holds only the state rows (no heading, hint or empty-list text).
+    widget_root = gui.split('name = "widget_eafp_concessions"', 1)[1]
+    assert re.findall(r"^\t(\w+)\s*=", widget_root, re.M) == [
+        "direction", "ignoreinvisible", "using", "min_width", "max_width", "margin", "background",
+        "eafp_concession_state_rows"]
+    # Fixed width and frame matching the vanilla JE containers (@panel_width_minus_30 = 510).
+    journal_gui = read(game / "gui/journal_entry.gui")
+    assert "min_width = @panel_width_minus_30" in journal_gui and "using = entry_bg" in journal_gui
+    for clause in ("using = default_list_position", "min_width = 510", "max_width = 510",
+                   "background = { using = entry_bg }"):
+        assert clause in widget_root, clause
+    # Expanded details sit on the dark inset used by the building browser's construction area.
+    # The details container is the one whose visibility is the per-state toggle and which
+    # holds the ownership bar (located by markup, not by comments).
+    details_match = re.search(r"flowcontainer = \{\s*visible = \"\[GetVariableSystem\.Exists\(" + re.escape(toggle_key)
+                              + r"\)\]\"(?:(?!\n\t\t\t\t\}).)*", gui, re.S)
+    assert details_match and "eafp_concession_ownership_bar = {" in details_match[0], "Details container not found"
+    details = details_match[0]
+    assert "background = { using = dark_area }" in details
+    # New concession buildings start with zero cash reserves.
+    assert re.findall(r"RESERVES = (\S+) \}", effects) == ["0"], "Only reserves = 0 is used"
+    # Concession levels are only company-owned, so the widget handles company ownership alone.
+    assert "IsCountryOwned" not in gui and "GetOwnerCountry" not in gui
+    # One ownership bar per state, split by ownership entry and coloured by the company's country.
+    bar = gui.split("type eafp_concession_ownership_bar = v3_stacked_barchart {", 1)[1].split("\n\t}", 1)[0]
+    for clause in ("datamodel = \"[Building.GetBuildingOwnerships]\"", "BuildingOwnership.GetOwnershipRatio",
+                   "datacontext = \"[BuildingOwnership.GetOwnerBuilding.GetCompany]\""):
+        assert clause in bar, clause
+    assert "color = \"[Company.GetCountry.GetMapColor]\"" in gui.split("type eafp_concession_owner_segment = widget {", 1)[1]
+    owner_row = gui.split("type eafp_concession_owner_row = flowcontainer {", 1)[1].split("\n\t}", 1)[0]
+    assert "datacontext = \"[BuildingOwnership.GetOwnerBuilding.GetCompany]\"" in owner_row and "visible" not in owner_row
+    assert "eafp_concession_ownership_bar = {" in gui.split("types eafp_concession_widgets", 1)[1].split("type eafp_concession_state_rows", 1)[1]
+    # Navigation to the state and to the concession building.
+    assert "onclick = \"[InformationPanelBar.OpenStatePanel(State.AccessSelf)]\"" in gui
+    assert "datacontext = \"[State.GetBuilding('building_eafp_concession')]\"" in gui
+    assert "onclick = \"[InformationPanelBar.OpenBuildingDetailsPanel(Building.AccessSelf)]\"" in gui
+    # Each navigation button shows the vanilla object tooltip of its target.
+    for onclick, fancy in (("OpenStatePanel(State.AccessSelf)", "FancyTooltip_State"),
+                           ("OpenBuildingDetailsPanel(Building.AccessSelf)", "FancyTooltip_Building"),
+                           ("OpenCountryPanel(Country.Self)", "FancyTooltip_Country"),
+                           ("OpenCompanyPanel(Company.Self)", "FancyTooltip_Company")):
+        assert re.search(re.escape(onclick) + r"\]\"\s*tooltipwidget\s*=\s*\{\s*" + fancy + r"\s*=\s*\{\s*\}", gui), fancy
+        assert re.search(r"^\s*type " + fancy + r" = ", "\n".join(read(p) for p in (game / "gui").rglob("*.gui")), re.M), fancy
+    assert "eafp_concession_goto_" not in gui, "Plain-text go-to tooltips were replaced"
+    # Expansion requirements shown on the button: right, urban cap room, gold reserves, ownership.
+    can_expand = triggers_code.split("\neafp_concession_can_expand = {", 1)[1].split("\n}", 1)[0]
+    assert re.findall(r"text = (eafp_concession_expand_\w+_tt)", can_expand) == [
+        "eafp_concession_expand_active_tt", "eafp_concession_expand_capacity_tt",
+        "eafp_concession_expand_treasury_tt", "eafp_concession_expand_ownership_tt"]
+    assert "$HOLDER$ = { gold_reserves >= eafp_concession_expansion_cost }" in can_expand
+    # Expand button: vanilla JE action tooltip shape (requirements with checkmarks, then effects).
+    assert 'tooltip = "eafp_concession_expand_button_tt"' in gui
+    sgui_code = unquoted(read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt"))
+    assert re.search(r"show_as_tooltip\s*=\s*\{\s*scope:actor\s*=\s*\{\s*add_treasury\s*=\s*\{\s*value = eafp_concession_expansion_cost multiply = -1", sgui_code), \
+        "Display-only fee line; the fee is charged inside the effect"
+    for lang in LANGUAGES:
+        expand_tt = re.search(r'^\s*eafp_concession_expand_button_tt:\s*"(.*)"\s*$',
+                              read(ROOT / f"localization/{lang}/eafp_concessions_in_china_l_{lang}.yml"), re.M)[1]
+        assert expand_tt.index("$TOOLTIP_DELIMITER$") < expand_tt.index(".IsValidTooltip(") \
+            < expand_tt.index("#title") < expand_tt.index(".ExecuteTooltip("), lang
+    assert gui.count("{") == gui.count("}"), "Unbalanced braces in the widget"
+    # Bar segments: the flag opens the country panel, the company logo the company panel.
+    segment = gui.split("type eafp_concession_owner_segment = widget {", 1)[1].split("\n\t}", 1)[0]
+    assert "datacontext = \"[Company.GetCountry]\"" in segment
+    assert "onclick = \"[InformationPanelBar.OpenCountryPanel(Country.Self)]\"" in segment
+    assert "texture = \"[Company.GetCompanyType.GetIcon]\"" in segment and "[InformationPanelBar.OpenCompanyPanel(Company.Self)]" in segment
+    # The header's current/cap figure explains the cap.
+    assert re.search(r'text = "eafp_concession_card_total"\s*tooltip = "eafp_concession_cap_tt"', gui)
+    # Details keep only the ownership bar/list and the expansion button.
+    for removed in ("eafp_concession_cap_status", "progressbar", "concession_owner_varlist", "eafp_concession_rights_heading"):
+        assert removed not in details, removed
     for key in re.findall(r"GetScriptedGui\('([^']+)'\)", gui):
         assert key in definitions, ("Missing GUI action", key)
     for key in re.findall(r"ScriptValue\('([^']+)'\)", gui):
@@ -364,12 +458,18 @@ def main():
     keys = {k for k in keys if k not in definitions
             and k not in ("eafp_concession_compensation", "eafp_concession_rebuild_map")}
     for key in ("je_concessions_in_china",):
-        keys.update((key, key + "_reason"))
+        keys.update((key, key + "_reason", key + "_status"))
     for key in ("eafp_grant_concession",):
         # The article's _desc text was removed on purpose (2026-11-11); no code references it.
         keys.update(key + suffix for suffix in ("", "_effects_desc", "_article_short_desc"))
     keys.update(("concept_concession", "concept_concessions", "concept_concession_desc",
-                 "eafp_concession_active_label", "eafp_concession_inactive_label"))
+                 "eafp_concession_expand_title", "eafp_concession_expand_desc"))
+    # Concessions work regardless of the host's and holder's prestige: no prestige comparison
+    # anywhere in the feature, and no active/suspended status in the widget.
+    assert not re.search(r"\bprestige\s*(?:[<>]=?|=)\s*\S*prestige", clean), "Prestige must not gate concessions"
+    for removed in ("eafp_concession_holder_active_gui", "eafp_concession_activity_summary",
+                    "eafp_concession_prestige_tt", "eafp_concession_active_label"):
+        assert removed not in code, removed
     keys.update(key for key in feature_definitions
                 if key.startswith(("building_eafp_", "bg_eafp_", "company_eafp_", "pm_eafp_", "pmg_eafp_")))
     keys.update(("eafp_concession_company_slot", "eafp_concession_forced_loss", "eafp_concession_right_live", "eafp_concession_right_returned"))
@@ -389,9 +489,22 @@ def main():
         for path in (ROOT / "localization" / lang).glob("*.yml"):
             for key, value in re.findall(r'^\s*([\w.]+):(?:\d+)?\s*"((?:\\.|[^"\\])*)"\s*$', read(path), re.M):
                 catalog.setdefault(key, []).append(value)
-        path = ROOT / "localization" / lang / f"eafp_china_l_{lang}.yml"
+        # All concession localization lives in one file per language (merged 2026-11-12).
+        path = ROOT / "localization" / lang / f"eafp_concessions_in_china_l_{lang}.yml"
         structural_check(path)
         assert read(path).splitlines()[0] == "l_" + lang + ":"
+        assert not (ROOT / "localization" / lang / f"eafp_concessions_buildings_l_{lang}.yml").exists()
+        own = set(re.findall(r'^\s*([\w.]+):', read(path), re.M))
+        assert keys <= own, ("Concession key outside the concession file", lang, sorted(keys - own)[:5])
+        # No unused text: every key is required above, referenced from another entry
+        # ($key$ or a SelectLocalization branch), or a loaded event's text.
+        own_text = read(path)
+        nested = set(re.findall(r"\$(\w+)\$", own_text)) | set(re.findall(r"'(eafp_concession_\w+)'", own_text))
+        loaded_events = set(re.findall(r"^(concessions_in_china\.\d+)\s*=", clean, re.M))
+        # Names of script definitions (building, PM group, company, modifier...) are read by the engine.
+        unused = {k for k in own - keys - nested - {"l_" + lang}
+                  if not (k.rsplit(".", 1)[0] in loaded_events) and not definitions[k]}
+        assert not unused, ("Unused concession localization", lang, sorted(unused))
         for key in keys:
             assert len(catalog.get(key, [])) == 1, ("Missing/duplicate localization", lang, key)
         assert "BuildingOwnership.GetOwnershipRatio" in catalog["eafp_concession_asset_amount"][0]

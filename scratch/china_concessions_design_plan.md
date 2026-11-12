@@ -26,6 +26,26 @@
 - 조계 항목 AI: flags에 바닐라 조약항과 같은 `hostile`·`ai_consider_threaten_naval_hostilities` 추가. `evaluation_chance`는 열강 0.3(기타 0.1). 수락 점수에 도시 규모(도심지 레벨 × 2, 최대 40, `EAFP_CONCESSION_AI_CITY`)를 더한다(내주는 쪽은 음수). `wargoal_score_multiplier`는 수취국이 열강이면 +1, 2차 아편전쟁에서 내주는 쪽과 적대 중이면 +2, 영국의 톈진이면 +3(바닐라 홍콩 패턴). 전쟁 목표 기동 비용 10 → 5.
 - 미검증: 엔진이 enforce 전쟁 목표 실행 시 `state_valid_trigger`를 다시 검사하는지, `hostile` 플래그의 정확한 AI 효과는 게임에서 확인하지 않았다.
 
+2026-11-12 변경(번역 파일 통합): 조계 번역을 언어마다 `localization/<언어>/eafp_concessions_in_china_l_<언어>.yml` 한 파일로 모았다. `eafp_concessions_buildings_l_*` 전체(36개)와 `eafp_china_l_*`의 「# 중국 조계지」 구역(115개)을 옮겨 151개이며, 원래 파일의 구역과 `eafp_concessions_buildings_l_*` 파일은 삭제했다. 키·값은 그대로이고 출처 주석은 해당 키(`je_concessions_in_china_reason`)에 붙어 있다. 순서는 세 언어가 같다: 개념 → 건물·생산 방식·회사·modifier → 조약 항목 → 외교전·전쟁 목표(조계 요구, 조계 반환) → 저널 → 저널 위젯(주 행, 소유 지분, 확장 버튼) → 월간 사건 200~207. 이후 미사용 문구 50개(구 버전 저널 2, 비활성 이벤트 1001~1006, 주석 처리된 `concession_state_modifier`·`concession_building_modifier`, 옛 위젯 문구, 어디서도 쓰지 않는 `STATE_CONCESSION`)를 삭제해 언어마다 101개가 남았고, 검사기가 이 파일의 모든 키가 실제로 쓰이는지(코드 참조, 다른 문구의 `$키$`·SelectLocalization 분기, 로드되는 이벤트, 스크립트 정의 이름) 확인한다. `qing_owns_all_concessions_tt`는 그 구역 밖의 청 관련 툴팁이라 `eafp_china_l_*`에 남겼다.
+
+2026-11-12 변경(회사 소유 전용): 조계지 레벨은 조계회사 소유만 존재한다. 저널 화면은 소유 항목을 회사 하나로만 해석한다(국유·기타 건물 분기와 번역 `eafp_concession_country_asset`·`_private_asset`·`_other_asset` 삭제). 스크립트에서도 조약 지급의 회사 설립 절차를 `eafp_concession_ensure_company`(회사 슬롯 modifier → `add_company` → 수도 state region에 본사)로 떼어 내, 지급 효과와 모든 조계지 `create_building`(`eafp_concession_rebuild_create`)이 함께 쓴다. 회사가 없는 소유국은 먼저 회사를 만들고, 그래도 실패하면 국유로 대신 주지 않고 레벨을 만들지 않은 채 debug_log를 남긴다. 주간 refresh는 조계권이 없는 국가의 조계회사를 해산하므로, 권리 없는 국가에 회사를 만들면 곧 해산된다(현재 흐름에서는 모든 소유국이 권리를 가진다).
+
+2026-11-12 변경(위젯 틀·상세 배경): `widget_eafp_concessions`를 바닐라 저널 칸(설명·관여국)과 같게 `default_list_position`, 고정 폭 510(`@panel_width_minus_30`), `entry_bg` 외곽선으로 만들었다. 안쪽 여백 5를 두어 주 행은 500, 펼친 상세는 여백 10을 빼고 480 폭이다. 펼친 상세 칸에는 건물 브라우저의 건설 영역과 같은 `dark_area` 배경을 깔았다.
+
+2026-11-12 변경(위젯 위치·저널 설명): 저널 위젯을 `custom_widget_container_5`(저널 설명 바로 아래, 관여국 목록 위)에 둔다. 「현재 N개 주에 조계지가 있다.」 문장은 저널 상태(`je_concessions_in_china_status`, `status_desc`가 없을 때 엔진이 읽는 기본 키)에 3개 언어로 두고 설명(`_reason`)에서는 뺐으며, N은 위젯 행과 같은 목록 `concession_candidate_states_gvarlist`의 크기다.
+
+2026-11-12 변경(현금보유고·위젯 정리): 조계지 건물을 새로 세울 때(첫 지급, 지분별 반환 뒤 재생성) `reserves = 0`으로 만든다. 이전의 「새 건물은 `reserves = 1`」 규칙을 대체한다. 기존 건물에 덮어쓸 때도 0을 넘겨 엔진 규칙(기존값과 지정값 중 큰 값)에 따라 현재 현금보유고를 건드리지 않는다. 저널 위젯 `widget_eafp_concessions`에는 `eafp_concession_state_rows`만 남기고 상단 제목·안내·빈 목록 문구와 그 번역(`eafp_concession_overview_heading`·`_hint`·`eafp_concession_empty_overview`)을 삭제했다.
+
+2026-11-12 변경(확장 버튼 툴팁): 바닐라 저널 행동 버튼 툴팁(`SCRIPTED_ACTION_TOOLTIP`)과 같은 형식으로 `eafp_concession_expand_button_tt`를 쓴다. `#header` 제목 → 설명 → `$TOOLTIP_DELIMITER$` → 조건(`IsValidTooltip`, 바닐라 체크 표시) → `#title 효과:#!` → 효과(`ExecuteTooltip`). 조건 문구 4개는 바닐라 트리거 문체(한국어 「~이어야 함」, 영어 「We must …」, 중국어 「我们必须…」)로 바꿨다. 효과는 `custom_tooltip` 한 줄(자국 지분 +5 크기)과, 스크립트 GUI의 `show_as_tooltip` 안 `add_treasury`가 그리는 바닐라 국고 줄(표시 전용, 실제 과금은 확장 효과 안에서 레벨 증가 후)이다.
+
+2026-11-12 변경(이동 버튼 툴팁): 주·조계지 건물·국가·회사로 가는 네 버튼은 일반 문구 툴팁 대신 바닐라 객체 툴팁(`FancyTooltip_State`·`FancyTooltip_Building`·`FancyTooltip_Country`·`FancyTooltip_Company`)을 `tooltipwidget`으로 띄운다. 건물 버튼은 `State.GetBuilding('building_eafp_concession')`를 datacontext로 받아 `Building` 기준으로 열고 툴팁을 띄운다. 쓰지 않게 된 `eafp_concession_goto_*_tt` 번역 4개는 삭제했다.
+
+2026-11-12 변경(저널 GUI 정리): 주별 상세 칸에는 「국가별 소유 지분」(막대 + 소유 목록)과 조계 확장 버튼만 남겼다. 상한 상태 문구·상한 막대, 권리 보유국 목록과 그 번역(`eafp_concession_rights_heading`·`eafp_concession_holder_row`)은 삭제했다. 막대의 각 조각에는 소유국 국기 버튼(`OpenCountryPanel`)과, 소유 건물이 회사이면 회사 로고 버튼(`Company.GetCompanyType.GetIcon`, `OpenCompanyPanel`)을 함께 둔다. 행 머리의 「현재 / 상한」 글자에는 `eafp_concession_cap_tt` 툴팁으로 상한 = 도심지 레벨 × 5 계산, 현재 레벨, 여유·초과 상태(`$eafp_concession_cap_status$`), 신규 획득·확장에 5레벨 여유가 필요한 이유와 도심지 감소 시 기존 건물 유지를 설명한다.
+
+2026-11-12 변경(위신 조건 삭제): 7절의 「주 소유국 위신이 보유국보다 높으면 확장·사건 자격 중단」보다 우선한다. 두 국가의 위신 우위와 상관없이 조계가 작동한다. `eafp_concession_active`, `eafp_concession_active_holder_count`, 월간 사건의 보유국 선택, 저널 자동 투자 조건에서 위신 비교를 모두 뺐다. 저널 화면의 작동 상태 표시(작동 보유국·무역소 환산 요약, 보유국별 작동/중단 표시와 위신 툴팁, 위신 값)와 `eafp_concession_holder_active_gui`, 관련 번역 키를 삭제했고, 권리 목록은 「국기 + 국가 이름」만 보여 준다. 확장 조건 툴팁에서도 위신 문구를 뺐다. 강제 반환 시의 위신 손실(`eafp_concession_forced_loss`)은 그대로 둔다.
+
+2026-11-12 변경(저널 GUI): 9절의 「한 주만 펼침」 아코디언보다 우선한다. 바닐라 건물 브라우저(건물 유형별 묶음 행)처럼 조계 주 목록을 보여 주고, 각 행 머리에 「국기 + 주 이름」·「현재 조계지 / 상한」과 주 화면(`button_icon_goto`)·조계지 건물 화면(무역소 아이콘 버튼)으로 가는 버튼을 둔다. 행마다 `GetVariableSystem.Toggle(Concatenate('eafp_concession_state_', State.GetIDString))`로 독립적으로 접고 펼친다(기본 접힘). 펼치면 맨 위에 바닐라 위상 우위 막대(`leverage_stacked_barchart`)·건물 소유 막대처럼 `v3_stacked_barchart` 하나로 국가별 소유 지분을 그린다. 조각은 `Building.GetBuildingOwnerships`의 소유 항목마다 하나이고 폭은 `GetOwnershipRatio`, 색·국기는 소유 국가(국유는 `GetOwnerCountry`, 회사·금융지구 등은 `GetOwnerBuilding.GetOwner`)의 지도 색이다. 그 아래에 같은 색 표식이 붙은 소유 목록, 상한 상태·막대, 작동 요약, 권리, 확장 버튼을 이어 둔다. 용량 툴팁(`eafp_concession_capacity_tt`), 도시 건물 주간 순이익 카드(`eafp_concession_profit_heading`·`_value`·`eafp_concession_economy_tt`), 잔존 지분 안내(`eafp_concession_shared_assets_note`), 자동 투자 안내(`eafp_concession_private_investment_label`·`_tt`)는 사용자 지시로 화면과 번역에서 삭제했다. 자동 투자와 `eafp_concession_state_profit`(AI 확장 정렬) 자체는 그대로 동작한다. 한 국가가 회사와 국유로 나눠 가지면 같은 색 조각이 둘로 보인다(GUI에서 국가별 합산 불가). 렌더링은 게임에서 확인하지 않았다.
+
 2026-11-12 변경(영향력·관여): 조계 항목 `cost`를 바닐라 `treaty_port`와 같은 50(영향력, 유지비는 `maintenance_paid_by = target_country`로 보유국 부담)으로 했다. 지급 효과가 권리를 등록한 직후 보유국에 그 주 전략지역 관여 +1000(`add_involvement`)을 준다. 지급이 실패하면 관여도 주지 않는다.
 
 2026-11-12 변경(조계 요구 외교전):
@@ -219,7 +239,7 @@ U=10에서 L=1이면 관계 -3·위신 -1.5, L=5이면 -15·-7.5다. 관계 하�
 | `common/journal_entries/eafp_concessions_in_china.txt` | 기존 주간 정합화, 월간 사건·투자·AI 확장 |
 | 기존 조약·전쟁 목표 파일 | 공통 부여·반환 연결 |
 | 기존 scripted GUI와 journal widget | 현황·소유 항목·확장 |
-| 한국어·영어·중국어 간체 localization | 명칭·상태·제약·반환 안내 |
+| `localization/*/eafp_concessions_in_china_l_*.yml` (한국어·영어·중국어 간체) | 조계 번역 전체 |
 | `tools/validate_china_concessions.py` | 참조·중복·인코딩·수치·연결 정적 검사 |
 
 정적 검증 명령:

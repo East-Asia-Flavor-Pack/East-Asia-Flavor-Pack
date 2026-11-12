@@ -22,7 +22,7 @@ eafp_concession_eligible_state = {
 	}
 }
 
-# Country scope; involvement follows rights, even while prestige suspends their income.
+# Country scope; involvement follows rights.
 eafp_concession_involved_country = {
 	any_state_in_china_proper = {
 		has_variable_list = concession_owner_varlist
@@ -71,11 +71,11 @@ eafp_concession_has_holder = {
 	NOT = { owner = $HOLDER$ }
 }
 
+# A right works regardless of the two countries' prestige (no prestige comparison).
 eafp_concession_active = {
 	eafp_concession_eligible_state = yes
 	$HOLDER$ = { has_company = company_type:company_eafp_concession }
 	eafp_concession_has_holder = { HOLDER = $HOLDER$ }
-	owner.prestige <= $HOLDER$.prestige
 }
 
 # Called by delayed event options: never act on a different owner or right.
@@ -120,12 +120,10 @@ eafp_concession_can_expand = {
 		text = eafp_concession_expand_capacity_tt
 		eafp_concession_free_capacity >= 5
 	}
+	# The concession company is already required by eafp_concession_active above.
 	custom_tooltip = {
 		text = eafp_concession_expand_treasury_tt
-		$HOLDER$ = {
-			has_company = company_type:company_eafp_concession
-			gold_reserves >= eafp_concession_expansion_cost
-		}
+		$HOLDER$ = { gold_reserves >= eafp_concession_expansion_cost }
 	}
 	custom_tooltip = {
 		text = eafp_concession_expand_ownership_tt

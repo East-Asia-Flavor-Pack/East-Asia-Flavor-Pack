@@ -13,18 +13,19 @@ eafp_concession_expand_gui = {
 	is_valid = { eafp_concession_can_expand = { HOLDER = scope:actor } }
 	effect = {
 		scope:actor = { save_temporary_scope_as = concession_holder }
-		# The rebuild's remove/create steps would flood the auto tooltip; describe it instead.
+		# Named in the effect line below ([SCOPE.sState('concession_state')]).
+		save_temporary_scope_as = concession_state
+		# The overwrite steps would flood the auto tooltip; one effect line describes them.
 		custom_tooltip = {
 			text = eafp_concession_expand_effect_tt
 			eafp_concession_expand_effect = yes
 		}
+		# Display only: the fee is charged inside eafp_concession_expand_effect, and only
+		# after the levels were added. This renders the vanilla treasury effect line.
+		show_as_tooltip = {
+			scope:actor = { add_treasury = { value = eafp_concession_expansion_cost multiply = -1 } }
+		}
 	}
-}
-
-# Existing holder-row localization uses this visibility predicate.
-eafp_concession_holder_active_gui = {
-	scope = state
-	is_shown = { eafp_concession_active = { HOLDER = scope:holder } }
 }
 
 eafp_concession_holder_right_gui = {

@@ -78,12 +78,30 @@ eafp_concession_rebuild_map_add = {
 	}
 }
 
-# State scope. One create_building call giving LEVELS to scope:eafp_rebuild_owner.
-# The owner's concession company receives the levels; an owner without one (e.g. a
-# returned holder whose company was dissolved) keeps them as country ownership.
+# Country scope. Creates the country's concession company if it has none, exactly as a
+# concession treaty grant does: company slot modifier, add_company, HQ in the capital's
+# state region. Shared by the grant effect and every create_building of concession levels.
+eafp_concession_ensure_company = {
+	if = {
+		limit = { NOT = { has_company = company_type:company_eafp_concession } }
+		add_modifier = { name = eafp_concession_company_slot }
+		add_company = company_type:company_eafp_concession
+		if = {
+			limit = { has_company = company_type:company_eafp_concession }
+			capital.state_region = { save_temporary_scope_as = concession_company_hq }
+			company:company_eafp_concession = { set_company_state_region = scope:concession_company_hq }
+		}
+	}
+}
+
+# State scope. One create_building call giving LEVELS to scope:eafp_rebuild_owner's
+# concession company. Concession levels are only ever company-owned: an owner without a
+# company first gets one (eafp_concession_ensure_company). If the engine still refuses
+# the company, nothing is created rather than falling back to country ownership.
 # On an existing building the engine keeps max(existing, scripted) reserves, so
 # RESERVES = 0 there leaves the live building's reserves untouched.
 eafp_concession_rebuild_create = {
+	scope:eafp_rebuild_owner = { eafp_concession_ensure_company = yes }
 	if = {
 		limit = { scope:eafp_rebuild_owner = { has_company = company_type:company_eafp_concession } }
 		create_building = {
@@ -93,28 +111,16 @@ eafp_concession_rebuild_create = {
 			add_ownership = { company = { type = company_eafp_concession country = scope:eafp_rebuild_owner levels = $LEVELS$ } }
 		}
 	}
-	else = {
-		create_building = {
-			building = building_eafp_concession
-			activate_production_methods = { pm_eafp_concession pm_trade_center_trade_quantity_normal }
-			reserves = $RESERVES$
-			add_ownership = { country = { country = scope:eafp_rebuild_owner levels = $LEVELS$ } }
-		}
-	}
+	else = { debug_log = "EAFP concession: owner has no concession company and none could be founded; levels not created" }
 }
 
 # State scope. ONE create_building call giving exactly LEVELS (a multiple of 5) to
 # scope:eafp_rebuild_owner. On the live building this overwrites that owner's levels
 # (create_building levels do not add to what is already there), so the owner's whole
-# new total goes in a single call. Only a brand-new building gets full reserves.
+# new total goes in a single call. A newly founded concession building starts with zero
+# cash reserves; on a live building reserves = 0 leaves its current reserves untouched.
 eafp_concession_rebuild_chunk = {
-	if = {
-		limit = { has_building = building_eafp_concession }
-		eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0 }
-	}
-	else = {
-		eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 1 }
-	}
+	eafp_concession_rebuild_create = { LEVELS = $LEVELS$ RESERVES = 0 }
 }
 
 # State scope. Runs eafp_concession_rebuild_chunk once for scope:eafp_rebuild_remaining.
@@ -287,18 +293,7 @@ eafp_concession_grant_effect = {
 			owner = scope:concession_host
 			eafp_concession_can_receive = { HOLDER = scope:concession_holder }
 		}
-		scope:concession_holder = {
-			if = {
-				limit = { NOT = { has_company = company_type:company_eafp_concession } }
-				add_modifier = { name = eafp_concession_company_slot }
-				add_company = company_type:company_eafp_concession
-				if = {
-					limit = { has_company = company_type:company_eafp_concession }
-					capital.state_region = { save_temporary_scope_as = concession_company_hq }
-					company:company_eafp_concession = { set_company_state_region = scope:concession_company_hq }
-				}
-			}
-		}
+		scope:concession_holder = { eafp_concession_ensure_company = yes }
 		if = {
 			limit = { scope:concession_holder = { has_company = company_type:company_eafp_concession } }
 			eafp_concession_add_company_level = { LEVELS = 5 }
@@ -358,7 +353,7 @@ eafp_concession_expand_effect = {
 #   2. remove_building;
 #   3. recreate each stored owner with one create_building (5-step switch).
 # The returning holder is never stored, so its share is gone; other owners keep their
-# levels. The rebuilt building starts fresh (workers re-hire, new reserves/default PMs).
+# levels. The rebuilt building starts fresh (workers re-hire, zero reserves, default PMs).
 eafp_concession_remove_holder_share = {
 	save_temporary_scope_as = eafp_rebuild_state
 	clear_variable_map = eafp_concession_rebuild_map
