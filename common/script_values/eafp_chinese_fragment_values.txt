@@ -1,0 +1,89 @@
+﻿# 중국 붕괴 시 분열국의 근대화 점수 (주 스코프, ROOT = 붕괴하는 중앙 정부)
+# 4 이상이면 군벌국, 미만이면 군주제 분열국 (eafp_chinese_state_is_traditional)
+eafp_chinese_fragment_modernity = {
+	value = 0
+
+	# 개혁 상황: 신해혁명 발발 시점의 청 양무운동 진척도 (0~5)
+	if = {
+		limit = { has_global_variable = eafp_qing_reform_level }
+		add = global_var:eafp_qing_reform_level
+	}
+
+	# 기술 상황: 중앙 정부의 기술
+	if = {
+		limit = { ROOT = { has_technology_researched = nationalism } }
+		add = 2
+	}
+	if = {
+		limit = { ROOT = { has_technology_researched = railways } }
+		add = 1
+	}
+	if = {
+		limit = { ROOT = { has_technology_researched = political_agitation } }
+		add = 1
+	}
+
+	# 본토 근접도: 중화민국 수도와 맞닿아 있거나 한 주 건너 있음
+	if = {
+		limit = {
+			any_neighbouring_state = {
+				owner = ROOT
+				is_capital = yes
+			}
+		}
+		add = 2
+	}
+	else_if = {
+		limit = {
+			any_neighbouring_state = {
+				any_neighbouring_state = {
+					owner = ROOT
+					is_capital = yes
+				}
+			}
+		}
+		add = 1
+	}
+
+	# 고립도: 변경 오지는 감점, 해안과 열강·조계와의 접촉은 가점
+	if = {
+		limit = { is_in_geographic_region = geographic_region_eafp_chinese_hinterland }
+		add = -2
+	}
+	if = {
+		limit = { is_coastal = yes }
+		add = 1
+	}
+	if = {
+		limit = {
+			OR = {
+				is_treaty_port = yes
+				any_neighbouring_state = {
+					OR = {
+						is_treaty_port = yes
+						owner = { country_rank >= rank_value:great_power }
+					}
+				}
+			}
+		}
+		add = 1
+	}
+
+	# 개발 상황: 철도, 근대 공업, 교육, 신식 군사 교육
+	if = {
+		limit = { has_building = building_railway }
+		add = 1
+	}
+	if = {
+		limit = { has_building = building_arms_industry }
+		add = 1
+	}
+	if = {
+		limit = { has_building = building_university }
+		add = 1
+	}
+	if = {
+		limit = { has_variable = chi_military_academy_state }
+		add = 1
+	}
+}

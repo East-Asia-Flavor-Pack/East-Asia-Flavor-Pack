@@ -17,6 +17,32 @@ eafp_can_claim_chinese_central_government = {
 	THIS.prestige > global_var:chinese_central_government.prestige
 }
 
+# 중국 붕괴 시 이 주가 군벌국이 아니라 군주제 분열국의 기반이 되는지 (주 스코프, ROOT = 붕괴하는 중앙 정부)
+# 근대화 점수가 4 미만이면 군주제 분열국, 4 이상이면 군벌국
+eafp_chinese_state_is_traditional = {
+	eafp_chinese_fragment_modernity < 4
+}
+
+# 군주제 법률을 가진 중국 분열국 (군벌국은 군벌 정부 법률)
+eafp_is_chinese_rebel_dynasty = {
+	has_law = law_type:law_monarchy
+}
+
+# 군벌 정부 법률을 가진 중국 분열국
+eafp_is_chinese_warlord_state = {
+	has_law = law_type:law_warlord_government
+}
+
+# 중화민국 세력과 상호작용하는 중국 국가: 중앙 정부 또는 군벌 정부 법률을 가진 분열국
+# 세력 가입·초대·결속도·참전 요청 등은 이 트리거를 기준으로 한다.
+eafp_is_chinese_bloc_fragment = {
+	eafp_is_chinese_fragment = yes
+	OR = {
+		eafp_is_chinese_central_government = yes
+		eafp_is_chinese_warlord_state = yes
+	}
+}
+
 eafp_has_foreign_war_against_chinese_fragment = {
 	eafp_is_chinese_central_government = yes
 	any_scope_war = {

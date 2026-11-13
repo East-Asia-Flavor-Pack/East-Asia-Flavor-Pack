@@ -303,8 +303,61 @@ nian_army_drift = {
 	}
 }
 
+# 중국 붕괴 분열국 세팅 (create_country의 on_created 안에서 호출)
+# 수도 주의 근대화 점수(eafp_chinese_fragment_modernity)에 따라
+# 군벌국(군벌 정부) 또는 군주제 분열국(군주제)이 된다.
+# 국명·국기는 이 법률을 보고 바뀐다.
+eafp_chinese_fragment_setup_effect = {
+	if = {
+		limit = {
+			capital = { eafp_chinese_state_is_traditional = yes }
+		}
+		eafp_chinese_rebel_dynasty_setup_effect = yes
+	}
+	else = {
+		warlord_setup_effect = yes
+		activate_law = law_type:law_warlord_government
+		set_variable = warlord_state
+		random_list = {
+			4 = {
+
+			}
+			1 = {
+				set_strategy = ai_strategy_unify_china
+			}
+		}
+	}
+}
+
+# 군주제 분열국 세팅
+eafp_chinese_rebel_dynasty_setup_effect = {
+	warlord_setup_effect = yes
+	activate_law = law_type:law_monarchy
+	random_list = {
+		1 = {
+
+		}
+		1 = {
+			set_strategy = ai_strategy_unify_china
+		}
+	}
+}
+
+# 분열국 생성 직후 처리 (c:태그 스코프)
+# 군벌 정부 법률이 있는 분열국만 중화민국(ROOT) 세력에 가입한다.
+# 영유권 주장은 군벌국·군주제 분열국 모두에 붙는다.
+eafp_join_chinese_central_bloc_effect = {
+	if = {
+		limit = { eafp_is_chinese_warlord_state = yes }
+		join_power_bloc = ROOT
+	}
+	every_scope_state = {
+		state_region = { add_claim = c:ROC }
+	}
+}
+
 china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
-	# 호남 군벌
+	# 호남 - 군벌 / 초
 	if = {
 		limit = { exists = s:STATE_HUNAN.region_state:ROC }
 		create_country = {
@@ -312,28 +365,15 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			origin = this
 			state = s:STATE_HUNAN.region_state:ROC
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:HNA = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_HNA
 		}
 	}
-	# 광서 군벌
+	# 광서 - 군벌 / 대성국
 	if = {
 		limit = { exists = s:STATE_GUANGXI.region_state:ROC }
 		create_country = {
@@ -359,35 +399,37 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						}
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
+				eafp_chinese_fragment_setup_effect = yes
+				# 대성국은 광동·소주 중 전통적인 곳을 함께 가져간다 (남은 곳은 아래 광동 분열국)
+				if = {
+					limit = { eafp_is_chinese_rebel_dynasty = yes }
+					if = {
+						limit = {
+							s:STATE_GUANGDONG.region_state:ROC ?= { eafp_chinese_state_is_traditional = yes }
+						}
+						s:STATE_GUANGDONG.region_state:ROC = { set_state_owner = c:GNG }
 					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
+					if = {
+						limit = {
+							s:STATE_SHAOZHOU.region_state:ROC ?= { eafp_chinese_state_is_traditional = yes }
+						}
+						s:STATE_SHAOZHOU.region_state:ROC = { set_state_owner = c:GNG }
 					}
 				}
 			}
 		}
 		c:GNG = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_GNG
 		}
 	}
-	# 안휘 군벌
+	# 안휘 - 군벌 / 회남
 	if = {
 		limit = { exists = s:STATE_SOUTHERN_ANHUI.region_state:ROC }
 		create_country = {
 			tag = AHU
 			origin = this
 			state = s:STATE_SOUTHERN_ANHUI.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_NORTHERN_ANHUI.region_state:ROC }
@@ -395,24 +437,11 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						set_state_owner = c:AHU
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:AHU = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_AHU
 		}
 	}
@@ -439,7 +468,7 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 	#	c:ZHI = { save_scope_as = scope_ZHI }
 	#}
 
-	# 봉천 군벌
+	# 봉천 - 군벌 / 후금
 	if = {
 		limit = { exists = s:STATE_SOUTHERN_MANCHURIA.region_state:CHI }
 		create_country = { #Fengtian Clique
@@ -475,66 +504,38 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						}
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 				add_primary_culture = cu:han # 추가
 			}
 		}
 		c:MCH = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_MCH
 		}
 	}
-	# 산서 군벌
+	# 산서 - 군벌 / 진
 	if = {
 		limit = { exists = s:STATE_SHANXI.region_state:ROC }
 		create_country = {
 			tag = SHN
 			origin = this
 			state = s:STATE_SHANXI.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:SHN = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_SHN
 		}
 	}
-	# 신강 군벌
+	# 신강 - 군벌 / 청진국
 	if = {
 		limit = { exists = s:STATE_TIANSHAN.region_state:ROC }
 		create_country = {
 			tag = XIN
 			origin = this
 			state = s:STATE_TIANSHAN.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_DZUNGARIA.region_state:ROC }
@@ -555,96 +556,53 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 					}
 				}
 				add_primary_culture = cu:han
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
-				add_primary_culture = cu:han # 추가
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:XIN = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_XIN
 		}
 	}
-	# 운남 군벌
+	# 운남 - 군벌 / 대리
 	if = {
 		limit = { exists = s:STATE_YUNNAN.region_state:ROC }
 		create_country = {
 			tag = YUN
 			origin = this
 			state = s:STATE_YUNNAN.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:YUN = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_YUN
 		}
 	}
-	# 귀주 군벌
+	# 귀주 - 군벌 / 대명
 	if = {
 		limit = { exists = s:STATE_GUIZHOU.region_state:ROC }
 		create_country = {
 			tag = GUI
 			origin = this
 			state = s:STATE_GUIZHOU.region_state:ROC
-	
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:GUI = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_GUI
 		}
 	}
-	# 광동 군벌
+	# 광동 - 군벌 / 남월 (대성국이 가져가지 않은 경우)
 	if = {
 		limit = { exists = s:STATE_GUANGDONG.region_state:ROC }
 		create_country = {
 			tag = YUE
 			origin = this
 			state = s:STATE_GUANGDONG.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_SHAOZHOU.region_state:ROC }
@@ -652,15 +610,11 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						set_state_owner = c:YUE
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:YUE = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_YUE
 		}
 	}
@@ -670,56 +624,28 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			tag = YUE
 			origin = this
 			state = s:STATE_SHAOZHOU.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:YUE = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_YUE
 		}
 	}
-
+	# 사천 - 군벌 / 순천국
 	if = {
 		limit = { exists = s:STATE_SICHUAN.region_state:ROC }
 		create_country = {
 			tag = SIH
 			origin = this
 			state = s:STATE_SICHUAN.region_state:ROC
-	
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:SIH = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_SIH
 		}
 	}
@@ -737,14 +663,13 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 	#	}
 	#	c:SHA = { save_scope_as = scope_SHA }
 	#}
-	# 서북 군벌
+	# 서북 - 군벌 / 서하
 	if = {
 		limit = { exists = s:STATE_NINGXIA.region_state:ROC }
 		create_country = {
 			tag = XIB
 			origin = this
 			state = s:STATE_NINGXIA.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_GANSU.region_state:ROC }
@@ -764,35 +689,21 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						set_state_owner = c:XIB
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 				add_primary_culture = cu:han # 추가
 			}
 		}
 		c:XIB = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_XIB
 		}
 	}
 	else_if = {
 		limit = { exists = s:STATE_GANSU.region_state:ROC }
 		create_country = {
-			tag = YUE
+			tag = XIB # 수정: 기존에는 YUE로 잘못 생성됨
 			origin = this
 			state = s:STATE_GANSU.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_ALXA.region_state:ROC }
@@ -800,29 +711,16 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						set_state_owner = c:XIB
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 				add_primary_culture = cu:han # 추가
 			}
 		}
 		c:XIB = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_XIB
 		}
 	}
-	# 몽골 (이미 합병됐을 때)
+	# 몽골 (이미 합병됐을 때) - 군주제 분열국 대상 아님
 	if = {
 		limit = {
 			exists = s:STATE_ULIASTAI.region_state:ROC
@@ -848,14 +746,11 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			}
 		}
 		c:MGL = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_MGL
 		}
 	}
-	# 투바 (몽골 이미 합병됐을 때)
+	# 투바 (몽골 이미 합병됐을 때) - 군주제 분열국 대상 아님
 	if = {
 		limit = { exists = s:STATE_TUVA.region_state:ROC }
 		create_country = {
@@ -869,15 +764,11 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			}
 		}
 		c:TUV = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_TUV
 		}
 	}
-	# 새로 추가한 것들
-	# 복건 군벌
+	# 복건 - 군벌 / 민
 	if = {
 		limit = { exists = s:STATE_FUJIAN.region_state:ROC }
 		create_country = {
@@ -885,28 +776,15 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			origin = this
 			state = s:STATE_FUJIAN.region_state:ROC
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:FJN = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_FJN
 		}
 	}
-	# 강서 군벌
+	# 강서 - 군벌 / 남당
 	if = {
 		limit = { exists = s:STATE_JIANGXI.region_state:ROC }
 		create_country = {
@@ -914,65 +792,37 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			origin = this
 			state = s:STATE_JIANGXI.region_state:ROC
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:JGX = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_JGX
 		}
 	}
-	# 절강 군벌
+	# 절강 - 군벌 / 오월
 	if = {
 		limit = { exists = s:STATE_ZHEJIANG.region_state:ROC }
 		create_country = {
 			tag = ZHE
 			origin = this
 			state = s:STATE_ZHEJIANG.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:ZHE = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_ZHE
 		}
 	}
-	# 호북 군벌
+	# 호북 - 군벌 / 형남
 	if = {
 		limit = { exists = s:STATE_EASTERN_HUBEI.region_state:ROC }
 		create_country = {
 			tag = HUB
 			origin = this
 			state = s:STATE_EASTERN_HUBEI.region_state:ROC
-
 			on_created = {
 				if = {
 					limit = { exists = s:STATE_WESTERN_HUBEI.region_state:ROC }
@@ -980,24 +830,11 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 						set_state_owner = c:HUB
 					}
 				}
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:HUB = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_HUB
 		}
 	}
@@ -1007,120 +844,64 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			tag = HUB
 			origin = this
 			state = s:STATE_WESTERN_HUBEI.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:HUB = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_HUB
 		}
 	}
-	# 하남 군벌
+	# 하남 - 군벌 / 천순
 	if = {
 		limit = { exists = s:STATE_HENAN.region_state:ROC }
 		create_country = {
 			tag = HEN
 			origin = this
 			state = s:STATE_HENAN.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:HEN = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_HEN
 		}
 	}
-	# 중경 군벌
+	# 중경 - 군벌 / 후촉
 	if = {
 		limit = { exists = s:STATE_CHONGQING.region_state:ROC }
 		create_country = {
 			tag = CHQ
 			origin = this
 			state = s:STATE_CHONGQING.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:CHQ = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_CHQ
 		}
 	}
-	# 서안 군벌
+	# 섬서 - 군벌 / 대순
 	if = {
 		limit = { exists = s:STATE_XIAN.region_state:ROC }
 		create_country = {
 			tag = XIA
 			origin = this
 			state = s:STATE_XIAN.region_state:ROC
-
 			on_created = {
-				warlord_setup_effect = yes
-				activate_law = law_type:law_warlord_government # 추가
-				set_variable = warlord_state
-				random_list = {
-					4 = {
-
-					}
-					1 = {
-						set_strategy = ai_strategy_unify_china
-					}
-				}
+				eafp_chinese_fragment_setup_effect = yes
 			}
 		}
 		c:XIA = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_XIA
 		}
 	}
-
+	# 알타이 - 군주제 분열국 대상 아님
 	if = {
 		limit = { exists = s:STATE_ALTAI.region_state:CHI }
 		create_country = {
@@ -1134,10 +915,7 @@ china_shatters_effect = { # 중국 분열 때 땅 할당 + 속국 독립
 			}
 		}
 		c:ALI = {
-			join_power_bloc = ROOT
-			every_scope_state = {
-				state_region = { add_claim = c:ROC }
-			}
+			eafp_join_chinese_central_bloc_effect = yes
 			save_scope_as = scope_ALI
 		}
 	}
