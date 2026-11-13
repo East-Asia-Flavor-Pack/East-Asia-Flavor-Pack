@@ -847,13 +847,16 @@ je_chinese_westernization_international_prestige = {
 }
 
 je_chi_military_academy = {
+	group = je_group_qing
+
 	activation_description = {
 		always = yes
 	}
 
-    icon = "gfx/interface/icons/event_icons/event_military.dds"
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
-	group = je_group_qing
+	scripted_progress_bar = chi_military_academy_progress_bar
+	scripted_progress_bar = chi_military_academy_peril_progress_bar
 
 	on_monthly_pulse = {
 		random_events = {
@@ -878,14 +881,6 @@ je_chi_military_academy = {
 	}
 
 	immediate = {
-		set_variable = {
-			name = chi_military_academy_peril
-			value = 0
-		}
-		set_variable = {
-			name = chi_military_academy_progress
-			value = 0
-		}
 		if = {
 			limit = { NOT = { capital = { has_variable = chi_military_academy_state } } }
 			capital = { save_scope_as = military_academy_state }
@@ -904,6 +899,8 @@ je_chi_military_academy = {
 				save_scope_as = military_academy_state
 			}
 		}
+		# status_desc 표시용 (vanilla expedition_leader_storage_var와 같은 역할)
+		set_variable = { name = chi_military_academy_state_var value = scope:military_academy_state }
 
 		trigger_event = { id = chinese_westernization.121 }
 	}
@@ -911,75 +908,95 @@ je_chi_military_academy = {
 	status_desc = {
 		first_valid = {
 			triggered_desc = {
-				desc = expedition_low_peril_loc
+				desc = chi_military_academy_status_blank
 				trigger = {
-					var:chi_military_academy_peril < 4
+					NOT = { exists = var:chi_military_academy_state_var }
 				}
 			}
 			triggered_desc = {
-				desc = expedition_medium_peril_loc
+				desc = chi_military_academy_status_low_peril
 				trigger = {
-					var:chi_military_academy_peril < 6
+					je:je_chi_military_academy ?= {
+						"scripted_bar_progress(chi_military_academy_peril_progress_bar)" < 4
+					}
 				}
 			}
 			triggered_desc = {
-				desc = expedition_high_peril_loc
+				desc = chi_military_academy_status_medium_peril
 				trigger = {
-					var:chi_military_academy_peril >= 6
+					je:je_chi_military_academy ?= {
+						"scripted_bar_progress(chi_military_academy_peril_progress_bar)" < 6
+					}
+				}
+			}
+			triggered_desc = {
+				desc = chi_military_academy_status_high_peril
+				trigger = {
+					je:je_chi_military_academy ?= {
+						"scripted_bar_progress(chi_military_academy_peril_progress_bar)" >= 6
+					}
 				}
 			}
 		}
 	}
 
-    outcome = {
+	outcome = {
 		header = je_standard_completion_header
 		effect_header = je_standard_on_completion_header
 		color = "gold_positive"
 		conclusion_desc = je_standard_completion_conclusion_desc
 		trigger = {
 			custom_tooltip = {
-				text = je_expedition_success
+				text = chi_military_academy_success_tt
 				scope:journal_entry = {
-					is_goal_complete = yes
+					"scripted_bar_progress(chi_military_academy_progress_bar)" >= 8
 				}
 			}
 		}
 		effect = {
-			remove_variable = chi_military_academy_peril
-			remove_variable = chi_military_academy_progress
+			remove_variable = chi_military_academy_state_var
 			trigger_event = { id = chinese_westernization.140 }
+		}
+		event_outcome_desc = {
+			first_valid = {
+				triggered_desc = {
+					desc = event_effects_chinese_westernization.140_tt
+				}
+			}
 		}
 	}
 
-   outcome = {
+	outcome = {
 		header = je_standard_failure_header
 		effect_header = je_standard_on_failure_header
 		color = "blue_negative"
 		conclusion_desc = je_standard_failure_conclusion_desc
 		trigger = {
 			custom_tooltip = {
-				text = je_expedition_fail
-				var:chi_military_academy_peril >= 8
+				text = chi_military_academy_fail_tt
+				scope:journal_entry = {
+					"scripted_bar_progress(chi_military_academy_peril_progress_bar)" >= 8
+				}
 			}
 			# A fulfilled objective wins if both ending conditions are met.
 			hidden_trigger = {
 				NOT = {
-					AND = {
-						custom_tooltip = {
-							text = je_expedition_success
-							scope:journal_entry = {
-								is_goal_complete = yes
-							}
-						}
-
+					scope:journal_entry = {
+						"scripted_bar_progress(chi_military_academy_progress_bar)" >= 8
 					}
 				}
 			}
 		}
 		effect = {
-			remove_variable = chi_military_academy_peril
-			remove_variable = chi_military_academy_progress
+			remove_variable = chi_military_academy_state_var
 			trigger_event = { id = chinese_westernization.139 }
+		}
+		event_outcome_desc = {
+			first_valid = {
+				triggered_desc = {
+					desc = event_effects_chinese_westernization.139_tt
+				}
+			}
 		}
 	}
 
@@ -993,34 +1010,26 @@ je_chi_military_academy = {
 			}
 		}
 		effect = {
-			remove_variable = chi_military_academy_peril
-			remove_variable = chi_military_academy_progress
+			remove_variable = chi_military_academy_state_var
 		}
 	}
 
-	current_value = {
-		value = var:chi_military_academy_progress
-	}
-
-	goal_add_value = {
-		add = 8
-	}
-
-	progressbar = yes
-
-    weight = 200
-    transferable = no
-    should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 200
+	transferable = no
+	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
 je_chi_naval_academy = {
+	group = je_group_qing
+
 	activation_description = {
 		always = yes
 	}
 
-    icon = "gfx/interface/icons/event_icons/event_military.dds"
+	icon = "gfx/interface/icons/event_icons/event_military.dds"
 
-	group = je_group_qing
+	scripted_progress_bar = chi_naval_academy_progress_bar
+	scripted_progress_bar = chi_naval_academy_peril_progress_bar
 
 	on_monthly_pulse = {
 		random_events = {
@@ -1045,90 +1054,105 @@ je_chi_naval_academy = {
 	}
 
 	immediate = {
-		set_variable = {
-			name = chi_naval_academy_peril
-			value = 0
-		}
-		set_variable = {
-			name = chi_naval_academy_progress
-			value = 0
-		}
 		capital = { save_scope_as = naval_academy_state }
+		# status_desc 표시용 (vanilla expedition_leader_storage_var와 같은 역할)
+		set_variable = { name = chi_naval_academy_state_var value = scope:naval_academy_state }
+
 		trigger_event = { id = chinese_westernization.221 }
 	}
 
 	status_desc = {
 		first_valid = {
 			triggered_desc = {
-				desc = expedition_low_peril_loc
+				desc = chi_naval_academy_status_blank
 				trigger = {
-					var:chi_naval_academy_peril < 4
+					NOT = { exists = var:chi_naval_academy_state_var }
 				}
 			}
 			triggered_desc = {
-				desc = expedition_medium_peril_loc
+				desc = chi_naval_academy_status_low_peril
 				trigger = {
-					var:chi_naval_academy_peril < 6
+					je:je_chi_naval_academy ?= {
+						"scripted_bar_progress(chi_naval_academy_peril_progress_bar)" < 4
+					}
 				}
 			}
 			triggered_desc = {
-				desc = expedition_high_peril_loc
+				desc = chi_naval_academy_status_medium_peril
 				trigger = {
-					var:chi_naval_academy_peril >= 6
+					je:je_chi_naval_academy ?= {
+						"scripted_bar_progress(chi_naval_academy_peril_progress_bar)" < 6
+					}
+				}
+			}
+			triggered_desc = {
+				desc = chi_naval_academy_status_high_peril
+				trigger = {
+					je:je_chi_naval_academy ?= {
+						"scripted_bar_progress(chi_naval_academy_peril_progress_bar)" >= 6
+					}
 				}
 			}
 		}
 	}
 
-    outcome = {
+	outcome = {
 		header = je_standard_completion_header
 		effect_header = je_standard_on_completion_header
 		color = "gold_positive"
 		conclusion_desc = je_standard_completion_conclusion_desc
 		trigger = {
 			custom_tooltip = {
-				text = je_expedition_success
+				text = chi_naval_academy_success_tt
 				scope:journal_entry = {
-					is_goal_complete = yes
+					"scripted_bar_progress(chi_naval_academy_progress_bar)" >= 8
 				}
 			}
 		}
 		effect = {
-			remove_variable = chi_naval_academy_peril
-			remove_variable = chi_naval_academy_progress
+			remove_variable = chi_naval_academy_state_var
 			trigger_event = { id = chinese_westernization.240 }
+		}
+		event_outcome_desc = {
+			first_valid = {
+				triggered_desc = {
+					desc = event_effects_chinese_westernization.240_tt
+				}
+			}
 		}
 	}
 
-   outcome = {
+	outcome = {
 		header = je_standard_failure_header
 		effect_header = je_standard_on_failure_header
 		color = "blue_negative"
 		conclusion_desc = je_standard_failure_conclusion_desc
 		trigger = {
 			custom_tooltip = {
-				text = je_expedition_fail
-				var:chi_naval_academy_peril >= 8
+				text = chi_naval_academy_fail_tt
+				scope:journal_entry = {
+					"scripted_bar_progress(chi_naval_academy_peril_progress_bar)" >= 8
+				}
 			}
 			# A fulfilled objective wins if both ending conditions are met.
 			hidden_trigger = {
 				NOT = {
-					AND = {
-						custom_tooltip = {
-							text = je_expedition_success
-							scope:journal_entry = {
-								is_goal_complete = yes
-							}
-						}
-
+					scope:journal_entry = {
+						"scripted_bar_progress(chi_naval_academy_progress_bar)" >= 8
 					}
 				}
 			}
 		}
 		effect = {
-			remove_variable = chi_naval_academy_peril
-			remove_variable = chi_naval_academy_progress
+			remove_variable = chi_naval_academy_state_var
 			trigger_event = { id = chinese_westernization.239 }
+		}
+		event_outcome_desc = {
+			first_valid = {
+				triggered_desc = {
+					desc = event_effects_chinese_westernization.239_tt
+				}
+			}
 		}
 	}
 
@@ -1142,24 +1166,13 @@ je_chi_naval_academy = {
 			}
 		}
 		effect = {
-			remove_variable = chi_naval_academy_peril
-			remove_variable = chi_naval_academy_progress
+			remove_variable = chi_naval_academy_state_var
 		}
 	}
 
-	current_value = {
-		value = var:chi_naval_academy_progress
-	}
-
-	goal_add_value = {
-		add = 8
-	}
-
-	progressbar = yes
-
-    weight = 200
-    transferable = no
-    should_be_pinned_by_default_uninvolved_or_context = yes
+	weight = 200
+	transferable = no
+	should_be_pinned_by_default_uninvolved_or_context = yes
 }
 
 je_new_army = {
