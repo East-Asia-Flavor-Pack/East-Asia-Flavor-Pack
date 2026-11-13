@@ -136,6 +136,116 @@
 		}
 	}
 
+	#추가: 바닐라 맵모드. 충성도는 막번체제 지역 충성도(eafp_japan_map_state_loyalty, 0~100)를 사용.
+	map_color = {
+		if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+				eafp_japan_map_state_loyalty >= 80
+			}
+			value = "restoration_shogunate_green_3"
+		}
+		else_if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+				eafp_japan_map_state_loyalty >= 65
+			}
+			value = "restoration_shogunate_green_2"
+		}
+		else_if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+				eafp_japan_map_state_loyalty >= 50
+			}
+			value = "restoration_shogunate_green_1"
+		}
+		else_if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+				eafp_japan_map_state_loyalty < 20
+			}
+			value = "restoration_imperial_red_3"
+		}
+		else_if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+				eafp_japan_map_state_loyalty < 35
+			}
+			value = "restoration_imperial_red_2"
+		}
+		else_if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+			}
+			value = "restoration_imperial_red_1"
+		}
+	}
+
+	#추가: 한 주에 여러 다이묘가 있으므로 전원을 충성도 순으로 표시.
+	map_tooltip = {
+		state_region ?= {
+			save_scope_as = eafp_map_state_region
+		}
+		if = {
+			limit = {
+				eafp_japan_map_state_is_relevant = yes
+			}
+			save_temporary_scope_value_as = {
+				name = eafp_map_state_loyalty
+				value = eafp_japan_map_state_loyalty
+			}
+			save_temporary_scope_value_as = {
+				name = eafp_map_daimyo_count
+				value = eafp_japan_map_state_daimyo_count
+			}
+			if = {
+				limit = { eafp_japan_map_state_loyalty >= 50 }
+				custom_tooltip_no_bullet = "eafp_restoration_map_shogunate_state"
+				if = {
+					limit = { c:JAP ?= owner }
+					custom_tooltip_no_bullet = "eafp_restoration_map_tokugawa_impact"
+				}
+			}
+			else = {
+				custom_tooltip_no_bullet = "eafp_restoration_map_imperial_state"
+				if = {
+					limit = { c:JAP ?= owner }
+					custom_tooltip_no_bullet = "eafp_restoration_map_restorationist_impact"
+				}
+			}
+			if = {
+				limit = { eafp_japan_map_state_daimyo_count > 0 }
+				custom_tooltip_no_bullet = "eafp_restoration_map_daimyo_header"
+				eafp_japan_map_tooltip_daimyos = yes
+			}
+			else = {
+				custom_tooltip_no_bullet = "eafp_restoration_map_no_daimyo"
+			}
+		}
+		# 바닐라 특수 사례
+		if = {
+			limit = {
+				state_region = s:STATE_RYUKYU_ISLANDS
+				c:JAP ?= owner
+			}
+			custom_tooltip_no_bullet = "restoration_map_satsuma_ryukyu"
+		}
+		else_if = {
+			limit = {
+				state_region = s:STATE_RYUKYU_ISLANDS
+				c:RYU ?= owner
+			}
+			custom_tooltip_no_bullet = "restoration_map_ryukyu"
+		}
+		else_if = {
+			limit = {
+				state_region = s:STATE_HOKKAIDO
+				c:EZO ?= owner
+			}
+			custom_tooltip_no_bullet = "restoration_map_ezochi"
+		}
+	}
+
 	# Imperial Victory
 	outcome = {
 		header = je_meiji_restoration_imperial_victory_header

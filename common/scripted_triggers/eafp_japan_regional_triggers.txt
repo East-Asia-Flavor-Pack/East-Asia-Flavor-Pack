@@ -5,3 +5,26 @@ eafp_japan_regional_active = {
     has_journal_entry = je_bakuhantaisei
     NOT = { has_variable = eafp_japan_regional_ended }
 }
+
+#### 메이지 유신 맵모드 ####
+# 메이지 유신 저널 맵모드용 트리거.
+
+# 주 스코프. 바닐라 맵모드와 같은 대상: 본토의 일본 영토, 또는 에조가 가진 홋카이도(일본 측 주 존재 시).
+eafp_japan_map_state_is_relevant = {
+    is_in_geographic_region = geographic_region_home_islands
+    OR = {
+        c:JAP ?= owner
+        AND = {
+            c:EZO ?= owner
+            state_region = s:STATE_HOKKAIDO
+            exists = s:STATE_HOKKAIDO.region_state:JAP
+        }
+    }
+}
+
+# 캐릭터 스코프. scope:eafp_map_state_region 필요.
+eafp_japan_map_is_state_daimyo = {
+    is_character_alive = yes
+    has_variable = daimyo_var
+    var:daimyo_var ?= scope:eafp_map_state_region
+}

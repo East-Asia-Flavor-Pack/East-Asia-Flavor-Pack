@@ -1140,3 +1140,75 @@ eafp_japan_region_KYUSHU_meiji_support_effect_value = {
         desc = eafp_japan_region_effect_base_coefficient
     }
 }
+
+#### 메이지 유신 맵모드 ####
+# 메이지 유신 저널 맵모드용 값. 모두 주(state) 스코프.
+# 막번체제 지역 관리가 활성화되어 있으면 위젯과 같은 JAP의 eafp_japan_loyalty_<지역>(0~100)을 쓰고,
+# 아니면 바닐라 캐시(state_daimyo_loyalty, 0~1)를 0~100으로 환산한다. 50 이상 = 막부 쪽.
+eafp_japan_map_state_loyalty = {
+    value = 50
+    if = {
+        limit = { c:JAP ?= owner }
+        value = state_daimyo_loyalty
+        multiply = 100
+    }
+    else_if = {
+        limit = { state_region = s:STATE_HOKKAIDO exists = s:STATE_HOKKAIDO.region_state:JAP }
+        value = s:STATE_HOKKAIDO.region_state:JAP.state_daimyo_loyalty
+        multiply = 100
+    }
+    if = {
+        limit = { c:JAP ?= { eafp_japan_regional_active = yes } }
+        if = {
+            limit = { state_region = s:STATE_HOKKAIDO c:JAP = { has_variable = eafp_japan_region_active_HOKKAIDO } }
+            value = c:JAP.var:eafp_japan_loyalty_HOKKAIDO
+        }
+        else_if = {
+            limit = { state_region = s:STATE_TOHOKU c:JAP = { has_variable = eafp_japan_region_active_TOHOKU } }
+            value = c:JAP.var:eafp_japan_loyalty_TOHOKU
+        }
+        else_if = {
+            limit = { state_region = s:STATE_KANTO c:JAP = { has_variable = eafp_japan_region_active_KANTO } }
+            value = c:JAP.var:eafp_japan_loyalty_KANTO
+        }
+        else_if = {
+            limit = { state_region = s:STATE_HOKUSHINETSU c:JAP = { has_variable = eafp_japan_region_active_HOKUSHINETSU } }
+            value = c:JAP.var:eafp_japan_loyalty_HOKUSHINETSU
+        }
+        else_if = {
+            limit = { state_region = s:STATE_TOKAI c:JAP = { has_variable = eafp_japan_region_active_TOKAI } }
+            value = c:JAP.var:eafp_japan_loyalty_TOKAI
+        }
+        else_if = {
+            limit = { state_region = s:STATE_KYOTO c:JAP = { has_variable = eafp_japan_region_active_KYOTO } }
+            value = c:JAP.var:eafp_japan_loyalty_KYOTO
+        }
+        else_if = {
+            limit = { state_region = s:STATE_KANSAI c:JAP = { has_variable = eafp_japan_region_active_KANSAI } }
+            value = c:JAP.var:eafp_japan_loyalty_KANSAI
+        }
+        else_if = {
+            limit = { state_region = s:STATE_CHUGOKU c:JAP = { has_variable = eafp_japan_region_active_CHUGOKU } }
+            value = c:JAP.var:eafp_japan_loyalty_CHUGOKU
+        }
+        else_if = {
+            limit = { state_region = s:STATE_SHIKOKU c:JAP = { has_variable = eafp_japan_region_active_SHIKOKU } }
+            value = c:JAP.var:eafp_japan_loyalty_SHIKOKU
+        }
+        else_if = {
+            limit = { state_region = s:STATE_KYUSHU c:JAP = { has_variable = eafp_japan_region_active_KYUSHU } }
+            value = c:JAP.var:eafp_japan_loyalty_KYUSHU
+        }
+    }
+}
+
+# scope:eafp_map_state_region 필요. 위젯 다이묘 목록과 같은 기준.
+eafp_japan_map_state_daimyo_count = {
+    value = 0
+    c:JAP ?= {
+        every_scope_character = {
+            limit = { eafp_japan_map_is_state_daimyo = yes }
+            add = 1
+        }
+    }
+}
