@@ -238,10 +238,14 @@ def main():
     assert grant_body.index("add_to_variable_list = { name = concession_owner_varlist target = scope:concession_holder }") \
         < grant_body.index("add_involvement = { strategic_region = scope:concession_region value = 1000 }"), \
         "Involvement only after the right is registered"
-    assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
-    # Grant, paid expansion and the treaty-backed restore all move in steps of 5 levels.
-    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 3
-    assert "LEVELS = 1 }" not in effects
+    # The trade center appears only as a monthly investment target (candidate + dispatch):
+    # no other trade center reward or deletion in the effects.
+    invest_code = unquoted(effects).split("eafp_concession_industry_investment_effect = {", 1)[1]
+    assert unquoted(effects).count("building_trade_center") == invest_code.count("building_trade_center") == 4
+    # Grant and the treaty-backed restore add 5 levels; the monthly investment grows a
+    # concession one level at a time.
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 2
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 1 }") == 1
     # Concession levels are only company-owned: one create_building, no country-ownership fallback,
     # and an owner without a company gets one the same way a treaty grant does.
     assert effects.count("levels = $LEVELS$") == 1
@@ -259,13 +263,12 @@ def main():
     assert "add_company = company_type:company_eafp_concession" in effects
     assert "remove_company = company_type:company_eafp_concession" in effects
     assert "NOT = { eafp_concession_holder_has_rights = yes }" in effects
-    assert "eafp_concession_expand_effect = yes" in je_code
-    # AI expansion waits until the concession building is staffed enough.
-    ai_expand = je_code.split("ordered_in_global_list = {", 1)[1].split("eafp_concession_expand_effect = yes", 1)[0]
-    assert re.search(r"is_building_type = building_eafp_concession\s*occupancy >= eafp_concession_ai_expand_min_occupancy", ai_expand)
-    assert re.search(r"^eafp_concession_ai_expand_min_occupancy = \{ value = 0\.8 \}",
-                     read(ROOT / "common/script_values/eafp_concessions_values.txt"), re.M)
-    assert "eafp_concession_expand_effect = yes" in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt")
+    # No manual (GUI) or separate AI expansion and no 5-level rounding (2026-11-14): the
+    # monthly investment is the only way a concession grows after its grant.
+    for gone in ("eafp_concession_expand_effect", "eafp_concession_can_expand", "eafp_concession_expand_gui",
+                 "eafp_concession_expansion_cost", "eafp_concession_ai_expand_min_occupancy",
+                 "eafp_concession_round_ownership_effect", "eafp_concession_expand_"):
+        assert gone not in code, gone
     assert "eafp_concession_free_capacity >= 1" not in read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt")
     assert not re.search(r"\blevel\s*=", unquoted(effects)), "Use additive ownership, not a fixed level"
     assert "eafp_concession_grant_effect" not in hooks, "Inheritance must not award buildings"
@@ -315,25 +318,17 @@ def main():
     assert "eafp_concession_rebuild_map_add = { KEY = scope:concession_holder VALUE = scope:eafp_rebuild_added }" in rebuild
     assert rebuild.index("eafp_concession_measure_country_levels = { COUNTRY = scope:concession_holder }") \
         < rebuild.index("eafp_concession_rebuild_owner_levels = yes"), "Read the holder's levels, then overwrite"
-    # return, per-holder share removal, rounding, the industry investment (holder pick + building
+    # return, per-holder share removal, the industry investment (holder pick + building
     # share) and the urban usage record.
-    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 7
-    # State creation/owner change rounds split shares to the nearest multiple of 5 (min 5)
-    # by overwriting, never by removing the building.
-    rounding = effects.split("eafp_concession_round_ownership_effect = {", 1)[1].split("\n}", 1)[0]
-    assert "value = { value = scope:concession_level_low divide = 5 round = yes multiply = 5 min = 5 }" in rounding
-    assert "NOT = { scope:eafp_rebuild_rounded = scope:concession_level_low }" in rounding
-    assert "remove_building" not in unquoted(rounding)
-    assert rounding.index("eafp_concession_measure_country_levels") < rounding.index("eafp_concession_rebuild_owner_levels = yes")
-    state_hook = hooks.split("eafp_concessions_state_changed = {", 1)[1].split("\n}", 1)[0]
-    assert state_hook.index("eafp_concession_round_ownership_effect = yes") < state_hook.index("eafp_concession_refresh_effect = yes")
+    assert effects.count("eafp_concession_measure_country_levels = { COUNTRY =") == 6
     assert re.search(r"on_state_owner_change\s*=\s*\{\s*on_actions\s*=\s*\{\s*eafp_concessions_state_changed", entries)
     assert re.search(r"on_state_created\s*=\s*\{\s*on_actions\s*=\s*\{\s*eafp_concessions_state_changed", entries)
-    # Grant and expansion judge success by the holder's expected total, not a total-level rise.
+    # Grant, add_company_level and the monthly concession growth judge success by the holder's
+    # expected total, not a total-level rise.
     assert effects.count("value >= scope:concession_expected_levels") == 3
     assert "concession_previous_levels" not in effects
     # create_building levels do not stack on an existing building: one call per owner,
-    # dispatched to the 5-level step that matches the stored value.
+    # dispatched to the case that matches the stored value (every level 1..500).
     assert "eafp_concession_rebuild_chunk" not in rebuild and "eafp_concession_rebuild_owner_levels = yes" in rebuild
     assert "while" not in effects.split("eafp_concession_rebuild_chunk = {", 1)[1].split("\n}", 1)[0]
     dispatch = effects.split("eafp_concession_rebuild_owner_levels = {", 1)[1].split("\n}", 1)[0]
@@ -341,10 +336,8 @@ def main():
     cases = [int(x) for x in re.findall(r"^\t\t(\d+) = \{", dispatch, re.M)]
     assert re.search(r"switch = \{\s*trigger = scope:eafp_rebuild_remaining\s", dispatch), "Dispatch with switch"
     assert "if =" not in dispatch and "else" not in dispatch
-    assert steps == list(range(5, steps[-1] + 1, 5)) and steps[-1] >= 250, steps[-3:]
+    assert steps == list(range(1, 501)), steps[-3:]
     assert cases == steps, "Each switch case n runs the chunk with LEVELS = n"
-    assert "custom_tooltip = {\n\t\t\ttext = eafp_concession_expand_effect_tt\n\t\t\teafp_concession_expand_effect = yes" \
-        in read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt").replace("\r\n", "\n")
     assert "NOT = { any_in_list = { variable = concession_owner_varlist always = yes } }" in effects
     assert re.search(r"else_if\s*=\s*\{\s*limit\s*=\s*\{\s*has_building\s*=\s*building_eafp_concession\s*\}\s*remove_building\s*=\s*building_eafp_concession\s*\}", effects)
     refresh = effects[effects.index("eafp_concession_refresh_effect = {"):]
@@ -367,7 +360,20 @@ def main():
     # measured on this state's concession building, strictly greater wins).
     assert "save_temporary_scope_value_as = { name = eafp_industry_best value = 0 }" in invest
     assert "scope:eafp_industry_concession = { eafp_concession_measure_country_levels = { COUNTRY = scope:eafp_industry_candidate } }" in invest
-    assert re.search(r"limit = \{\s*scope:concession_level_low > scope:eafp_industry_best\s*scope:eafp_industry_used < scope:concession_level_low\s*\}", invest), "Cap: urban levels below concession levels"
+    assert re.search(r"limit = \{\s*scope:concession_level_low > scope:eafp_industry_best\s*OR = \{\s*"
+                     r"scope:eafp_industry_used < scope:concession_level_low\s*"
+                     r"scope:eafp_industry_state = \{ eafp_concession_free_capacity >= 1 \}\s*\}\s*\}", invest), \
+        "Holder needs room: urban levels below concession levels, or a free concession level"
+    # Concession growth competes in the same pick as industries: the concession building itself
+    # while the urban cap has a free level; industries only below the holder's urban cap.
+    assert re.search(r"AND = \{\s*is_building_type = building_eafp_concession\s*"
+                     r"scope:eafp_industry_state = \{ eafp_concession_free_capacity >= 1 \}\s*\}", invest)
+    assert re.search(r"AND = \{\s*scope:eafp_industry_holder_used < scope:eafp_industry_best\s*can_queue_building_levels = 1", invest)
+    growth = invest.split("limit = { is_building_type = building_eafp_concession }", 1)[1].split("# Local industry or port.", 1)[0]
+    assert "scope:eafp_industry_holder = { save_temporary_scope_as = concession_holder }" in growth
+    assert growth.index("eafp_concession_add_company_level = { LEVELS = 1 }") \
+        < growth.index("value >= scope:concession_expected_levels") \
+        < growth.index("add_treasury = { value = eafp_concession_industry_level_cost multiply = -1 }"), "Charge only after growth"
     # Usage record: refreshed weekly and before each investment, counting exactly the
     # investable building types.
     assert invest.index("eafp_concession_urban_usage_refresh = yes") < invest.index("every_in_list")
@@ -391,21 +397,20 @@ def main():
     urban_trigger = urban_trigger.split("\neafp_concession_urban_investment_building = {", 1)[1].split("\n}", 1)[0]
     assert sorted(re.findall(r"is_building_type = (\w+)", urban_trigger)) == sorted(
         re.findall(r"eafp_concession_industry_create = \{ TYPE = (\w+) \}", invest)), "Cap counts the investable types"
-    assert invest.index("eafp_concession_industry_create") < invest.index("add_treasury"), "Charge after the grant"
+    assert invest.index("eafp_concession_industry_create") < invest.rindex("add_treasury"), "Charge after the grant"
     assert re.search(r"levels_owned_by_country = \{ target = scope:eafp_industry_holder value >= scope:eafp_industry_new_levels \}\s*\}\s*scope:eafp_industry_holder = \{ add_treasury", invest)
     create = effects.split("eafp_concession_industry_create = {", 1)[1].split("\n}", 1)[0]
     levels = [int(x) for x in re.findall(r"^\t\t(\d+) = \{ create_building = \{ building = \$TYPE\$ add_ownership = \{ company = \{ type = company_eafp_concession", create, re.M)]
     assert levels == list(range(1, 101)), "One literal case per level 1..100"
-    # Costs (user values): industry level 100,000; +5 concession expansion 500,000.
+    # Cost (user value): 100,000 per level of industry, port or concession building.
     values_text = read(ROOT / "common/script_values/eafp_concessions_values.txt")
     assert re.search(r"^eafp_concession_industry_level_cost = \{ value = 100000 \}", values_text, re.M)
-    assert re.search(r"^eafp_concession_expansion_cost = \{ value = 500000 \}", values_text, re.M)
-    # Industry investment needs a staffed, funded concession building; looser than AI expansion.
+    # The monthly investment needs a staffed, funded concession building.
     invest_call = je_code.split("eafp_concession_industry_investment_effect = yes", 1)[0].rsplit("every_in_global_list = {", 1)[1]
     assert "occupancy >= eafp_concession_industry_min_occupancy" in invest_call
     assert "cash_reserves_ratio >= eafp_concession_industry_min_cash_reserves" in invest_call
     num = lambda key: float(re.search(r"^" + key + r" = \{ value = ([\d.]+) \}", values_text, re.M)[1])
-    assert num("eafp_concession_industry_min_occupancy") < num("eafp_concession_ai_expand_min_occupancy")
+    assert 0 < num("eafp_concession_industry_min_occupancy") < 1
     assert 0 < num("eafp_concession_industry_min_cash_reserves") < 1
     # Every candidate building, ports included, needs a positive weekly profit.
     invest_limit = invest.split("ordered_scope_building = {", 1)[1].split("order_by", 1)[0]
@@ -565,22 +570,8 @@ def main():
         assert re.search(re.escape(onclick) + r"\]\"\s*tooltipwidget\s*=\s*\{\s*" + fancy + r"\s*=\s*\{\s*\}", gui), fancy
         assert re.search(r"^\s*type " + fancy + r" = ", "\n".join(read(p) for p in (game / "gui").rglob("*.gui")), re.M), fancy
     assert "eafp_concession_goto_" not in gui, "Plain-text go-to tooltips were replaced"
-    # Expansion requirements shown on the button: right, urban cap room, gold reserves, ownership.
-    can_expand = triggers_code.split("\neafp_concession_can_expand = {", 1)[1].split("\n}", 1)[0]
-    assert re.findall(r"text = (eafp_concession_expand_\w+_tt)", can_expand) == [
-        "eafp_concession_expand_active_tt", "eafp_concession_expand_capacity_tt",
-        "eafp_concession_expand_treasury_tt", "eafp_concession_expand_ownership_tt"]
-    assert "$HOLDER$ = { gold_reserves >= eafp_concession_expansion_cost }" in can_expand
-    # Expand button: vanilla JE action tooltip shape (requirements with checkmarks, then effects).
-    assert 'tooltip = "eafp_concession_expand_button_tt"' in gui
-    sgui_code = unquoted(read(ROOT / "common/scripted_guis/concessions_in_china_sgui.txt"))
-    assert re.search(r"show_as_tooltip\s*=\s*\{\s*scope:actor\s*=\s*\{\s*add_treasury\s*=\s*\{\s*value = eafp_concession_expansion_cost multiply = -1", sgui_code), \
-        "Display-only fee line; the fee is charged inside the effect"
-    for lang in LANGUAGES:
-        expand_tt = re.search(r'^\s*eafp_concession_expand_button_tt:\s*"(.*)"\s*$',
-                              read(ROOT / f"localization/{lang}/eafp_concessions_in_china_l_{lang}.yml"), re.M)[1]
-        assert expand_tt.index("$TOOLTIP_DELIMITER$") < expand_tt.index(".IsValidTooltip(") \
-            < expand_tt.index("#title") < expand_tt.index(".ExecuteTooltip("), lang
+    # No expansion button any more: the widget has no player action.
+    assert "eafp_concession_expand" not in gui and "eafp_concession_expand" not in triggers_code
     assert gui.count("{") == gui.count("}"), "Unbalanced braces in the widget"
     # Bar segments: the flag opens the country panel, the company logo the company panel.
     segment = gui.split("type eafp_concession_owner_segment = widget {", 1)[1].split("\n\t}", 1)[0]
@@ -589,7 +580,7 @@ def main():
     assert "texture = \"[Company.GetCompanyType.GetIcon]\"" in segment and "[InformationPanelBar.OpenCompanyPanel(Company.Self)]" in segment
     # The header's current/cap figure explains the cap.
     assert re.search(r'text = "eafp_concession_card_total"\s*tooltip = "eafp_concession_cap_tt"', gui)
-    # Details keep only the ownership bar/list and the expansion button.
+    # Details keep only the ownership bar/list.
     for removed in ("eafp_concession_cap_status", "progressbar", "concession_owner_varlist", "eafp_concession_rights_heading"):
         assert removed not in details, removed
     for key in re.findall(r"GetScriptedGui\('([^']+)'\)", gui):
@@ -611,8 +602,7 @@ def main():
     for key in ("eafp_grant_concession",):
         # The article's _desc text was removed on purpose (2026-11-11); no code references it.
         keys.update(key + suffix for suffix in ("", "_effects_desc", "_article_short_desc"))
-    keys.update(("concept_concession", "concept_concessions", "concept_concession_desc",
-                 "eafp_concession_expand_title", "eafp_concession_expand_desc"))
+    keys.update(("concept_concession", "concept_concessions", "concept_concession_desc"))
     # Concessions work regardless of the host's and holder's prestige: no prestige comparison
     # anywhere in the feature, and no active/suspended status in the widget.
     assert not re.search(r"\bprestige\s*(?:[<>]=?|=)\s*\S*prestige", clean), "Prestige must not gate concessions"
@@ -624,8 +614,6 @@ def main():
         "Operation checks were removed"
     assert "eafp_concession_has_holder = { HOLDER = scope:concession_holder }" in \
         triggers_text.split("\neafp_concession_event_valid = {", 1)[1].split("\n}", 1)[0]
-    assert "eafp_concession_has_holder = { HOLDER = $HOLDER$ }" in \
-        triggers_text.split("\neafp_concession_can_expand = {", 1)[1].split("\n}", 1)[0]
     eligible_users = {p.name for p in files if "eafp_concession_eligible_state = yes" in read(p)}
     assert eligible_users <= {"eafp_concessions_triggers.txt", "eafp_concessions_treaty_articles.txt",
                               "eafp_concessions_diplomatic_plays.txt"}, eligible_users

@@ -91,16 +91,17 @@
 			}
 			# Once per actual state, after incidents; never once per holder. The candidate list
 			# holds only states with a concession right. The best-placed concession company
-			# gets one more level of a local industry or port at once, paid from its country's
-			# treasury (eafp_concession_industry_investment_effect).
+			# gets one more level of a local industry, the port, the trade center or the concession building
+			# itself at once, paid from its country's treasury
+			# (eafp_concession_industry_investment_effect). This is the only way a concession
+			# grows after its grant; there is no manual or separate AI expansion.
 			every_in_global_list = {
 				variable = concession_candidate_states_gvarlist
 				limit = {
 					eafp_concession_total_levels > 0
 					infrastructure_delta > 0
 					state_unemployment_rate > 0
-					# The local concession building must be reasonably staffed and funded;
-					# looser than the AI expansion's occupancy requirement.
+					# The local concession building must be reasonably staffed and funded.
 					any_scope_building = {
 						is_building_type = building_eafp_concession
 						occupancy >= eafp_concession_industry_min_occupancy
@@ -109,30 +110,6 @@
 				}
 				eafp_concession_industry_investment_effect = yes
 			}
-
-			# One paid expansion per AI holder/month, using the same effect as the GUI.
-			# The AI only expands a concession building that is already well staffed
-			# (occupancy >= eafp_concession_ai_expand_min_occupancy, as vanilla's 0.8).
-			every_country = {
-				limit = { is_ai = yes is_country_alive = yes eafp_concession_holder_has_rights = yes }
-				save_temporary_scope_as = concession_holder
-				ordered_in_global_list = {
-					variable = concession_candidate_states_gvarlist
-					limit = {
-						eafp_concession_can_expand = { HOLDER = scope:concession_holder }
-						eafp_concession_state_profit > 0
-						any_scope_building = {
-							is_building_type = building_eafp_concession
-							occupancy >= eafp_concession_ai_expand_min_occupancy
-						}
-					}
-					order_by = eafp_concession_state_profit
-					max = 1
-					check_range_bounds = no
-					eafp_concession_expand_effect = yes
-				}
-			}
-
 		}
 	}
 	weight = 600
