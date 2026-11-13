@@ -214,7 +214,7 @@ def main():
         assert specific not in article_code + demand_goal, specific
     assert "any_scope_state = { eafp_concession_eligible_state = yes }" in demand_play
     strategy = unquoted(read(ROOT / "common/ai_strategies/eafp_default_strategy.txt"))
-    assert re.search(r"wargoal_scores\s*=\s*\{.*?\beafp_demand_concession\s*=\s*\{", strategy, re.S), "AI score"
+    assert re.search(r"wargoal_scores\s*=\s*\{.*?\bcustom\s*=\s*\{", strategy, re.S), "AI score"
     # Second Opium War: third parties can join, and Britain demands Tianjin as a primary demand.
     plays = unquoted(read(ROOT / "common/diplomatic_plays/eafp_diplomatic_plays.txt"))
     second_play = plays.split("dp_second_opium_war = {", 1)[1].split("\n}", 1)[0]
