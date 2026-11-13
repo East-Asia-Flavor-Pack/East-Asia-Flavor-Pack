@@ -1,0 +1,42 @@
+﻿# 태평천국 분쇄(je_taiping) / 태평의 혁명(je_taiping_revolution) 맵모드용 트리거. root = state.
+# je_taiping_revolution의 immediate / on_weekly_pulse 계산과 같은 조건.
+
+# 태평천국 미편입 주(num_unincorporated_states_in_china_proper)
+# 1) 태평천국이 소유·점령 중이며 recently_conquered_state가 있는 주
+eafp_taiping_map_tpg_recent = {
+	owner ?= { c:TPG ?= this }
+	controller ?= { c:TPG ?= this }
+	has_modifier = recently_conquered_state
+}
+# 2) 청 소유지만 태평천국이 점령 중인 주
+eafp_taiping_map_tpg_occupied = {
+	owner ?= { c:CHI ?= this }
+	controller ?= { c:TPG ?= this }
+}
+
+# 청 측 주(num_claimed_states_in_china_proper)
+# 3) 청이 소유·점령 중이며 recently_conquered_state가 있는 주
+eafp_taiping_map_chi_recent = {
+	owner ?= { c:CHI ?= this }
+	controller ?= { c:CHI ?= this }
+	has_modifier = recently_conquered_state
+}
+# 4) 태평천국 소유지만 청이 점령 중인 주
+eafp_taiping_map_chi_occupied = {
+	owner ?= { c:TPG ?= this }
+	controller ?= { c:CHI ?= this }
+}
+
+eafp_taiping_map_counts_for_tpg = {
+	OR = {
+		eafp_taiping_map_tpg_recent = yes
+		eafp_taiping_map_tpg_occupied = yes
+	}
+}
+
+eafp_taiping_map_counts_for_chi = {
+	OR = {
+		eafp_taiping_map_chi_recent = yes
+		eafp_taiping_map_chi_occupied = yes
+	}
+}

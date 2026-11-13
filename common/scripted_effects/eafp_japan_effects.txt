@@ -738,6 +738,34 @@ remove_bakufu_politician_role_without_appointment = { # scope = character
 	}
 }
 
+# 인물 범위. 사망·이벤트 해임으로 생긴 공석을 정리하고 후임 등용을 요청한다.
+# 사망 on_action과 인물을 제거하는 이벤트가 함께 사용한다. 직위 변수가 없으면 아무것도 하지 않는다.
+eafp_japan_vacate_bakufu_office_for_successor = { # scope = character
+	if = {
+		limit = {
+			exists = c:JAP
+			has_variable = eafp_bakufu_office_position
+		}
+		if = {
+			limit = { c:JAP = { eafp_japan_regional_active = yes } }
+			# 보직 변수가 삭제되기 전에 기존 후임 요청 변수에 직위를 기록한다.
+			c:JAP = {
+				switch = {
+					trigger = PREV.var:eafp_bakufu_office_position
+					flag:roju = { set_variable = eafp_bakufu_recruitment_pending_roju }
+					flag:rojushuza = { set_variable = eafp_bakufu_recruitment_pending_rojushuza }
+					flag:tairo = { set_variable = eafp_bakufu_recruitment_pending_tairo }
+				}
+			}
+			remove_bakufu_politician_role = yes
+			# 명부 정리 후 기존 등용 잠금과 우선순위에 따라 후임 요청을 처리한다.
+			c:JAP = { eafp_japan_process_pending_office_recruitment = yes }
+		}
+		else = { remove_bakufu_politician_role_without_appointment = yes }
+		c:JAP ?= { eafp_japan_refresh_regions = yes }
+	}
+}
+
 remove_bakufu_politician_mission = { # scope = character
 	custom_tooltip = {
 		text = remove_bakufu_politician_mission_tt

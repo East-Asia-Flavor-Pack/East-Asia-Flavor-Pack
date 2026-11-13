@@ -131,7 +131,23 @@ def main():
     assert "appoint_roju_effect" not in end and "appoint_rojushuza_effect" not in end
     death = block(read(paths[5]), "eafp_japan_on_bakufu_politician_death")
     assert "has_variable = eafp_bakufu_office_position" in death
-    assert "remove_bakufu_politician_role" in death
+    # Death and event dismissals share one vacancy path: record request, clear caches, recruit.
+    assert "eafp_japan_vacate_bakufu_office_for_successor = yes" in death
+    vacate = block(effects, "eafp_japan_vacate_bakufu_office_for_successor")
+    assert "has_variable = eafp_bakufu_office_position" in vacate
+    assert vacate.index("set_variable = eafp_bakufu_recruitment_pending_roju") < vacate.index("remove_bakufu_politician_role = yes") < vacate.index("eafp_japan_process_pending_office_recruitment = yes")
+    assert "remove_bakufu_politician_role_without_appointment" in vacate
+    # Tenpo failure kills the officeholder; the office must be vacated while still alive.
+    overrides_path = ROOT / "events/000_eafp_japan_overrides.txt"
+    structural_check(overrides_path)
+    tenpo = block(overrides_path.read_text(encoding="utf-8-sig"), "tenpo_events.4")
+    killing = [part for part in clean(tenpo).split("option = {")[1:] if "kill_character" in part]
+    assert len(killing) == 2
+    for part in killing:
+        assert part.index("eafp_japan_vacate_bakufu_office_for_successor = yes") < part.index("kill_character")
+    # Weekly repair must drop invalid roju entries even without an office variable.
+    roju_repair = block(block(read(paths[6]), "je_bakuhantaisei"), "on_weekly_pulse")
+    assert "remove_list_variable = { name = roju_varlist target = PREV }" in roju_repair
     save = block(effects, "save_bakufu_politician_mission")
     assert "var:eafp_bakufu_office_position ?= flag:roju" in save
     assert "var:eafp_bakufu_office_position ?= flag:rojushuza" in save
