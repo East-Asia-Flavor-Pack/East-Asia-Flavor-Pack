@@ -18,10 +18,6 @@ eafp_concession_start_return_war = {
 				}
 			}
 		}
-		if = {
-			limit = { scope:concession_host = { has_war_with = scope:concession_holder } }
-			scope:concession_host = { trigger_event = { id = concessions_in_china.205 } }
-		}
 	}
 }
 
@@ -879,14 +875,55 @@ eafp_concession_return_effect = {
 
 # One global refresh, used by the international JE and immediate right/ownership changes.
 # No money is moved here and this effect never schedules a timer or creates country journal entries.
+# Treaty-backed rights that lost their company or building share are restored before the
+# invalid rights are dropped.
 eafp_concession_refresh_effect = {
 	clear_global_variable_list = concession_candidate_states_gvarlist
 	every_state = {
 		limit = { OR = { has_variable_list = concession_owner_varlist has_building = building_eafp_concession } }
 		save_temporary_scope_as = eafp_refresh_state
+		owner = { save_temporary_scope_as = eafp_refresh_owner }
 		every_in_list = {
 			variable = concession_owner_varlist
 			save_temporary_scope_as = eafp_refresh_holder
+			# A right still backed by an in-force concession treaty with the state's owner is
+			# restored when its concession company or its share of the concession building has
+			# disappeared: eafp_concession_add_company_level gives the holder the 5 levels of a
+			# new grant, founding the company again first (eafp_concession_rebuild_create ->
+			# eafp_concession_ensure_company). Rights ended on purpose (return by incident, war
+			# or withdrawal) have already left the list, so they are never restored here.
+			# add_company_level reads scope:concession_holder; the caller's one is put back.
+			if = {
+				limit = {
+					is_country_alive = yes
+					NOT = { this = scope:eafp_refresh_owner }
+					OR = {
+						NOT = { has_company = company_type:company_eafp_concession }
+						scope:eafp_refresh_state = {
+							NOT = {
+								any_scope_building = {
+									is_building_type = building_eafp_concession
+									levels_owned_by_country = { target = scope:eafp_refresh_holder value >= 1 }
+								}
+							}
+						}
+					}
+					scope:eafp_refresh_owner = {
+						any_scope_treaty = {
+							any_scope_article = {
+								has_type = eafp_grant_concession
+								source_country = scope:eafp_refresh_owner
+								target_country = scope:eafp_refresh_holder
+								input_state = scope:eafp_refresh_state
+							}
+						}
+					}
+				}
+				scope:concession_holder ?= { save_temporary_scope_as = eafp_refresh_caller_holder }
+				save_temporary_scope_as = concession_holder
+				scope:eafp_refresh_state = { eafp_concession_add_company_level = { LEVELS = 5 } }
+				scope:eafp_refresh_caller_holder ?= { save_temporary_scope_as = concession_holder }
+			}
 			if = {
 				limit = {
 					OR = {

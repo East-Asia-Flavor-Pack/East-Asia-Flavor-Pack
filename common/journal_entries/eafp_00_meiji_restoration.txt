@@ -199,50 +199,101 @@
 				value = eafp_japan_map_state_daimyo_count
 			}
 			if = {
-				limit = { eafp_japan_map_state_loyalty >= 50 }
-				custom_tooltip_no_bullet = "eafp_restoration_map_shogunate_state"
+				# 막번체제 지역 관리 중: 번의 충성도·독립성과 지역 효과(위젯 effects_text와 동일)
+				limit = { eafp_japan_map_state_is_regional = yes }
 				if = {
-					limit = { c:JAP ?= owner }
-					custom_tooltip_no_bullet = "eafp_restoration_map_tokugawa_impact"
+					limit = { eafp_japan_map_state_loyalty >= 50 }
+					custom_tooltip_no_bullet = "eafp_restoration_map_shogunate_state"
 				}
-			}
-			else = {
-				custom_tooltip_no_bullet = "eafp_restoration_map_imperial_state"
+				else = {
+					custom_tooltip_no_bullet = "eafp_restoration_map_imperial_state"
+				}
+				save_temporary_scope_value_as = {
+					name = eafp_map_state_independency
+					value = eafp_japan_map_state_independency
+				}
+				custom_tooltip_no_bullet = eafp_restoration_map_region_values
 				if = {
-					limit = { c:JAP ?= owner }
-					custom_tooltip_no_bullet = "eafp_restoration_map_restorationist_impact"
+					limit = { state_region = s:STATE_HOKKAIDO }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_HOKKAIDO_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_TOHOKU }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_TOHOKU_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_KANTO }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_KANTO_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_HOKUSHINETSU }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_HOKUSHINETSU_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_TOKAI }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_TOKAI_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_KYOTO }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_KYOTO_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_KANSAI }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_KANSAI_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_CHUGOKU }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_CHUGOKU_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_SHIKOKU }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_SHIKOKU_effects_text }
+				}
+				else_if = {
+					limit = { state_region = s:STATE_KYUSHU }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_KYUSHU_effects_text }
 				}
 			}
 			if = {
 				limit = { eafp_japan_map_state_daimyo_count > 0 }
-				custom_tooltip_no_bullet = "eafp_restoration_map_daimyo_header"
-				eafp_japan_map_tooltip_daimyos = yes
+				# 툴팁은 현재 스코프 줄을 먼저, 스코프 전환 블록을 나중에 출력하므로
+				# 지역 효과(c:JAP)·다이묘(캐릭터) 블록과 순서를 맞추려고 c:JAP 블록 안에서 출력한다.
+				c:JAP ?= { custom_tooltip_no_bullet = "eafp_restoration_map_daimyo_header" }
+				eafp_japan_map_tooltip_daimyo = { N = 0 }
+				eafp_japan_map_tooltip_daimyo = { N = 1 }
+				eafp_japan_map_tooltip_daimyo = { N = 2 }
+				eafp_japan_map_tooltip_daimyo = { N = 3 }
+				eafp_japan_map_tooltip_daimyo = { N = 4 }
+				if = {
+					limit = { eafp_japan_map_state_daimyo_count > 5 }
+					c:JAP ?= { custom_tooltip_no_bullet = eafp_restoration_map_daimyo_more }
+				}
 			}
 			else = {
-				custom_tooltip_no_bullet = "eafp_restoration_map_no_daimyo"
+				c:JAP ?= { custom_tooltip_no_bullet = "eafp_restoration_map_no_daimyo" }
 			}
-		}
-		# 바닐라 특수 사례
-		if = {
-			limit = {
-				state_region = s:STATE_RYUKYU_ISLANDS
-				c:JAP ?= owner
+			# 바닐라 특수 사례
+			if = {
+				limit = {
+					state_region = s:STATE_RYUKYU_ISLANDS
+					c:JAP ?= owner
+				}
+				custom_tooltip_no_bullet = "restoration_map_satsuma_ryukyu"
 			}
-			custom_tooltip_no_bullet = "restoration_map_satsuma_ryukyu"
-		}
-		else_if = {
-			limit = {
-				state_region = s:STATE_RYUKYU_ISLANDS
-				c:RYU ?= owner
+			else_if = {
+				limit = {
+					state_region = s:STATE_RYUKYU_ISLANDS
+					c:RYU ?= owner
+				}
+				custom_tooltip_no_bullet = "restoration_map_ryukyu"
 			}
-			custom_tooltip_no_bullet = "restoration_map_ryukyu"
-		}
-		else_if = {
-			limit = {
-				state_region = s:STATE_HOKKAIDO
-				c:EZO ?= owner
+			else_if = {
+				limit = {
+					state_region = s:STATE_HOKKAIDO
+					c:EZO ?= owner
+				}
+				custom_tooltip_no_bullet = "restoration_map_ezochi"
 			}
-			custom_tooltip_no_bullet = "restoration_map_ezochi"
 		}
 	}
 

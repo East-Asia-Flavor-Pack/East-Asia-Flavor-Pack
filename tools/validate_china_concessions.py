@@ -239,8 +239,8 @@ def main():
         < grant_body.index("add_involvement = { strategic_region = scope:concession_region value = 1000 }"), \
         "Involvement only after the right is registered"
     assert "building_trade_center" not in unquoted(effects), "No vanilla trade center reward or deletion"
-    # Grant and paid expansion both move in steps of 5 levels.
-    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 2
+    # Grant, paid expansion and the treaty-backed restore all move in steps of 5 levels.
+    assert effects.count("eafp_concession_add_company_level = { LEVELS = 5 }") == 3
     assert "LEVELS = 1 }" not in effects
     # Concession levels are only company-owned: one create_building, no country-ownership fallback,
     # and an owner without a company gets one the same way a treaty grant does.
@@ -374,6 +374,17 @@ def main():
     assert "variable_map(eafp_concession_urban_map|scope:eafp_industry_candidate)" in invest
     refresh_body = effects.split("eafp_concession_refresh_effect = {", 1)[1].split("\n}", 1)[0]
     assert "eafp_concession_urban_usage_refresh = yes" in refresh_body
+    # A treaty-backed right that lost its company or building share is restored (5 levels,
+    # company re-founded by the existing chain) before the invalid-right drop; the caller's
+    # scope:concession_holder is put back. Refresh must not call the grant (it refreshes).
+    restore = refresh_body.index("eafp_concession_add_company_level = { LEVELS = 5 }")
+    assert restore < refresh_body.index("remove_list_variable = { name = concession_owner_varlist")
+    assert re.search(r"any_scope_article = \{\s*has_type = eafp_grant_concession\s*source_country = scope:eafp_refresh_owner\s*"
+                     r"target_country = scope:eafp_refresh_holder\s*input_state = scope:eafp_refresh_state", refresh_body)
+    assert "scope:eafp_refresh_caller_holder ?= { save_temporary_scope_as = concession_holder }" in refresh_body
+    assert "eafp_concession_grant_effect" not in refresh_body
+    add_level = effects.split("eafp_concession_add_company_level = {", 1)[1].split("\n}", 1)[0]
+    assert "eafp_concession_refresh_effect" not in add_level
     usage = effects.split("eafp_concession_urban_usage_refresh = {", 1)[1].split("\n}", 1)[0]
     assert "add_to_variable_map = { name = eafp_concession_urban_map key = scope:eafp_usage_holder" in usage
     urban_trigger = unquoted(read(ROOT / "common/scripted_triggers/eafp_concessions_triggers.txt"))
@@ -670,7 +681,9 @@ def main():
             tokens.append(Counter(re.findall(r"\[[^\]]+\]|\$[^$]+\$", value)))
         assert tokens[0] == tokens[1] == tokens[2], ("Translated tokens differ", key)
     events = re.findall(r"^concessions_in_china\.(\d+)\s*=", clean, re.M)
-    assert len(events) == 8 and len(set(events)) == 8
+    # 203 (repair bill), 204 (forced return notice) and 205 (return war notice) were removed.
+    assert len(events) == 5 and len(set(events)) == 5
+    assert not {"203", "204", "205"} & set(events)
     print(f"PASS: {len(files)} feature files; {len(feature_definitions)} unique definitions; "
           f"{len(expected_groups)} urban groups; {len(keys)} localized keys in 3 languages; "
           "international journal pulses, hooks, treaty callbacks, removed mechanisms and encoding.")
