@@ -1,0 +1,31 @@
+﻿# 불안정한 통합(je_warlord_china) 맵모드용 트리거. root = state.
+
+# 이 주를 일지 보유국(청)이 소유
+eafp_qing_unity_map_owned_by_je_country = {
+	owner ?= { has_journal_entry = je_warlord_china }
+}
+
+# 같은 주 지역에 일지 보유국이 소유한 주가 남아 있음
+eafp_qing_unity_map_region_has_je_country_state = {
+	state_region = {
+		any_scope_state = {
+			owner ?= { has_journal_entry = je_warlord_china }
+		}
+	}
+}
+
+# 맵모드에 표시할 외국 조약항: 중국 본토에 있거나, 일지 보유국 영토와 같은 주 지역에 있는 조약항
+eafp_qing_unity_map_is_treaty_port = {
+	is_treaty_port = yes
+	NOT = { eafp_qing_unity_map_owned_by_je_country = yes }
+	OR = {
+		is_in_geographic_region = geographic_region_china_proper
+		eafp_qing_unity_map_region_has_je_country_state = yes
+	}
+}
+
+# 일지 진행도 계산(on_monthly_pulse)과 같은 조건: 한족 본토의 주 지역 중 일지 보유국이 소유하지 않은 주가 있음
+eafp_qing_unity_map_counts_against_unity = {
+	is_in_geographic_region = geographic_region_han_homelands
+	NOT = { eafp_qing_unity_map_owned_by_je_country = yes }
+}

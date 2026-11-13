@@ -422,6 +422,61 @@
 		}
 	}
 
+	#추가: 맵모드. 중국 본토 중 일지 보유국 소유 주 / 미소유 주 / 조약항을 구분해 표시.
+	map_color = {
+		if = {
+			limit = { eafp_qing_unity_map_is_treaty_port = yes }
+			value = "eafp_qing_unity_treaty_port_blue"
+		}
+		else_if = {
+			limit = {
+				is_in_geographic_region = geographic_region_china_proper
+				eafp_qing_unity_map_owned_by_je_country = yes
+			}
+			value = "eafp_qing_unity_owned_gold"
+		}
+		else_if = {
+			limit = { is_in_geographic_region = geographic_region_china_proper }
+			value = "eafp_qing_unity_unowned_red"
+		}
+	}
+
+	map_tooltip = {
+		c:CHI ?= {
+			save_scope_as = eafp_qing_unity_country
+		}
+		if = {
+			limit = {
+				OR = {
+					eafp_qing_unity_map_is_treaty_port = yes
+					is_in_geographic_region = geographic_region_china_proper
+				}
+			}
+			if = {
+				limit = { eafp_qing_unity_map_is_treaty_port = yes }
+				custom_tooltip_no_bullet = "je_warlord_china_map_treaty_port"
+			}
+			else_if = {
+				limit = { eafp_qing_unity_map_owned_by_je_country = yes }
+				custom_tooltip_no_bullet = "je_warlord_china_map_owned"
+			}
+			else = {
+				custom_tooltip_no_bullet = "je_warlord_china_map_unowned"
+			}
+			# 일지 진행도 계산과 같은 조건(한족 본토, 주 지역 단위)으로 통합 감소 여부 안내
+			if = {
+				limit = { eafp_qing_unity_map_counts_against_unity = yes }
+				if = {
+					limit = { eafp_qing_unity_map_region_has_je_country_state = yes }
+					custom_tooltip_no_bullet = "je_warlord_china_map_split_region_effect"
+				}
+				else = {
+					custom_tooltip_no_bullet = "je_warlord_china_map_lost_region_effect"
+				}
+			}
+		}
+	}
+
 	weight = 10000
 	should_be_pinned_by_default_uninvolved_or_context = yes
 }
