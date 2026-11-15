@@ -109,7 +109,9 @@
 
 je_reunify_china_warlord = {
 	activation_description = {
-		always = yes
+		has_global_variable = china_shatters
+		exists = global_var:chinese_central_government
+		global_var:chinese_central_government ?= { is_country_alive = yes }
 	}
 
 	icon = "gfx/interface/icons/event_icons/event_military.dds"
@@ -142,8 +144,17 @@ je_reunify_china_warlord = {
 		}
 	}
 
+	# Keep the global journal dormant until fragmentation has established a living government.
 	is_shown_when_inactive = {
-		always = yes
+		has_global_variable = china_shatters
+		exists = global_var:chinese_central_government
+		global_var:chinese_central_government ?= { is_country_alive = yes }
+	}
+
+	possible = {
+		has_global_variable = china_shatters
+		exists = global_var:chinese_central_government
+		global_var:chinese_central_government ?= { is_country_alive = yes }
 	}
 
 	immediate = {
@@ -187,7 +198,12 @@ je_reunify_china_warlord = {
 			# 	}
 			# }
 			if = {
-				limit = { global_var:chinese_central_government.power_bloc.power_bloc_leader != global_var:chinese_central_government }
+				limit = {
+					exists = global_var:chinese_central_government
+					exists = global_var:chinese_central_government.power_bloc
+					exists = global_var:chinese_central_government.power_bloc.power_bloc_leader
+					global_var:chinese_central_government.power_bloc.power_bloc_leader != global_var:chinese_central_government
+				}
 				set_global_variable = {
 					name = chinese_central_government
 					value = global_var:chinese_central_government.power_bloc.power_bloc_leader
