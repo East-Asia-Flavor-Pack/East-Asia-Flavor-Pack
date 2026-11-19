@@ -161,4 +161,4 @@ max_regressiveness = {
 
 ## E. 이번 비교 중 발견한 기존 버그 (1.15.2와 무관)
 
-- `common/parties/eafp_parties.txt:140` `INJECT:social_democrat_party`: 바닐라 1.15.0과 1.15.2 모두 키 이름이 `socialist_party`임 → `INJECT:socialist_party`로 고쳐야 조선 사회당 이름이 적용됨(지금은 INJECT 대상이 없어 오류 로그가 남음).
+- ~~`common/parties/eafp_parties.txt:140` `INJECT:social_democrat_party`~~ → `INJECT:socialist_party`로 **수정 완료**. (바닐라 1.15.0과 1.15.2 모두 키 이름이 `socialist_party`임 → `INJECT:socialist_party`로 고쳐야 조선 사회당 이름이 적용됨(지금은 INJECT 대상이 없어 오류 로그가 남음).)
