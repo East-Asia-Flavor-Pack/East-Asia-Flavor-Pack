@@ -1,0 +1,45 @@
+﻿# chi_war_dynamism 버튼 공용 트리거
+# 버튼 정의: common/scripted_buttons/eafp_chi_war_dynamism_buttons.txt
+
+# 국가 스코프: 빼앗을 수 있는 주의 소유국 (청 또는 한족 주류 국가)
+eafp_chi_war_dynamism_target_owner_trigger = {
+	OR = {
+		AND = {
+			exists = c:CHI
+			THIS = c:CHI
+		}
+		country_has_primary_culture = cu:han
+	}
+}
+
+# 주 스코프: ROOT가 점령 중이고 지금 빼앗을 수 있는 주
+eafp_chi_war_dynamism_seizable_state_trigger = {
+	NOT = { owner = ROOT }
+	controller = ROOT
+	any_neighbouring_state = { owner = ROOT }
+	NOT = { has_modifier = chi_war_dynamism_modifier }
+	hidden_trigger = {
+		NOT = { has_variable_list = chi_war_dynamism_varlist }
+	}
+	owner = {
+		has_war_with = ROOT
+		eafp_chi_war_dynamism_target_owner_trigger = yes
+	}
+}
+
+# 매개변수 STATE: STATE_ 접두사를 뺀 주 지역 이름 (예: GUIZHOU)
+eafp_chi_war_dynamism_button_visible_trigger = {
+	s:STATE_$STATE$ = {
+		any_scope_state = {
+			NOT = { owner = ROOT }
+			owner = { eafp_chi_war_dynamism_target_owner_trigger = yes }
+		}
+	}
+}
+
+eafp_chi_war_dynamism_button_possible_trigger = {
+	aggressive_diplomatic_plays_permitted = yes
+	s:STATE_$STATE$ = {
+		any_scope_state = { eafp_chi_war_dynamism_seizable_state_trigger = yes }
+	}
+}
