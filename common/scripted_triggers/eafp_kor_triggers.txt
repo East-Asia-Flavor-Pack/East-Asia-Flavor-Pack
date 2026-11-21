@@ -94,3 +94,65 @@ scramble_for_korea_score_winner = {
 		}
 	}
 }
+
+# 유학의 왕국(je_korean_confu) 예치의 길: 체제 유지. 정착 기간 계산과 요약 줄 체크박스가 함께 쓴다. Country scope.
+eafp_yechi_pillars_kept = {
+	has_law_or_variant = law_type:law_monarchy
+	has_law_or_variant = law_type:law_autocracy
+	has_law = law_type:law_scholar_bureaucrats
+	has_law = law_type:law_state_religion
+	country_has_state_religion = rel:confucian
+	any_active_law = {
+		has_amendment = amendment_type:amendment_seowon
+	}
+	NOT = {	# 청 이외 국가의 종속국
+		is_subject = yes
+		overlord ?= { NOT = { c:CHI ?= this } }
+	}
+}
+# 유학의 왕국(je_korean_confu) 예치의 길 완료 조건. Country scope.
+# 충족 개수(eafp_yechi_conditions_completed)와 저널 체크박스(eafp_yechi_checkbox_*)가 함께 쓴다.
+eafp_yechi_cond_gdp = {	# 부국: 첫 달에 저장한 목표값(GDP × 1.5) 이상
+	has_variable = eafp_var_yechi_gdp_goal
+	gdp >= var:eafp_var_yechi_gdp_goal
+}
+eafp_yechi_cond_samjeong = {	# 삼정 해결
+	has_variable = eafp_var_sam_all_clear
+}
+eafp_yechi_cond_sojunghwa = {	# 소중화 계승: 독립국이고 강대국 이상
+	is_subject = no
+	country_rank >= rank_value:major_power
+}
+eafp_yechi_cond_sedo = {	# 세도정치 종식 (je_korean_fading_power와 같은 판정)
+	NOT = { has_journal_entry = je_sedo_politics }
+}
+eafp_yechi_cond_devout = {	# 유림의 지지
+	ig:ig_devout ?= {
+		is_in_government = yes
+		ig_approval >= 10
+	}
+}
+eafp_yechi_cond_iyeok = {	# 이역 동화: 본토 밖 주 하나 이상이 한국 문화 50% 이상
+	any_scope_state = {
+		NOT = { is_homeland_of_country_cultures = root }
+		culture_percent_state = {
+			target = cu:korean
+			value >= 0.5
+		}
+	}
+}
+eafp_yechi_cond_literacy = {	# 서원 교육 성과
+	literacy_rate >= 0.3
+}
+eafp_yechi_cond_confucian = {	# 교화
+	religion_percent_country = {
+		target = rel:confucian
+		value >= 0.9
+	}
+}
+# 예치 결말 이벤트 AI 선택용: 한국 본토 밖의 주를 가지고 있음
+eafp_yechi_has_iyeok_state = {
+	any_scope_state = {
+		NOT = { is_homeland_of_country_cultures = root }
+	}
+}

@@ -1403,9 +1403,9 @@ je_korean_confu = {
 		}
 	}
 
-	outcome = {
-		header = je_standard_completion_header
-		effect_header = je_standard_on_completion_header
+	outcome = {	# 개화의 길
+		header = je_korean_confu_blossom_cond_header
+		effect_header = je_korean_confu_blossom_header
 		color = "gold_positive"
 		conclusion_desc = je_standard_completion_conclusion_desc
 		trigger = {
@@ -1417,11 +1417,7 @@ je_korean_confu = {
 			}
 		}
 		effect = {
-			if = {
-				limit = { has_modifier = eafp_modi_catholic_plague }
-				remove_modifier = eafp_modi_catholic_plague
-			}
-			remove_variable = eafp_progress_bar_confu_from_trade_var
+			eafp_effect_confu_cleanup = yes
 			trigger_event = { id = eafp_kor_mainline.171 }
 			show_as_tooltip = {
 				add_modifier = {
@@ -1439,17 +1435,24 @@ je_korean_confu = {
 					set_ig_trait = ig_trait:ig_trait_propagandists
 				}
 			}
-			hidden_effect = {
-				every_scope_character = {
-					limit = {
-						has_ideology = ideology:ideology_eafp_missionary
-					}
-					set_character_busy_and_immortal = no
-					kill_character = {
-						hidden = yes
-					}
-				}
+		}
+	}
+
+	outcome = {	# 예치의 길
+		header = je_korean_confu_yechi_cond_header
+		effect_header = je_korean_confu_yechi_header
+		color = "gold_positive"
+		conclusion_desc = je_standard_completion_conclusion_desc
+		trigger = {
+			custom_tooltip = {
+				text = eafp_yechi_settled_tt
+				has_variable = eafp_var_yechi_months
+				var:eafp_var_yechi_months >= 60
 			}
+		}
+		effect = {
+			eafp_effect_confu_cleanup = yes
+			trigger_event = { id = eafp_kor_mainline.172 popup = yes }
 		}
 	}
 
@@ -1460,22 +1463,7 @@ je_korean_confu = {
 			NOT = { country_has_state_religion = rel:confucian }
 		}
 		effect = {
-			if = {
-				limit = { has_modifier = eafp_modi_catholic_plague }
-				remove_modifier = eafp_modi_catholic_plague
-			}
-			remove_variable = eafp_progress_bar_confu_from_trade_var
-			hidden_effect = {
-				every_scope_character = {
-					limit = {
-						has_ideology = ideology:ideology_eafp_missionary
-					}
-					set_character_busy_and_immortal = no
-					kill_character = {
-						hidden = yes
-					}
-				}
-			}
+			eafp_effect_confu_cleanup = yes
 		}
 	}
 
@@ -1510,6 +1498,31 @@ je_korean_confu = {
 			eafp_effect_cal_catholic_modi_mult = yes
 			eafp_effect_catholic_spread = yes
 			eafp_effect_missionary_spawn = yes
+			##예치의 길
+			if = {	# 첫 달: 게임 시작 시점에는 GDP가 계산되기 전이라 여기서 목표값을 저장
+				limit = { NOT = { has_variable = eafp_var_yechi_gdp_goal } }
+				set_variable = {
+					name = eafp_var_yechi_gdp_goal
+					value = {
+						value = gdp
+						multiply = 1.5
+					}
+				}
+				set_variable = {
+					name = eafp_var_yechi_months
+					value = 0
+				}
+			}
+			if = {	# 체제를 지키고 완료 조건을 6개 이상 갖춘 달만 정착 기간에 셈
+				limit = {
+					eafp_yechi_pillars_kept = yes
+					eafp_yechi_conditions_completed >= 6
+				}
+				change_variable = {
+					name = eafp_var_yechi_months
+					add = 1
+				}
+			}
 		}
 		events = {
 			eafp_kor_mainline.120
