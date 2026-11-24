@@ -366,4 +366,305 @@ eafp_yechi_conditions_completed = {
 		limit = { eafp_yechi_cond_confucian = yes }
 		add = 1
 	}
+	if = {
+		limit = { eafp_yechi_cond_haebang = yes }
+		add = 1
+	}
+}
+#유학의 왕국 예치의 길: 정착에 필요한 완료 조건 개수 (9개 중)
+eafp_yechi_conditions_required = {
+	value = 7
+}
+
+# 양요 강화 원정 (docs/joseon_yangyo.md 4.3). 군대 질은 부대·함선 종류별 바닐라 기본 스탯의 평균.
+# 육군: 공격 + 방어 (common/combat_unit_types), 해군: 선체 화력 + 장갑 (common/ship_types). 바닐라 1.15.2 값.
+eafp_yangyo_army_stat_sum = {	# 나라 스코프
+	value = 0
+	every_military_formation = {
+		limit = { is_army = yes }
+		every_combat_unit = {
+			if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_irregular_infantry }
+				add = 20
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_line_infantry }
+				add = 45
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_skirmish_infantry }
+				add = 60
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_trench_infantry }
+				add = 70
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_squad_infantry }
+				add = 90
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_mechanized_infantry }
+				add = 110
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_cannon_artillery }
+				add = 40
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_mobile_artillery }
+				add = 45
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_shrapnel_artillery }
+				add = 70
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_siege_artillery }
+				add = 85
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_heavy_tank }
+				add = 105
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_hussars }
+				add = 25
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_dragoons }
+				add = 45
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_cuirassiers }
+				add = 45
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_lancers }
+				add = 50
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_light_tanks }
+				add = 90
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_low_tier_marines }
+				add = 45
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_mid_tier_marines }
+				add = 60
+			}
+			else_if = {
+				limit = { has_unit_type = unit_type:combat_unit_type_high_tier_marines }
+				add = 70
+			}
+		}
+	}
+}
+eafp_yangyo_army_unit_count = {	# 나라 스코프
+	value = 0
+	every_military_formation = {
+		limit = { is_army = yes }
+		every_combat_unit = { add = 1 }
+	}
+}
+eafp_yangyo_army_quality = {	# 나라 스코프. 평균 (공격+방어) × (1 + 공격·방어 배율 평균)
+	value = 0
+	if = {
+		limit = { eafp_yangyo_army_unit_count > 0 }
+		add = eafp_yangyo_army_stat_sum
+		divide = eafp_yangyo_army_unit_count
+		multiply = {
+			value = modifier:unit_offense_mult
+			add = modifier:unit_defense_mult
+			divide = 2
+			add = 1
+			min = 0.1
+		}
+	}
+}
+eafp_yangyo_warship_stat_sum = {	# 나라 스코프
+	value = 0
+	every_scope_ship = {
+		limit = {
+			NOR = {
+				is_ship_type = ship_type:ship_type_early_troop_ship
+				is_ship_type = ship_type:ship_type_troop_ship
+				is_ship_type = ship_type:ship_type_supply_ship
+			}
+		}
+		if = {
+			limit = { is_ship_type = ship_type:ship_type_ship_of_the_line }
+			add = 37
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_frigate }
+			add = 25
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_iron_frigate }
+			add = 47
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_early_ironclad }
+			add = 110
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_monitor }
+			add = 80
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_coastal_defense_ship }
+			add = 100
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_modern_ironclad }
+			add = 185
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_torpedo_boat }
+			add = 54
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_torpedo_boat_destroyer }
+			add = 70
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_protected_cruiser }
+			add = 158
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_armored_cruiser }
+			add = 190
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_light_cruiser }
+			add = 200
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_pre_dreadnought }
+			add = 230
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_dreadnought }
+			add = 240
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_super_dreadnought }
+			add = 280
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_destroyer }
+			add = 90
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_submarine }
+			add = 75
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_seaplane_tender }
+			add = 205
+		}
+		else_if = {
+			limit = { is_ship_type = ship_type:ship_type_aircraft_carrier }
+			add = 243
+		}
+	}
+}
+eafp_yangyo_warship_count = {	# 나라 스코프
+	value = 0
+	every_scope_ship = {
+		limit = {
+			NOR = {
+				is_ship_type = ship_type:ship_type_early_troop_ship
+				is_ship_type = ship_type:ship_type_troop_ship
+				is_ship_type = ship_type:ship_type_supply_ship
+			}
+		}
+		add = 1
+	}
+}
+eafp_yangyo_navy_quality = {	# 나라 스코프. 전투함 평균 (선체 화력 + 장갑)
+	value = 0
+	if = {
+		limit = { eafp_yangyo_warship_count > 0 }
+		add = eafp_yangyo_warship_stat_sum
+		divide = eafp_yangyo_warship_count
+	}
+}
+eafp_yangyo_attack_power = {	# 원정국 스코프
+	value = eafp_yangyo_navy_quality
+	add = eafp_yangyo_army_quality
+}
+eafp_yangyo_fort_level = {	# 조선 스코프. 경기 해군 요새 단계
+	value = 0
+	s:STATE_SEOUL.region_state:KOR ?= {
+		every_scope_building = {
+			limit = { is_building_type = building_naval_fortification }
+			add = this.level
+		}
+	}
+}
+eafp_yangyo_fort_pm_bonus = {	# 조선 스코프. 경기 해군 요새 생산 방식
+	value = 0
+	s:STATE_SEOUL.region_state:KOR ?= {
+		every_scope_building = {
+			limit = { is_building_type = building_naval_fortification }
+			if = {
+				limit = { has_active_production_method = pm_naval_fortification_advanced }
+				add = 30
+			}
+			else_if = {
+				limit = { has_active_production_method = pm_naval_fortification_reinforced }
+				add = 15
+			}
+		}
+	}
+}
+eafp_yangyo_fort_score = {	# 조선 스코프. 요새 단계 × 6 + 생산 방식
+	value = eafp_yangyo_fort_level
+	multiply = 6
+	add = eafp_yangyo_fort_pm_bonus
+}
+eafp_yangyo_defense_power = {	# 조선 스코프
+	value = eafp_yangyo_fort_score
+	add = eafp_yangyo_army_quality
+}
+# 아래 승산 값은 조선 스코프. 원정국 공격력은 eafp_effect_yangyo_calc_odds가 var:eafp_var_yangyo_attack에 담는다.
+eafp_yangyo_repel_chance = {	# 조선 승산(완승 + 격퇴), 5~95%
+	value = 50
+	if = {
+		limit = { has_variable = eafp_var_yangyo_attack }
+		value = eafp_yangyo_defense_power
+		multiply = 100
+		divide = {
+			value = eafp_yangyo_defense_power
+			add = var:eafp_var_yangyo_attack
+			min = 1
+		}
+	}
+	min = 5
+	max = 95
+	round = yes
+}
+eafp_yangyo_win_chance = {	# 완승 = 승산 - 50 (승산이 50 이하면 0)
+	value = eafp_yangyo_repel_chance
+	subtract = 50
+	min = 0
+}
+eafp_yangyo_hold_chance = {	# 격퇴 = 승산 - 완승
+	value = eafp_yangyo_repel_chance
+	subtract = eafp_yangyo_win_chance
+}
+eafp_yangyo_lose_chance = {	# 패배 = 100 - 승산
+	value = 100
+	subtract = eafp_yangyo_repel_chance
+}
+eafp_yangyo_indemnity = {	# 조선 스코프. 배상금 (「집중 교화」 비용 계산의 2배)
+	value = gdp
+	divide = 100000
+	round = yes
+	multiply = 2000
+	min = 1000
 }

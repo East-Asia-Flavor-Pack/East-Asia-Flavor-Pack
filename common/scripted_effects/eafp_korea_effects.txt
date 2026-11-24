@@ -1774,6 +1774,10 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 					is_primary_culture_of = PREV
 				}
 			}
+			set_variable = {	# 양요 명분 (10년)
+				name = eafp_var_yangyo_grievance
+				months = 120
+			}
 			change_relations = {
 				country = ROOT
 				value = -20
@@ -1786,6 +1790,7 @@ eafp_effect_catholic_purge = {	#가톨릭 퍼지
 		hidden_effect = { set_character_busy_and_immortal = no }
 		kill_character = yes
 	}
+	custom_tooltip = eafp_catholic_purge_yangyo_tt
 	custom_tooltip = {
 		text = eafp_catholic_purge_tt2
 		every_country = {
@@ -1935,4 +1940,67 @@ scramble_for_korea_notify_result = {
 	else_if = { limit = { scope:scramble_winner ?= c:JAP } trigger_event = { id = scramble_for_korea_events.6 popup = yes } }
 	else_if = { limit = { scope:scramble_winner ?= c:CHI } trigger_event = { id = scramble_for_korea_events.7 popup = yes } }
 	else = { trigger_event = { id = scramble_for_korea_events.5 popup = yes } }
+}
+
+# 양요 시작: 원정국 스코프에서 호출 (.130 원정 선택지, 디버그 결단)
+# 조선에 원정국을 담은 변수를 두고(원정 진행 중 표시, 120일 뒤 저절로 사라짐) 최후통첩 .131을 보낸다.
+eafp_effect_yangyo_launch = {
+	save_scope_as = yangyo_aggressor
+	remove_variable = eafp_var_yangyo_grievance
+	c:KOR ?= {
+		set_variable = {
+			name = eafp_var_yangyo_aggressor
+			value = scope:yangyo_aggressor
+			days = 120
+		}
+		trigger_event = { id = eafp_kor_mainline.131 popup = yes }
+	}
+}
+
+# 강화 원정 승산 계산 (조선 스코프, scope:yangyo_aggressor 필요). .131·.132 immediate
+eafp_effect_yangyo_calc_odds = {
+	scope:yangyo_aggressor = {
+		save_scope_value_as = {
+			name = yangyo_attack_power
+			value = eafp_yangyo_attack_power
+		}
+	}
+	set_variable = {
+		name = eafp_var_yangyo_attack
+		value = scope:yangyo_attack_power
+	}
+}
+
+# 원정국의 요구 집행 (조선 스코프, scope:yangyo_aggressor 필요). 굴복(.131)과 패배(.132)
+eafp_effect_yangyo_enforce_demands = {
+	if = {	# 쇄국 해제
+		limit = { has_law_or_variant = law_type:law_isolationism }
+		activate_law = law_type:law_mercantilism
+	}
+	save_scope_value_as = {	# 배상금
+		name = yangyo_indemnity
+		value = eafp_yangyo_indemnity
+	}
+	add_treasury = {
+		value = scope:yangyo_indemnity
+		multiply = -1
+	}
+	scope:yangyo_aggressor = {
+		add_treasury = scope:yangyo_indemnity
+	}
+}
+
+# 원정 정리 (조선 스코프)
+eafp_effect_yangyo_end = {
+	remove_variable = eafp_var_yangyo_aggressor
+	remove_variable = eafp_var_yangyo_attack
+	remove_variable = eafp_var_yangyo_result
+}
+
+# 이양선 사건의 상대국 고르기 (조선 스코프, 이벤트 immediate)
+eafp_effect_yangyo_pick_ship_country = {
+	random_country = {
+		limit = { eafp_yangyo_interested_power = yes }
+		save_scope_as = yangyo_ship_country
+	}
 }

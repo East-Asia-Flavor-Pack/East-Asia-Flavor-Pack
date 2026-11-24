@@ -1417,9 +1417,12 @@ je_korean_confu = {
 			}
 		}
 		effect = {
-			eafp_effect_confu_cleanup = yes
-			trigger_event = { id = eafp_kor_mainline.171 }
-			show_as_tooltip = {
+			trigger_event = { id = eafp_kor_mainline.171 }	# 결말 정리는 이벤트 선택지에서
+		}
+		event_outcome_effect_desc = {	# 결말 이벤트 「새로운 물결」의 선택지 효과
+			header = eafp_kor_mainline.171.oa
+			effect = {
+				eafp_effect_confu_cleanup = yes
 				add_modifier = {
 					name = eafp_modi_confucian_state_reverse
 					days = normal_modifier_time
@@ -1453,6 +1456,26 @@ je_korean_confu = {
 		effect = {
 			eafp_effect_confu_cleanup = yes
 			trigger_event = { id = eafp_kor_mainline.172 popup = yes }
+		}
+		event_outcome_effect_desc = {	# 결말 이벤트 「예악이 바로 서다」의 선택지 효과
+			header = eafp_kor_mainline.172.oa
+			effect = {
+				activate_law = law_type:law_eafp_yongha_byeoni
+				add_modifier = {
+					name = eafp_modi_yechi_iyeok_gyohwa
+					days = long_modifier_time
+				}
+			}
+		}
+		event_outcome_effect_desc = {
+			header = eafp_kor_mainline.172.ob
+			effect = {
+				activate_law = law_type:law_eafp_yongha_byeoni
+				add_modifier = {
+					name = eafp_modi_yechi_hyangdang_gyohwa
+					days = long_modifier_time
+				}
+			}
 		}
 	}
 
@@ -1498,6 +1521,21 @@ je_korean_confu = {
 			eafp_effect_cal_catholic_modi_mult = yes
 			eafp_effect_catholic_spread = yes
 			eafp_effect_missionary_spawn = yes
+			##양요
+			if = {	# 이양선이 잦은 시기 (.138): 이양선 출몰이 더 자주
+				limit = { has_variable = eafp_var_yangyo_ships_frequent }
+				random_list = {
+					90 = {}
+					10 = { trigger_event = { id = eafp_kor_mainline.129 } }
+				}
+			}
+			if = {	# 명분을 가진 열강의 원정 결정
+				limit = { eafp_yangyo_can_start = yes }
+				random_country = {
+					limit = { eafp_yangyo_can_launch = yes }
+					trigger_event = { id = eafp_kor_mainline.130 }
+				}
+			}
 			##예치의 길
 			if = {	# 첫 달: 게임 시작 시점에는 GDP가 계산되기 전이라 여기서 목표값을 저장
 				limit = { NOT = { has_variable = eafp_var_yechi_gdp_goal } }
@@ -1516,7 +1554,7 @@ je_korean_confu = {
 			if = {	# 체제를 지키고 완료 조건을 6개 이상 갖춘 달만 정착 기간에 셈
 				limit = {
 					eafp_yechi_pillars_kept = yes
-					eafp_yechi_conditions_completed >= 6
+					eafp_yechi_conditions_completed >= eafp_yechi_conditions_required
 				}
 				change_variable = {
 					name = eafp_var_yechi_months
@@ -1530,6 +1568,21 @@ je_korean_confu = {
 			eafp_kor_mainline.124
 			eafp_kor_mainline.127
 			eafp_kor_mainline.128
+		}
+		random_events = {	# 이양선 사건 (상대는 이해관계가 있는 열강)
+			170 = 0
+			3 = eafp_kor_mainline.129
+			1 = eafp_kor_mainline.135
+			1 = eafp_kor_mainline.136
+			1 = eafp_kor_mainline.137
+			1 = eafp_kor_mainline.138
+			1 = eafp_kor_mainline.139
+			1 = eafp_kor_mainline.140
+			1 = eafp_kor_mainline.141
+			1 = eafp_kor_mainline.142
+			1 = eafp_kor_mainline.143
+			1 = eafp_kor_mainline.144
+			1 = eafp_kor_mainline.145
 		}
 	}
 

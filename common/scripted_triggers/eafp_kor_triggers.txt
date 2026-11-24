@@ -150,9 +150,43 @@ eafp_yechi_cond_confucian = {	# 교화
 		value >= 0.9
 	}
 }
+eafp_yechi_cond_haebang = {	# 해안 방비: 경기 해군 요새 5단계 이상
+	s:STATE_SEOUL.region_state:KOR ?= {
+		state_has_building_type_levels = {
+			target = bt:building_naval_fortification
+			value >= 5
+		}
+	}
+}
 # 예치 결말 이벤트 AI 선택용: 한국 본토 밖의 주를 가지고 있음
 eafp_yechi_has_iyeok_state = {
 	any_scope_state = {
 		NOT = { is_homeland_of_country_cultures = root }
+	}
+}
+
+# 양요 (docs/joseon_yangyo.md). Country scope.
+# 조선과 이해관계가 있는 열강: 이양선 사건의 상대국, 원정국
+eafp_yangyo_interested_power = {
+	exists = c:KOR
+	NOT = { c:KOR ?= this }
+	country_rank >= rank_value:great_power
+	has_interest_marker_in_region = sr:region_northeast_asia
+	NOT = { has_war_with = c:KOR }
+}
+# 지금 조선 원정을 시작할 수 있는 나라 (전투함이 있어야 함)
+eafp_yangyo_can_launch = {
+	eafp_yangyo_interested_power = yes
+	has_variable = eafp_var_yangyo_grievance
+	NOT = { has_truce_with = c:KOR }
+	eafp_yangyo_warship_count > 0
+}
+# 조선 쪽에서 양요가 일어날 수 있는 상태 (어느 스코프에서나)
+eafp_yangyo_can_start = {
+	c:KOR ?= {
+		has_journal_entry = je_korean_confu
+		NOT = { is_involved_in_journal_entry = je_scramble_for_korea }
+		NOT = { has_variable = eafp_var_yangyo_aggressor }	# 다른 원정이 진행 중이 아님
+		owns_entire_state_region = STATE_SEOUL
 	}
 }

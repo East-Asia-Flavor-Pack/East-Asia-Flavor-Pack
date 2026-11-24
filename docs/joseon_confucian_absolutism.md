@@ -9,7 +9,7 @@
 새 저널을 따로 만들지 않고, 기존 「유학의 왕국」에 **두 번째 결말**을 더한다.
 
 - **개화의 길 (기존)**: 세계 인식 막대가 1000에 이르면 「새로운 물결」(`eafp_kor_mainline.171`)로 끝난다. 지금 저널이 가진 유일한 결말이다.
-- **예치(禮治)의 길 (신규)**: **정통 유교 체제**(전제정치·과거·유교·서원)를 지키며 완료 조건 8개 중 6개를 갖춘 달이 **60개월(5년)** 쌓이면 끝난다. 전제정치(`law_autocracy`)를 **조선 전용 하위 법률 용하변이(用夏變夷)**로 바꾼다. 이 법률은 전제정치의 정치적 성격을 물려받되, 효과는 **종교 개종과 문화 동화**에 집중한다.
+- **예치(禮治)의 길 (신규)**: **정통 유교 체제**(전제정치·과거·유교·서원)를 지키며 완료 조건 9개 중 7개를 갖춘 달이 **60개월(5년)** 쌓이면 끝난다. 전제정치(`law_autocracy`)를 **조선 전용 하위 법률 용하변이(用夏變夷)**로 바꾼다. 이 법률은 전제정치의 정치적 성격을 물려받되, 효과는 **종교 개종과 문화 동화**에 집중한다.
 
 두 길은 **경주**한다. 무역과 기술이 세계 인식을 끌어올리는 동안, 조선은 체제를 지킨 채 예치의 조건을 채워야 한다. 네 체제 가운데 하나라도 고쳐져 있는 동안은 예치의 정착이 멈춘다. 체제를 되돌리면 쌓인 개월 수에서 이어서 센다.
 
@@ -24,7 +24,7 @@
 | 지지 세력 | 소부르주아가 정부에서 강력 | 따로 두지 않는다. 완료 조건 「유림의 지지」가 대신한다 |
 | 진행 표시 | 헌정 압력 막대 (100 도달 시 실패) | 기존 **세계 인식 막대**(개화의 길) + 예치 **체크박스**와 정착 기간 `N/60개월` |
 | 버튼 | 교황 정교협약 / 봉건 의무 폐지 / 왕령지 자치 폐지 | 기존 「집중 교화」만. 새 버튼 없음 |
-| 예치 완료 | 6개 중 4개 충족 즉시 | **8개 중 6개를 갖춘 달이 60개월** (3.4·3.5절) |
+| 예치 완료 | 6개 중 4개 충족 즉시 | **9개 중 7개를 갖춘 달이 60개월** (3.4·3.5절) |
 | 예치 실패 | 헌정 압력 100 등 | 세계 인식 1000(개화 결말)에 먼저 이르면 예치의 길도 끝난다. **유지 조건 상실**은 실패가 아니라 정착을 멈출 뿐이다 (3.6절) |
 | 보상 법률 | `law_neo_absolutism` (관료 정치력, 권위) | `law_eafp_yongha_byeoni` **용하변이(用夏變夷)**, 개종·동화 특화 |
 
@@ -82,7 +82,7 @@ flowchart TD
     BAR -- "1000 도달" --> OPEN["개화의 길 (기존)<br/>새로운 물결 .171"]
     JE --> PILLAR{"매달 확인<br/>군주제·전제정치·과거·유교·서원 유지<br/>청 이외 국가의 종속국 아님?"}
     PILLAR -- "하나라도 어긋남" --> S["정착 기간 그대로<br/>(쌓인 개월 수는 유지)"]
-    PILLAR -- "유지" --> COND{"완료 조건<br/>8개 중 6개 충족?"}
+    PILLAR -- "유지" --> COND{"완료 조건<br/>9개 중 7개 충족?"}
     COND -- "충족" --> M["정착 기간 +1개월"]
     COND -- "미충족" --> S
     M -- "60개월 (5년) 도달" --> WIN["예치의 길<br/>예악이 바로 서다 (eafp_kor_mainline.172)<br/>용하변이 시행"]
@@ -115,8 +115,7 @@ flowchart TD
 
 ```
 예치의 길
-전제 정치, 사대부제, 국교, 서원 가운데 하나라도 고치면 예치의 길이 닫힌다.
-☑ 완료 조건을 6개 이상(현재 6/8) 갖춘 채 23/60개월을 지냄
+☑ 완료 조건을 7개 이상(현재 7/9) 갖춘 채 23/60개월을 지냄
 • ☑ GDP가 £1.2M 이상임
 • ☐ 삼정의 폐단이 전부 혁파됨
 • ☑ 청의 종속국이 아니거나 청이 무너졌으며, 강대국 이상임
@@ -125,6 +124,7 @@ flowchart TD
 • ☐ 한국 본토 밖의 주 하나 이상에서 한국 문화 인구가 50% 이상임
 • ☑ 문해율이 30% 이상임
 • ☑ 인구의 90% 이상이 유교를 믿음
+• ☐ 경기의 해군 요새 5단계 이상
 ```
 
 | 항목 | 방식 |
@@ -188,9 +188,11 @@ je_korean_confu = {
 		effect_header = je_korean_confu_blossom_header
 		...
 		effect = {
-			eafp_effect_confu_cleanup = yes
-			trigger_event = { id = eafp_kor_mainline.171 }
-			...
+			trigger_event = { id = eafp_kor_mainline.171 }	# 정리 효과는 .171 선택지에서
+		}
+		event_outcome_effect_desc = {	# .171 선택지 효과(정리 효과 포함)를 저널에서 미리 보여 줌
+			header = eafp_kor_mainline.171.oa
+			effect = { eafp_effect_confu_cleanup = yes  ... }
 		}
 	}
 
@@ -239,13 +241,13 @@ je_korean_confu = {
 }
 ```
 
-- **결말 정리 효과 묶기**: 지금 두 outcome(완료·무효)이 똑같은 정리(천주교 역병 모디파이어 제거, 무역 변수 제거, 선교사 제거)를 반복한다. 예치 결말까지 세 곳이 되므로 scripted effect `eafp_effect_confu_cleanup`으로 묶고, 예치 변수 두 개(`eafp_var_yechi_gdp_goal`, `eafp_var_yechi_months`)도 여기서 지운다.
+- **결말 정리 효과 묶기**: 지금 두 outcome(완료·무효)이 똑같은 정리(천주교 역병 모디파이어 제거, 무역 변수 제거, 선교사 제거)를 반복한다. 예치 결말까지 세 곳이 되므로 scripted effect `eafp_effect_confu_cleanup`으로 묶고, 예치 변수 두 개(`eafp_var_yechi_gdp_goal`, `eafp_var_yechi_months`)도 여기서 지운다. 개화 결말에서는 이 효과를 저널이 아니라 결말 이벤트 `.171`의 선택지에서 실행하고, 저널은 `event_outcome_effect_desc`로 미리 보여 준다.
 - 체제가 어긋나도 길은 닫히지 않는다. 이벤트나 세계 인식 변화도 없고, 그달 정착 기간만 늘지 않는다.
 - 바닐라 덴포 위기처럼 GDP는 **목표값 자체**(첫 달 GDP × 1.5)를 저장한다. 그래야 본문에 목표 금액을 `[…Var('eafp_var_yechi_gdp_goal').GetValue|k0]`로 바로 보여 줄 수 있다. 게임 시작 직후에는 GDP가 계산되기 전이라 `immediate`가 아니라 첫 월간 처리에서 저장하고, 정착 개월 수도 그때 0으로 둔다. 그래서 첫 달 전까지는 본문의 GDP 목표가 0으로 보인다.
 - 정착 기간은 막대가 없으므로 변수에 담아야 한다. 조건이 깨져도 쌓인 값이 남아야 해서 현재 상태로 다시 계산할 수 없다.
 - 기간(5년)은 초안이다.
 
-### 3.5 완료 조건 (8개 중 6개)
+### 3.5 완료 조건 (9개 중 7개)
 
 체제를 유지하는 동안, 국가 상태 조건 8개 가운데 **6개 이상**을 갖춘 달에만 정착 기간이 늘어난다. 각 조건은 괄호 안의 이름으로 `eafp_yechi_cond_*` scripted trigger가 되고(3.4절), 저널 본문에 체크박스 한 줄씩으로 보인다. GDP 목표값 말고는 모두 현재 상태를 직접 읽는다.
 
@@ -265,6 +267,7 @@ je_korean_confu = {
 |---|---|---|---|
 | 6 | **이역 동화(異域同化)** (`_iyeok`): 한국 본토 밖의 주를 하나 이상 가지고, 그 주의 한국 문화 비율 50% 이상 | `any_scope_state = { NOT = { is_homeland_of_country_cultures = root }  culture_percent_state = { target = cu:korean value >= 0.5 } }` | 간도·만주 등. 고향 땅 동화(`state_allow_assimilation_in_homeland_bool`)와 짝을 이루어 **용하변이와 가장 직접 이어지는 조건** |
 | 7 | **서원 교육 성과** (`_literacy`): 문해율 30% 이상 | `literacy_rate >= 0.3` | 서원을 지킨 교육의 결과 |
+| 9 | **해안 방비** (`_haebang`): 경기의 해군 요새 5단계 이상 | `state_has_building_type_levels = { target = bt:building_naval_fortification value >= 5 }` (경기 `STATE_SEOUL`) | 양요 포격전(`docs/joseon_yangyo.md`)과 같은 해군 요새를 본다 |
 | 8 | **교화(敎化)** (`_confucian`): 국내 인구의 유교 신자 비율 90% 이상 | `religion_percent_country = { target = rel:confucian value >= 0.9 }` | 개종 성과 |
 
 **구현 전 확인할 점**
@@ -282,7 +285,7 @@ je_korean_confu = {
 
 예치의 길은 **닫히지 않는다.** 저널이 이어지는 한 언제든 체제를 되돌려 정착을 이어 갈 수 있고, 저널은 개화의 길·예치의 길·무효 가운데 하나로 끝난다.
 
-서원 수정안은 의회 절차로 폐지될 수 있고, AI는 `ai_will_revoke` 조건(국교·양심의 자유 법률이 아닐 때)에서 폐지한다. 폐지되면 정착이 멈추므로 저널 본문의 예치 단락에 경고를 적어 둔다.
+서원 수정안은 의회 절차로 폐지될 수 있고, AI는 `ai_will_revoke` 조건(국교·양심의 자유 법률이 아닐 때)에서 폐지한다. 폐지되면 정착이 멈춘다. 저널 본문에는 따로 경고 문장을 두지 않는다.
 
 ### 3.7 이벤트 설계 (`events/eafp_kor_events/eafp_kor_mainline.txt`)
 
@@ -332,8 +335,8 @@ eafp_modi_yechi_hyangdang_gyohwa = {	# 예치 성공 .b
 
 ```yaml
 eafp_kor_mainline.172.mt: "예악이 바로 서다"
- eafp_kor_mainline.172.md: "[ROOT.GetCountry.GetName]의 조정이 끝내 조종의 법도를 고치지 아니하고 나라를 부강하게 하다. 이에 예로 다스리는 법을 나라의 큰 법으로 삼기로 하였으나, 교화를 안에서부터 펼칠지 밖에서부터 펼칠지를 두고 신료들의 의논이 갈리다."
- eafp_kor_mainline.172.mf: "\"나는 중화의 도로 오랑캐를 변화시켰다는 말은 들었어도, 오랑캐에게 변화되었다는 말은 듣지 못하였다.\"\n\n— 『맹자』 「등문공 상」"
+ eafp_kor_mainline.172.md: "[ROOT.GetCountry.GetName]의 조정이 끝내 예와 악을 바로세웠다."
+ eafp_kor_mainline.172.mf: "\"나는 중화의 도로 오랑캐를 변화시켰다는 말은 들었어도, 오랑캐에게 변화되었다는 말은 듣지 못하였다.\"\n\n— \"맹자\" '등문공 상'"
  eafp_kor_mainline.172.oa: "중화의 도로 이역을 바꾸리라."
  eafp_kor_mainline.172.ob: "안을 먼저 바로 세운 뒤에 밖을 교화하리라."
 
@@ -345,7 +348,7 @@ eafp_kor_mainline.172.mt: "예악이 바로 서다"
 
 ```yaml
 eafp_kor_mainline.172.mt: "Rites Restored"
- eafp_kor_mainline.172.md: "The court of [ROOT.GetCountry.GetName] has made the realm rich and strong without altering a single statute of the founding kings. It now resolves to make rule by ritual the great law of the land, yet the ministers are divided on whether its civilizing work should begin at home or beyond the frontier."
+ eafp_kor_mainline.172.md: "The court of [ROOT.GetCountry.GetName] has at last set rites and music aright."
  eafp_kor_mainline.172.mf: "\"I have heard of men using the doctrines of our great land to change barbarians, but I have never yet heard of any being changed by barbarians.\"\n\n— Mencius, Teng Wen Gong I (trans. James Legge)"
  eafp_kor_mainline.172.oa: "We shall transform the frontier by the Way of the civilized."
  eafp_kor_mainline.172.ob: "First set our own house in order, then civilize what lies beyond."
@@ -358,7 +361,7 @@ eafp_kor_mainline.172.mt: "Rites Restored"
 
 ```yaml
 eafp_kor_mainline.172.mt: "礼乐复正"
- eafp_kor_mainline.172.md: "[ROOT.GetCountry.GetName]朝廷终未更改祖宗之法，而国以富强。于是议以礼治为国之大典，然教化当先行于内抑或先及于外，群臣议论不一。"
+ eafp_kor_mainline.172.md: "[ROOT.GetCountry.GetName]朝廷终于使礼乐归于正道。"
  eafp_kor_mainline.172.mf: "“吾闻用夏变夷者，未闻变于夷者也。”\n\n——《孟子·滕文公上》"
  eafp_kor_mainline.172.oa: "用夏变夷，教化四方。"
  eafp_kor_mainline.172.ob: "先正其内，而后化其外。"
@@ -396,7 +399,7 @@ eafp_kor_mainline.172.mt: "礼乐复正"
 
 ```yaml
 # eafp_kor_rework_l_korean.yml — 기존 je_korean_confu_reason 값 끝에 이어 붙임
-"(기존 본문)...$eafp_modi_catholic_plague_desc$\n\n#bold 예치의 길#!\n$law_autocracy$, $law_scholar_bureaucrats$, $law_state_religion$, $amendment_seowon$ 가운데 하나라도 고치면 예치의 길이 닫힌다.\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] 완료 조건을 #v 6#!개 이상(현재 #v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 8#!) 갖춘 채 #v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#!개월을 지냄\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp]가 @gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] 청의 종속국이 아니거나 청이 무너졌으며, 독립국으로서 #bold 강대국#! 이상의 위상을 가짐\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] 세도정치가 끝남\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] #bold $ig_confucian_k$#! 세력이 정부에 있고 승인도가 #v 10#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] 한국 본토 밖의 주 하나 이상에서 한국 문화 인구가 #v 50%#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] 문해율이 #v 30%#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] 인구의 #v 90%#! 이상이 유교를 믿음"
+"(기존 본문)...$eafp_modi_catholic_plague_desc$\n\n#bold 예치의 길#!\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] 완료 조건을 #v 7#!개 이상(현재 #v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 9#!) 갖춘 채 #v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#!개월을 지냄\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp]가 @gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] 청의 종속국이 아니거나 청이 무너졌으며, 독립국으로서 #bold 강대국#! 이상의 위상을 가짐\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] 세도정치가 끝남\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] #bold $ig_confucian_k$#! 세력이 정부에 있고 승인도가 #v 10#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] 한국 본토 밖의 주 하나 이상에서 한국 문화 인구가 #v 50%#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] 문해율이 #v 30%#! 이상임\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] 인구의 #v 90%#! 이상이 유교를 믿음\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_haebang')] 경기의 $building_naval_fortification$ #v 5#!단계 이상"
 
 # eafp_kor_rework_l_korean.yml — 세계 인식 막대 키 뒤에 추가
  je_korean_confu_blossom_cond_header: "#b 개화의 길#! 달성 조건"
@@ -410,7 +413,7 @@ eafp_kor_mainline.172.mt: "礼乐复正"
 
 ```yaml
 # eafp_kor_rework_l_english.yml — appended to the existing je_korean_confu_reason value
-"(existing text)...$eafp_modi_catholic_plague_desc$\n\n#bold The Path of Rule by Ritual#!\nAltering any of $law_autocracy$, $law_scholar_bureaucrats$, $law_state_religion$, $amendment_seowon$ closes this path.\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] At least #v 6#! completion conditions met (currently #v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 8#!) for #v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#! months\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp] is @gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#! or above\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] Not a subject of Qing, or Qing has collapsed, and holds at least #bold Major Power#! rank as an independent country\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] In-law government has come to an end\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] The #bold $ig_confucian_k$#! are in government with approval of at least #v 10#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] At least #v 50%#! of the population is Korean in at least one state outside the Korean homeland\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] Literacy is at least #v 30%#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] At least #v 90%#! of the population is Confucian"
+"(existing text)...$eafp_modi_catholic_plague_desc$\n\n#bold The Path of Rule by Ritual#!\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] At least #v 7#! completion conditions met (currently #v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 9#!) for #v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#! months\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp] is @gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#! or above\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] Not a subject of Qing, or Qing has collapsed, and holds at least #bold Major Power#! rank as an independent country\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] In-law government has come to an end\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] The #bold $ig_confucian_k$#! are in government with approval of at least #v 10#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] At least #v 50%#! of the population is Korean in at least one state outside the Korean homeland\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] Literacy is at least #v 30%#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] At least #v 90%#! of the population is Confucian"
 
 # eafp_kor_rework_l_english.yml — added after the worldview bar keys
  je_korean_confu_blossom_cond_header: "Conditions for the #b Path of Enlightenment#!"
@@ -424,7 +427,7 @@ eafp_kor_mainline.172.mt: "礼乐复正"
 
 ```yaml
 # eafp_kor_rework_l_simp_chinese.yml — 接在现有 je_korean_confu_reason 值的末尾
-"(现有正文)...$eafp_modi_catholic_plague_desc$\n\n#bold 礼治之路#!\n$law_autocracy$、$law_scholar_bureaucrats$、$law_state_religion$、$amendment_seowon$中任何一项一经更改，礼治之路即告关闭。\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] 满足至少#v 6#!项完成条件（当前#v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 8#!），已持续#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#!个月\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp]达到@gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#!以上\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] 不是清朝的附庸，或清朝已经崩溃，且作为独立国家至少拥有#bold 强国#!地位\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] 势道政治已经终结\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] #bold $ig_confucian_k$#!在政府中且认可度至少为#v 10#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] 朝鲜本土以外至少一个州的朝鲜文化人口达到#v 50%#!以上\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] 识字率至少为#v 30%#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] 至少#v 90%#!的人口信仰儒教"
+"(现有正文)...$eafp_modi_catholic_plague_desc$\n\n#bold 礼治之路#!\n[SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_conditions')] 满足至少#v 7#!项完成条件（当前#v [SCOPE.GetRootScope.GetCountry.MakeScope.ScriptValue('eafp_yechi_conditions_completed')|0]#!/#v 9#!），已持续#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_months').GetValue|0]#!/#v 60#!个月\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_gdp')] [concept_gdp]达到@gdp!#v [SCOPE.GetRootScope.GetCountry.MakeScope.Var('eafp_var_yechi_gdp_goal').GetValue|k0]#!以上\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_samjeong')] $je_korean_land_problem_complete_cond_tt$\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sojunghwa')] 不是清朝的附庸，或清朝已经崩溃，且作为独立国家至少拥有#bold 强国#!地位\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_sedo')] 势道政治已经终结\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_devout')] #bold $ig_confucian_k$#!在政府中且认可度至少为#v 10#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_iyeok')] 朝鲜本土以外至少一个州的朝鲜文化人口达到#v 50%#!以上\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_literacy')] 识字率至少为#v 30%#!\n• [SCOPE.GetRootScope.GetCountry.GetCustom('eafp_yechi_checkbox_confucian')] 至少#v 90%#!的人口信仰儒教"
 
 # eafp_kor_rework_l_simp_chinese.yml — 添加在世界认知进度条键之后
  je_korean_confu_blossom_cond_header: "#b 开化之路#!达成条件"
@@ -543,7 +546,7 @@ law_eafp_yongha_byeoni = {
 | 유지 조건 | 군주제·전제정치·과거·유교·서원 유지, 청 이외 국가의 종속국 아님. 어긋나 있는 동안은 정착이 멈추고, 되돌리면 이어서 센다. 길이 닫히지 않으며 이벤트·세계 인식 변화도 없다 |
 | 시작·지지 조건 | 두지 않음. 지지는 완료 조건 「유림의 지지」가 맡는다 |
 | 버튼 | 새 버튼 없음. 기존 「집중 교화」만 남는다 |
-| 완료 조건 | 8개 중 6개: 부국, 삼정 해결, 소중화 계승, 세도정치 종식, 유림의 지지, 이역 동화, 서원 교육 성과, 교화(유교 비율) |
+| 완료 조건 | 9개 중 7개: 부국, 삼정 해결, 소중화 계승, 세도정치 종식, 유림의 지지, 이역 동화, 서원 교육 성과, 교화(유교 비율), 해안 방비(경기 해군 요새 5단계) |
 | 완료 방식 | 새 막대 없음. 완료 조건 6개 이상을 갖춘 달이 60개월(5년) 쌓이면 예치 결말. 조건이 깨지면 개월 수가 늘지 않고, 쌓인 값은 유지 |
 | 진행 표시 | 유학의 왕국 본문 끝에 덴포 위기식 체크박스 목록. 맨 위 한 줄에 충족 개수(N/8)와 정착 기간(N/60개월) |
 | 근대 개혁 저널과의 관계 | 함께 진행 가능. 서로 영향 없음 |

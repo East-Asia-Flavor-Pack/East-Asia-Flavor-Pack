@@ -457,3 +457,299 @@ kor_reformation_diplomacy_complete = {
 
 	ai_chance = { value = 0 }
 }
+
+# 양요 (docs/joseon_yangyo.md 8.1)
+kor_yangyo_make_interested_power = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+		any_country = {
+			NOT = { c:KOR ?= this }
+			country_rank >= rank_value:great_power
+			NOT = { eafp_yangyo_interested_power = yes }
+		}
+	}
+
+	when_taken = {
+		random_country = {
+			limit = {
+				NOT = { c:KOR ?= this }
+				country_rank >= rank_value:great_power
+				NOT = { eafp_yangyo_interested_power = yes }
+			}
+			add_involvement = {
+				strategic_region = sr:region_northeast_asia
+				value = 2500
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_fire_ship_event = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+		any_country = { eafp_yangyo_interested_power = yes }
+	}
+
+	when_taken = {
+		random_list = {
+			3 = { trigger_event = { id = eafp_kor_mainline.129 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.135 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.136 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.137 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.138 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.139 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.140 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.141 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.142 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.143 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.144 } }
+			1 = { trigger_event = { id = eafp_kor_mainline.145 } }
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_grant_grievance = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+		any_country = { eafp_yangyo_interested_power = yes }
+	}
+
+	when_taken = {
+		every_country = {
+			limit = { eafp_yangyo_interested_power = yes }
+			set_variable = { name = eafp_var_yangyo_grievance months = 120 }
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_launch_now = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+		eafp_yangyo_can_start = yes
+		any_country = {
+			eafp_yangyo_interested_power = yes
+			NOT = { has_truce_with = c:KOR }
+			eafp_yangyo_warship_count > 0
+		}
+	}
+
+	when_taken = {
+		random_country = {
+			limit = {
+				eafp_yangyo_interested_power = yes
+				NOT = { has_truce_with = c:KOR }
+				eafp_yangyo_warship_count > 0
+			}
+			set_variable = { name = eafp_var_yangyo_grievance months = 120 }
+			eafp_effect_yangyo_launch = yes
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_make_opened = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+		has_law_or_variant = law_type:law_isolationism
+	}
+
+	when_taken = {	# 쇄국 해제: 배상금만 요구받는 갈래 확인용
+		activate_law = law_type:law_mercantilism
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_reset = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {
+		eafp_effect_yangyo_end = yes
+		remove_variable = eafp_var_yangyo_debug_result
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_become_aggressor = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		NOT = { c:KOR ?= this }
+		country_rank >= rank_value:great_power
+		c:KOR ?= { has_journal_entry = je_korean_confu }
+	}
+
+	possible = {
+		is_player = yes
+		NOT = { has_war_with = c:KOR }
+	}
+
+	when_taken = {
+		add_involvement = {
+			strategic_region = sr:region_northeast_asia
+			value = 2500
+		}
+		set_variable = { name = eafp_var_yangyo_grievance months = 120 }
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+# 예치의 길 (docs/joseon_confucian_absolutism.md)
+kor_yechi_complete = {
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		has_journal_entry = je_korean_confu
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {	# 정착 기간을 채워 다음 저널 확인 때 예치의 길 결말이 나게 함
+		set_variable = {
+			name = eafp_var_yechi_months
+			value = 60
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_set_fort_level = {	# 경기 해군 요새 0 → 5 → 10단계
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+		owns_entire_state_region = STATE_SEOUL
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {
+		s:STATE_SEOUL.region_state:KOR = {
+			if = {
+				limit = {
+					state_has_building_type_levels = {
+						target = bt:building_naval_fortification
+						value >= 10
+					}
+				}
+				remove_building = building_naval_fortification
+			}
+			else_if = {
+				limit = {
+					state_has_building_type_levels = {
+						target = bt:building_naval_fortification
+						value >= 5
+					}
+				}
+				create_building = {
+					building = building_naval_fortification
+					level = 10
+				}
+			}
+			else = {
+				create_building = {
+					building = building_naval_fortification
+					level = 5
+				}
+			}
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
+
+kor_yangyo_force_result = {	# 다음 원정 결과 고정: 완승(3) → 격퇴(2) → 패배(1) → 확률(고정 해제)
+	is_shown = {
+		has_global_variable = eafp_debug_mode
+		c:KOR ?= this
+	}
+
+	possible = {
+		is_player = yes
+	}
+
+	when_taken = {
+		if = {
+			limit = { NOT = { has_variable = eafp_var_yangyo_debug_result } }
+			set_variable = { name = eafp_var_yangyo_debug_result value = 3 }
+		}
+		else_if = {
+			limit = { var:eafp_var_yangyo_debug_result > 1 }
+			change_variable = { name = eafp_var_yangyo_debug_result add = -1 }
+		}
+		else = {
+			remove_variable = eafp_var_yangyo_debug_result
+		}
+	}
+
+	ai_chance = {
+		value = 0
+	}
+}
