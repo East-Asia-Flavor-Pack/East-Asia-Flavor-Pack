@@ -159,6 +159,8 @@ Do not spend the description explaining exact modifiers already shown below the 
 
 ### Flavor
 
+Choose the effect first. For instance, a direct appeal lets workers argue their case, while a conversation between friends can convey what a decree makes hard to say aloud. For Korean excerpts, writing techniques, and matched outcomes, see [Korean vanilla flavor forms and effects](vanilla-korean-flavor.md).
+
 Choose one dominant mode:
 
 - **Vignette:** a clerk, soldier, merchant, farmer, courtier, or traveler encounters the change. Use one or two concrete details and a small turn of thought.

@@ -58,6 +58,7 @@ Use the feature's existing keys, scopes, variables, conditions, and localization
 Read the references required by the task:
 
 - Read the [Korean event examples](references/vanilla-korean-events.md) when writing Korean event titles, descriptions, flavor, or choices. Each case pairs the installed vanilla script with its Korean lines, including conditional variants and source attribution.
+- When drafting or revising event flavor, choose the effect the passage should have alongside its description and options. The [Korean vanilla flavor guide](references/vanilla-korean-flavor.md) compares narrative forms, their effects, and how the same voice changes across outcomes.
 - Read the [Korean journal examples](references/vanilla-korean-journals.md) when writing Korean journal entries. Follow the examples for default keys, conditional reasons, goals, status, progress bars, buttons, and concluded entries.
 - [references/writing-style.md](references/writing-style.md): read whenever authoring or substantially revising events, journal entries, options, or historical flavor. Its voice matrix defines the speaker, tense, formality, and sentence endings for each text type.
 - [references/localization-syntax.md](references/localization-syntax.md): read whenever editing localization files, dynamic text, conditional variants, or multiple languages.
