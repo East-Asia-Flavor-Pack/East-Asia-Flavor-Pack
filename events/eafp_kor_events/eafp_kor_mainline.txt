@@ -4161,7 +4161,7 @@ eafp_kor_mainline.115 = {
 }
 
 #169까지 - 유학의 왕국&서원 저널에서 점화하는 역사 이벤트 영역
-eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
+eafp_kor_mainline.120 = {	#이지연의 상소문 (박해는 집중 교화 버튼으로만: docs/joseon_missionaries.md 7)
 	dlc = dlc_eafp
 	type = country_event
 	placement = ROOT
@@ -4190,31 +4190,14 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 
 	fire_only_once = yes
 
-	option = {
+	option = {	# 상소를 받아들여 검거 준비: 집중 교화 쿨타임 해제
 		name = eafp_kor_mainline.120.oa
-
 		default_option = yes
-
 		eafp_effect_option_gain_balance = {
 			BALANCE = -30
 		}
-		trigger_event = {	#척사윤음 반포
-			id = eafp_kor_mainline.121
-			days = { 150 210 }
-		}
-		c:FRA ?= {
-			create_diplomatic_catalyst = {
-				type = catalyst_event_negative
-				target = ROOT
-			}
-		}
-		hidden_effect = {
-			trigger_event = {
-				id = eafp_kor_mainline.125
-				years = 7
-			}
-		}
-		eafp_effect_catholic_purge = yes
+		remove_variable = eafp_var_button_educating_cooltime
+		custom_tooltip = eafp_kor_mainline.144.tt
 		ai_chance = {
 			base = 10
 			modifier = {
@@ -4232,66 +4215,18 @@ eafp_kor_mainline.120 = {	#기해박해 시작-이지연의 상소문
 			}
 		}
 	}
-	option = {
+	option = {	# 대왕대비 이름의 사학토치령: 유림 승인도
 		name = eafp_kor_mainline.120.ob
-		trigger_event = {	#척사윤음 반포
-			id = eafp_kor_mainline.121
-			days = { 150 210 }
+		add_modifier = {
+			name = eafp_modi_saak_tochi
+			months = 12
 		}
-		c:FRA ?= {
-			create_diplomatic_catalyst = {
-				type = catalyst_event_negative
-				target = ROOT
-			}
-		}
-		hidden_effect = {
-			trigger_event = {
-				id = eafp_kor_mainline.125
-				years = 7
-			}
-		}
-		eafp_effect_catholic_purge = yes
 	}
 	option = {
 		name = eafp_kor_mainline.120.oc
 		add_modifier = {
 			name = ruler_protect_christians_modifier
 			days = normal_modifier_time
-		}
-	}
-}
-eafp_kor_mainline.121 = {	#기해박해 끝-척사윤음 반포
-	dlc = dlc_eafp
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.121.mt
-	desc = eafp_kor_mainline.121.md
-	flavor = eafp_kor_mainline.121.mf
-
-	duration = 2
-	
-
-	event_image = {
-		texture = "gfx/event_pictures/gonjang.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-	}
-
-	option = {
-		name = eafp_kor_mainline.121.oa
-		#custom_tooltip = {
-		#	text = eafp_kor_mainline.121.ta
-		#}
-		default_option = yes
-		trigger_event = {	#이지연 탄핵
-			id = eafp_kor_mainline.123
-			days = { 90 150 }
 		}
 	}
 }
@@ -4383,7 +4318,7 @@ eafp_kor_mainline.122 = {	#윤상도의 옥-김정희 귀양
 		}
 	}
 }
-eafp_kor_mainline.123 = {	#이지연 귀양
+eafp_kor_mainline.123 = {	#이재학의 탄핵: 이지연 파직 여부 (세도정치 월간, 1840년 10월부터)
 	dlc = dlc_eafp
 	type = country_event
 	placement = ROOT
@@ -4405,6 +4340,7 @@ eafp_kor_mainline.123 = {	#이지연 귀양
 
 	trigger = {
 		has_journal_entry = je_sedo_politics
+		game_date >= 1840.10.1
 	}
 
 	fire_only_once = yes
@@ -4412,139 +4348,59 @@ eafp_kor_mainline.123 = {	#이지연 귀양
 	immediate = {
 	}
 
-	option = {
+	option = {	# 탄핵 수용 (AI 기본)
 		name = eafp_kor_mainline.123.oa
 		default_option = yes
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = 1
+		add_modifier = {
+			name = eafp_modi_jihyeon_impeached
+			months = 12
 		}
 		ai_chance = {
 			base = 10
-			modifier = {
-				factor = 2.0
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 1.1
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 1.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
 		}
 	}
-	option = {
+	option = {	# 왕실 재심
 		name = eafp_kor_mainline.123.ob
-		eafp_effect_option_gain_stress = {
-			STRESS = 20
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -10
-		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
+		add_modifier = {
+			name = eafp_modi_jihyeon_deferred
+			months = 12
 		}
 		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0.5
-			}
-			modifier = {
-				factor = 0.1
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 0.8
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 0.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
-			modifier = {
-				factor = 2.0
-				var:eafp_var_je_sedo_politics_balance > 300
-			}
-			modifier = {
-				factor = 1.2
-				var:eafp_var_je_sedo_politics_balance <= 100
-			}
-			modifier = {
-				factor = 1.5
-				var:eafp_var_je_sedo_politics_balance > 100
-				var:eafp_var_je_sedo_politics_balance <= 300
-			}
+			base = 2
 		}
 	}
 }
-eafp_kor_mainline.124 = {	#병오박해 시작-김대건 발각
-	dlc = dlc_eafp
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.124.mt
-	desc = eafp_kor_mainline.124.md
-	flavor = eafp_kor_mainline.124.mf
-
-	duration = 2
-	
-
-	event_image = {
-		texture = "gfx/event_pictures/sendball.dds"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	trigger = {
-		game_date > 1846.4.1
-		any_scope_character = {
-			has_template = eafp_kor_daegeon_kim_character_template
-		}
-	}
-
-	fire_only_once = yes
-
-	immediate = {
-		random_scope_character = {
-			limit = { has_template = eafp_kor_daegeon_kim_character_template }
-			save_scope_as = prisoner_scope
-		}
-	}
-
-	option = {
-		name = eafp_kor_mainline.124.oa
-		scope:prisoner_scope = {
-			custom_tooltip = {
-				text = to_jail_10_tt
-				set_variable = { name = prison_time_var value = 120 }
-				set_variable = { name = prison_country value = owner }
-				place_character_in_void = 132
-			}
-		}
-		hidden_effect = {
-			trigger_event = {
-				id = eafp_kor_mainline.126
-				months = 1
-			}
-		}
-	}
-}
-eafp_kor_mainline.125 = {	#프랑스 배
+eafp_kor_mainline.125 = {	#불길한 배: 집중 교화에서 프랑스 선교사를 처형하면 7년 뒤 (.170에서 예약)
 	dlc = dlc_eafp
 	type = country_event
 	placement = ROOT
 
 	title = eafp_kor_mainline.125.mt
-	desc = eafp_kor_mainline.125.md
-	flavor = eafp_kor_mainline.125.mf
+	desc = {
+		first_valid = {
+			triggered_desc = {	# 기해박해 세 사람을 한 번에 처형
+				trigger = { has_variable = eafp_var_missionary_letter_gihae }
+				desc = eafp_kor_mainline.125.md
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.125.md_generic
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { has_variable = eafp_var_missionary_letter_gihae }
+				desc = eafp_kor_mainline.125.mf
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.125.mf_generic
+			}
+		}
+	}
 
 	duration = 2
-	
+
 
 	event_image = {
 		video = "votp_gunboat_diplomacy"
@@ -4554,262 +4410,26 @@ eafp_kor_mainline.125 = {	#프랑스 배
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	immediate = {
-	}
-
-	option = {
-		name = eafp_kor_mainline.125.oa
-
-		create_diplomatic_catalyst = {
-			type = catalyst_event_negative
-			target = ROOT
-		}
-	}
-}
-eafp_kor_mainline.126 = {	#김대건 판결
-	dlc = dlc_eafp
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.126.mt
-	desc = eafp_kor_mainline.126.md
-	flavor = eafp_kor_mainline.126.mf
-
-	duration = 2
-	
-
-	event_image = {
-		video = "votp_prison"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	immediate = {
-
-	}
-
-	option = {
-		name = eafp_kor_mainline.126.oa
-		default_option = yes
-		scope:prisoner_scope = {
-			hidden_effect = {
-				free_character_from_void = yes
-			}
-			kill_character = yes
-		}
-		if = {
-			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
-			every_political_movement = {
-				limit = { is_political_movement_type = eafp_movement_rel_catholic }
-				add_modifier = {
-					name = large_scale_christian_persecution_modifier
-					days = normal_modifier_time
-				}
-			}
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -30
-		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0.1
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 0.8
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 0.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
-			modifier = {
-				factor = 2.0
-				var:eafp_var_je_sedo_politics_balance > 300
-			}
-			modifier = {
-				factor = 1.2
-				var:eafp_var_je_sedo_politics_balance <= 100
-			}
-			modifier = {
-				factor = 1.5
-				var:eafp_var_je_sedo_politics_balance > 100
-				var:eafp_var_je_sedo_politics_balance <= 300
-			}
-		}
-	}
-
-	option = {
-		name = eafp_kor_mainline.126.ob
-		scope:prisoner_scope = {
-			remove_variable = prison_time_var
-			remove_variable = prison_country
-			place_character_in_void = 132
-		}
-		if = {
-			limit = { any_political_movement = { is_political_movement_type = eafp_movement_rel_catholic } }
-			every_political_movement = {
-				limit = { is_political_movement_type = eafp_movement_rel_catholic }
-				add_modifier = {
-					name = large_scale_christian_persecution_modifier
-					days = normal_modifier_time
-					multiplier = 0.5
-				}
-			}
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -15
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 2.0
-				var:eafp_var_je_sedo_politics_balance > 300
-			}
-			modifier = {
-				factor = 1.2
-				var:eafp_var_je_sedo_politics_balance <= 100
-			}
-			modifier = {
-				factor = 1.5
-				var:eafp_var_je_sedo_politics_balance > 100
-				var:eafp_var_je_sedo_politics_balance <= 300
-			}
-		}
-	}
-
-	option = {
-		name = eafp_kor_mainline.126.oc
-		scope:prisoner_scope = {
-			free_character_from_void = yes
-		}
-		add_modifier = {
-			name = ruler_protect_christians_modifier
-			days = normal_modifier_time
-		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = 1
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 2.0
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 1.1
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 1.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
-		}
-	}
-}
-eafp_kor_mainline.127 = {	#서학도 색출
-	dlc = dlc_eafp
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.127.mt
-	desc = eafp_kor_mainline.127.md
-	flavor = eafp_kor_mainline.127.mf
-
-	duration = 2
-	
-
-	event_image = {
-		video = "votp_prison"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
 	trigger = {
-		game_date > 1860.1.1
-	}
-
-	immediate = {
+		exists = c:FRA
 	}
 
 	fire_only_once = yes
 
-	option = {
-		name = eafp_kor_mainline.127.oa
-		default_option = yes
-		add_modifier = {
-			name = ruler_protect_christians_modifier
-			days = normal_modifier_time
-		}
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = 1
-		}
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 2.0
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 1.1
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 1.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
-		}
+	immediate = {
+		c:FRA = { save_scope_as = eafp_letter_sender }
 	}
 
 	option = {
-		name = eafp_kor_mainline.127.ob
-		eafp_effect_option_gain_attitude = {
-			ATTITUDE = -1
-		}
-		eafp_effect_option_gain_balance = {
-			BALANCE = -30
-		}
-		eafp_effect_catholic_purge = yes
-		ai_chance = {
-			base = 10
-			modifier = {
-				factor = 0.1
-				ig:ig_landowners.ig_approval < 0
-			}
-			modifier = {
-				factor = 0.8
-				ig:ig_landowners.ig_approval >= 10
-			}
-			modifier = {
-				factor = 0.5
-				ig:ig_landowners.ig_approval >= 0
-				ig:ig_landowners.ig_approval < 10
-			}
-			modifier = {
-				factor = 2.0
-				var:eafp_var_je_sedo_politics_balance > 300
-			}
-			modifier = {
-				factor = 1.2
-				var:eafp_var_je_sedo_politics_balance <= 100
-			}
-			modifier = {
-				factor = 1.5
-				var:eafp_var_je_sedo_politics_balance > 100
-				var:eafp_var_je_sedo_politics_balance <= 300
+		name = eafp_kor_mainline.125.oa
+		default_option = yes
+		scope:eafp_letter_sender = {
+			create_diplomatic_catalyst = {
+				type = catalyst_event_negative
+				target = ROOT
 			}
 		}
+		hidden_effect = { remove_variable = eafp_var_missionary_letter_gihae }
 	}
 }
 eafp_kor_mainline.128 = {	#대남의 비보
@@ -4847,13 +4467,13 @@ eafp_kor_mainline.128 = {	#대남의 비보
 
 	option = {
 		name = eafp_kor_mainline.128.oa
+		default_option = yes
 		eafp_effect_option_gain_attitude = {
 			ATTITUDE = -1
 		}
 		eafp_effect_option_gain_balance = {
 			BALANCE = -30
 		}
-		eafp_effect_catholic_purge = yes
 		ai_chance = {
 			base = 10
 			modifier = {
@@ -5850,7 +5470,8 @@ eafp_kor_mainline.144 = {	# 사학을 다스리라는 상소
 	option = {
 		name = eafp_kor_mainline.144.oa
 		default_option = yes
-		eafp_effect_catholic_purge = yes
+		remove_variable = eafp_var_button_educating_cooltime	# 다음 집중 교화를 바로 쓸 수 있음
+		custom_tooltip = eafp_kor_mainline.144.tt
 		ai_chance = {
 			base = 1
 		}
@@ -5913,17 +5534,19 @@ eafp_kor_mainline.145 = {	# 능묘를 파헤친 이국인
 
 
 #199까지 - 유학의 왕국&서원 저널에서 점화하는 임의 이벤트 영역
-eafp_kor_mainline.170 = {	#임의적 박해 발동
+eafp_kor_mainline.170 = {	#집중 교화: 활동 중인 선교사마다 70% 검거, 잡힌 사람에 따라 문구가 달라짐 (docs/joseon_missionaries.md 6)
 	dlc = dlc_eafp
 	type = country_event
 	placement = ROOT
 
 	title = eafp_kor_mainline.170.mt
-	desc = eafp_kor_mainline.170.md
+	desc = eafp_kor_mainline.170.d
 	flavor = eafp_kor_mainline.170.mf
 
 	duration = 2
-	
+
+	gui_window = event_window_1char_tabloid
+	left_icon = scope:eafp_purge_portrait
 
 	event_image = {
 		texture = "gfx/event_pictures/gonjang.dds"
@@ -5933,16 +5556,109 @@ eafp_kor_mainline.170 = {	#임의적 박해 발동
 
 	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
 
-	#trigger = {
-	#}
-	
 	immediate = {
+		every_character_in_void = {	# 검거: 수감 표식을 두고 판결까지 공허에 둔다
+			limit = { eafp_missionary_active = yes }
+			random = {
+				chance = 70
+				set_variable = eafp_var_missionary_jailed
+			}
+		}
+		if = {	# 초상: 잡힌 역사 인물 > 잡힌 사람 > 군주
+			limit = { any_character_in_void = { has_variable = eafp_var_missionary_jailed eafp_missionary_historical = yes } }
+			random_character_in_void = {
+				limit = { has_variable = eafp_var_missionary_jailed eafp_missionary_historical = yes }
+				save_scope_as = eafp_purge_portrait
+			}
+		}
+		else_if = {
+			limit = { any_character_in_void = { has_variable = eafp_var_missionary_jailed } }
+			random_character_in_void = {
+				limit = { has_variable = eafp_var_missionary_jailed }
+				save_scope_as = eafp_purge_portrait
+			}
+		}
+		else = {
+			ruler = { save_scope_as = eafp_purge_portrait }
+		}
 	}
 
-	option = {
+	option = {	# 잡힌 자를 모두 처형
 		name = eafp_kor_mainline.170.oa
+		trigger = { any_character_in_void = { has_variable = eafp_var_missionary_jailed } }
 		default_option = yes
 		eafp_effect_catholic_purge = yes
+		custom_tooltip = eafp_kor_mainline.170.tt_execute
+		if = {	# 외국 선교사 처형: 유림 승인도 (한 번만), 양요 명분
+			limit = { any_character_in_void = { has_variable = eafp_var_missionary_jailed NOT = { has_culture = cu:korean } } }
+			custom_tooltip = eafp_catholic_purge_yangyo_tt
+			add_modifier = {
+				name = eafp_modi_missionary_executed
+				months = 12
+			}
+		}
+		hidden_effect = {
+			if = {	# 프랑스 선교사 처형: 7년 뒤 항의문 (한 번)
+				limit = {
+					exists = c:FRA
+					NOT = { has_global_variable = eafp_check_missionary_letter }
+					any_character_in_void = { has_variable = eafp_var_missionary_jailed has_culture = cu:french }
+				}
+				set_global_variable = eafp_check_missionary_letter
+				if = {	# 기해박해 세 사람이 같은 집중 교화에서 모두 처형됨
+					limit = {
+				any_character_in_void = { has_variable = eafp_var_missionary_jailed has_template = eafp_kor_laurent_joseph_marius_imbert_character_template }
+				any_character_in_void = { has_variable = eafp_var_missionary_jailed has_template = eafp_kor_jacques_chastan_character_template }
+				any_character_in_void = { has_variable = eafp_var_missionary_jailed has_template = eafp_kor_pierre_maubant_character_template }
+					}
+					set_variable = eafp_var_missionary_letter_gihae
+				}
+				trigger_event = { id = eafp_kor_mainline.125 years = 7 }
+			}
+			every_character_in_void = {
+				limit = { has_variable = eafp_var_missionary_jailed }
+				eafp_effect_missionary_execute = yes
+			}
+		}
+		ai_chance = {
+			base = 3
+		}
+	}
+	option = {	# 양인은 추방, 조선인 전교자만 처형
+		name = eafp_kor_mainline.170.ob
+		trigger = { any_character_in_void = { has_variable = eafp_var_missionary_jailed NOT = { has_culture = cu:korean } } }
+		eafp_effect_catholic_purge = yes
+		custom_tooltip = eafp_kor_mainline.170.tt_deport
+		if = {
+			limit = { any_character_in_void = { has_variable = eafp_var_missionary_jailed has_culture = cu:korean } }
+			custom_tooltip = eafp_kor_mainline.170.tt_execute_korean
+		}
+		hidden_effect = {
+			every_character_in_void = {
+				limit = { has_variable = eafp_var_missionary_jailed has_culture = cu:korean }
+				eafp_effect_missionary_execute = yes
+			}
+			every_character_in_void = {
+				limit = { has_variable = eafp_var_missionary_jailed }
+				eafp_effect_missionary_deport = yes
+			}
+		}
+		ai_chance = {
+			base = 1
+		}
+	}
+	option = {	# 아무도 잡히지 않음: 신자 인구 박해만
+		name = eafp_kor_mainline.170.oc
+		trigger = { NOT = { any_character_in_void = { has_variable = eafp_var_missionary_jailed } } }
+		default_option = yes
+		eafp_effect_catholic_purge = yes
+	}
+
+	after = {	# 수감 표식 정리 (판결에서 남은 사람이 없어야 정상)
+		every_character_in_void = {
+			limit = { has_variable = eafp_var_missionary_jailed }
+			remove_variable = eafp_var_missionary_jailed
+		}
 	}
 }
 eafp_kor_mainline.171 = {	#
