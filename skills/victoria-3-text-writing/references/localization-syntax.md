@@ -44,12 +44,13 @@ This is a convention, not a generator. The event script is authoritative. Condit
 For a journal key `je_example`:
 
 - `je_example` is the title.
-- `je_example_reason` is the normal reason text.
+- `je_example_reason` supplies the reason when the JE omits `reason`. An explicit `reason` can select a key or conditional branches.
+- If the active title uses scoped data, supply `je_example_concluded` as the static title for the concluded list.
 - `je_example_status` is the fallback returned when no scripted `status_desc` is defined.
 - `je_example_progress` is the fallback returned when no scripted `progress_desc` is defined.
 - `_goal`, `_complete`, `_fail`, `_invalid`, and tooltip keys are used only when the script or UI references them.
 
-`status_desc`, `progress_desc`, `complete` custom tooltips, scripted buttons, and widgets may reference arbitrary localization keys. Read the JE definition rather than inferring the complete key set from suffixes.
+In vanilla 1.15.2 each `outcome` can reference distinct `header`, `effect_header`, and `conclusion_desc` keys. A goal condition can have its own `custom_tooltip` inside `outcome.trigger`. Trace separately any `scripted_button` and `scripted_progress_bar` definitions the journal uses. The [Korean journal examples](vanilla-korean-journals.md) pair these fields with their displayed text.
 
 ## Dynamic Localization
 
@@ -67,7 +68,7 @@ Preserve expressions character-for-character unless the script scope itself is b
  [concept_journal_entry]
 ```
 
-- `$key$` inserts another localization value.
+- `$key$` can insert another localization value. In a format string, the caller can also supply a substitution, as with `$EFFECT$` in a journal outcome’s `effect_header`. Preserve the placeholder when translating.
 - Bracket expressions evaluate game data. Do not translate identifiers inside them.
 - Formatters after `|` control number, sign, percent, precision, or casing. Preserve them deliberately.
 - `GetName` may include game formatting; `GetNameNoFormatting` is useful inside quotations, possessives, or an existing style span. Follow current vanilla or nearby EAFP usage for the same object type.
