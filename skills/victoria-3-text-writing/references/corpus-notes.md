@@ -15,7 +15,7 @@ The workshop root contained 71 mod directories. Forty-five contained English loc
 
 ## Corpus Scale
 
-The scan parsed single-line quoted localization entries. Counts are useful for calibration but include UI keys that happen to resemble event or journal conventions.
+The scan parsed single-line quoted localization entries. Counts are useful for calibration but include UI keys that happen to resemble event or journal conventions. Suffixes can also coincide within an event. For example, the script assigns `strike.2.d` and `strike.2.f` to options. Use the [script-checked Korean event examples](vanilla-korean-events.md) for field assignments.
 
 | Corpus | Files | Parsed loc entries | Event titles | Descriptions | Flavor | Options | JE reasons |
 |---|---:|---:|---:|---:|---:|---:|---:|

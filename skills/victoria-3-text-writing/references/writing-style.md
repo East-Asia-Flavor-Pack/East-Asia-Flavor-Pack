@@ -57,7 +57,7 @@ Keep tense tied to event timing:
 - ongoing crisis: `-하고 있다/-해지고 있다`, English present progressive or present, Chinese `正在/日益`;
 - impending consequence: `-할 것이다/-할 수 있다`, English `will/may`, Chinese `将/可能`.
 
-Do not use the option's state voice here. A description reports that the court faces a choice; it does not make the choice.
+A description can report a settled outcome in the state's voice, as in `opium_wars.3.d`. Keep any decision still open to the player in the options.
 
 ### Flavor Voice
 
@@ -100,7 +100,7 @@ The final flavor should still read as native Victoria 3 text. Research supplies 
 
 ### Event Option Voice
 
-An option is the player's government speaking through a decision, not the UI politely asking the user for input. Korean options therefore favor decisive plain forms and short reaction phrases, not `-합니다/-하십시오` customer-service language. Across one event, keep the same grammatical frame unless a deliberate contrast is useful:
+An option voices a decision or reaction from the side making the choice. The Korean opium crisis uses conversational `-야 해!` and `-순 없어` to distinguish resolve from hesitation. Korean options therefore favor decisive plain forms and short reaction phrases, not `-합니다/-하십시오` customer-service language. Across one event, keep the same grammatical frame unless a deliberate contrast is useful:
 
 - commitments: `우리는 …한다`, `…할 것이다`, `…하리라`;
 - directives: `…하라`, `…을 지원한다`, `…을 금지한다`;
@@ -113,7 +113,7 @@ The wording should encode ideology or policy without pretending to list every ef
 
 ### Journal Reason Voice
 
-The journal reason is a sustained strategic brief. Korean usually uses plain written `-다`, moving from historical diagnosis to `-해야 한다/-할 것이다` when stating the task. English normally uses institutional “we” for a project owned by the country. Use third person when the journal tracks a ruler, movement, epidemic, rebellion, or external country rather than expressing government intent.
+The journal reason is a sustained strategic brief. The Korean opium crisis reason uses plain `-다`, moving from diagnosis to `-해야 한다`. The Sakoku and Ryukyu reasons sustain `-습니다` through historical exposition. Follow the voice of the relevant entry and keep the register consistent within its narrative. English normally uses institutional “we” for a project owned by the country. Use third person when the journal tracks a ruler, movement, epidemic, rebellion, or external country rather than expressing government intent.
 
 Do not address the real-world player as `당신`, “you,” or `你`. Do not use patch-note language such as “the displayed requirements are calculated…” in the narrative voice. If mechanics must appear in the same value, introduce a visibly separate system section after the historical prose.
 
