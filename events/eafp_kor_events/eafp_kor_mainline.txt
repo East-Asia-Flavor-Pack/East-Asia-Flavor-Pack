@@ -4514,6 +4514,7 @@ eafp_kor_mainline.129 = {	# 이양선 출몰
 
 	title = eafp_kor_mainline.129.mt
 	desc = eafp_kor_mainline.129.md
+	flavor = eafp_kor_mainline.129.mf
 
 	duration = 2
 
@@ -4572,6 +4573,7 @@ eafp_kor_mainline.130 = {	# 조선 원정 결정 (원정국)
 
 	title = eafp_kor_mainline.130.mt
 	desc = eafp_kor_mainline.130.md
+	flavor = eafp_kor_mainline.130.mf
 
 	duration = 2
 
@@ -4623,6 +4625,7 @@ eafp_kor_mainline.131 = {	# 양요: 최후통첩 (조선)
 
 	title = eafp_kor_mainline.131.mt
 	desc = eafp_kor_mainline.131.md
+	flavor = eafp_kor_mainline.131.mf
 
 	duration = 3
 
@@ -4713,6 +4716,21 @@ eafp_kor_mainline.132 = {	# 양요: 강화 원정 (조선). 해군 요새와 양
 			}
 			triggered_desc = {
 				desc = eafp_kor_mainline.132.md_lose
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { has_variable = eafp_var_yangyo_result var:eafp_var_yangyo_result = 3 }
+				desc = eafp_kor_mainline.132.mf_win
+			}
+			triggered_desc = {
+				trigger = { has_variable = eafp_var_yangyo_result var:eafp_var_yangyo_result = 2 }
+				desc = eafp_kor_mainline.132.mf_hold
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.132.mf_lose
 			}
 		}
 	}
@@ -4841,6 +4859,7 @@ eafp_kor_mainline.133 = {	# 양요: 조선의 거부 (원정국)
 
 	title = eafp_kor_mainline.133.mt
 	desc = eafp_kor_mainline.133.md
+	flavor = eafp_kor_mainline.133.mf
 
 	duration = 2
 
@@ -4891,6 +4910,21 @@ eafp_kor_mainline.134 = {	# 양요: 원정 결과 (원정국). eafp_var_yangyo_o
 			}
 			triggered_desc = {
 				desc = eafp_kor_mainline.134.md_fail
+			}
+		}
+	}
+	flavor = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { has_variable = eafp_var_yangyo_outcome var:eafp_var_yangyo_outcome = 0 }
+				desc = eafp_kor_mainline.134.mf_submit
+			}
+			triggered_desc = {
+				trigger = { has_variable = eafp_var_yangyo_outcome var:eafp_var_yangyo_outcome = 1 }
+				desc = eafp_kor_mainline.134.mf
+			}
+			triggered_desc = {
+				desc = eafp_kor_mainline.134.mf_fail
 			}
 		}
 	}
@@ -4947,6 +4981,7 @@ eafp_kor_mainline.135 = {	# 이양선의 약탈
 
 	title = eafp_kor_mainline.135.mt
 	desc = eafp_kor_mainline.135.md
+	flavor = eafp_kor_mainline.135.mf
 
 	duration = 2
 
@@ -5000,6 +5035,7 @@ eafp_kor_mainline.136 = {	# 이양선의 측량
 
 	title = eafp_kor_mainline.136.mt
 	desc = eafp_kor_mainline.136.md
+	flavor = eafp_kor_mainline.136.mf
 
 	duration = 2
 
@@ -5056,6 +5092,7 @@ eafp_kor_mainline.137 = {	# 이양선의 좌초
 
 	title = eafp_kor_mainline.137.mt
 	desc = eafp_kor_mainline.137.md
+	flavor = eafp_kor_mainline.137.mf
 
 	duration = 2
 
@@ -5106,6 +5143,7 @@ eafp_kor_mainline.138 = {	# 잇따르는 이양선
 
 	title = eafp_kor_mainline.138.mt
 	desc = eafp_kor_mainline.138.md
+	flavor = eafp_kor_mainline.138.mf
 
 	duration = 2
 
@@ -5158,6 +5196,7 @@ eafp_kor_mainline.139 = {	# 연해 주민과의 충돌
 
 	title = eafp_kor_mainline.139.mt
 	desc = eafp_kor_mainline.139.md
+	flavor = eafp_kor_mainline.139.mf
 
 	duration = 2
 
@@ -5204,80 +5243,6 @@ eafp_kor_mainline.139 = {	# 연해 주민과의 충돌
 	}
 }
 
-eafp_kor_mainline.140 = {	# 이웃 나라의 전쟁 소식
-	dlc = dlc_eafp
-	type = country_event
-	placement = ROOT
-
-	title = eafp_kor_mainline.140.mt
-	desc = eafp_kor_mainline.140.md
-
-	duration = 2
-
-	event_image = {
-		video = "votp_gunboat_diplomacy"
-	}
-
-	on_created_soundeffect = "event:/SFX/UI/Alerts/event_appear"
-
-	icon = "gfx/interface/icons/event_icons/event_newspaper.dds"
-
-	cooldown = { months = 60 }
-
-	trigger = {
-		any_country = {
-			NOT = { c:KOR ?= this }
-			capital.state_region = { is_in_geographic_region = geographic_region_east_asia }
-			save_temporary_scope_as = yangyo_neighbor_check
-			any_country = {
-				eafp_yangyo_interested_power = yes
-				has_war_with = scope:yangyo_neighbor_check
-			}
-		}
-	}
-
-	immediate = {
-		random_country = {
-			limit = {
-				NOT = { c:KOR ?= this }
-				capital.state_region = { is_in_geographic_region = geographic_region_east_asia }
-				save_temporary_scope_as = yangyo_neighbor_check
-				any_country = {
-					eafp_yangyo_interested_power = yes
-					has_war_with = scope:yangyo_neighbor_check
-				}
-			}
-			save_scope_as = yangyo_neighbor
-			random_country = {
-				limit = {
-					eafp_yangyo_interested_power = yes
-					has_war_with = scope:yangyo_neighbor
-				}
-				save_scope_as = yangyo_ship_country
-			}
-		}
-	}
-
-	option = {
-		name = eafp_kor_mainline.140.oa
-		default_option = yes
-		add_modifier = {
-			name = eafp_modi_yangyo_haebang
-			days = normal_modifier_time
-		}
-		ai_chance = {
-			base = 1
-		}
-	}
-	option = {
-		name = eafp_kor_mainline.140.ob
-		eafp_effect_option_gain_blossom = { BLOSSOM = 20 }
-		ai_chance = {
-			base = 1
-		}
-	}
-}
-
 eafp_kor_mainline.141 = {	# 국경 너머의 통상 요구
 	dlc = dlc_eafp
 	type = country_event
@@ -5285,6 +5250,7 @@ eafp_kor_mainline.141 = {	# 국경 너머의 통상 요구
 
 	title = eafp_kor_mainline.141.mt
 	desc = eafp_kor_mainline.141.md
+	flavor = eafp_kor_mainline.141.mf
 
 	duration = 2
 
@@ -5340,6 +5306,7 @@ eafp_kor_mainline.142 = {	# 이국 상선의 통상 요구
 
 	title = eafp_kor_mainline.142.mt
 	desc = eafp_kor_mainline.142.md
+	flavor = eafp_kor_mainline.142.mf
 
 	duration = 2
 
@@ -5389,6 +5356,7 @@ eafp_kor_mainline.143 = {	# 강을 거슬러 오는 이양선
 
 	title = eafp_kor_mainline.143.mt
 	desc = eafp_kor_mainline.143.md
+	flavor = eafp_kor_mainline.143.mf
 
 	duration = 2
 
@@ -5447,6 +5415,7 @@ eafp_kor_mainline.144 = {	# 사학을 다스리라는 상소
 
 	title = eafp_kor_mainline.144.mt
 	desc = eafp_kor_mainline.144.md
+	flavor = eafp_kor_mainline.144.mf
 
 	duration = 2
 
@@ -5495,6 +5464,7 @@ eafp_kor_mainline.145 = {	# 능묘를 파헤친 이국인
 
 	title = eafp_kor_mainline.145.mt
 	desc = eafp_kor_mainline.145.md
+	flavor = eafp_kor_mainline.145.mf
 
 	duration = 2
 
