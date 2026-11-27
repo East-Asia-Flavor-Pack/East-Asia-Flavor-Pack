@@ -1,0 +1,281 @@
+﻿# 바닐라 1.15 ai_strategy_unify_china(02_diplomatic_strategies.txt) 전체 사본에 군벌 할거(je_reunify_china_warlord) 보정을 더함.
+# 예전에는 INJECT:ai_strategy_default로 넣었으나, INJECT는 같은 이름의 필드를 통째로 바꿔서
+# 모든 나라의 바닐라 기본값(recklessness 1, diplomatic_play_boldness 50 등)이 사라졌음.
+# 전략 전체를 REPLACE하므로 바닐라가 바뀌면 이 사본도 맞춰야 함.
+REPLACE:ai_strategy_unify_china = {
+	icon = "gfx/interface/icons/ai_strategy_icons/unification.dds"
+
+	type = diplomatic
+
+	will_form_power_bloc = {
+		always = yes
+	}
+
+	undesirable_infamy_level = {
+		value = 50
+	}
+
+	unacceptable_infamy_level = {
+		value = 100
+	}
+
+	ideological_opinion_effect_mult = {
+		value = 0.5
+	}
+
+	wargoal_maneuvers_fraction = {
+		value = 0.2
+
+		if = { # 추가: 군벌끼리는 영토 요구에 기동을 더 씀
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:enemy_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 0.25
+		}
+	}
+
+	diplomatic_play_neutrality = {
+		value = 0
+	}
+
+	diplomatic_play_boldness = {
+		value = 50
+
+		if = { # 추가: 군벌끼리의 외교전에서는 잘 물러나지 않음
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				any_enemy_in_diplo_play = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 50
+		}
+	}
+
+	diplomatic_play_support = { # 추가: 군벌끼리 연합함
+		value = 0
+
+		if = {
+			limit = {
+				scope:country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+				scope:enemy_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = {
+				value = 25
+				desc = "alignment_politics"
+			}
+		}
+	}
+
+	obligation_value = {
+		value = 0
+
+		if = {
+			limit = {
+				scope:target_country = { has_journal_entry = je_reunify_china }
+			}
+			add = 25
+		}
+	}
+
+	recklessness = {
+		value = 0.5
+
+		if = { # 추가: 상대 군벌의 군사력을 얕잡아 봄
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 2
+		}
+	}
+
+	aggression = {
+		value = 0.5
+
+		if = {
+			limit = {
+				scope:target_country = { has_journal_entry = je_reunify_china }
+			}
+			add = 5.0
+		}
+
+		# Less aggressive against countries we're just antagonistic against, rather than belligerent/domineering
+		if = {
+			limit = {
+				has_attitude = {
+					who = scope:target_country
+					attitude = antagonistic
+				}
+			}
+			multiply = 0.25
+		}
+
+		if = { # 추가: 군벌끼리 외교전을 더 자주 검
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 10
+		}
+	}
+
+	building_group_weights = {
+		bg_army = 1.5
+	}
+
+	state_value = {
+		if = {
+			limit = {
+				scope:target_state = {
+					state_region = {
+						OR = {
+							is_homeland = cu:manchu
+							is_homeland = cu:han
+						}
+					}
+				}
+				can_reach_target_state_to_conquer = { TARGET_STATE = scope:target_state }
+			}
+			add = {
+				value = 100
+				desc = "STATE_VALUE_UNIFY_CHINA"
+			}
+		}
+
+		if = { # 추가: 다른 군벌이 가진 주를 통일 대상으로 높이 침
+			limit = {
+				is_involved_in_journal_entry = je_reunify_china_warlord
+				scope:target_country = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+				}
+			}
+			add = 50
+		}
+	}
+
+	wargoal_scores = {
+		conquer_state = { # 추가: 합병뿐 아니라 모든 영토 요구로 통일을 노림
+			if = {
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
+			}
+		}
+
+		return_state = { # 추가
+			if = {
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
+			}
+		}
+
+		annex_country = {
+			if = {
+				limit = {
+					scope:target_country = {
+						has_journal_entry = je_reunify_china
+					}
+					can_reach_target_country_to_conquer = { TARGET_COUNTRY = scope:target_country }
+				}
+				add = 300
+			}
+			if = { # 추가
+				limit = {
+					is_involved_in_journal_entry = je_reunify_china_warlord
+					scope:target_country = {
+						is_involved_in_journal_entry = je_reunify_china_warlord
+					}
+				}
+				add = 100
+			}
+		}
+	}
+
+	secret_goal_scores = {
+		befriend = {
+			trigger = {
+				NOT = { scope:target_country = { is_subject_of = root } }
+				scope:target_country = {
+					has_journal_entry = je_reunify_china
+				}
+			}
+			score = {
+				value = 150
+
+				if = {
+					limit = {
+						NOT = { can_reach_target_country_to_protect = { TARGET_COUNTRY = scope:target_country } }
+					}
+					add = 150
+				}
+			}
+		}
+		conquer = {
+			trigger = {
+				NOT = { scope:target_country = { is_subject_of = root } }
+				scope:target_country = {
+					has_journal_entry = je_reunify_china
+				}
+				can_reach_target_country_to_conquer = { TARGET_COUNTRY = scope:target_country }
+			}
+			score = {
+				value = 500
+			}
+		}
+	}
+
+	possible = {
+		is_subject = no
+		has_journal_entry = je_reunify_china
+	}
+
+	weight = {
+		value = 25
+
+		if = {
+			limit = {
+				has_journal_entry = je_reunify_china
+			}
+			add = 50
+		}
+
+		add = {
+			value = army_size
+			multiply = 10
+		}
+
+		if = {
+			limit = { NOT = { is_country_type = unrecognized } }
+			multiply = 10.0
+		}
+		else_if = {
+			limit = { country_rank = rank_value:unrecognized_major_power }
+			multiply = 5.0
+		}
+		else_if = {
+			limit = { country_rank = rank_value:unrecognized_regional_power }
+			multiply = 3.0
+		}
+	}
+}
