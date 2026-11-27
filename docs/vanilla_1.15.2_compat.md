@@ -107,7 +107,7 @@ max_regressiveness = {
 | 모드 정의 | 바닐라 변경 | 상태 |
 |---|---|---|
 | `INJECT:*_party` (eafp_parties.txt) | 지배정당(SPS) 수정: `available_for_interest_group`, 점수에 `amendment_*_party_dominance` 추가 | 모드는 `name` 분기만 INJECT하므로 바닐라 변경이 그대로 유지됨 |
-| `INJECT:ai_strategy_default` | 종속국 가치 계산, 보조금(조선소 추가), 라디오·전화·석유 수요 stance 등 | INJECT라 유지됨 |
+| ~~`INJECT:ai_strategy_default`~~ | 종속국 가치 계산, 보조금(조선소 추가), 라디오·전화·석유 수요 stance 등 | **판단 오류였음.** INJECT는 같은 이름의 필드를 통째로 바꾸므로 `recklessness` 기본값 1, `diplomatic_play_boldness` 기본값 50 등 바닐라 내용이 모든 나라에서 사라졌음. 파일을 지우고 군벌 몫은 `REPLACE:ai_strategy_unify_china`(eafp_diplomatic_strategies.txt, 바닐라 전체 사본이므로 바닐라 갱신 때 맞춰야 함. 군벌국(`warlord_state` 변수)은 `je_reunify_china`의 on_weekly_pulse에서 이 전략을 받고, weight에 +100000을 받음), 청의 1차 아편전쟁 보정은 `ai_strategy_maintain_mandate_of_heaven`으로 옮김. 영국 쪽 보정과 조계 요구 외교전 AI 점수는 삭제(조계 AI는 `eafp_grant_concession` 조약 조항의 ai 블록만 씀) |
 | `INJECT:da_decrease_autonomy` | `possible`에 `modifier:country_cannot_decrease_autonomy_bool ?= no` 추가 | `ai` 블록만 INJECT하므로 유지됨 |
 | `00_code_on_actions_definition.txt`의 `on_character_death`, `on_new_ruler`, `on_law_checkpoint_advance/debate` | effect/events/on_actions 추가 | 모드는 `on_actions` 목록만 추가해서 병합됨 |
 | 회사(eafp_companies_*) | 바닐라는 모든 회사 `possible`에 `any_scope_state = { state_region = ... is_incorporated = yes }` 추가 | 모드 회사는 이미 같은 패턴이라 수정할 필요 없음 |
